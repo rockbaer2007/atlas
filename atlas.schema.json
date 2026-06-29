@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "required": [
+    "atlas.manifest.json",
+    "atlas.workspace.json",
+    "atlas.packages.json",
+    "atlas.release.json"
+  ],
+  "optional": [
+    "atlas.dependencies.json",
+    "atlas.quality.json",
+    "atlas.dashboard.json",
+    "atlas.documentation.json",
+    "atlas.devtools.json"
+  ],
+  "validation": {
+    "strict": true,
+    "failOnMissingRequired": true,
+    "warnOnMissingOptional": true
+  }
+}

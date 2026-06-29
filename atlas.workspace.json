@@ -1,0 +1,19 @@
+{
+  "packages": [
+    "packages/*"
+  ],
+  "examples": [
+    "examples/*"
+  ],
+  "tools": [
+    "tools/*"
+  ],
+  "tests": [
+    "tests/*"
+  ],
+  "sharedConfig": {
+    "tsconfig": "tsconfig.base.json",
+    "packageManager": "pnpm",
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "widgets": [
+    "progress",
+    "packages",
+    "quality",
+    "release",
+    "tests"
+  ],
+  "refresh": "manual"
+}

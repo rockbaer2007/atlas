@@ -1,0 +1,11 @@
+{
+  "commands": [
+    "status",
+    "doctor",
+    "audit",
+    "graph",
+    "release"
+  ],
+  "strictMode": true,
+  "validateManifest": true
+}

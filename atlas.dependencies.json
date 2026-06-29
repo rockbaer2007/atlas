@@ -1,0 +1,70 @@
+{
+  "rules": [
+    {
+      "package": "foundation",
+      "allowed": []
+    },
+    {
+      "package": "core",
+      "allowed": [
+        "foundation"
+      ]
+    },
+    {
+      "package": "plugins",
+      "allowed": [
+        "core",
+        "foundation"
+      ]
+    },
+    {
+      "package": "providers",
+      "allowed": [
+        "core",
+        "foundation"
+      ]
+    },
+    {
+      "package": "layouts",
+      "allowed": [
+        "core",
+        "foundation"
+      ]
+    },
+    {
+      "package": "rendering",
+      "allowed": [
+        "layouts",
+        "foundation"
+      ]
+    },
+    {
+      "package": "runtime",
+      "allowed": [
+        "rendering",
+        "providers",
+        "foundation"
+      ]
+    },
+    {
+      "package": "theme",
+      "allowed": [
+        "rendering",
+        "foundation"
+      ]
+    },
+    {
+      "package": "homeassistant",
+      "allowed": [
+        "runtime",
+        "theme"
+      ]
+    },
+    {
+      "package": "devtools",
+      "allowed": [
+        "foundation"
+      ]
+    }
+  ]
+}

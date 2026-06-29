@@ -1,0 +1,18 @@
+{
+  "current": "0.2.0-alpha.1",
+  "next": "0.3.0-alpha.1",
+  "strategy": "semantic-versioning",
+  "channels": [
+    "alpha",
+    "beta",
+    "rc",
+    "stable"
+  ],
+  "qualityGates": {
+    "check": true,
+    "build": true,
+    "tests": true,
+    "docs": true,
+    "architectureReview": true
+  }
+}

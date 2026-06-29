@@ -1,0 +1,44 @@
+{
+  "packages": [
+    {
+      "name": "@atlas/foundation",
+      "layer": 0
+    },
+    {
+      "name": "@atlas/core",
+      "layer": 1
+    },
+    {
+      "name": "@atlas/plugins",
+      "layer": 2
+    },
+    {
+      "name": "@atlas/providers",
+      "layer": 2
+    },
+    {
+      "name": "@atlas/layouts",
+      "layer": 2
+    },
+    {
+      "name": "@atlas/rendering",
+      "layer": 3
+    },
+    {
+      "name": "@atlas/runtime",
+      "layer": 4
+    },
+    {
+      "name": "@atlas/theme",
+      "layer": 4
+    },
+    {
+      "name": "@atlas/homeassistant",
+      "layer": 5
+    },
+    {
+      "name": "@atlas/devtools",
+      "layer": 5
+    }
+  ]
+}

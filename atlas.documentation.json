@@ -1,0 +1,9 @@
+{
+  "sources": [
+    "docs",
+    "packages"
+  ],
+  "output": "site",
+  "generateApi": true,
+  "generateArchitecture": true
+}
