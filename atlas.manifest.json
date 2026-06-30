@@ -6,7 +6,7 @@
   },
   "architecture": {
     "monorepo": true,
-    "packageManager": "pnpm",
+    "packageManager": "pnpm@11.9.0",
     "typescript": "5.x"
   },
   "packages": [

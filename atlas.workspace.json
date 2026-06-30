@@ -13,7 +13,7 @@
   ],
   "sharedConfig": {
     "tsconfig": "tsconfig.base.json",
-    "packageManager": "pnpm",
+    "packageManager": "pnpm@11.9.0",
     "node": ">=22"
   }
 }
