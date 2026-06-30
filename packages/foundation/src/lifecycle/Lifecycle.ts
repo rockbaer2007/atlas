@@ -1,6 +1,5 @@
-import { Disposable } from "./Disposable";
-import { Initializable } from "./Initializable";
-import { Startable } from "./Startable";
-import { Stoppable } from "./Stoppable";
+import type { LifecycleState } from "./LifecycleState";
 
-export interface Lifecycle extends Initializable, Startable, Stoppable, Disposable {}
+export interface Lifecycle {
+    readonly state: LifecycleState;
+}
