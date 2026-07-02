@@ -1,0 +1,37 @@
+# ==========================================
+# ATLAS Framework
+# Global Git Ignore
+# ==========================================
+
+# Dependencies
+node_modules/
+
+# PNPM
+.pnpm-store/
+
+# Build output
+dist/
+build/
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+.vite/
+
+# Vitest
+vitest-results/
+*.vitest
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/settings.json
+
+# Operating System
+.DS_Store
+Thumbs.db
