@@ -1,13 +1,45 @@
 /**
  * ATLAS Framework
- * Sprint: G2.5.1b - Default EventBus
- * Package: v2
+ *
+ * Event Infrastructure
+ * Sprint: G2.5.1b-R2 "Heartbeat"
+ *
+ * Default implementation of an event subscription.
  */
 
-export class DefaultEventSubscription{
- constructor(
-  public readonly id:string,
-  public readonly eventType:string,
-  private readonly disposeAction:()=>Promise<void>|void){}
- async dispose():Promise<void>{await this.disposeAction();}
+import type { EventSubscription } from "../contracts/EventSubscription";
+
+export class DefaultEventSubscription implements EventSubscription {
+
+  private isDisposedInternal = false;
+
+  /**
+   * Creates a new event subscription.
+   *
+   * @param id Unique subscription identifier.
+   * @param eventType Registered event type.
+   * @param disposeAction Callback executed when the subscription is disposed.
+   */
+  public constructor(
+    public readonly id: string,
+    public readonly eventType: string,
+    private readonly disposeAction: () => void | Promise<void>,
+  ) {}
+
+  /**
+   * Disposes this subscription.
+   *
+   * Calling dispose() multiple times is safe.
+   */
+  public async dispose(): Promise<void> {
+
+    if (this.isDisposedInternal) {
+      return;
+    }
+
+    this.isDisposedInternal = true;
+
+    await this.disposeAction();
+  }
+
 }
