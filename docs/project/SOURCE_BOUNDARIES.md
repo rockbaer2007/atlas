@@ -78,6 +78,10 @@ state, a Kernel service container and runtime lifecycle events through an
 in dependency order. Missing required dependencies and cycles reject startup;
 missing optional dependencies are allowed.
 
+Runtime stop is restart-safe and does not shut modules down. Terminal Runtime
+disposal invokes optional module stop and dispose capabilities in reverse
+dependency order.
+
 Runtime does not yet own service registration, module activation or rendering.
 
 ---

@@ -9,6 +9,9 @@ export type RuntimeEvent =
         | "runtime.disposed";
     }>)
   | (Event & Readonly<{
-      type: "runtime.module.initialized";
+      type:
+        | "runtime.module.initialized"
+        | "runtime.module.stopped"
+        | "runtime.module.disposed";
       moduleId: string;
     }>);

@@ -27,7 +27,8 @@ quality validation and the delivered results.
 | G2.5.9 | Runtime Service Composition | Completed | - |
 | G2.5.10 | Runtime Module Activation | Completed | - |
 | G2.5.11 | Runtime Module Dependencies | Completed | - |
-| G2.5.12 | Runtime Module Shutdown | Planned | - |
+| G2.5.12 | Runtime Module Shutdown | Completed | - |
+| G2.5.13 | Runtime Module Versioning | Planned | - |
 
 ---
 
@@ -216,15 +217,28 @@ Highlights
 
 ---
 
+## G2.5.12 - Runtime Module Shutdown
+
+Added terminal module shutdown to Runtime disposal.
+
+Highlights
+
+- Added optional module stop and dispose capabilities
+- Shut down initialized modules in reverse dependency order
+- Kept Runtime stop restart-safe
+- Preserved a stopped host when terminal shutdown fails
+
+---
+
 # Planned Sprints
 
-## G2.5.12 - Runtime Module Shutdown
+## G2.5.13 - Runtime Module Versioning
 
 Planned deliverables
 
-- Define module shutdown and disposal contracts
-- Stop initialized modules in reverse dependency order
-- Add shutdown and disposal failure-path tests
+- Validate required module dependency versions
+- Define module version compatibility rules
+- Add compatible and incompatible dependency tests
 
 ---
 

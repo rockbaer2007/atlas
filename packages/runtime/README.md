@@ -37,6 +37,10 @@ Kernel module context. Required dependencies initialize before their dependents;
 missing required dependencies and cycles reject startup. Missing optional
 dependencies are allowed.
 
+`RuntimeHost.stop()` pauses the host but leaves initialized modules available
+for restart. Terminal shutdown occurs during `dispose()`: optional module
+`stop()` and `dispose()` capabilities run in reverse dependency order.
+
 ---
 
 # Build Output

@@ -200,4 +200,70 @@ describe("RuntimeHost", () => {
     await expect(cyclic.start()).rejects.toThrow("Module dependency cycle detected");
     expect(cyclic.state).toBe("initialized");
   });
+
+  it("shuts modules down in reverse dependency order during disposal", async () => {
+    const host = new RuntimeHost(application);
+    const order: string[] = [];
+
+    host.registerModule({
+      manifest: {
+        id: "dependent",
+        name: "Dependent",
+        version: "1.0.0",
+        dependencies: [{ id: "dependency", version: "1.0.0" }],
+      },
+      module: {
+        async initialize() { order.push("initialize dependent"); },
+        async stop() { order.push("stop dependent"); },
+        async dispose() { order.push("dispose dependent"); },
+      },
+    });
+    host.registerModule({
+      manifest: {
+        id: "dependency",
+        name: "Dependency",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() { order.push("initialize dependency"); },
+        async stop() { order.push("stop dependency"); },
+        async dispose() { order.push("dispose dependency"); },
+      },
+    });
+
+    await host.start();
+    await host.dispose();
+
+    expect(order).toEqual([
+      "initialize dependency",
+      "initialize dependent",
+      "stop dependent",
+      "dispose dependent",
+      "stop dependency",
+      "dispose dependency",
+    ]);
+    expect(host.state).toBe("disposed");
+  });
+
+  it("does not dispose the host when module shutdown fails", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "failing-stop",
+        name: "Failing stop",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {},
+        async stop() { throw new Error("shutdown failure"); },
+      },
+    });
+
+    await host.start();
+
+    await expect(host.dispose()).rejects.toThrow("shutdown failure");
+    expect(host.state).toBe("stopped");
+  });
 });

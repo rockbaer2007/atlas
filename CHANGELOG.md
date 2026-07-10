@@ -23,6 +23,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime service keys for application and EventBus composition.
 * Runtime module registration and activation events.
 * Kernel module dependency resolution and Runtime dependency-ordered activation.
+* Optional module stop and dispose contracts with reverse-order Runtime shutdown.
 
 ### Changed
 
@@ -38,6 +39,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Kernel container aligned with its public `ServiceContainer` contract.
 * Runtime module activation through the Kernel module contract.
 * Missing and cyclic Runtime module dependencies now reject startup.
+* Runtime disposal now propagates module shutdown failures without claiming disposal.
 
 ### Fixed
 

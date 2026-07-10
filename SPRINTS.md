@@ -24,24 +24,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.9 | Runtime Service Composition | Completed | - |
 | G2.5.10 | Runtime Module Activation | Completed | - |
 | G2.5.11 | Runtime Module Dependencies | Completed | - |
-| G2.5.12 | Runtime Module Shutdown | Planned | - |
+| G2.5.12 | Runtime Module Shutdown | Completed | - |
+| G2.5.13 | Runtime Module Versioning | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.11 - Runtime Module Dependencies
+## G2.5.12 - Runtime Module Shutdown
 
 Goal:
 
-Resolve Runtime module dependencies before activation and reject invalid module
-graphs.
+Define terminal module shutdown and disposal for RuntimeHost.
 
 Deliverables:
 
-* Kernel dependency resolver
-* Dependency-ordered Runtime activation
-* Missing, optional and cyclic dependency tests
+* Optional stop and dispose module contracts
+* Reverse dependency shutdown order
+* Shutdown failure-path tests
 * Sprint documentation
 
 Status:
@@ -52,13 +52,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.12 - Runtime Module Shutdown
+## G2.5.13 - Runtime Module Versioning
 
 Suggested focus:
 
-* Define module shutdown and disposal contracts
-* Stop initialized modules in reverse dependency order
-* Add shutdown and disposal failure-path tests
+* Validate required module dependency versions
+* Define module version compatibility rules
+* Add compatible and incompatible dependency tests
 
 ---
 
@@ -80,6 +80,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.9.md`
 * `docs/sprints/Sprint-G2.5.10.md`
 * `docs/sprints/Sprint-G2.5.11.md`
+* `docs/sprints/Sprint-G2.5.12.md`
 
 ---
 

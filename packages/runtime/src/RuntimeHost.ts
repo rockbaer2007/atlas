@@ -1,8 +1,10 @@
 import type {
   Application,
   ApplicationHost,
+  DisposableModule,
   EventBus,
   ServiceContainer,
+  StoppableModule,
 } from "@atlas/kernel";
 import {
   DefaultEventBus,
@@ -95,6 +97,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       await this.stop();
     }
 
+    await this.shutdownModules();
     this.stateInternal = "disposed";
     await this.publish("runtime.disposed");
   }
@@ -139,6 +142,24 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     });
   }
 
+  private async shutdownModules(): Promise<void> {
+    const initializedModules = this.resolveModules()
+      .filter(runtimeModule => this.initializedModuleIds.has(runtimeModule.manifest.id))
+      .reverse();
+
+    for (const runtimeModule of initializedModules) {
+      if (this.isStoppableModule(runtimeModule.module)) {
+        await runtimeModule.module.stop();
+        await this.publishModuleEvent("runtime.module.stopped", runtimeModule.manifest.id);
+      }
+
+      if (this.isDisposableModule(runtimeModule.module)) {
+        await runtimeModule.module.dispose();
+        await this.publishModuleEvent("runtime.module.disposed", runtimeModule.manifest.id);
+      }
+    }
+  }
+
   private async publish(type: RuntimeEvent["type"]): Promise<void> {
     await this.events.publish({
       type,
@@ -147,11 +168,32 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   }
 
   private async publishModuleInitialized(moduleId: string): Promise<void> {
+    await this.publishModuleEvent("runtime.module.initialized", moduleId);
+  }
+
+  private async publishModuleEvent(
+    type: Extract<RuntimeEvent, { moduleId: string }> ["type"],
+    moduleId: string,
+  ): Promise<void> {
     await this.events.publish({
-      type: "runtime.module.initialized",
+      type,
       moduleId,
       timestamp: new Date(),
     });
+  }
+
+  private isStoppableModule(module: unknown): module is StoppableModule {
+    return typeof module === "object"
+      && module !== null
+      && "stop" in module
+      && typeof module.stop === "function";
+  }
+
+  private isDisposableModule(module: unknown): module is DisposableModule {
+    return typeof module === "object"
+      && module !== null
+      && "dispose" in module
+      && typeof module.dispose === "function";
   }
 
   private ensureAvailable(): void {
