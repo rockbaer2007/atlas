@@ -20,24 +20,25 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.5 | Source Boundary Review | Completed | - |
 | G2.5.6 | Kernel Workspace Decision | Completed | - |
 | G2.5.7 | Kernel API Validation | Completed | - |
-| G2.5.8 | Runtime Integration Readiness | Planned | - |
+| G2.5.8 | Runtime Integration Readiness | Completed | - |
+| G2.5.9 | Runtime Service Composition | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.7 - Kernel API Validation
+## G2.5.8 - Runtime Integration Readiness
 
 Goal:
 
-Validate the kernel package surface and make the standard EventBus available to
-package consumers.
+Establish the first Runtime API that composes stable Foundation and Kernel
+contracts.
 
 Deliverables:
 
-* Public `DefaultEventBus`
-* Package-root API test
-* Updated public-boundary documentation
+* `RuntimeHost` lifecycle implementation
+* Runtime lifecycle events
+* Runtime consumer integration test
 * Sprint documentation
 
 Status:
@@ -48,13 +49,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.8 - Runtime Integration Readiness
+## G2.5.9 - Runtime Service Composition
 
 Suggested focus:
 
-* Define the first runtime dependency on Foundation and Kernel
-* Establish runtime startup and composition contracts
-* Add a consumer-level integration test
+* Define service composition ownership for RuntimeHost
+* Integrate the Kernel service container
+* Add runtime service lifecycle tests
 
 ---
 
@@ -72,6 +73,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.5.md`
 * `docs/sprints/Sprint-G2.5.6.md`
 * `docs/sprints/Sprint-G2.5.7.md`
+* `docs/sprints/Sprint-G2.5.8.md`
 
 ---
 

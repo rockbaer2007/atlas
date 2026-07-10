@@ -3,8 +3,9 @@
 Dependencies always point downward.
 
 foundation
+ -> kernel
  -> core
- -> plugins/providers/layouts
- -> rendering
- -> runtime/theme
- -> adapters
+ -> runtime
+ -> renderer/theme
+ -> homeassistant
+ -> devtools

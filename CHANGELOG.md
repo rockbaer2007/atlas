@@ -19,6 +19,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Source-boundary documentation.
 * `@atlas/kernel` workspace package.
 * `DefaultEventBus` public export from `@atlas/kernel`.
+* `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
 
 ### Changed
 
@@ -30,6 +31,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Public package-boundary documentation.
 * Kernel source promoted from reference code to a configured workspace package.
 * Kernel public API validation and consumer-level test coverage.
+* Runtime package promoted from placeholder to active workspace package.
 
 ### Fixed
 

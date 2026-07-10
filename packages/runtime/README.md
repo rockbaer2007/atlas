@@ -7,11 +7,24 @@ execution flow.
 
 # Status
 
-Planned runtime package.
+Active runtime package.
 
-The runtime layer will build on stable foundation contracts once the runtime
-architecture is defined. Kernel reference source is not currently a workspace
-package or a runtime dependency.
+The first runtime component is `RuntimeHost`, which owns an application,
+coordinates its lifecycle and publishes runtime lifecycle events through the
+Kernel EventBus.
+
+---
+
+# Public API
+
+`@atlas/runtime` exports:
+
+- `RuntimeHost`
+- `RuntimeEvent`
+
+`RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
+`@atlas/kernel` application and event contracts. Consumers may provide their
+own `EventBus`, or use the default `DefaultEventBus`.
 
 ---
 

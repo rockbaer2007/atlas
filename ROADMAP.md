@@ -22,7 +22,7 @@ Current Release:
 
 Current Focus:
 
-**Foundation Architecture**
+**Kernel and Runtime Integration**
 
 ---
 
@@ -56,7 +56,7 @@ Current Focus:
 
 ## 0.3 – Runtime
 
-**Status:** 📅 Planned
+**Status:** 🚧 In Progress
 
 ### Objectives
 
@@ -66,6 +66,7 @@ Current Focus:
 * Dependency Injection
 * Bootstrap Process
 * Module Activation
+* Application lifecycle host
 
 ### Success Criteria
 

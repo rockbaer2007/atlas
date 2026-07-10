@@ -34,7 +34,14 @@ importers:
 
   packages/renderer: {}
 
-  packages/runtime: {}
+  packages/runtime:
+    dependencies:
+      '@atlas/foundation':
+        specifier: workspace:*
+        version: link:../foundation
+      '@atlas/kernel':
+        specifier: workspace:*
+        version: link:../kernel
 
   packages/theme: {}
 

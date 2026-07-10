@@ -4,9 +4,13 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@atlas/foundation": "workspace:*",
+    "@atlas/kernel": "workspace:*"
+  },
   "scripts": {
     "build": "tsc -b",
     "check": "tsc --noEmit",
-    "test": "echo \"No tests yet\""
+    "test": "vitest"
   }
 }

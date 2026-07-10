@@ -1,0 +1,9 @@
+import type { Event } from "@atlas/kernel";
+
+export type RuntimeEvent = Event & Readonly<{
+  type:
+    | "runtime.initialized"
+    | "runtime.started"
+    | "runtime.stopped"
+    | "runtime.disposed";
+}>;

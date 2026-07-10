@@ -23,7 +23,8 @@ quality validation and the delivered results.
 | G2.5.5 | Source Boundary Review | Completed | - |
 | G2.5.6 | Kernel Workspace Decision | Completed | - |
 | G2.5.7 | Kernel API Validation | Completed | - |
-| G2.5.8 | Runtime Integration Readiness | Planned | - |
+| G2.5.8 | Runtime Integration Readiness | Completed | - |
+| G2.5.9 | Runtime Service Composition | Planned | - |
 
 ---
 
@@ -162,15 +163,28 @@ Highlights
 
 ---
 
+## G2.5.8 - Runtime Integration Readiness
+
+Established the first Runtime API on top of Foundation and Kernel.
+
+Highlights
+
+- Added `RuntimeHost` lifecycle implementation
+- Published runtime lifecycle events through the Kernel EventBus
+- Added consumer-level runtime integration tests
+- Updated dependency and package-boundary documentation
+
+---
+
 # Planned Sprints
 
-## G2.5.8 - Runtime Integration Readiness
+## G2.5.9 - Runtime Service Composition
 
 Planned deliverables
 
-- Define the first runtime dependency on Foundation and Kernel
-- Establish runtime startup and composition contracts
-- Add a consumer-level integration test
+- Define service composition ownership for RuntimeHost
+- Integrate the Kernel service container
+- Add runtime service lifecycle tests
 
 ---
 

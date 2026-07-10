@@ -13,7 +13,7 @@ not a future package layout.
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
 | `@atlas/core` | Planned | Empty entry point; no public API yet. |
-| `@atlas/runtime` | Planned | Empty entry point; no public API yet. |
+| `@atlas/runtime` | Active | Root exports for runtime lifecycle host and events. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
 | `@atlas/homeassistant` | Planned | Empty entry point; no public API yet. |
@@ -64,6 +64,16 @@ composition, dependency injection, modules, event contracts and
 
 Event subscriptions and handler storage remain internal. Consumers must not
 deep-import those implementation files.
+
+---
+
+# Runtime Boundary
+
+`@atlas/runtime` depends on `@atlas/foundation` and `@atlas/kernel`. Its root
+exports `RuntimeHost` and `RuntimeEvent`. The host owns application lifecycle
+state and publishes runtime lifecycle events through an `EventBus`.
+
+Runtime does not yet own service registration, module activation or rendering.
 
 ---
 
