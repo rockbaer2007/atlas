@@ -22,4 +22,14 @@ describe("DefaultServiceContainer", () => {
     expect(a.id).toBe(1);
     expect(b.id).toBe(1);
   });
+
+  it("registers a service instance through the public contract", () => {
+    const key = Symbol("instance");
+    const container = new DefaultServiceContainer();
+    const value = { ready: true };
+
+    container.register(key, value);
+
+    expect(container.resolve(key)).toBe(value);
+  });
 });

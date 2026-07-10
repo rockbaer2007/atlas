@@ -71,7 +71,8 @@ deep-import those implementation files.
 
 `@atlas/runtime` depends on `@atlas/foundation` and `@atlas/kernel`. Its root
 exports `RuntimeHost` and `RuntimeEvent`. The host owns application lifecycle
-state and publishes runtime lifecycle events through an `EventBus`.
+state, a Kernel service container and runtime lifecycle events through an
+`EventBus`. `RuntimeServiceKeys` exposes the application and EventBus entries.
 
 Runtime does not yet own service registration, module activation or rendering.
 

@@ -1,5 +1,5 @@
-export interface ServiceContainer {
+import type { ServiceResolver } from "../container/ServiceResolver";
+
+export interface ServiceContainer extends ServiceResolver {
   register<T>(key: symbol, instance: T): void;
-  resolve<T>(key: symbol): T;
-  contains(key: symbol): boolean;
 }

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Application } from "@atlas/kernel";
 
-import { RuntimeHost } from "../src";
+import { RuntimeHost, RuntimeServiceKeys } from "../src";
 
 const application: Application = {
   name: "demo",
@@ -57,5 +57,14 @@ describe("RuntimeHost", () => {
 
     expect(host.state).toBe("disposed");
     await expect(host.start()).rejects.toThrow("disposed");
+  });
+
+  it("owns application services for its lifecycle", async () => {
+    const host = new RuntimeHost(application);
+
+    await host.start();
+
+    expect(host.services.resolve(RuntimeServiceKeys.application)).toBe(application);
+    expect(host.services.resolve(RuntimeServiceKeys.events)).toBe(host.events);
   });
 });

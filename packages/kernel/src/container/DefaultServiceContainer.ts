@@ -2,16 +2,25 @@ import type { ServiceCollection } from "./ServiceCollection";
 import type { ServiceDescriptor } from "./ServiceDescriptor";
 import type { ServiceResolver } from "./ServiceResolver";
 import type { ServiceKey } from "../di/ServiceKey";
+import type { ServiceContainer } from "../contracts/ServiceContainer";
 import { ServiceLifetimes } from "./ServiceLifetime";
 
 export class DefaultServiceContainer
-implements ServiceCollection, ServiceResolver {
+implements ServiceCollection, ServiceContainer, ServiceResolver {
 
   private readonly descriptorByKey = new Map<symbol, ServiceDescriptor>();
   private readonly singletons = new Map<symbol, unknown>();
 
   add<T>(descriptor: ServiceDescriptor<T>): void {
     this.descriptorByKey.set(this.keyId(descriptor.key), descriptor);
+  }
+
+  register<T>(key: symbol, instance: T): void {
+    this.add({
+      key,
+      lifetime: ServiceLifetimes.Singleton,
+      instance,
+    });
   }
 
   descriptors(): readonly ServiceDescriptor[] {

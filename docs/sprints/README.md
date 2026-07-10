@@ -24,7 +24,8 @@ quality validation and the delivered results.
 | G2.5.6 | Kernel Workspace Decision | Completed | - |
 | G2.5.7 | Kernel API Validation | Completed | - |
 | G2.5.8 | Runtime Integration Readiness | Completed | - |
-| G2.5.9 | Runtime Service Composition | Planned | - |
+| G2.5.9 | Runtime Service Composition | Completed | - |
+| G2.5.10 | Runtime Module Activation | Planned | - |
 
 ---
 
@@ -176,15 +177,27 @@ Highlights
 
 ---
 
+## G2.5.9 - Runtime Service Composition
+
+Established RuntimeHost ownership of the Kernel service container.
+
+Highlights
+
+- Aligned the concrete Kernel container with its public contract
+- Registered the application and EventBus under stable runtime service keys
+- Added service composition tests to the Runtime lifecycle suite
+
+---
+
 # Planned Sprints
 
-## G2.5.9 - Runtime Service Composition
+## G2.5.10 - Runtime Module Activation
 
 Planned deliverables
 
-- Define service composition ownership for RuntimeHost
-- Integrate the Kernel service container
-- Add runtime service lifecycle tests
+- Define module registration for RuntimeHost
+- Integrate Kernel module activation into the runtime lifecycle
+- Add module activation and failure-path tests
 
 ---
 

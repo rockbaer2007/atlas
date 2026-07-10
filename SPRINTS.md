@@ -21,24 +21,25 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.6 | Kernel Workspace Decision | Completed | - |
 | G2.5.7 | Kernel API Validation | Completed | - |
 | G2.5.8 | Runtime Integration Readiness | Completed | - |
-| G2.5.9 | Runtime Service Composition | Planned | - |
+| G2.5.9 | Runtime Service Composition | Completed | - |
+| G2.5.10 | Runtime Module Activation | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.8 - Runtime Integration Readiness
+## G2.5.9 - Runtime Service Composition
 
 Goal:
 
-Establish the first Runtime API that composes stable Foundation and Kernel
-contracts.
+Define RuntimeHost service ownership and connect it to the Kernel service
+container.
 
 Deliverables:
 
-* `RuntimeHost` lifecycle implementation
-* Runtime lifecycle events
-* Runtime consumer integration test
+* Runtime-owned Kernel service container
+* Application and EventBus service keys
+* Container contract alignment and lifecycle tests
 * Sprint documentation
 
 Status:
@@ -49,13 +50,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.9 - Runtime Service Composition
+## G2.5.10 - Runtime Module Activation
 
 Suggested focus:
 
-* Define service composition ownership for RuntimeHost
-* Integrate the Kernel service container
-* Add runtime service lifecycle tests
+* Define module registration for RuntimeHost
+* Integrate Kernel module activation into the runtime lifecycle
+* Add module activation and failure-path tests
 
 ---
 
@@ -74,6 +75,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.6.md`
 * `docs/sprints/Sprint-G2.5.7.md`
 * `docs/sprints/Sprint-G2.5.8.md`
+* `docs/sprints/Sprint-G2.5.9.md`
 
 ---
 

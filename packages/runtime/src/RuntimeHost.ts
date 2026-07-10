@@ -2,11 +2,13 @@ import type {
   Application,
   ApplicationHost,
   EventBus,
+  ServiceContainer,
 } from "@atlas/kernel";
-import { DefaultEventBus } from "@atlas/kernel";
+import { DefaultEventBus, DefaultServiceContainer } from "@atlas/kernel";
 import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
 
 import type { RuntimeEvent } from "./RuntimeEvent";
+import { RuntimeServiceKeys } from "./RuntimeServiceKeys";
 
 export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private stateInternal: LifecycleState = "created";
@@ -14,7 +16,11 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   public constructor(
     public readonly application: Application,
     public readonly events: EventBus = new DefaultEventBus(),
-  ) {}
+    public readonly services: ServiceContainer = new DefaultServiceContainer(),
+  ) {
+    this.services.register(RuntimeServiceKeys.application, application);
+    this.services.register(RuntimeServiceKeys.events, events);
+  }
 
   public get state(): LifecycleState {
     return this.stateInternal;

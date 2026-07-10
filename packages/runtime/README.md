@@ -21,10 +21,14 @@ Kernel EventBus.
 
 - `RuntimeHost`
 - `RuntimeEvent`
+- `RuntimeServiceKeys`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
 `@atlas/kernel` application and event contracts. Consumers may provide their
 own `EventBus`, or use the default `DefaultEventBus`.
+
+`RuntimeHost` owns a Kernel service container and registers its application and
+EventBus under `RuntimeServiceKeys.application` and `RuntimeServiceKeys.events`.
 
 ---
 

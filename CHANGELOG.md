@@ -20,6 +20,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * `@atlas/kernel` workspace package.
 * `DefaultEventBus` public export from `@atlas/kernel`.
 * `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
+* Runtime service keys for application and EventBus composition.
 
 ### Changed
 
@@ -32,6 +33,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Kernel source promoted from reference code to a configured workspace package.
 * Kernel public API validation and consumer-level test coverage.
 * Runtime package promoted from placeholder to active workspace package.
+* Kernel container aligned with its public `ServiceContainer` contract.
 
 ### Fixed
 
