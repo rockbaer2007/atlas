@@ -9,8 +9,9 @@ execution flow.
 
 Planned runtime package.
 
-The runtime layer will build on foundation and kernel capabilities once the
-foundation architecture is stable.
+The runtime layer will build on stable foundation contracts once the runtime
+architecture is defined. Kernel reference source is not currently a workspace
+package or a runtime dependency.
 
 ---
 

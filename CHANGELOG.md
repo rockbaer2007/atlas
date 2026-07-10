@@ -16,6 +16,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * GitHub issue templates.
 * GitHub pull request template.
 * Build artifact policy documentation.
+* Source-boundary documentation.
 
 ### Changed
 
@@ -24,11 +25,13 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Package README consistency.
 * Package TypeScript build output alignment.
 * Roadmap foundation/runtime boundaries.
+* Public package-boundary documentation.
 
 ### Fixed
 
 * Removed tracked `node_modules` from Git version control.
 * Removed tracked generated build artifacts from version control.
+* Corrected Foundation documentation that implied a public EventBus API.
 
 ### Removed
 

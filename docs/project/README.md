@@ -11,6 +11,7 @@ This section contains the long-term project documentation for ATLAS.
 -   **schemas/** -- Formal specifications and schemas.
 -   **specifications/** -- Core project specifications and design rules.
 -   **BUILD_ARTIFACTS.md** -- Build output and generated artifact policy.
+-   **SOURCE_BOUNDARIES.md** -- Current public package and source boundaries.
 
 These documents describe stable concepts rather than sprint-specific
 implementation details.

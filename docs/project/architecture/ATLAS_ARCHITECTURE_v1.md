@@ -37,14 +37,17 @@ Counters, Timers, Gauges, Histograms.
 
 packages/
 - foundation
-- kernel
 - core
 - runtime
 - renderer
 - theme
 - homeassistant
-- cli
 - devtools
+
+`foundation` is the active public workspace package. Core, runtime, renderer,
+theme, Home Assistant and devtools are reserved workspace packages with empty
+public entry points. The historical `packages/kernel` source is not currently
+a workspace package and does not define a published `@atlas/kernel` API.
 
 ## Foundation Domains
 
@@ -94,6 +97,9 @@ Never the opposite.
 - Public APIs documented
 - Semantic Versioning
 - Deprecation before removal
+
+The current public workspace boundaries are recorded in
+`docs/project/SOURCE_BOUNDARIES.md`.
 
 ## Quality Gates
 

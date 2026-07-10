@@ -20,7 +20,8 @@ quality validation and the delivered results.
 | G2.5.2 | Project Identity | Completed | - |
 | G2.5.3 | Foundation Alignment | Completed | - |
 | G2.5.4 | Artifact Cleanup | Completed | - |
-| G2.5.5 | Source Boundary Review | Planned | - |
+| G2.5.5 | Source Boundary Review | Completed | - |
+| G2.5.6 | Kernel Workspace Decision | Planned | - |
 
 ---
 
@@ -120,16 +121,28 @@ Highlights
 
 ---
 
+## G2.5.5 - Source Boundary Review
+
+Documented the current public source boundaries.
+
+Highlights
+
+- Confirmed `@atlas/foundation` as the active public workspace package
+- Confirmed six planned packages remain intentionally empty
+- Recorded that `packages/kernel` is reference source, not a workspace package
+- Corrected package documentation that implied a public Foundation EventBus
+
+---
+
 # Planned Sprints
 
-## G2.5.5 - Source Boundary Review
+## G2.5.6 - Kernel Workspace Decision
 
 Planned deliverables
 
-- Review package source boundaries
-- Confirm public exports match intended package roles
-- Identify placeholder packages that should remain empty
-- Prepare the next foundation architecture step
+- Decide whether kernel becomes a configured workspace package
+- Define migration or archival work for its reference source
+- Specify the public kernel API before implementation work resumes
 
 ---
 

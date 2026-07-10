@@ -17,23 +17,25 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.2 | Project Identity | Completed | - |
 | G2.5.3 | Foundation Alignment | Completed | - |
 | G2.5.4 | Artifact Cleanup | Completed | - |
-| G2.5.5 | Source Boundary Review | Planned | - |
+| G2.5.5 | Source Boundary Review | Completed | - |
+| G2.5.6 | Kernel Workspace Decision | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.4 - Artifact Cleanup
+## G2.5.5 - Source Boundary Review
 
 Goal:
 
-Remove generated build artifacts from version control and confirm that package
-outputs remain reproducible from source.
+Document the actual public boundaries of the configured workspace and identify
+the next decision required for historical kernel source.
 
 Deliverables:
 
-* Generated artifact removal
-* Build artifact policy update
+* Public source-boundary policy
+* Placeholder package confirmation
+* Kernel workspace decision record
 * Sprint documentation
 
 Status:
@@ -44,14 +46,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.5 - Source Boundary Review
+## G2.5.6 - Kernel Workspace Decision
 
 Suggested focus:
 
-* Review package source boundaries
-* Confirm public exports match intended package roles
-* Identify placeholder packages that should remain empty
-* Prepare the next foundation architecture step
+* Decide whether kernel becomes a configured workspace package
+* Define migration or archival work for its reference source
+* Specify the public kernel API before implementation work resumes
 
 ---
 
@@ -66,6 +67,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.2.md`
 * `docs/sprints/Sprint-G2.5.3.md`
 * `docs/sprints/Sprint-G2.5.4.md`
+* `docs/sprints/Sprint-G2.5.5.md`
 
 ---
 

@@ -109,8 +109,9 @@ Current project focus:
 **Foundation Architecture**
 
 The foundation phase establishes the contracts, package boundaries, diagnostics,
-registry, lifecycle, event infrastructure and governance model required for the
-later runtime, rendering, theme and integration layers.
+registry, lifecycle and governance model required for the later runtime,
+rendering, theme and integration layers. Kernel and event infrastructure are
+subject to an explicit workspace-boundary decision before becoming public APIs.
 
 ---
 

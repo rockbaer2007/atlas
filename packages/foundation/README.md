@@ -20,88 +20,21 @@ Current release line:
 
 ---
 
-# Current Components
+# Public API
 
-## Event Infrastructure (Heartbeat)
+The package root exports the current foundation domains:
 
-The first production-ready subsystem of the Foundation package is the
-Event Infrastructure.
+- capabilities
+- diagnostics
+- identity
+- lifecycle
+- metadata
+- registry
+- result
+- types
 
-It provides:
-
-- Event contracts
-- Event handlers
-- Event subscriptions
-- Event publishing
-- Default EventBus implementation
-
-The implementation intentionally keeps the core small.
-
-Features such as filtering, wildcard matching or priorities are postponed
-until real use cases require them.
-
----
-
-# Design Principles
-
-The Event Infrastructure follows a few simple rules.
-
-## Small Core
-
-The EventBus only coordinates.
-
-Responsibilities are delegated to dedicated classes.
-
-- EventHandlerCollection
-- DefaultEventSubscription
-- DefaultEventBus
-
----
-
-## Fail Fast
-
-If an event handler throws an exception:
-
-- publishing stops immediately
-- the exception is propagated
-- later handlers are not executed
-
----
-
-## Deterministic Execution
-
-Handlers are always executed
-
-- sequentially
-- in registration order
-
-This guarantees predictable behaviour.
-
----
-
-## Safe Enumeration
-
-Publishing always iterates over a snapshot of the registered handlers.
-
-This allows handlers to unsubscribe themselves safely while an event is
-being published.
-
----
-
-# Example
-
-```ts
-const bus = new DefaultEventBus();
-
-bus.subscribe("demo", async event => {
-  console.log(event.type);
-});
-
-await bus.publish({
-  type: "demo",
-  timestamp: new Date(),
-});
-```
+Use `@atlas/foundation` rather than deep imports. The package is deliberately
+small and does not yet expose runtime, module or event-bus APIs.
 
 ---
 
@@ -114,18 +47,6 @@ New abstractions are introduced only when they solve an existing problem.
 The goal is not to build the largest framework.
 
 The goal is to build a framework developers can trust.
-
----
-
-# Sprint
-
-Latest foundation sprint
-
-**G2.5.1b-R2 — ❤️ Heartbeat**
-
-Snapshot
-
-**S0002**
 
 ---
 
