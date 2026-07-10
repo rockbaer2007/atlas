@@ -40,7 +40,8 @@ Current Focus:
 * Introduce diagnostics.
 * Implement the registry system.
 * Define lifecycle infrastructure.
-* Build the event contracts.
+* Build the event infrastructure.
+* Align package documentation and build outputs.
 * Establish architecture governance.
 * Complete repository cleanup.
 
@@ -59,7 +60,6 @@ Current Focus:
 
 ### Objectives
 
-* Default EventBus
 * Event Pipeline
 * Runtime Services
 * Service Container

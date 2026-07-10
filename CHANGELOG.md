@@ -11,15 +11,24 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Repository governance documentation.
 * `ATLAS.md` project constitution.
 * `ROADMAP.md` strategic development roadmap.
+* `SPRINTS.md` sprint index.
+* `SNAPSHOTS.md` snapshot index.
+* GitHub issue templates.
+* GitHub pull request template.
+* Build artifact policy documentation.
 
 ### Changed
 
 * Repository structure cleanup.
 * Documentation organization improvements.
+* Package README consistency.
+* Package TypeScript build output alignment.
+* Roadmap foundation/runtime boundaries.
 
 ### Fixed
 
 * Removed tracked `node_modules` from Git version control.
+* Removed tracked generated build artifacts from version control.
 
 ### Removed
 

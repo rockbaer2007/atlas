@@ -10,6 +10,16 @@ that higher-level packages can build upon.
 
 ---
 
+# Status
+
+Active foundation package.
+
+Current release line:
+
+**0.2.0-alpha.1**
+
+---
+
 # Current Components
 
 ## Event Infrastructure (Heartbeat)
@@ -109,13 +119,21 @@ The goal is to build a framework developers can trust.
 
 # Sprint
 
-Current Sprint
+Latest foundation sprint
 
 **G2.5.1b-R2 — ❤️ Heartbeat**
 
 Snapshot
 
 **S0002**
+
+---
+
+# Build Output
+
+Compiled artifacts are emitted to `dist`.
+
+Source files remain under `src`.
 
 ---
 

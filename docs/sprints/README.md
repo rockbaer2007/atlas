@@ -13,17 +13,20 @@ quality validation and the delivered results.
 
 | Sprint | Codename | Status | Snapshot |
 |---------|----------|--------|----------|
-| G2.5.1a | Foundation Cleanup | ✅ Completed | S0001 |
-| G2.5.1b | Event Infrastructure | ✅ Completed | — |
-| G2.5.1b-R1 | Architecture Cleanup | ✅ Completed | — |
-| G2.5.1b-R2 | ❤️ Heartbeat | ✅ Completed | S0002 |
-| G2.5.2 | Project Identity | 🚧 Planned | — |
+| G2.5.1a | Foundation Cleanup | Completed | S0001 |
+| G2.5.1b | Event Infrastructure | Completed | - |
+| G2.5.1b-R1 | Architecture Cleanup | Completed | - |
+| G2.5.1b-R2 | Heartbeat | Completed | S0002 |
+| G2.5.2 | Project Identity | Completed | - |
+| G2.5.3 | Foundation Alignment | Completed | - |
+| G2.5.4 | Artifact Cleanup | Completed | - |
+| G2.5.5 | Source Boundary Review | Planned | - |
 
 ---
 
 # Completed Sprints
 
-## G2.5.1a — Foundation Cleanup
+## G2.5.1a - Foundation Cleanup
 
 Initial cleanup of the repository and package architecture.
 
@@ -33,7 +36,7 @@ Snapshot
 
 ---
 
-## G2.5.1b — Event Infrastructure
+## G2.5.1b - Event Infrastructure
 
 Started the implementation of the ATLAS event system.
 
@@ -45,7 +48,7 @@ Highlights
 
 ---
 
-## G2.5.1b-R1 — Architecture Cleanup
+## G2.5.1b-R1 - Architecture Cleanup
 
 Focused on simplifying the event architecture.
 
@@ -57,7 +60,7 @@ Highlights
 
 ---
 
-## G2.5.1b-R2 — ❤️ Heartbeat
+## G2.5.1b-R2 - Heartbeat
 
 First production-ready Event Infrastructure.
 
@@ -76,17 +79,57 @@ Snapshot
 
 ---
 
+## G2.5.2 - Project Identity
+
+Established the public repository identity and contributor entry points.
+
+Highlights
+
+- ATLAS project identity
+- Root README refresh
+- Sprint index
+- Snapshot index
+- GitHub issue templates
+- Pull request template
+
+---
+
+## G2.5.3 - Foundation Alignment
+
+Aligned package documentation, roadmap status and build output configuration.
+
+Highlights
+
+- Package README alignment
+- Package TypeScript output alignment
+- Build artifact policy
+- Roadmap foundation/runtime boundary cleanup
+
+---
+
+## G2.5.4 - Artifact Cleanup
+
+Removed generated build artifacts from version control.
+
+Highlights
+
+- Removed generated files from `src`
+- Removed tracked TypeScript build metadata
+- Removed tracked `dist` output
+- Confirmed build reproducibility
+
+---
+
 # Planned Sprints
 
-## G2.5.2 — Project Identity
+## G2.5.5 - Source Boundary Review
 
 Planned deliverables
 
-- ATLAS.md
-- CONTRIBUTING.md
-- CODE_OF_CONDUCT.md
-- SECURITY.md
-- GitHub templates
+- Review package source boundaries
+- Confirm public exports match intended package roles
+- Identify placeholder packages that should remain empty
+- Prepare the next foundation architecture step
 
 ---
 
@@ -105,4 +148,4 @@ Only then is a sprint considered complete.
 
 ---
 
-© ATLAS Framework
+(c) ATLAS Framework

@@ -10,6 +10,7 @@ This section contains the long-term project documentation for ATLAS.
 -   **governance/** -- Framework reviews and governance decisions.
 -   **schemas/** -- Formal specifications and schemas.
 -   **specifications/** -- Core project specifications and design rules.
+-   **BUILD_ARTIFACTS.md** -- Build output and generated artifact policy.
 
 These documents describe stable concepts rather than sprint-specific
 implementation details.
