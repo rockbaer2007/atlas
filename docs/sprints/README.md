@@ -22,7 +22,8 @@ quality validation and the delivered results.
 | G2.5.4 | Artifact Cleanup | Completed | - |
 | G2.5.5 | Source Boundary Review | Completed | - |
 | G2.5.6 | Kernel Workspace Decision | Completed | - |
-| G2.5.7 | Kernel API Validation | Planned | - |
+| G2.5.7 | Kernel API Validation | Completed | - |
+| G2.5.8 | Runtime Integration Readiness | Planned | - |
 
 ---
 
@@ -148,15 +149,28 @@ Highlights
 
 ---
 
+## G2.5.7 - Kernel API Validation
+
+Validated the kernel package surface and published the standard EventBus.
+
+Highlights
+
+- Added a package-root API test
+- Published `DefaultEventBus` from `@atlas/kernel`
+- Preserved subscriptions and handler storage as internal details
+- Updated source-boundary documentation
+
+---
+
 # Planned Sprints
 
-## G2.5.7 - Kernel API Validation
+## G2.5.8 - Runtime Integration Readiness
 
 Planned deliverables
 
-- Validate the kernel public API against consumer needs
-- Decide whether EventBus implementations should become public
-- Add package-level API tests and dependency checks
+- Define the first runtime dependency on Foundation and Kernel
+- Establish runtime startup and composition contracts
+- Add a consumer-level integration test
 
 ---
 

@@ -68,7 +68,7 @@ with empty public entry points.
 - Dependency Injection
 - Service Container
 - Module Loader
-- Event Bus
+- Default EventBus
 - Bootstrap
 - Lifecycle Coordination
 

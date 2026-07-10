@@ -24,9 +24,10 @@ The package root exports:
 - dependency-injection contracts and implementations
 - module contracts and infrastructure
 - event contracts
+- `DefaultEventBus` as the standard event implementation
 
-Use `@atlas/kernel` rather than deep imports. EventBus implementations remain
-internal until their public lifecycle and compatibility guarantees are defined.
+Use `@atlas/kernel` rather than deep imports. Event subscriptions and handler
+storage remain internal implementation details.
 
 ---
 

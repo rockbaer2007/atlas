@@ -19,24 +19,25 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.4 | Artifact Cleanup | Completed | - |
 | G2.5.5 | Source Boundary Review | Completed | - |
 | G2.5.6 | Kernel Workspace Decision | Completed | - |
-| G2.5.7 | Kernel API Validation | Planned | - |
+| G2.5.7 | Kernel API Validation | Completed | - |
+| G2.5.8 | Runtime Integration Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.6 - Kernel Workspace Decision
+## G2.5.7 - Kernel API Validation
 
 Goal:
 
-Promote the kernel source to a configured workspace package with a deliberately
-limited public API.
+Validate the kernel package surface and make the standard EventBus available to
+package consumers.
 
 Deliverables:
 
-* `@atlas/kernel` workspace package
-* Kernel build and test participation
-* Documented public API boundary
+* Public `DefaultEventBus`
+* Package-root API test
+* Updated public-boundary documentation
 * Sprint documentation
 
 Status:
@@ -47,13 +48,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.7 - Kernel API Validation
+## G2.5.8 - Runtime Integration Readiness
 
 Suggested focus:
 
-* Validate the kernel public API against consumer needs
-* Decide whether EventBus implementations should become public
-* Add package-level API tests and dependency checks
+* Define the first runtime dependency on Foundation and Kernel
+* Establish runtime startup and composition contracts
+* Add a consumer-level integration test
 
 ---
 
@@ -70,6 +71,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.4.md`
 * `docs/sprints/Sprint-G2.5.5.md`
 * `docs/sprints/Sprint-G2.5.6.md`
+* `docs/sprints/Sprint-G2.5.7.md`
 
 ---
 

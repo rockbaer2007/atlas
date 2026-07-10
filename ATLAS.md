@@ -111,7 +111,8 @@ Current project focus:
 The foundation phase establishes the contracts, package boundaries, diagnostics,
 registry, lifecycle and governance model required for the later runtime,
 rendering, theme and integration layers. The kernel package provides the next
-public layer for service composition, modules and event contracts.
+public layer for service composition, modules, event contracts and the default
+EventBus.
 
 ---
 

@@ -11,7 +11,7 @@ not a future package layout.
 | Package | Status | Public boundary |
 | --- | --- | --- |
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
-| `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules and event contracts. |
+| `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
 | `@atlas/core` | Planned | Empty entry point; no public API yet. |
 | `@atlas/runtime` | Planned | Empty entry point; no public API yet. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
@@ -59,11 +59,11 @@ architecture phase defines its public contracts, dependencies and tests.
 
 `@atlas/kernel` is an active workspace package that depends only on
 `@atlas/foundation`. Its package-root API exposes kernel contracts, service
-composition, dependency injection, modules and event contracts.
+composition, dependency injection, modules, event contracts and
+`DefaultEventBus`.
 
-EventBus implementations remain internal. Consumers must not deep-import their
-implementation files until a dedicated API decision defines their lifecycle and
-compatibility guarantees.
+Event subscriptions and handler storage remain internal. Consumers must not
+deep-import those implementation files.
 
 ---
 

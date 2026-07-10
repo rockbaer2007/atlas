@@ -18,6 +18,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Build artifact policy documentation.
 * Source-boundary documentation.
 * `@atlas/kernel` workspace package.
+* `DefaultEventBus` public export from `@atlas/kernel`.
 
 ### Changed
 
@@ -28,6 +29,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Roadmap foundation/runtime boundaries.
 * Public package-boundary documentation.
 * Kernel source promoted from reference code to a configured workspace package.
+* Kernel public API validation and consumer-level test coverage.
 
 ### Fixed
 
