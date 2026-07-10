@@ -25,7 +25,8 @@ quality validation and the delivered results.
 | G2.5.7 | Kernel API Validation | Completed | - |
 | G2.5.8 | Runtime Integration Readiness | Completed | - |
 | G2.5.9 | Runtime Service Composition | Completed | - |
-| G2.5.10 | Runtime Module Activation | Planned | - |
+| G2.5.10 | Runtime Module Activation | Completed | - |
+| G2.5.11 | Runtime Module Dependencies | Planned | - |
 
 ---
 
@@ -189,15 +190,27 @@ Highlights
 
 ---
 
+## G2.5.10 - Runtime Module Activation
+
+Connected registered Kernel modules to the RuntimeHost lifecycle.
+
+Highlights
+
+- Added Runtime module registrations and module lifecycle events
+- Initialized modules once in registration order
+- Preserved an initialized host state when module activation fails
+
+---
+
 # Planned Sprints
 
-## G2.5.10 - Runtime Module Activation
+## G2.5.11 - Runtime Module Dependencies
 
 Planned deliverables
 
-- Define module registration for RuntimeHost
-- Integrate Kernel module activation into the runtime lifecycle
-- Add module activation and failure-path tests
+- Resolve module dependencies before activation
+- Reject missing and cyclic module dependencies
+- Add dependency-order and failure-path tests
 
 ---
 

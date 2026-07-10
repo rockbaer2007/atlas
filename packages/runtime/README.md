@@ -21,6 +21,7 @@ Kernel EventBus.
 
 - `RuntimeHost`
 - `RuntimeEvent`
+- `RuntimeModule`
 - `RuntimeServiceKeys`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
@@ -29,6 +30,10 @@ own `EventBus`, or use the default `DefaultEventBus`.
 
 `RuntimeHost` owns a Kernel service container and registers its application and
 EventBus under `RuntimeServiceKeys.application` and `RuntimeServiceKeys.events`.
+
+Modules are registered with `RuntimeHost.registerModule` before startup. They
+initialize once in registration order and may contribute services through the
+Kernel module context. Module dependency resolution remains future work.
 
 ---
 

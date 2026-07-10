@@ -8,10 +8,13 @@ import { DefaultEventBus, DefaultServiceContainer } from "@atlas/kernel";
 import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
 
 import type { RuntimeEvent } from "./RuntimeEvent";
+import type { RuntimeModule } from "./RuntimeModule";
 import { RuntimeServiceKeys } from "./RuntimeServiceKeys";
 
 export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private stateInternal: LifecycleState = "created";
+  private readonly modulesInternal: RuntimeModule[] = [];
+  private readonly initializedModuleIds = new Set<string>();
 
   public constructor(
     public readonly application: Application,
@@ -26,6 +29,26 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     return this.stateInternal;
   }
 
+  public get modules(): readonly RuntimeModule[] {
+    return [...this.modulesInternal];
+  }
+
+  public registerModule(runtimeModule: RuntimeModule): void {
+    this.ensureAvailable();
+
+    if (this.stateInternal !== "created") {
+      throw new Error("Runtime modules must be registered before startup.");
+    }
+
+    if (this.modulesInternal.some(
+      registered => registered.manifest.id === runtimeModule.manifest.id,
+    )) {
+      throw new Error(`Runtime module already registered: ${runtimeModule.manifest.id}`);
+    }
+
+    this.modulesInternal.push(runtimeModule);
+  }
+
   public async start(): Promise<void> {
     this.ensureAvailable();
 
@@ -37,6 +60,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       await this.initialize();
     }
 
+    await this.activateModules();
     this.stateInternal = "running";
     await this.publish("runtime.started");
   }
@@ -75,9 +99,31 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     await this.publish("runtime.initialized");
   }
 
+  private async activateModules(): Promise<void> {
+    for (const runtimeModule of this.modulesInternal) {
+      if (this.initializedModuleIds.has(runtimeModule.manifest.id)) {
+        continue;
+      }
+
+      await runtimeModule.module.initialize({
+        services: this.services,
+      });
+      this.initializedModuleIds.add(runtimeModule.manifest.id);
+      await this.publishModuleInitialized(runtimeModule.manifest.id);
+    }
+  }
+
   private async publish(type: RuntimeEvent["type"]): Promise<void> {
     await this.events.publish({
       type,
+      timestamp: new Date(),
+    });
+  }
+
+  private async publishModuleInitialized(moduleId: string): Promise<void> {
+    await this.events.publish({
+      type: "runtime.module.initialized",
+      moduleId,
       timestamp: new Date(),
     });
   }

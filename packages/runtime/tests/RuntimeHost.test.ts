@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import type { Application } from "@atlas/kernel";
 
-import { RuntimeHost, RuntimeServiceKeys } from "../src";
+import {
+  RuntimeHost,
+  type RuntimeModule,
+  RuntimeServiceKeys,
+} from "../src";
 
 const application: Application = {
   name: "demo",
@@ -66,5 +70,59 @@ describe("RuntimeHost", () => {
 
     expect(host.services.resolve(RuntimeServiceKeys.application)).toBe(application);
     expect(host.services.resolve(RuntimeServiceKeys.events)).toBe(host.events);
+  });
+
+  it("initializes registered modules and exposes their services", async () => {
+    const moduleServiceKey = Symbol("module-service");
+    const host = new RuntimeHost(application);
+    const types: string[] = [];
+    const runtimeModule: RuntimeModule = {
+      manifest: {
+        id: "demo.module",
+        name: "Demo module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize(context) {
+          context.services.add({
+            key: moduleServiceKey,
+            lifetime: "singleton",
+            instance: "ready",
+          });
+        },
+      },
+    };
+
+    host.events.subscribe("runtime.module.initialized", event => {
+      types.push(event.type);
+    });
+    host.registerModule(runtimeModule);
+
+    await host.start();
+
+    expect(host.services.resolve(moduleServiceKey)).toBe("ready");
+    expect(types).toEqual(["runtime.module.initialized"]);
+  });
+
+  it("keeps the host initialized when module activation fails", async () => {
+    const host = new RuntimeHost(application);
+
+    host.registerModule({
+      manifest: {
+        id: "broken.module",
+        name: "Broken module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {
+          throw new Error("module failure");
+        },
+      },
+    });
+
+    await expect(host.start()).rejects.toThrow("module failure");
+    expect(host.state).toBe("initialized");
   });
 });

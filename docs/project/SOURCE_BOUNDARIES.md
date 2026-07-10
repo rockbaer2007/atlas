@@ -74,6 +74,10 @@ exports `RuntimeHost` and `RuntimeEvent`. The host owns application lifecycle
 state, a Kernel service container and runtime lifecycle events through an
 `EventBus`. `RuntimeServiceKeys` exposes the application and EventBus entries.
 
+`RuntimeModule` registrations are accepted before startup and initialize once
+in registration order. Dependency resolution is not part of the current
+Runtime boundary.
+
 Runtime does not yet own service registration, module activation or rendering.
 
 ---
