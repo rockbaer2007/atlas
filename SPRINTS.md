@@ -25,23 +25,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.10 | Runtime Module Activation | Completed | - |
 | G2.5.11 | Runtime Module Dependencies | Completed | - |
 | G2.5.12 | Runtime Module Shutdown | Completed | - |
-| G2.5.13 | Runtime Module Versioning | Planned | - |
+| G2.5.13 | Runtime Module Versioning | Completed | - |
+| G2.5.14 | Runtime Module Observability | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.12 - Runtime Module Shutdown
+## G2.5.13 - Runtime Module Versioning
 
 Goal:
 
-Define terminal module shutdown and disposal for RuntimeHost.
+Validate module dependency versions before Runtime activation.
 
 Deliverables:
 
-* Optional stop and dispose module contracts
-* Reverse dependency shutdown order
-* Shutdown failure-path tests
+* SemVer-compatible dependency validation
+* Exact, caret and wildcard requirement rules
+* Compatible and incompatible version tests
 * Sprint documentation
 
 Status:
@@ -52,13 +53,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.13 - Runtime Module Versioning
+## G2.5.14 - Runtime Module Observability
 
 Suggested focus:
 
-* Validate required module dependency versions
-* Define module version compatibility rules
-* Add compatible and incompatible dependency tests
+* Publish Runtime module dependency diagnostics
+* Expose module activation and shutdown timing
+* Add observable module lifecycle tests
 
 ---
 
@@ -81,6 +82,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.10.md`
 * `docs/sprints/Sprint-G2.5.11.md`
 * `docs/sprints/Sprint-G2.5.12.md`
+* `docs/sprints/Sprint-G2.5.13.md`
 
 ---
 

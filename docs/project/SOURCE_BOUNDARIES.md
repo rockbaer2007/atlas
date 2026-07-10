@@ -78,6 +78,10 @@ state, a Kernel service container and runtime lifecycle events through an
 in dependency order. Missing required dependencies and cycles reject startup;
 missing optional dependencies are allowed.
 
+Module versions use stable `MAJOR.MINOR.PATCH` values. Exact requirements must
+match exactly, `^` requirements use SemVer compatibility and `*` accepts any
+available version. Pre-release identifiers are not yet part of this boundary.
+
 Runtime stop is restart-safe and does not shut modules down. Terminal Runtime
 disposal invokes optional module stop and dispose capabilities in reverse
 dependency order.

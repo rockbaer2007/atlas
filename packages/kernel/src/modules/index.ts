@@ -11,3 +11,4 @@ export * from "./default/DependencyGraph";
 export * from "./default/TopologicalSorter";
 export * from "./default/CycleDetector";
 export * from "./default/ModuleDependencyResolver";
+export * from "./default/ModuleVersionMatcher";

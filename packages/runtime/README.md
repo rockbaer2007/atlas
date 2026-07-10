@@ -35,7 +35,9 @@ Modules are registered with `RuntimeHost.registerModule` before startup. They
 initialize once in registration order and may contribute services through the
 Kernel module context. Required dependencies initialize before their dependents;
 missing required dependencies and cycles reject startup. Missing optional
-dependencies are allowed.
+dependencies are allowed. Module versions use stable `MAJOR.MINOR.PATCH`
+values: exact requirements must match exactly, `^` requirements follow SemVer
+compatibility and `*` accepts any version.
 
 `RuntimeHost.stop()` pauses the host but leaves initialized modules available
 for restart. Terminal shutdown occurs during `dispose()`: optional module

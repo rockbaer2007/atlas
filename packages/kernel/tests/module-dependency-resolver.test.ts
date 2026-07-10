@@ -8,12 +8,13 @@ import {
 function descriptor(
   id: string,
   dependencies: ModuleDescriptor["manifest"]["dependencies"] = [],
+  version = "1.0.0",
 ): ModuleDescriptor {
   return {
     manifest: {
       id,
       name: id,
-      version: "1.0.0",
+      version,
       dependencies,
     },
     loaded: false,
@@ -48,6 +49,48 @@ describe("ModuleDependencyResolver", () => {
     expect(resolver.resolve([
       descriptor("optional", [{ id: "missing", version: "1.0.0", optional: true }]),
     ]).map(module => module.manifest.id)).toEqual(["optional"]);
+  });
+
+  it("accepts compatible caret dependencies", () => {
+    const resolver = new ModuleDependencyResolver();
+    const dependent = descriptor(
+      "dependent",
+      [{ id: "dependency", version: "^1.2.0" }],
+    );
+    const dependency = descriptor("dependency", [], "1.4.0");
+
+    expect(resolver.resolve([dependent, dependency]))
+      .toHaveLength(2);
+  });
+
+  it("rejects incompatible dependency versions", () => {
+    const resolver = new ModuleDependencyResolver();
+    const dependent = descriptor(
+      "dependent",
+      [{ id: "dependency", version: "^1.2.0" }],
+    );
+    const dependency = descriptor("dependency", [], "2.0.0");
+
+    expect(() => resolver.resolve([dependent, dependency]))
+      .toThrow("Module dependency version incompatible");
+  });
+
+  it("treats pre-1.0 caret dependencies as minor-version compatible", () => {
+    const resolver = new ModuleDependencyResolver();
+    const dependent = descriptor(
+      "dependent",
+      [{ id: "dependency", version: "^0.2.1" }],
+    );
+
+    expect(resolver.resolve([
+      dependent,
+      descriptor("dependency", [], "0.2.4"),
+    ])).toHaveLength(2);
+
+    expect(() => resolver.resolve([
+      dependent,
+      descriptor("dependency", [], "0.3.0"),
+    ])).toThrow("Module dependency version incompatible");
   });
 
   it("rejects cyclic dependencies", () => {

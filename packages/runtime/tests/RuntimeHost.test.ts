@@ -201,6 +201,31 @@ describe("RuntimeHost", () => {
     expect(cyclic.state).toBe("initialized");
   });
 
+  it("rejects an incompatible module dependency version", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "dependent",
+        name: "Dependent",
+        version: "1.0.0",
+        dependencies: [{ id: "dependency", version: "^1.0.0" }],
+      },
+      module: { async initialize() {} },
+    });
+    host.registerModule({
+      manifest: {
+        id: "dependency",
+        name: "Dependency",
+        version: "2.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await expect(host.start()).rejects.toThrow("Module dependency version incompatible");
+    expect(host.state).toBe("initialized");
+  });
+
   it("shuts modules down in reverse dependency order during disposal", async () => {
     const host = new RuntimeHost(application);
     const order: string[] = [];
