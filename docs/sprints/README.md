@@ -29,7 +29,8 @@ quality validation and the delivered results.
 | G2.5.11 | Runtime Module Dependencies | Completed | - |
 | G2.5.12 | Runtime Module Shutdown | Completed | - |
 | G2.5.13 | Runtime Module Versioning | Completed | - |
-| G2.5.14 | Runtime Module Observability | Planned | - |
+| G2.5.14 | Runtime Module Observability | Completed | - |
+| G2.5.15 | Runtime Configuration | Planned | - |
 
 ---
 
@@ -243,15 +244,27 @@ Highlights
 
 ---
 
+## G2.5.14 - Runtime Module Observability
+
+Exposed module lifecycle diagnostics from RuntimeHost.
+
+Highlights
+
+- Added registered, initialized, stopped, disposed and failed module statuses
+- Recorded module lifecycle timestamps and durations
+- Preserved activation and shutdown error messages in public snapshots
+
+---
+
 # Planned Sprints
 
-## G2.5.14 - Runtime Module Observability
+## G2.5.15 - Runtime Configuration
 
 Planned deliverables
 
-- Publish Runtime module dependency diagnostics
-- Expose module activation and shutdown timing
-- Add observable module lifecycle tests
+- Define RuntimeHost configuration contracts
+- Validate application and module configuration before startup
+- Add configuration validation tests
 
 ---
 

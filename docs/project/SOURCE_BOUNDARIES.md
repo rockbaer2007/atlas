@@ -86,6 +86,9 @@ Runtime stop is restart-safe and does not shut modules down. Terminal Runtime
 disposal invokes optional module stop and dispose capabilities in reverse
 dependency order.
 
+`RuntimeHost.moduleDiagnostics` provides public module lifecycle snapshots with
+status, timing, timestamps and the latest activation or shutdown error.
+
 Runtime does not yet own service registration, module activation or rendering.
 
 ---

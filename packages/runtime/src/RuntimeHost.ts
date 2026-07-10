@@ -15,11 +15,14 @@ import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
 
 import type { RuntimeEvent } from "./RuntimeEvent";
 import type { RuntimeModule } from "./RuntimeModule";
+import type { RuntimeModuleSnapshot } from "./RuntimeModuleSnapshot";
+import { RuntimeModuleStatuses } from "./RuntimeModuleStatus";
 import { RuntimeServiceKeys } from "./RuntimeServiceKeys";
 
 export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private stateInternal: LifecycleState = "created";
   private readonly modulesInternal: RuntimeModule[] = [];
+  private readonly moduleSnapshotsInternal = new Map<string, RuntimeModuleSnapshot>();
   private readonly initializedModuleIds = new Set<string>();
   private readonly moduleResolver = new ModuleDependencyResolver();
 
@@ -40,6 +43,12 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     return [...this.modulesInternal];
   }
 
+  public get moduleDiagnostics(): readonly RuntimeModuleSnapshot[] {
+    return this.modulesInternal.map(runtimeModule =>
+      this.moduleSnapshotsInternal.get(runtimeModule.manifest.id)!,
+    );
+  }
+
   public registerModule(runtimeModule: RuntimeModule): void {
     this.ensureAvailable();
 
@@ -54,6 +63,11 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     }
 
     this.modulesInternal.push(runtimeModule);
+    this.moduleSnapshotsInternal.set(runtimeModule.manifest.id, {
+      moduleId: runtimeModule.manifest.id,
+      moduleVersion: runtimeModule.manifest.version,
+      status: RuntimeModuleStatuses.Registered,
+    });
   }
 
   public async start(): Promise<void> {
@@ -113,11 +127,28 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
         continue;
       }
 
-      await runtimeModule.module.initialize({
-        services: this.services,
-      });
-      this.initializedModuleIds.add(runtimeModule.manifest.id);
-      await this.publishModuleInitialized(runtimeModule.manifest.id);
+      const startedAt = Date.now();
+
+      try {
+        await runtimeModule.module.initialize({
+          services: this.services,
+        });
+        this.initializedModuleIds.add(runtimeModule.manifest.id);
+        this.updateModuleSnapshot(runtimeModule, {
+          status: RuntimeModuleStatuses.Initialized,
+          initializedAt: Date.now(),
+          activationDurationMs: Date.now() - startedAt,
+          error: undefined,
+        });
+        await this.publishModuleInitialized(runtimeModule.manifest.id);
+      } catch (error) {
+        this.updateModuleSnapshot(runtimeModule, {
+          status: RuntimeModuleStatuses.Failed,
+          activationDurationMs: Date.now() - startedAt,
+          error: this.errorMessage(error),
+        });
+        throw error;
+      }
     }
   }
 
@@ -148,14 +179,37 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       .reverse();
 
     for (const runtimeModule of initializedModules) {
-      if (this.isStoppableModule(runtimeModule.module)) {
-        await runtimeModule.module.stop();
-        await this.publishModuleEvent("runtime.module.stopped", runtimeModule.manifest.id);
-      }
+      const startedAt = Date.now();
 
-      if (this.isDisposableModule(runtimeModule.module)) {
-        await runtimeModule.module.dispose();
-        await this.publishModuleEvent("runtime.module.disposed", runtimeModule.manifest.id);
+      try {
+        if (this.isStoppableModule(runtimeModule.module)) {
+          await runtimeModule.module.stop();
+          this.updateModuleSnapshot(runtimeModule, {
+            status: RuntimeModuleStatuses.Stopped,
+            stoppedAt: Date.now(),
+            shutdownDurationMs: Date.now() - startedAt,
+            error: undefined,
+          });
+          await this.publishModuleEvent("runtime.module.stopped", runtimeModule.manifest.id);
+        }
+
+        if (this.isDisposableModule(runtimeModule.module)) {
+          await runtimeModule.module.dispose();
+          this.updateModuleSnapshot(runtimeModule, {
+            status: RuntimeModuleStatuses.Disposed,
+            disposedAt: Date.now(),
+            shutdownDurationMs: Date.now() - startedAt,
+            error: undefined,
+          });
+          await this.publishModuleEvent("runtime.module.disposed", runtimeModule.manifest.id);
+        }
+      } catch (error) {
+        this.updateModuleSnapshot(runtimeModule, {
+          status: RuntimeModuleStatuses.Failed,
+          shutdownDurationMs: Date.now() - startedAt,
+          error: this.errorMessage(error),
+        });
+        throw error;
       }
     }
   }
@@ -194,6 +248,25 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       && module !== null
       && "dispose" in module
       && typeof module.dispose === "function";
+  }
+
+  private updateModuleSnapshot(
+    runtimeModule: RuntimeModule,
+    update: Partial<RuntimeModuleSnapshot>,
+  ): void {
+    const current = this.moduleSnapshotsInternal.get(runtimeModule.manifest.id);
+    if (!current) {
+      throw new Error(`Runtime module diagnostics not found: ${runtimeModule.manifest.id}`);
+    }
+
+    this.moduleSnapshotsInternal.set(runtimeModule.manifest.id, {
+      ...current,
+      ...update,
+    });
+  }
+
+  private errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
   }
 
   private ensureAvailable(): void {

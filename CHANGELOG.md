@@ -25,6 +25,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Kernel module dependency resolution and Runtime dependency-ordered activation.
 * Optional module stop and dispose contracts with reverse-order Runtime shutdown.
 * Module version compatibility validation for Runtime dependencies.
+* Runtime module lifecycle diagnostics with statuses, timing and errors.
 
 ### Changed
 
@@ -42,6 +43,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Missing and cyclic Runtime module dependencies now reject startup.
 * Runtime disposal now propagates module shutdown failures without claiming disposal.
 * Incompatible required and present optional module versions now reject startup.
+* Runtime module activation and shutdown failures are now visible in diagnostics.
 
 ### Fixed
 

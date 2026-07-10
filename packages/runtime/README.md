@@ -22,6 +22,8 @@ Kernel EventBus.
 - `RuntimeHost`
 - `RuntimeEvent`
 - `RuntimeModule`
+- `RuntimeModuleSnapshot`
+- `RuntimeModuleStatus`
 - `RuntimeServiceKeys`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
@@ -42,6 +44,10 @@ compatibility and `*` accepts any version.
 `RuntimeHost.stop()` pauses the host but leaves initialized modules available
 for restart. Terminal shutdown occurs during `dispose()`: optional module
 `stop()` and `dispose()` capabilities run in reverse dependency order.
+
+`RuntimeHost.moduleDiagnostics` exposes each registered module's lifecycle
+status, version, activation or shutdown duration, timestamps and the latest
+activation or shutdown error.
 
 ---
 

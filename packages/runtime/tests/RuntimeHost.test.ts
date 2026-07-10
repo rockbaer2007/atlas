@@ -5,6 +5,7 @@ import type { Application } from "@atlas/kernel";
 import {
   RuntimeHost,
   type RuntimeModule,
+  RuntimeModuleStatuses,
   RuntimeServiceKeys,
 } from "../src";
 
@@ -124,6 +125,11 @@ describe("RuntimeHost", () => {
 
     await expect(host.start()).rejects.toThrow("module failure");
     expect(host.state).toBe("initialized");
+    expect(host.moduleDiagnostics).toMatchObject([{
+      moduleId: "broken.module",
+      status: RuntimeModuleStatuses.Failed,
+      error: "module failure",
+    }]);
   });
 
   it("activates module dependencies before dependents", async () => {
@@ -269,6 +275,10 @@ describe("RuntimeHost", () => {
       "dispose dependency",
     ]);
     expect(host.state).toBe("disposed");
+    expect(host.moduleDiagnostics).toMatchObject([
+      { moduleId: "dependent", status: RuntimeModuleStatuses.Disposed },
+      { moduleId: "dependency", status: RuntimeModuleStatuses.Disposed },
+    ]);
   });
 
   it("does not dispose the host when module shutdown fails", async () => {
@@ -290,5 +300,38 @@ describe("RuntimeHost", () => {
 
     await expect(host.dispose()).rejects.toThrow("shutdown failure");
     expect(host.state).toBe("stopped");
+    expect(host.moduleDiagnostics).toMatchObject([{
+      moduleId: "failing-stop",
+      status: RuntimeModuleStatuses.Failed,
+      error: "shutdown failure",
+    }]);
+  });
+
+  it("reports activation timing and lifecycle state for modules", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "diagnostic-module",
+        name: "Diagnostic module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    expect(host.moduleDiagnostics).toEqual([{
+      moduleId: "diagnostic-module",
+      moduleVersion: "1.0.0",
+      status: RuntimeModuleStatuses.Registered,
+    }]);
+
+    await host.start();
+
+    expect(host.moduleDiagnostics).toMatchObject([{
+      moduleId: "diagnostic-module",
+      status: RuntimeModuleStatuses.Initialized,
+      activationDurationMs: expect.any(Number),
+      initializedAt: expect.any(Number),
+    }]);
   });
 });

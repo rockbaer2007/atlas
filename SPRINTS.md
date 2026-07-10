@@ -26,23 +26,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.11 | Runtime Module Dependencies | Completed | - |
 | G2.5.12 | Runtime Module Shutdown | Completed | - |
 | G2.5.13 | Runtime Module Versioning | Completed | - |
-| G2.5.14 | Runtime Module Observability | Planned | - |
+| G2.5.14 | Runtime Module Observability | Completed | - |
+| G2.5.15 | Runtime Configuration | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.13 - Runtime Module Versioning
+## G2.5.14 - Runtime Module Observability
 
 Goal:
 
-Validate module dependency versions before Runtime activation.
+Expose public Runtime module lifecycle diagnostics.
 
 Deliverables:
 
-* SemVer-compatible dependency validation
-* Exact, caret and wildcard requirement rules
-* Compatible and incompatible version tests
+* Module lifecycle snapshots
+* Activation and shutdown timing
+* Failure diagnostics tests
 * Sprint documentation
 
 Status:
@@ -53,13 +54,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.14 - Runtime Module Observability
+## G2.5.15 - Runtime Configuration
 
 Suggested focus:
 
-* Publish Runtime module dependency diagnostics
-* Expose module activation and shutdown timing
-* Add observable module lifecycle tests
+* Define RuntimeHost configuration contracts
+* Validate application and module configuration before startup
+* Add configuration validation tests
 
 ---
 
@@ -83,6 +84,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.11.md`
 * `docs/sprints/Sprint-G2.5.12.md`
 * `docs/sprints/Sprint-G2.5.13.md`
+* `docs/sprints/Sprint-G2.5.14.md`
 
 ---
 
