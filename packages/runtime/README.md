@@ -33,7 +33,9 @@ EventBus under `RuntimeServiceKeys.application` and `RuntimeServiceKeys.events`.
 
 Modules are registered with `RuntimeHost.registerModule` before startup. They
 initialize once in registration order and may contribute services through the
-Kernel module context. Module dependency resolution remains future work.
+Kernel module context. Required dependencies initialize before their dependents;
+missing required dependencies and cycles reject startup. Missing optional
+dependencies are allowed.
 
 ---
 

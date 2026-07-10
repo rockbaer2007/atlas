@@ -4,7 +4,11 @@ import type {
   EventBus,
   ServiceContainer,
 } from "@atlas/kernel";
-import { DefaultEventBus, DefaultServiceContainer } from "@atlas/kernel";
+import {
+  DefaultEventBus,
+  DefaultServiceContainer,
+  ModuleDependencyResolver,
+} from "@atlas/kernel";
 import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
 
 import type { RuntimeEvent } from "./RuntimeEvent";
@@ -15,6 +19,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private stateInternal: LifecycleState = "created";
   private readonly modulesInternal: RuntimeModule[] = [];
   private readonly initializedModuleIds = new Set<string>();
+  private readonly moduleResolver = new ModuleDependencyResolver();
 
   public constructor(
     public readonly application: Application,
@@ -100,7 +105,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   }
 
   private async activateModules(): Promise<void> {
-    for (const runtimeModule of this.modulesInternal) {
+    for (const runtimeModule of this.resolveModules()) {
       if (this.initializedModuleIds.has(runtimeModule.manifest.id)) {
         continue;
       }
@@ -111,6 +116,27 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       this.initializedModuleIds.add(runtimeModule.manifest.id);
       await this.publishModuleInitialized(runtimeModule.manifest.id);
     }
+  }
+
+  private resolveModules(): readonly RuntimeModule[] {
+    const modulesById = new Map(
+      this.modulesInternal.map(runtimeModule => [
+        runtimeModule.manifest.id,
+        runtimeModule,
+      ]),
+    );
+    const descriptors = this.modulesInternal.map(runtimeModule => ({
+      manifest: runtimeModule.manifest,
+      loaded: false,
+    }));
+
+    return this.moduleResolver.resolve(descriptors).map(descriptor => {
+      const runtimeModule = modulesById.get(descriptor.manifest.id);
+      if (!runtimeModule) {
+        throw new Error(`Runtime module not registered: ${descriptor.manifest.id}`);
+      }
+      return runtimeModule;
+    });
   }
 
   private async publish(type: RuntimeEvent["type"]): Promise<void> {

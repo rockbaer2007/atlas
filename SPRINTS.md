@@ -23,23 +23,25 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.8 | Runtime Integration Readiness | Completed | - |
 | G2.5.9 | Runtime Service Composition | Completed | - |
 | G2.5.10 | Runtime Module Activation | Completed | - |
-| G2.5.11 | Runtime Module Dependencies | Planned | - |
+| G2.5.11 | Runtime Module Dependencies | Completed | - |
+| G2.5.12 | Runtime Module Shutdown | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.10 - Runtime Module Activation
+## G2.5.11 - Runtime Module Dependencies
 
 Goal:
 
-Connect registered Kernel modules to the RuntimeHost lifecycle.
+Resolve Runtime module dependencies before activation and reject invalid module
+graphs.
 
 Deliverables:
 
-* Runtime module registration
-* Ordered module initialization and events
-* Activation failure-path tests
+* Kernel dependency resolver
+* Dependency-ordered Runtime activation
+* Missing, optional and cyclic dependency tests
 * Sprint documentation
 
 Status:
@@ -50,13 +52,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.11 - Runtime Module Dependencies
+## G2.5.12 - Runtime Module Shutdown
 
 Suggested focus:
 
-* Resolve module dependencies before activation
-* Reject missing and cyclic module dependencies
-* Add dependency-order and failure-path tests
+* Define module shutdown and disposal contracts
+* Stop initialized modules in reverse dependency order
+* Add shutdown and disposal failure-path tests
 
 ---
 
@@ -77,6 +79,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.8.md`
 * `docs/sprints/Sprint-G2.5.9.md`
 * `docs/sprints/Sprint-G2.5.10.md`
+* `docs/sprints/Sprint-G2.5.11.md`
 
 ---
 

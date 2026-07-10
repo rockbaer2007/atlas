@@ -26,7 +26,8 @@ quality validation and the delivered results.
 | G2.5.8 | Runtime Integration Readiness | Completed | - |
 | G2.5.9 | Runtime Service Composition | Completed | - |
 | G2.5.10 | Runtime Module Activation | Completed | - |
-| G2.5.11 | Runtime Module Dependencies | Planned | - |
+| G2.5.11 | Runtime Module Dependencies | Completed | - |
+| G2.5.12 | Runtime Module Shutdown | Planned | - |
 
 ---
 
@@ -202,15 +203,28 @@ Highlights
 
 ---
 
+## G2.5.11 - Runtime Module Dependencies
+
+Resolved module dependency graphs before Runtime activation.
+
+Highlights
+
+- Implemented Kernel dependency ordering and cycle detection
+- Activated dependencies before their dependents
+- Rejected missing required and cyclic dependencies
+- Allowed missing optional dependencies
+
+---
+
 # Planned Sprints
 
-## G2.5.11 - Runtime Module Dependencies
+## G2.5.12 - Runtime Module Shutdown
 
 Planned deliverables
 
-- Resolve module dependencies before activation
-- Reject missing and cyclic module dependencies
-- Add dependency-order and failure-path tests
+- Define module shutdown and disposal contracts
+- Stop initialized modules in reverse dependency order
+- Add shutdown and disposal failure-path tests
 
 ---
 

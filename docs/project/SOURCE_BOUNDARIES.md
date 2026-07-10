@@ -75,8 +75,8 @@ state, a Kernel service container and runtime lifecycle events through an
 `EventBus`. `RuntimeServiceKeys` exposes the application and EventBus entries.
 
 `RuntimeModule` registrations are accepted before startup and initialize once
-in registration order. Dependency resolution is not part of the current
-Runtime boundary.
+in dependency order. Missing required dependencies and cycles reject startup;
+missing optional dependencies are allowed.
 
 Runtime does not yet own service registration, module activation or rendering.
 

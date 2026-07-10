@@ -125,4 +125,79 @@ describe("RuntimeHost", () => {
     await expect(host.start()).rejects.toThrow("module failure");
     expect(host.state).toBe("initialized");
   });
+
+  it("activates module dependencies before dependents", async () => {
+    const host = new RuntimeHost(application);
+    const order: string[] = [];
+
+    host.registerModule({
+      manifest: {
+        id: "dependent.module",
+        name: "Dependent module",
+        version: "1.0.0",
+        dependencies: [{ id: "dependency.module", version: "1.0.0" }],
+      },
+      module: {
+        async initialize() {
+          order.push("dependent");
+        },
+      },
+    });
+    host.registerModule({
+      manifest: {
+        id: "dependency.module",
+        name: "Dependency module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {
+          order.push("dependency");
+        },
+      },
+    });
+
+    await host.start();
+
+    expect(order).toEqual(["dependency", "dependent"]);
+  });
+
+  it("rejects missing and cyclic module dependencies", async () => {
+    const missing = new RuntimeHost(application);
+    missing.registerModule({
+      manifest: {
+        id: "missing-dependent",
+        name: "Missing dependent",
+        version: "1.0.0",
+        dependencies: [{ id: "missing", version: "1.0.0" }],
+      },
+      module: { async initialize() {} },
+    });
+
+    await expect(missing.start()).rejects.toThrow("Module dependency not found");
+    expect(missing.state).toBe("initialized");
+
+    const cyclic = new RuntimeHost(application);
+    cyclic.registerModule({
+      manifest: {
+        id: "first",
+        name: "First",
+        version: "1.0.0",
+        dependencies: [{ id: "second", version: "1.0.0" }],
+      },
+      module: { async initialize() {} },
+    });
+    cyclic.registerModule({
+      manifest: {
+        id: "second",
+        name: "Second",
+        version: "1.0.0",
+        dependencies: [{ id: "first", version: "1.0.0" }],
+      },
+      module: { async initialize() {} },
+    });
+
+    await expect(cyclic.start()).rejects.toThrow("Module dependency cycle detected");
+    expect(cyclic.state).toBe("initialized");
+  });
 });
