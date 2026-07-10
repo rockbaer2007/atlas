@@ -17,6 +17,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * GitHub pull request template.
 * Build artifact policy documentation.
 * Source-boundary documentation.
+* `@atlas/kernel` workspace package.
 
 ### Changed
 
@@ -26,6 +27,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Package TypeScript build output alignment.
 * Roadmap foundation/runtime boundaries.
 * Public package-boundary documentation.
+* Kernel source promoted from reference code to a configured workspace package.
 
 ### Fixed
 

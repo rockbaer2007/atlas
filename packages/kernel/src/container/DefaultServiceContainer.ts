@@ -1,28 +1,29 @@
 import type { ServiceCollection } from "./ServiceCollection";
 import type { ServiceDescriptor } from "./ServiceDescriptor";
 import type { ServiceResolver } from "./ServiceResolver";
+import type { ServiceKey } from "../di/ServiceKey";
 import { ServiceLifetimes } from "./ServiceLifetime";
 
 export class DefaultServiceContainer
 implements ServiceCollection, ServiceResolver {
 
-  private readonly descriptors = new Map<symbol, ServiceDescriptor>();
+  private readonly descriptorByKey = new Map<symbol, ServiceDescriptor>();
   private readonly singletons = new Map<symbol, unknown>();
 
   add<T>(descriptor: ServiceDescriptor<T>): void {
-    this.descriptors.set(descriptor.key.id, descriptor);
+    this.descriptorByKey.set(this.keyId(descriptor.key), descriptor);
   }
 
   descriptors(): readonly ServiceDescriptor[] {
-    return [...this.descriptors.values()];
+    return [...this.descriptorByKey.values()];
   }
 
   contains(key: symbol): boolean {
-    return this.descriptors.has(key);
+    return this.descriptorByKey.has(key);
   }
 
   resolve<T>(key: symbol): T {
-    const descriptor = this.descriptors.get(key);
+    const descriptor = this.descriptorByKey.get(key);
 
     if (!descriptor) {
       throw new Error(`Service not registered: ${String(key)}`);
@@ -52,5 +53,9 @@ implements ServiceCollection, ServiceResolver {
     }
 
     return create() as T;
+  }
+
+  private keyId(key: ServiceKey | symbol): symbol {
+    return typeof key === "symbol" ? key : key.id;
   }
 }

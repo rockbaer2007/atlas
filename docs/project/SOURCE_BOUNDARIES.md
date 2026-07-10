@@ -11,6 +11,7 @@ not a future package layout.
 | Package | Status | Public boundary |
 | --- | --- | --- |
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
+| `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules and event contracts. |
 | `@atlas/core` | Planned | Empty entry point; no public API yet. |
 | `@atlas/runtime` | Planned | Empty entry point; no public API yet. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
@@ -26,7 +27,7 @@ control.
 
 # Foundation Boundary
 
-`@atlas/foundation` is the only active public workspace package. Its root
+`@atlas/foundation` provides the lower-level public workspace API. Its root
 entry point exposes the following foundation domains:
 
 - capabilities
@@ -54,16 +55,15 @@ architecture phase defines its public contracts, dependencies and tests.
 
 ---
 
-# Kernel Reference Source
+# Kernel Boundary
 
-`packages/kernel` contains historical kernel, event and module source plus
-tests. It has no `package.json` or TypeScript build configuration and is not
-included in the PNPM workspace. It is therefore not an installable
-`@atlas/kernel` package and has no current public package API.
+`@atlas/kernel` is an active workspace package that depends only on
+`@atlas/foundation`. Its package-root API exposes kernel contracts, service
+composition, dependency injection, modules and event contracts.
 
-The reference source imports only from `@atlas/foundation`. Workspace packages
-must not depend on it until a dedicated architecture decision either promotes
-it to a configured workspace package or formally archives or migrates it.
+EventBus implementations remain internal. Consumers must not deep-import their
+implementation files until a dedicated API decision defines their lifecycle and
+compatibility guarantees.
 
 ---
 
@@ -72,5 +72,4 @@ it to a configured workspace package or formally archives or migrates it.
 - Public APIs are exposed through package-root barrel exports.
 - Package dependencies follow `docs/project/specifications/DEPENDENCY_RULES.md`.
 - `pnpm check`, `pnpm build` and `pnpm test` validate the configured workspace.
-- A future kernel decision must add its own package manifest, build setup and
-  dependency checks before it becomes a public package.
+- Kernel changes must preserve its dependency on Foundation only.

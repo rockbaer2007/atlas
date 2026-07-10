@@ -21,7 +21,8 @@ quality validation and the delivered results.
 | G2.5.3 | Foundation Alignment | Completed | - |
 | G2.5.4 | Artifact Cleanup | Completed | - |
 | G2.5.5 | Source Boundary Review | Completed | - |
-| G2.5.6 | Kernel Workspace Decision | Planned | - |
+| G2.5.6 | Kernel Workspace Decision | Completed | - |
+| G2.5.7 | Kernel API Validation | Planned | - |
 
 ---
 
@@ -134,15 +135,28 @@ Highlights
 
 ---
 
+## G2.5.6 - Kernel Workspace Decision
+
+Promoted the historical kernel source to an active workspace package.
+
+Highlights
+
+- Added `@atlas/kernel` package metadata and build configuration
+- Added the kernel package to workspace checks, builds and tests
+- Published kernel contracts, containers, DI, modules and event contracts
+- Kept EventBus implementations internal
+
+---
+
 # Planned Sprints
 
-## G2.5.6 - Kernel Workspace Decision
+## G2.5.7 - Kernel API Validation
 
 Planned deliverables
 
-- Decide whether kernel becomes a configured workspace package
-- Define migration or archival work for its reference source
-- Specify the public kernel API before implementation work resumes
+- Validate the kernel public API against consumer needs
+- Decide whether EventBus implementations should become public
+- Add package-level API tests and dependency checks
 
 ---
 

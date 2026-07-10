@@ -18,24 +18,25 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.3 | Foundation Alignment | Completed | - |
 | G2.5.4 | Artifact Cleanup | Completed | - |
 | G2.5.5 | Source Boundary Review | Completed | - |
-| G2.5.6 | Kernel Workspace Decision | Planned | - |
+| G2.5.6 | Kernel Workspace Decision | Completed | - |
+| G2.5.7 | Kernel API Validation | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.5 - Source Boundary Review
+## G2.5.6 - Kernel Workspace Decision
 
 Goal:
 
-Document the actual public boundaries of the configured workspace and identify
-the next decision required for historical kernel source.
+Promote the kernel source to a configured workspace package with a deliberately
+limited public API.
 
 Deliverables:
 
-* Public source-boundary policy
-* Placeholder package confirmation
-* Kernel workspace decision record
+* `@atlas/kernel` workspace package
+* Kernel build and test participation
+* Documented public API boundary
 * Sprint documentation
 
 Status:
@@ -46,13 +47,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.6 - Kernel Workspace Decision
+## G2.5.7 - Kernel API Validation
 
 Suggested focus:
 
-* Decide whether kernel becomes a configured workspace package
-* Define migration or archival work for its reference source
-* Specify the public kernel API before implementation work resumes
+* Validate the kernel public API against consumer needs
+* Decide whether EventBus implementations should become public
+* Add package-level API tests and dependency checks
 
 ---
 
@@ -68,6 +69,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.3.md`
 * `docs/sprints/Sprint-G2.5.4.md`
 * `docs/sprints/Sprint-G2.5.5.md`
+* `docs/sprints/Sprint-G2.5.6.md`
 
 ---
 

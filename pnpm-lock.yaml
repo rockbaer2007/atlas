@@ -26,6 +26,12 @@ importers:
 
   packages/homeassistant: {}
 
+  packages/kernel:
+    dependencies:
+      '@atlas/foundation':
+        specifier: workspace:*
+        version: link:../foundation
+
   packages/renderer: {}
 
   packages/runtime: {}

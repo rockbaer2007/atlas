@@ -3,7 +3,6 @@ export * from "./manifest/ModuleManifest";
 export * from "./manifest/ModuleDescriptor";
 export * from "./contracts/Module";
 export * from "./contracts/ModuleContext";
-export * from "./contracts/ModuleLoader";
 export * from "./default/ModuleRegistry";
 export * from "./default/DefaultModuleLoader";
 export * from "./default/DependencyGraph";
