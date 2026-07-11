@@ -40,7 +40,8 @@ quality validation and the delivered results.
 | G2.5.22 | Core Runtime Diagnostics | Completed | - |
 | G2.5.23 | Core Runtime Lifecycle | Completed | - |
 | G2.5.24 | Core Runtime Events | Completed | - |
-| G2.5.25 | Core API Review | Planned | - |
+| G2.5.25 | Core API Review | Completed | - |
+| G2.5.26 | Integration Package Readiness | Planned | - |
 
 ---
 
@@ -397,15 +398,28 @@ Highlights
 
 ---
 
+## G2.5.25 - Core API Review
+
+Reviewed and protected the Core package-root API before integration packages.
+
+Highlights
+
+- Added Core package-root value export coverage
+- Added Core package-root type export coverage
+- Confirmed Core host, diagnostics, lifecycle and event helpers from the root
+- Preserved Core as a thin framework-level boundary above Runtime
+
+---
+
 # Planned Sprints
 
-## G2.5.25 - Core API Review
+## G2.5.26 - Integration Package Readiness
 
 Planned deliverables
 
-- Review Core package-root exports
-- Add Core public API coverage for value and type exports
-- Document Core API readiness before integration packages
+- Review planned integration package boundaries
+- Confirm next active package candidate
+- Document dependency direction from integrations to Core
 
 ---
 

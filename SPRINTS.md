@@ -37,23 +37,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.22 | Core Runtime Diagnostics | Completed | - |
 | G2.5.23 | Core Runtime Lifecycle | Completed | - |
 | G2.5.24 | Core Runtime Events | Completed | - |
-| G2.5.25 | Core API Review | Planned | - |
+| G2.5.25 | Core API Review | Completed | - |
+| G2.5.26 | Integration Package Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.24 - Core Runtime Events
+## G2.5.25 - Core API Review
 
 Goal:
 
-Expose Runtime event subscriptions through the Core package boundary.
+Review and protect the Core package-root API before integration packages.
 
 Deliverables:
 
-* Core Runtime event subscription helper
-* Core event type aliases
-* Core event contract tests
+* Core package-root value export coverage
+* Core package-root type export coverage
+* Core API readiness documentation
 * Sprint documentation
 
 Status:
@@ -64,13 +65,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.25 - Core API Review
+## G2.5.26 - Integration Package Readiness
 
 Suggested focus:
 
-* Review Core package-root exports
-* Add Core public API coverage for value and type exports
-* Document Core API readiness before integration packages
+* Review planned integration package boundaries
+* Confirm next active package candidate
+* Document dependency direction from integrations to Core
 
 ---
 
@@ -105,6 +106,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.22.md`
 * `docs/sprints/Sprint-G2.5.23.md`
 * `docs/sprints/Sprint-G2.5.24.md`
+* `docs/sprints/Sprint-G2.5.25.md`
 
 ---
 

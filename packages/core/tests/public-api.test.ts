@@ -14,6 +14,7 @@ import type {
   CoreRuntimeLifecycleResult,
   CoreRuntimeLifecycleState,
 } from "../src";
+import * as Core from "../src";
 import {
   createCoreRuntimeHost,
   inspectCoreRuntimeHost,
@@ -22,6 +23,50 @@ import {
 } from "../src";
 
 describe("core public API", () => {
+  it("exports the Core package value surface from the package root", () => {
+    expect(Core.createCoreRuntimeHost).toBeTypeOf("function");
+    expect(Core.inspectCoreRuntimeHost).toBeTypeOf("function");
+    expect(Core.transitionCoreRuntimeHost).toBeTypeOf("function");
+    expect(Core.subscribeToCoreRuntimeEvent).toBeTypeOf("function");
+  });
+
+  it("exports the Core package type surface from the package root", () => {
+    const configuration: CoreRuntimeHostConfiguration = {
+      application: {
+        name: "core-type-api",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    };
+    const host: CoreRuntimeHost = createCoreRuntimeHost(configuration);
+    const diagnostics: CoreRuntimeDiagnostics = inspectCoreRuntimeHost(host);
+    const health: CoreRuntimeHealthReport = diagnostics.health;
+    const report: CoreRuntimeDiagnosticReport = diagnostics.report;
+    const action: CoreRuntimeLifecycleAction = "start";
+    const state: CoreRuntimeLifecycleState = "created";
+    const result: CoreRuntimeLifecycleResult = { action, state };
+    const eventType: CoreRuntimeEventType = "runtime.started";
+    const handler: CoreRuntimeEventHandler = event => event.type;
+    const subscription: CoreRuntimeEventSubscription = subscribeToCoreRuntimeEvent(
+      host,
+      eventType,
+      handler,
+    );
+    const event: CoreRuntimeEvent = {
+      type: "runtime.started",
+      timestamp: new Date(),
+    };
+
+    expect(health.applicationName).toBe("core-type-api");
+    expect(report.context.component).toBe("runtime:core-type-api");
+    expect(result.state).toBe("created");
+    expect(subscription.eventType).toBe(eventType);
+    expect(event.type).toBe(eventType);
+  });
+
   it("creates a Runtime host through the Core package root", () => {
     const configuration: CoreRuntimeHostConfiguration = {
       application: {

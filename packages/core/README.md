@@ -41,7 +41,8 @@ typed event subscription helper for Runtime host events.
 - `transitionCoreRuntimeHost`
 
 Core currently depends on `@atlas/runtime` and intentionally keeps its public
-surface compact while higher-level Core concepts are defined.
+surface compact while higher-level Core concepts are defined. The package-root
+value and type surface is protected by public API contract tests.
 
 ---
 
