@@ -29,6 +29,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * RuntimeHost configuration contracts and startup configuration validation.
 * RuntimeHost health reporting derived from module diagnostics.
 * RuntimeHost diagnostic reports using Foundation diagnostics contracts.
+* Runtime diagnostic change events with health transition payloads.
 
 ### Changed
 
@@ -50,6 +51,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Invalid Runtime application and module configuration now rejects before startup.
 * Runtime module diagnostics now aggregate into host health state.
 * Runtime health now maps to stable diagnostic issue codes.
+* Runtime health transitions now publish diagnostic change events.
 
 ### Fixed
 

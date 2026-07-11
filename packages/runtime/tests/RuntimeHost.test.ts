@@ -4,6 +4,7 @@ import type { Application } from "@atlas/kernel";
 
 import {
   RuntimeHost,
+  type RuntimeDiagnosticEvent,
   RuntimeDiagnosticIssueCodes,
   RuntimeHealthStates,
   type RuntimeModule,
@@ -18,6 +19,10 @@ const application: Application = {
     minor: 2,
     patch: 0,
   },
+};
+
+const waitForDiagnosticsEvent = async (): Promise<void> => {
+  await Promise.resolve();
 };
 
 describe("RuntimeHost", () => {
@@ -590,5 +595,89 @@ describe("RuntimeHost", () => {
         }],
       },
     });
+  });
+
+  it("publishes diagnostic events when runtime health changes", async () => {
+    const host = new RuntimeHost(application);
+    const events: RuntimeDiagnosticEvent[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(event);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-healthy",
+        name: "Event healthy",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+    await waitForDiagnosticsEvent();
+
+    await host.start();
+
+    expect(events).toMatchObject([
+      {
+        previousHealth: undefined,
+        currentHealth: RuntimeHealthStates.Degraded,
+        report: {
+          health: RuntimeHealthStates.Degraded,
+        },
+      },
+      {
+        previousHealth: RuntimeHealthStates.Degraded,
+        currentHealth: RuntimeHealthStates.Healthy,
+        report: {
+          health: RuntimeHealthStates.Healthy,
+        },
+      },
+    ]);
+  });
+
+  it("publishes failed diagnostic events when module activation fails", async () => {
+    const host = new RuntimeHost(application);
+    const events: RuntimeDiagnosticEvent[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(event);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-failed",
+        name: "Event failed",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {
+          throw new Error("event failure");
+        },
+      },
+    });
+    await waitForDiagnosticsEvent();
+
+    await expect(host.start()).rejects.toThrow("event failure");
+
+    expect(events).toMatchObject([
+      {
+        previousHealth: undefined,
+        currentHealth: RuntimeHealthStates.Degraded,
+      },
+      {
+        previousHealth: RuntimeHealthStates.Degraded,
+        currentHealth: RuntimeHealthStates.Failed,
+        report: {
+          health: RuntimeHealthStates.Failed,
+          modules: [{
+            moduleId: "event-failed",
+            health: RuntimeHealthStates.Failed,
+            error: "event failure",
+          }],
+        },
+      },
+    ]);
   });
 });

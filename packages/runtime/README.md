@@ -22,6 +22,7 @@ Kernel EventBus.
 - `RuntimeHost`
 - `RuntimeHostConfiguration`
 - `RuntimeConfigurationValidator`
+- `RuntimeDiagnosticEvent`
 - `RuntimeDiagnosticIssueCode`
 - `RuntimeEvent`
 - `RuntimeHealthReport`
@@ -65,6 +66,10 @@ make it degraded, and initialized or disposed modules are considered healthy.
 `DiagnosticReport` contract. Degraded modules produce warning issues, failed
 modules produce error issues, and stable Runtime diagnostic issue codes identify
 the reported condition.
+
+Runtime publishes `runtime.diagnostics.changed` whenever the aggregate Runtime
+health changes. The event includes the previous health, current health and the
+current health report.
 
 Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,

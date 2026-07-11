@@ -42,6 +42,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private readonly initializedModuleIds = new Set<string>();
   private readonly moduleResolver = new ModuleDependencyResolver();
   private readonly configurationValidator = new RuntimeConfigurationValidator();
+  private publishedHealth?: RuntimeHealthState;
 
   public constructor(configuration: RuntimeHostConfiguration);
   public constructor(
@@ -140,6 +141,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       moduleVersion: runtimeModule.manifest.version,
       status: RuntimeModuleStatuses.Registered,
     });
+    void this.publishDiagnosticChangeIfNeeded();
   }
 
   public async start(): Promise<void> {
@@ -222,12 +224,14 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
           error: undefined,
         });
         await this.publishModuleInitialized(runtimeModule.manifest.id);
+        await this.publishDiagnosticChangeIfNeeded();
       } catch (error) {
         this.updateModuleSnapshot(runtimeModule, {
           status: RuntimeModuleStatuses.Failed,
           activationDurationMs: Date.now() - startedAt,
           error: this.errorMessage(error),
         });
+        await this.publishDiagnosticChangeIfNeeded();
         throw error;
       }
     }
@@ -272,6 +276,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
             error: undefined,
           });
           await this.publishModuleEvent("runtime.module.stopped", runtimeModule.manifest.id);
+          await this.publishDiagnosticChangeIfNeeded();
         }
 
         if (this.isDisposableModule(runtimeModule.module)) {
@@ -283,6 +288,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
             error: undefined,
           });
           await this.publishModuleEvent("runtime.module.disposed", runtimeModule.manifest.id);
+          await this.publishDiagnosticChangeIfNeeded();
         }
       } catch (error) {
         this.updateModuleSnapshot(runtimeModule, {
@@ -290,6 +296,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
           shutdownDurationMs: Date.now() - startedAt,
           error: this.errorMessage(error),
         });
+        await this.publishDiagnosticChangeIfNeeded();
         throw error;
       }
     }
@@ -298,6 +305,25 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private async publish(type: RuntimeEvent["type"]): Promise<void> {
     await this.events.publish({
       type,
+      timestamp: new Date(),
+    });
+  }
+
+  private async publishDiagnosticChangeIfNeeded(): Promise<void> {
+    const report = this.health;
+
+    if (this.publishedHealth === report.health) {
+      return;
+    }
+
+    const previousHealth = this.publishedHealth;
+    this.publishedHealth = report.health;
+
+    await this.events.publish({
+      type: "runtime.diagnostics.changed",
+      previousHealth,
+      currentHealth: report.health,
+      report,
       timestamp: new Date(),
     });
   }

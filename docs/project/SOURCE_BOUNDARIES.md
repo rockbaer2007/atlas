@@ -104,6 +104,10 @@ module diagnostics. Runtime health is `failed` when any module failed,
 `DiagnosticReport` values with stable Runtime issue codes for degraded and
 failed modules.
 
+Runtime publishes `runtime.diagnostics.changed` events when aggregate Runtime
+health changes. The event payload includes the previous health state, current
+health state and current health report.
+
 Runtime does not yet own rendering.
 
 ---

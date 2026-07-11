@@ -33,7 +33,8 @@ quality validation and the delivered results.
 | G2.5.15 | Runtime Configuration | Completed | - |
 | G2.5.16 | Runtime Health Reporting | Completed | - |
 | G2.5.17 | Runtime Diagnostics Reports | Completed | - |
-| G2.5.18 | Runtime Event Diagnostics | Planned | - |
+| G2.5.18 | Runtime Event Diagnostics | Completed | - |
+| G2.5.19 | Runtime Event Semantics | Planned | - |
 
 ---
 
@@ -298,15 +299,28 @@ Highlights
 
 ---
 
+## G2.5.18 - Runtime Event Diagnostics
+
+Published diagnostic events when Runtime health changes.
+
+Highlights
+
+- Added `runtime.diagnostics.changed`
+- Added diagnostic event payload contract
+- Published degraded, healthy and failed health transitions
+- Covered health transition events with tests
+
+---
+
 # Planned Sprints
 
-## G2.5.18 - Runtime Event Diagnostics
+## G2.5.19 - Runtime Event Semantics
 
 Planned deliverables
 
-- Publish diagnostic events when Runtime health changes
-- Add diagnostic event payload contracts
-- Add health transition tests
+- Review Runtime lifecycle and diagnostic event ordering
+- Define sync registration event guarantees
+- Add event ordering tests
 
 ---
 

@@ -1,4 +1,5 @@
 import type { Event } from "@atlas/kernel";
+import type { RuntimeDiagnosticEvent } from "./RuntimeDiagnosticEvent";
 
 export type RuntimeEvent =
   | (Event & Readonly<{
@@ -14,4 +15,5 @@ export type RuntimeEvent =
         | "runtime.module.stopped"
         | "runtime.module.disposed";
       moduleId: string;
-    }>);
+    }>)
+  | RuntimeDiagnosticEvent;

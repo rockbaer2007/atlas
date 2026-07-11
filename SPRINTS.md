@@ -30,23 +30,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.15 | Runtime Configuration | Completed | - |
 | G2.5.16 | Runtime Health Reporting | Completed | - |
 | G2.5.17 | Runtime Diagnostics Reports | Completed | - |
-| G2.5.18 | Runtime Event Diagnostics | Planned | - |
+| G2.5.18 | Runtime Event Diagnostics | Completed | - |
+| G2.5.19 | Runtime Event Semantics | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.17 - Runtime Diagnostics Reports
+## G2.5.18 - Runtime Event Diagnostics
 
 Goal:
 
-Adapt Runtime health into Foundation diagnostic reports.
+Publish diagnostic events when Runtime health changes.
 
 Deliverables:
 
-* Runtime diagnostic issue codes
-* Foundation DiagnosticReport adapter
-* Diagnostic report tests
+* Runtime diagnostic change event contract
+* Health transition event publishing
+* Diagnostic event tests
 * Sprint documentation
 
 Status:
@@ -57,13 +58,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.18 - Runtime Event Diagnostics
+## G2.5.19 - Runtime Event Semantics
 
 Suggested focus:
 
-* Publish diagnostic events when Runtime health changes
-* Add diagnostic event payload contracts
-* Add health transition tests
+* Review Runtime lifecycle and diagnostic event ordering
+* Define sync registration event guarantees
+* Add event ordering tests
 
 ---
 
@@ -91,6 +92,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.15.md`
 * `docs/sprints/Sprint-G2.5.16.md`
 * `docs/sprints/Sprint-G2.5.17.md`
+* `docs/sprints/Sprint-G2.5.18.md`
 
 ---
 
