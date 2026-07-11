@@ -45,23 +45,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.30 | Renderer Pipeline Review | Completed | - |
 | G2.5.31 | Renderer Pipeline Execution Readiness | Completed | - |
 | G2.5.32 | Renderer Pipeline Execution Review | Completed | - |
-| G2.5.33 | Renderer Output Boundary | Planned | - |
+| G2.5.33 | Renderer Output Boundary | Completed | - |
+| G2.5.34 | Renderer Output Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.32 - Renderer Pipeline Execution Review
+## G2.5.33 - Renderer Output Boundary
 
 Goal:
 
-Review and protect Renderer pipeline execution before output contracts.
+Define the first Renderer output contract shape before targets and theme.
 
 Deliverables:
 
-* Renderer pipeline execution package-root review
-* Empty Renderer pipeline execution coverage
-* Asynchronous Renderer pipeline execution coverage
+* Renderer output type contract
+* Renderer output creation helper
+* Renderer output contract tests
 * Sprint documentation
 
 Status:
@@ -72,13 +73,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.33 - Renderer Output Boundary
+## G2.5.34 - Renderer Output Review
 
 Suggested focus:
 
-* Define first Renderer output contract shape
-* Add Renderer output contract tests
-* Document Renderer output boundary before targets and theme
+* Review Renderer output package-root exports
+* Add Renderer output type coverage
+* Document Renderer output readiness before target contracts
 
 ---
 
@@ -121,6 +122,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.30.md`
 * `docs/sprints/Sprint-G2.5.31.md`
 * `docs/sprints/Sprint-G2.5.32.md`
+* `docs/sprints/Sprint-G2.5.33.md`
 
 ---
 

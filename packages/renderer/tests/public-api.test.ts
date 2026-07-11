@@ -4,6 +4,8 @@ import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 
 import type {
   RendererHostContext,
+  RendererOutput,
+  RendererOutputKind,
   RendererPipeline,
   RendererPipelineExecutionResult,
   RendererPipelineStage,
@@ -11,6 +13,7 @@ import type {
 } from "../src";
 import * as Renderer from "../src";
 import {
+  createRendererOutput,
   createRendererHostContext,
   createRendererPipeline,
   executeRendererPipeline,
@@ -19,6 +22,7 @@ import {
 describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
+    expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
   });
@@ -51,8 +55,15 @@ describe("renderer public API", () => {
       completed: true,
       stages: [stageResult],
     };
+    const outputKind: RendererOutputKind = "fragment";
+    const output: RendererOutput = {
+      kind: outputKind,
+      name: "type-output",
+      content: "ready",
+    };
 
     expect(context.runtime.application.name).toBe("renderer-type-api");
+    expect(output.kind).toBe("fragment");
     expect(pipeline[0]?.name).toBe("prepare");
     expect(execution.completed).toBe(true);
   });
@@ -73,6 +84,33 @@ describe("renderer public API", () => {
 
     expect(context.runtime).toBe(runtime);
     expect(context.runtime.application.name).toBe("renderer-api");
+  });
+
+  it("creates Renderer output without binding it to a render target", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "status-card",
+      content: "online",
+    });
+
+    expect(output).toEqual({
+      kind: "fragment",
+      name: "status-card",
+      content: "online",
+    });
+  });
+
+  it("creates Renderer output as an immutable copy of the source shape", () => {
+    const source: RendererOutput = {
+      kind: "document",
+      name: "dashboard",
+      content: "ready",
+    };
+
+    const output = createRendererOutput(source);
+
+    expect(output).toEqual(source);
+    expect(output).not.toBe(source);
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {

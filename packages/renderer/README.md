@@ -12,7 +12,8 @@ Active rendering integration package.
 Renderer is the first integration package above `@atlas/core`. It provides a
 small package-root API for creating a renderer host context from a Core Runtime
 host, defining ordered renderer pipeline stages and executing those stages
-sequentially without introducing a component output model yet.
+sequentially. It also defines a first output shape without binding output to a
+target, DOM, Home Assistant surface or theme model yet.
 
 ---
 
@@ -21,11 +22,14 @@ sequentially without introducing a component output model yet.
 `@atlas/renderer` exports:
 
 - `RendererHostContext`
+- `RendererOutput`
+- `RendererOutputKind`
 - `RendererPipeline`
 - `RendererPipelineExecutionResult`
 - `RendererPipelineStage`
 - `RendererPipelineStageResult`
 - `createRendererHostContext`
+- `createRendererOutput`
 - `createRendererPipeline`
 - `executeRendererPipeline`
 
@@ -36,7 +40,8 @@ ordered stage boundary without linking the resulting pipeline to later source
 array mutations. Pipeline execution runs stages sequentially and reports their
 stage results without defining component output or theme resolution. Empty
 pipelines complete successfully, and asynchronous stages are awaited before the
-next stage runs.
+next stage runs. Renderer output currently captures output kind, name and
+optional string content only.
 
 ---
 

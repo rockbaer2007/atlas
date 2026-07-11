@@ -14,7 +14,7 @@ not a future package layout.
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
 | `@atlas/core` | Active | Root exports for the Core Runtime host entry point, diagnostics, lifecycle and event helpers. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
-| `@atlas/renderer` | Active | Root exports for the Renderer host context and pipeline boundary. |
+| `@atlas/renderer` | Active | Root exports for the Renderer host context, output and pipeline boundaries. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
 | `@atlas/homeassistant` | Planned | Empty entry point; no public API yet. |
 | `@atlas/devtools` | Planned | Empty entry point; no public API yet. |
@@ -112,9 +112,13 @@ pipeline stage/result type contracts. Pipeline execution runs ordered stages
 sequentially and reports their stage results, but Renderer does not yet own a
 component output model or theme resolution.
 
+Renderer exposes `createRendererOutput`, `RendererOutput` and
+`RendererOutputKind` as the first output contract. Output currently records
+kind, name and optional string content only. It is not yet bound to render
+targets, DOM nodes, Home Assistant surfaces or themes.
+
 Renderer is intentionally thin in this phase. It provides a stable integration
-package boundary above Core without adding component output or theme behavior
-yet.
+package boundary above Core without adding render targets or theme behavior yet.
 
 Lower layers must not depend on Renderer.
 
