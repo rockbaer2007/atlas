@@ -68,6 +68,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * `@atlas/renderer` is now an active package with a Core dependency.
 * Renderer public API coverage now protects value and type exports.
 * Renderer now exposes an ordered pipeline stage contract without a rendering engine.
+* Renderer pipeline creation now preserves stage order independently from source arrays.
 
 ### Fixed
 

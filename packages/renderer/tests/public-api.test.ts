@@ -97,4 +97,27 @@ describe("renderer public API", () => {
       completed: true,
     });
   });
+
+  it("keeps Renderer pipeline stage order independent from source arrays", () => {
+    const first: RendererPipelineStage = {
+      name: "first",
+      run: () => ({
+        stage: "first",
+        completed: true,
+      }),
+    };
+    const second: RendererPipelineStage = {
+      name: "second",
+      run: () => ({
+        stage: "second",
+        completed: true,
+      }),
+    };
+    const stages = [first];
+
+    const pipeline = createRendererPipeline(stages);
+    stages.push(second);
+
+    expect(pipeline.map(stage => stage.name)).toEqual(["first"]);
+  });
 });

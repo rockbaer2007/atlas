@@ -29,7 +29,9 @@ rendering engine yet.
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface
-is protected by public API contract tests.
+is protected by public API contract tests. Pipeline creation preserves the
+ordered stage boundary without linking the resulting pipeline to later source
+array mutations.
 
 ---
 
