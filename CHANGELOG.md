@@ -32,6 +32,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime diagnostic change events with health transition payloads.
 * Core Runtime host entry point above `@atlas/runtime`.
 * Core Runtime diagnostics helper above Runtime health and diagnostic reports.
+* Core Runtime lifecycle transition helper above Runtime host lifecycle methods.
 * Runtime package-root API contract tests.
 
 ### Changed

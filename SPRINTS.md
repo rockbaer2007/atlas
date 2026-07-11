@@ -35,23 +35,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.20 | Runtime API Review | Completed | - |
 | G2.5.21 | Core Integration Readiness | Completed | - |
 | G2.5.22 | Core Runtime Diagnostics | Completed | - |
-| G2.5.23 | Core Runtime Lifecycle | Planned | - |
+| G2.5.23 | Core Runtime Lifecycle | Completed | - |
+| G2.5.24 | Core Runtime Events | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.22 - Core Runtime Diagnostics
+## G2.5.23 - Core Runtime Lifecycle
 
 Goal:
 
-Expose Runtime diagnostics through the Core package boundary.
+Expose Runtime lifecycle transitions through the Core package boundary.
 
 Deliverables:
 
-* Core Runtime diagnostics helper
-* Core diagnostics type aliases
-* Core diagnostics contract tests
+* Core Runtime lifecycle helper
+* Core lifecycle result types
+* Core lifecycle contract tests
 * Sprint documentation
 
 Status:
@@ -62,13 +63,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.23 - Core Runtime Lifecycle
+## G2.5.24 - Core Runtime Events
 
 Suggested focus:
 
-* Define Core lifecycle helper shape
-* Add Core lifecycle contract tests
-* Document Core lifecycle boundary
+* Define Core event subscription helper shape
+* Add Core event contract tests
+* Document Core event boundary
 
 ---
 
@@ -101,6 +102,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.20.md`
 * `docs/sprints/Sprint-G2.5.21.md`
 * `docs/sprints/Sprint-G2.5.22.md`
+* `docs/sprints/Sprint-G2.5.23.md`
 
 ---
 

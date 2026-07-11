@@ -38,7 +38,8 @@ quality validation and the delivered results.
 | G2.5.20 | Runtime API Review | Completed | - |
 | G2.5.21 | Core Integration Readiness | Completed | - |
 | G2.5.22 | Core Runtime Diagnostics | Completed | - |
-| G2.5.23 | Core Runtime Lifecycle | Planned | - |
+| G2.5.23 | Core Runtime Lifecycle | Completed | - |
+| G2.5.24 | Core Runtime Events | Planned | - |
 
 ---
 
@@ -368,15 +369,28 @@ Highlights
 
 ---
 
+## G2.5.23 - Core Runtime Lifecycle
+
+Exposed Runtime lifecycle transitions through the Core package boundary.
+
+Highlights
+
+- Added `transitionCoreRuntimeHost`
+- Added Core lifecycle action, state and result types
+- Covered Core start, stop and dispose transitions
+- Documented Runtime lifecycle ownership behind the Core boundary
+
+---
+
 # Planned Sprints
 
-## G2.5.23 - Core Runtime Lifecycle
+## G2.5.24 - Core Runtime Events
 
 Planned deliverables
 
-- Define Core lifecycle helper shape
-- Add Core lifecycle contract tests
-- Document Core lifecycle boundary
+- Define Core event subscription helper shape
+- Add Core event contract tests
+- Document Core event boundary
 
 ---
 

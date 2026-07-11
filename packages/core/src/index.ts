@@ -5,3 +5,4 @@
 
 export * from "./CoreRuntimeDiagnostics";
 export * from "./CoreRuntimeHost";
+export * from "./CoreRuntimeLifecycle";

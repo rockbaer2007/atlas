@@ -6,8 +6,15 @@ import type {
   CoreRuntimeHealthReport,
   CoreRuntimeHost,
   CoreRuntimeHostConfiguration,
+  CoreRuntimeLifecycleAction,
+  CoreRuntimeLifecycleResult,
+  CoreRuntimeLifecycleState,
 } from "../src";
-import { createCoreRuntimeHost, inspectCoreRuntimeHost } from "../src";
+import {
+  createCoreRuntimeHost,
+  inspectCoreRuntimeHost,
+  transitionCoreRuntimeHost,
+} from "../src";
 
 describe("core public API", () => {
   it("creates a Runtime host through the Core package root", () => {
@@ -76,5 +83,58 @@ describe("core public API", () => {
     expect(diagnostics.report.result.ok).toBe(false);
     expect(diagnostics.report.result.issues).toHaveLength(1);
     expect(diagnostics.report.result.issues[0]?.code).toBe("runtime.module.degraded");
+  });
+
+  it("transitions Runtime lifecycle through the Core package root", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-lifecycle",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    const startAction: CoreRuntimeLifecycleAction = "start";
+    const started: CoreRuntimeLifecycleResult = await transitionCoreRuntimeHost(
+      host,
+      startAction,
+    );
+    const running: CoreRuntimeLifecycleState = started.state;
+
+    expect(started).toEqual({
+      action: "start",
+      state: "running",
+    });
+    expect(running).toBe("running");
+
+    const stopped = await transitionCoreRuntimeHost(host, "stop");
+
+    expect(stopped).toEqual({
+      action: "stop",
+      state: "stopped",
+    });
+  });
+
+  it("disposes Runtime lifecycle through Core", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-dispose",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    const disposed = await transitionCoreRuntimeHost(host, "dispose");
+
+    expect(disposed).toEqual({
+      action: "dispose",
+      state: "disposed",
+    });
   });
 });
