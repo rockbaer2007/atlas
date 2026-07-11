@@ -4,6 +4,7 @@ import type { Application } from "@atlas/kernel";
 
 import {
   RuntimeHost,
+  RuntimeDiagnosticIssueCodes,
   RuntimeHealthStates,
   type RuntimeModule,
   RuntimeModuleStatuses,
@@ -500,6 +501,94 @@ describe("RuntimeHost", () => {
         health: RuntimeHealthStates.Failed,
         error: "health failure",
       }],
+    });
+  });
+
+  it("reports healthy runtime diagnostics without issues", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "diagnostic-healthy",
+        name: "Diagnostic healthy",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await host.start();
+
+    expect(host.diagnostics).toEqual({
+      context: {
+        component: "runtime:demo",
+        version: "0.2.0",
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
+    });
+  });
+
+  it("reports degraded runtime diagnostics as warnings", () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "diagnostic-waiting",
+        name: "Diagnostic waiting",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    expect(host.diagnostics).toEqual({
+      context: {
+        component: "runtime:demo",
+        version: "0.2.0",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: RuntimeDiagnosticIssueCodes.ModuleDegraded,
+          message: "Runtime module is degraded: diagnostic-waiting (registered)",
+          severity: "warning",
+        }],
+      },
+    });
+  });
+
+  it("reports failed runtime diagnostics as errors", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "diagnostic-failed",
+        name: "Diagnostic failed",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {
+          throw new Error("diagnostic failure");
+        },
+      },
+    });
+
+    await expect(host.start()).rejects.toThrow("diagnostic failure");
+
+    expect(host.diagnostics).toEqual({
+      context: {
+        component: "runtime:demo",
+        version: "0.2.0",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: RuntimeDiagnosticIssueCodes.ModuleFailed,
+          message: "Runtime module failed: diagnostic-failed - diagnostic failure",
+          severity: "error",
+        }],
+      },
     });
   });
 });

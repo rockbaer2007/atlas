@@ -11,9 +11,16 @@ import {
   DefaultServiceContainer,
   ModuleDependencyResolver,
 } from "@atlas/kernel";
-import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
+import type {
+  AsyncDisposable,
+  DiagnosticIssue,
+  DiagnosticReport,
+  LifecycleState,
+} from "@atlas/foundation";
+import { DiagnosticSeverities } from "@atlas/foundation";
 
 import { RuntimeConfigurationValidator } from "./RuntimeConfigurationValidator";
+import { RuntimeDiagnosticIssueCodes } from "./RuntimeDiagnosticIssueCode";
 import type { RuntimeEvent } from "./RuntimeEvent";
 import type { RuntimeHealthReport } from "./RuntimeHealthReport";
 import { RuntimeHealthStates, type RuntimeHealthState } from "./RuntimeHealthState";
@@ -91,6 +98,24 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       health: this.aggregateHealth(summary),
       modules,
       summary,
+    };
+  }
+
+  public get diagnostics(): DiagnosticReport {
+    const health = this.health;
+    const issues = health.modules
+      .filter(module => module.health !== RuntimeHealthStates.Healthy)
+      .map(module => this.toDiagnosticIssue(module));
+
+    return {
+      context: {
+        component: `runtime:${health.applicationName}`,
+        version: health.applicationVersion,
+      },
+      result: {
+        ok: health.health === RuntimeHealthStates.Healthy,
+        issues,
+      },
     };
   }
 
@@ -364,6 +389,24 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     const { major, minor, patch, label } = this.application.version;
     const version = `${major}.${minor}.${patch}`;
     return label ? `${version}-${label}` : version;
+  }
+
+  private toDiagnosticIssue(module: RuntimeModuleHealthReport): DiagnosticIssue {
+    if (module.health === RuntimeHealthStates.Failed) {
+      return {
+        code: RuntimeDiagnosticIssueCodes.ModuleFailed,
+        message: module.error
+          ? `Runtime module failed: ${module.moduleId} - ${module.error}`
+          : `Runtime module failed: ${module.moduleId}`,
+        severity: DiagnosticSeverities.Error,
+      };
+    }
+
+    return {
+      code: RuntimeDiagnosticIssueCodes.ModuleDegraded,
+      message: `Runtime module is degraded: ${module.moduleId} (${module.status})`,
+      severity: DiagnosticSeverities.Warning,
+    };
   }
 
   private toConfiguration(

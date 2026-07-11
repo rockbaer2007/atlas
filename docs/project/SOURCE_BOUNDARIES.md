@@ -100,6 +100,10 @@ module diagnostics. Runtime health is `failed` when any module failed,
 `degraded` when any module is registered or stopped but none failed, and
 `healthy` when all modules are initialized, disposed or absent.
 
+`RuntimeHost.diagnostics` adapts Runtime health into Foundation
+`DiagnosticReport` values with stable Runtime issue codes for degraded and
+failed modules.
+
 Runtime does not yet own rendering.
 
 ---

@@ -32,7 +32,8 @@ quality validation and the delivered results.
 | G2.5.14 | Runtime Module Observability | Completed | - |
 | G2.5.15 | Runtime Configuration | Completed | - |
 | G2.5.16 | Runtime Health Reporting | Completed | - |
-| G2.5.17 | Runtime Diagnostics Reports | Planned | - |
+| G2.5.17 | Runtime Diagnostics Reports | Completed | - |
+| G2.5.18 | Runtime Event Diagnostics | Planned | - |
 
 ---
 
@@ -284,15 +285,28 @@ Highlights
 
 ---
 
+## G2.5.17 - Runtime Diagnostics Reports
+
+Adapted Runtime health into Foundation diagnostic reports.
+
+Highlights
+
+- Added Runtime diagnostic issue codes
+- Added `RuntimeHost.diagnostics`
+- Mapped degraded modules to warning issues
+- Mapped failed modules to error issues
+
+---
+
 # Planned Sprints
 
-## G2.5.17 - Runtime Diagnostics Reports
+## G2.5.18 - Runtime Event Diagnostics
 
 Planned deliverables
 
-- Adapt Runtime health into Foundation diagnostic reports
-- Add diagnostic issue codes for Runtime states
-- Add report contract tests
+- Publish diagnostic events when Runtime health changes
+- Add diagnostic event payload contracts
+- Add health transition tests
 
 ---
 

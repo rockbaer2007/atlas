@@ -22,6 +22,7 @@ Kernel EventBus.
 - `RuntimeHost`
 - `RuntimeHostConfiguration`
 - `RuntimeConfigurationValidator`
+- `RuntimeDiagnosticIssueCode`
 - `RuntimeEvent`
 - `RuntimeHealthReport`
 - `RuntimeHealthState`
@@ -59,6 +60,11 @@ activation or shutdown error.
 `RuntimeHost.health` promotes module diagnostics into a host-level health
 summary. Failed modules make the Runtime failed, registered or stopped modules
 make it degraded, and initialized or disposed modules are considered healthy.
+
+`RuntimeHost.diagnostics` adapts Runtime health into the Foundation
+`DiagnosticReport` contract. Degraded modules produce warning issues, failed
+modules produce error issues, and stable Runtime diagnostic issue codes identify
+the reported condition.
 
 Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,

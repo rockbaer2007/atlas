@@ -28,6 +28,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime module lifecycle diagnostics with statuses, timing and errors.
 * RuntimeHost configuration contracts and startup configuration validation.
 * RuntimeHost health reporting derived from module diagnostics.
+* RuntimeHost diagnostic reports using Foundation diagnostics contracts.
 
 ### Changed
 
@@ -48,6 +49,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime module activation and shutdown failures are now visible in diagnostics.
 * Invalid Runtime application and module configuration now rejects before startup.
 * Runtime module diagnostics now aggregate into host health state.
+* Runtime health now maps to stable diagnostic issue codes.
 
 ### Fixed
 

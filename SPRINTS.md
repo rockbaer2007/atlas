@@ -29,23 +29,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.14 | Runtime Module Observability | Completed | - |
 | G2.5.15 | Runtime Configuration | Completed | - |
 | G2.5.16 | Runtime Health Reporting | Completed | - |
-| G2.5.17 | Runtime Diagnostics Reports | Planned | - |
+| G2.5.17 | Runtime Diagnostics Reports | Completed | - |
+| G2.5.18 | Runtime Event Diagnostics | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.16 - Runtime Health Reporting
+## G2.5.17 - Runtime Diagnostics Reports
 
 Goal:
 
-Promote Runtime module diagnostics into host-level health reporting.
+Adapt Runtime health into Foundation diagnostic reports.
 
 Deliverables:
 
-* Runtime health state contract
-* Module health reports
-* Host health summary aggregation tests
+* Runtime diagnostic issue codes
+* Foundation DiagnosticReport adapter
+* Diagnostic report tests
 * Sprint documentation
 
 Status:
@@ -56,13 +57,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.17 - Runtime Diagnostics Reports
+## G2.5.18 - Runtime Event Diagnostics
 
 Suggested focus:
 
-* Adapt Runtime health into Foundation diagnostic reports
-* Add diagnostic issue codes for Runtime states
-* Add report contract tests
+* Publish diagnostic events when Runtime health changes
+* Add diagnostic event payload contracts
+* Add health transition tests
 
 ---
 
@@ -89,6 +90,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.14.md`
 * `docs/sprints/Sprint-G2.5.15.md`
 * `docs/sprints/Sprint-G2.5.16.md`
+* `docs/sprints/Sprint-G2.5.17.md`
 
 ---
 
