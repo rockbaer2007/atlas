@@ -11,6 +11,25 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
   });
 
+  it("exports the Renderer package type surface from the package root", () => {
+    const runtime: CoreRuntimeHost = createCoreRuntimeHost({
+      application: {
+        name: "renderer-type-api",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    const context: RendererHostContext = {
+      runtime,
+    };
+
+    expect(context.runtime.application.name).toBe("renderer-type-api");
+  });
+
   it("creates a Renderer host context from a Core Runtime host", () => {
     const runtime: CoreRuntimeHost = createCoreRuntimeHost({
       application: {

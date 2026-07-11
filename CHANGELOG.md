@@ -65,6 +65,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * `@atlas/core` is now an active package with a Runtime dependency.
 * Planned integration package dependency direction is now documented above Core.
 * `@atlas/renderer` is now an active package with a Core dependency.
+* Renderer public API coverage now protects value and type exports.
 
 ### Fixed
 

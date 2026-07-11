@@ -43,7 +43,8 @@ quality validation and the delivered results.
 | G2.5.25 | Core API Review | Completed | - |
 | G2.5.26 | Integration Package Readiness | Completed | - |
 | G2.5.27 | Renderer Activation Readiness | Completed | - |
-| G2.5.28 | Renderer API Review | Planned | - |
+| G2.5.28 | Renderer API Review | Completed | - |
+| G2.5.29 | Renderer Pipeline Boundary | Planned | - |
 
 ---
 
@@ -441,15 +442,29 @@ Highlights
 
 ---
 
+## G2.5.28 - Renderer API Review
+
+Reviewed and protected the Renderer package-root API before rendering pipeline
+contracts.
+
+Highlights
+
+- Added Renderer package-root value export coverage
+- Added Renderer package-root type export coverage
+- Confirmed Renderer host context is consumable from the package root
+- Preserved Renderer as a thin integration boundary above Core
+
+---
+
 # Planned Sprints
 
-## G2.5.28 - Renderer API Review
+## G2.5.29 - Renderer Pipeline Boundary
 
 Planned deliverables
 
-- Review Renderer package-root exports
-- Add Renderer public API coverage for value and type exports
-- Document Renderer API readiness before rendering pipeline contracts
+- Define first Renderer pipeline contract shape
+- Add Renderer pipeline contract tests
+- Document Renderer pipeline boundary
 
 ---
 

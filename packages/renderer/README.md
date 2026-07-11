@@ -23,7 +23,8 @@ host without introducing rendering pipeline behavior yet.
 - `createRendererHostContext`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
-while rendering contracts are defined.
+while rendering contracts are defined. The package-root value and type surface
+is protected by public API contract tests.
 
 ---
 
