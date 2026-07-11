@@ -30,6 +30,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * RuntimeHost health reporting derived from module diagnostics.
 * RuntimeHost diagnostic reports using Foundation diagnostics contracts.
 * Runtime diagnostic change events with health transition payloads.
+* Core Runtime host entry point above `@atlas/runtime`.
 * Runtime package-root API contract tests.
 
 ### Changed
@@ -54,6 +55,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime health now maps to stable diagnostic issue codes.
 * Runtime health transitions now publish diagnostic change events.
 * Runtime module registration no longer publishes hidden asynchronous diagnostic events.
+* `@atlas/core` is now an active package with a Runtime dependency.
 
 ### Fixed
 

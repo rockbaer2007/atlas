@@ -12,7 +12,7 @@ not a future package layout.
 | --- | --- | --- |
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
-| `@atlas/core` | Planned | Empty entry point; no public API yet. |
+| `@atlas/core` | Active | Root exports for the Core Runtime host entry point. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
@@ -64,6 +64,18 @@ composition, dependency injection, modules, event contracts and
 
 Event subscriptions and handler storage remain internal. Consumers must not
 deep-import those implementation files.
+
+---
+
+# Core Boundary
+
+`@atlas/core` depends on `@atlas/runtime`. Its package-root API exposes the
+first Core Runtime entry point: `createCoreRuntimeHost`, `CoreRuntimeHost` and
+`CoreRuntimeHostConfiguration`.
+
+Core is intentionally thin in this phase. It provides a stable framework-level
+entry point above Runtime without adding domain, rendering or integration
+behavior yet.
 
 ---
 

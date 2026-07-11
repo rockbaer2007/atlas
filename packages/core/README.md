@@ -7,10 +7,24 @@ points.
 
 # Status
 
-Planned foundation package.
+Active core integration package.
 
-This package is reserved for stable framework concepts that are shared across
-multiple ATLAS layers.
+`@atlas/core` is the first framework-level entry point above Runtime. It
+provides a package-root API for creating a Runtime host through Core without
+requiring consumers to deep-import Runtime internals.
+
+---
+
+# Public API
+
+`@atlas/core` exports:
+
+- `CoreRuntimeHost`
+- `CoreRuntimeHostConfiguration`
+- `createCoreRuntimeHost`
+
+Core currently depends on `@atlas/runtime` and intentionally keeps its public
+surface compact while higher-level Core concepts are defined.
 
 ---
 

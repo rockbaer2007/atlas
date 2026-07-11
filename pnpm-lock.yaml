@@ -18,7 +18,11 @@ importers:
         specifier: ^3.2.4
         version: 3.2.6(@types/node@24.13.2)
 
-  packages/core: {}
+  packages/core:
+    dependencies:
+      '@atlas/runtime':
+        specifier: workspace:*
+        version: link:../runtime
 
   packages/devtools: {}
 

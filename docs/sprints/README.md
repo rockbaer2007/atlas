@@ -36,7 +36,8 @@ quality validation and the delivered results.
 | G2.5.18 | Runtime Event Diagnostics | Completed | - |
 | G2.5.19 | Runtime Event Semantics | Completed | - |
 | G2.5.20 | Runtime API Review | Completed | - |
-| G2.5.21 | Core Integration Readiness | Planned | - |
+| G2.5.21 | Core Integration Readiness | Completed | - |
+| G2.5.22 | Core Runtime Diagnostics | Planned | - |
 
 ---
 
@@ -340,15 +341,28 @@ Highlights
 
 ---
 
+## G2.5.21 - Core Integration Readiness
+
+Activated Core as a thin integration layer above Runtime.
+
+Highlights
+
+- Added Core dependency on Runtime
+- Added `createCoreRuntimeHost`
+- Added Core Runtime host type aliases
+- Added Core package-root API contract test
+
+---
+
 # Planned Sprints
 
-## G2.5.21 - Core Integration Readiness
+## G2.5.22 - Core Runtime Diagnostics
 
 Planned deliverables
 
-- Review Core package placeholder boundary
-- Define Core dependency on Runtime
-- Add first Core package-root API contract test
+- Expose Core-level Runtime diagnostics helpers
+- Add Core diagnostics contract tests
+- Document Core diagnostic boundary
 
 ---
 
