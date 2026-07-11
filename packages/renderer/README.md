@@ -34,7 +34,9 @@ while rendering contracts are defined. The package-root value and type surface
 is protected by public API contract tests. Pipeline creation preserves the
 ordered stage boundary without linking the resulting pipeline to later source
 array mutations. Pipeline execution runs stages sequentially and reports their
-stage results without defining component output or theme resolution.
+stage results without defining component output or theme resolution. Empty
+pipelines complete successfully, and asynchronous stages are awaited before the
+next stage runs.
 
 ---
 

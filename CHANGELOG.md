@@ -71,6 +71,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer now exposes an ordered pipeline stage contract without a rendering engine.
 * Renderer pipeline creation now preserves stage order independently from source arrays.
 * Renderer pipeline execution now reports aggregate completion from stage results.
+* Renderer pipeline execution review now covers empty and asynchronous pipelines.
 
 ### Fixed
 

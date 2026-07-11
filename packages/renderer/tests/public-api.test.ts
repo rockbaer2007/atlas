@@ -211,4 +211,70 @@ describe("renderer public API", () => {
       completed: false,
     }]);
   });
+
+  it("reports empty Renderer pipeline execution as completed", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-empty-execution",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+
+    const result = await executeRendererPipeline(
+      context,
+      createRendererPipeline([]),
+    );
+
+    expect(result).toEqual({
+      completed: true,
+      stages: [],
+    });
+  });
+
+  it("awaits asynchronous Renderer pipeline stages before continuing", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-async-execution",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const order: string[] = [];
+    const pipeline = createRendererPipeline([{
+      name: "async-first",
+      async run() {
+        await Promise.resolve();
+        order.push("async-first");
+
+        return {
+          stage: "async-first",
+          completed: true,
+        };
+      },
+    }, {
+      name: "sync-second",
+      run() {
+        order.push("sync-second");
+
+        return {
+          stage: "sync-second",
+          completed: true,
+        };
+      },
+    }]);
+
+    const result = await executeRendererPipeline(context, pipeline);
+
+    expect(order).toEqual(["async-first", "sync-second"]);
+    expect(result.completed).toBe(true);
+  });
 });
