@@ -28,24 +28,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.13 | Runtime Module Versioning | Completed | - |
 | G2.5.14 | Runtime Module Observability | Completed | - |
 | G2.5.15 | Runtime Configuration | Completed | - |
-| G2.5.16 | Runtime Health Reporting | Planned | - |
+| G2.5.16 | Runtime Health Reporting | Completed | - |
+| G2.5.17 | Runtime Diagnostics Reports | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.15 - Runtime Configuration
+## G2.5.16 - Runtime Health Reporting
 
 Goal:
 
-Define RuntimeHost configuration contracts and validate configuration before
-startup.
+Promote Runtime module diagnostics into host-level health reporting.
 
 Deliverables:
 
-* RuntimeHost configuration object contract
-* Application and module configuration validation
-* Configuration validation tests
+* Runtime health state contract
+* Module health reports
+* Host health summary aggregation tests
 * Sprint documentation
 
 Status:
@@ -56,13 +56,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.16 - Runtime Health Reporting
+## G2.5.17 - Runtime Diagnostics Reports
 
 Suggested focus:
 
-* Promote module diagnostics into health reports
-* Define RuntimeHost health summary contract
-* Add health-state aggregation tests
+* Adapt Runtime health into Foundation diagnostic reports
+* Add diagnostic issue codes for Runtime states
+* Add report contract tests
 
 ---
 
@@ -88,6 +88,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.13.md`
 * `docs/sprints/Sprint-G2.5.14.md`
 * `docs/sprints/Sprint-G2.5.15.md`
+* `docs/sprints/Sprint-G2.5.16.md`
 
 ---
 

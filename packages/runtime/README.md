@@ -23,7 +23,10 @@ Kernel EventBus.
 - `RuntimeHostConfiguration`
 - `RuntimeConfigurationValidator`
 - `RuntimeEvent`
+- `RuntimeHealthReport`
+- `RuntimeHealthState`
 - `RuntimeModule`
+- `RuntimeModuleHealthReport`
 - `RuntimeModuleSnapshot`
 - `RuntimeModuleStatus`
 - `RuntimeServiceKeys`
@@ -52,6 +55,10 @@ for restart. Terminal shutdown occurs during `dispose()`: optional module
 `RuntimeHost.moduleDiagnostics` exposes each registered module's lifecycle
 status, version, activation or shutdown duration, timestamps and the latest
 activation or shutdown error.
+
+`RuntimeHost.health` promotes module diagnostics into a host-level health
+summary. Failed modules make the Runtime failed, registered or stopped modules
+make it degraded, and initialized or disposed modules are considered healthy.
 
 Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,

@@ -15,7 +15,10 @@ import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
 
 import { RuntimeConfigurationValidator } from "./RuntimeConfigurationValidator";
 import type { RuntimeEvent } from "./RuntimeEvent";
+import type { RuntimeHealthReport } from "./RuntimeHealthReport";
+import { RuntimeHealthStates, type RuntimeHealthState } from "./RuntimeHealthState";
 import type { RuntimeHostConfiguration } from "./RuntimeHostConfiguration";
+import type { RuntimeModuleHealthReport } from "./RuntimeModuleHealthReport";
 import type { RuntimeModule } from "./RuntimeModule";
 import type { RuntimeModuleSnapshot } from "./RuntimeModuleSnapshot";
 import { RuntimeModuleStatuses } from "./RuntimeModuleStatus";
@@ -71,6 +74,24 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     return this.modulesInternal.map(runtimeModule =>
       this.moduleSnapshotsInternal.get(runtimeModule.manifest.id)!,
     );
+  }
+
+  public get health(): RuntimeHealthReport {
+    const modules = this.moduleDiagnostics.map(snapshot => this.toModuleHealthReport(snapshot));
+    const summary = {
+      healthy: modules.filter(module => module.health === RuntimeHealthStates.Healthy).length,
+      degraded: modules.filter(module => module.health === RuntimeHealthStates.Degraded).length,
+      failed: modules.filter(module => module.health === RuntimeHealthStates.Failed).length,
+    };
+
+    return {
+      applicationName: this.application.name,
+      applicationVersion: this.applicationVersion(),
+      state: this.stateInternal,
+      health: this.aggregateHealth(summary),
+      modules,
+      summary,
+    };
   }
 
   public registerModule(runtimeModule: RuntimeModule): void {
@@ -302,6 +323,47 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
 
   private errorMessage(error: unknown): string {
     return error instanceof Error ? error.message : String(error);
+  }
+
+  private toModuleHealthReport(snapshot: RuntimeModuleSnapshot): RuntimeModuleHealthReport {
+    return {
+      moduleId: snapshot.moduleId,
+      moduleVersion: snapshot.moduleVersion,
+      health: this.moduleHealth(snapshot),
+      status: snapshot.status,
+      error: snapshot.error,
+    };
+  }
+
+  private moduleHealth(snapshot: RuntimeModuleSnapshot): RuntimeHealthState {
+    switch (snapshot.status) {
+      case RuntimeModuleStatuses.Failed:
+        return RuntimeHealthStates.Failed;
+      case RuntimeModuleStatuses.Registered:
+      case RuntimeModuleStatuses.Stopped:
+        return RuntimeHealthStates.Degraded;
+      case RuntimeModuleStatuses.Initialized:
+      case RuntimeModuleStatuses.Disposed:
+        return RuntimeHealthStates.Healthy;
+    }
+  }
+
+  private aggregateHealth(summary: RuntimeHealthReport["summary"]): RuntimeHealthState {
+    if (summary.failed > 0) {
+      return RuntimeHealthStates.Failed;
+    }
+
+    if (summary.degraded > 0) {
+      return RuntimeHealthStates.Degraded;
+    }
+
+    return RuntimeHealthStates.Healthy;
+  }
+
+  private applicationVersion(): string {
+    const { major, minor, patch, label } = this.application.version;
+    const version = `${major}.${minor}.${patch}`;
+    return label ? `${version}-${label}` : version;
   }
 
   private toConfiguration(

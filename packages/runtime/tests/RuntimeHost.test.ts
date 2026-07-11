@@ -4,6 +4,7 @@ import type { Application } from "@atlas/kernel";
 
 import {
   RuntimeHost,
+  RuntimeHealthStates,
   type RuntimeModule,
   RuntimeModuleStatuses,
   RuntimeServiceKeys,
@@ -404,5 +405,101 @@ describe("RuntimeHost", () => {
       activationDurationMs: expect.any(Number),
       initializedAt: expect.any(Number),
     }]);
+  });
+
+  it("reports degraded health for registered modules before startup", () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "waiting-module",
+        name: "Waiting module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    expect(host.health).toMatchObject({
+      applicationName: "demo",
+      applicationVersion: "0.2.0",
+      state: "created",
+      health: RuntimeHealthStates.Degraded,
+      summary: {
+        healthy: 0,
+        degraded: 1,
+        failed: 0,
+      },
+      modules: [{
+        moduleId: "waiting-module",
+        moduleVersion: "1.0.0",
+        status: RuntimeModuleStatuses.Registered,
+        health: RuntimeHealthStates.Degraded,
+      }],
+    });
+  });
+
+  it("reports healthy runtime health after successful startup", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "healthy-module",
+        name: "Healthy module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await host.start();
+
+    expect(host.health).toMatchObject({
+      state: "running",
+      health: RuntimeHealthStates.Healthy,
+      summary: {
+        healthy: 1,
+        degraded: 0,
+        failed: 0,
+      },
+      modules: [{
+        moduleId: "healthy-module",
+        status: RuntimeModuleStatuses.Initialized,
+        health: RuntimeHealthStates.Healthy,
+      }],
+    });
+  });
+
+  it("reports failed runtime health when module activation fails", async () => {
+    const host = new RuntimeHost(application);
+    host.registerModule({
+      manifest: {
+        id: "unhealthy-module",
+        name: "Unhealthy module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {
+          throw new Error("health failure");
+        },
+      },
+    });
+
+    await expect(host.start()).rejects.toThrow("health failure");
+
+    expect(host.health).toMatchObject({
+      state: "initialized",
+      health: RuntimeHealthStates.Failed,
+      summary: {
+        healthy: 0,
+        degraded: 0,
+        failed: 1,
+      },
+      modules: [{
+        moduleId: "unhealthy-module",
+        status: RuntimeModuleStatuses.Failed,
+        health: RuntimeHealthStates.Failed,
+        error: "health failure",
+      }],
+    });
   });
 });

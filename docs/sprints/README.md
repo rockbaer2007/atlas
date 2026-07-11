@@ -31,7 +31,8 @@ quality validation and the delivered results.
 | G2.5.13 | Runtime Module Versioning | Completed | - |
 | G2.5.14 | Runtime Module Observability | Completed | - |
 | G2.5.15 | Runtime Configuration | Completed | - |
-| G2.5.16 | Runtime Health Reporting | Planned | - |
+| G2.5.16 | Runtime Health Reporting | Completed | - |
+| G2.5.17 | Runtime Diagnostics Reports | Planned | - |
 
 ---
 
@@ -270,15 +271,28 @@ Highlights
 
 ---
 
+## G2.5.16 - Runtime Health Reporting
+
+Promoted Runtime module diagnostics into host-level health reporting.
+
+Highlights
+
+- Added Runtime health states
+- Added module health reports
+- Added RuntimeHost health summary aggregation
+- Covered healthy, degraded and failed health states with tests
+
+---
+
 # Planned Sprints
 
-## G2.5.16 - Runtime Health Reporting
+## G2.5.17 - Runtime Diagnostics Reports
 
 Planned deliverables
 
-- Promote module diagnostics into health reports
-- Define RuntimeHost health summary contract
-- Add health-state aggregation tests
+- Adapt Runtime health into Foundation diagnostic reports
+- Add diagnostic issue codes for Runtime states
+- Add report contract tests
 
 ---
 

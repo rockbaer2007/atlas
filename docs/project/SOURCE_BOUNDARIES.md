@@ -95,6 +95,11 @@ dependency order.
 `RuntimeHost.moduleDiagnostics` provides public module lifecycle snapshots with
 status, timing, timestamps and the latest activation or shutdown error.
 
+`RuntimeHost.health` provides a public host-level health summary derived from
+module diagnostics. Runtime health is `failed` when any module failed,
+`degraded` when any module is registered or stopped but none failed, and
+`healthy` when all modules are initialized, disposed or absent.
+
 Runtime does not yet own rendering.
 
 ---
