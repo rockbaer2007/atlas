@@ -3,6 +3,10 @@ import { describe, expect, it } from "vitest";
 import type {
   CoreRuntimeDiagnosticReport,
   CoreRuntimeDiagnostics,
+  CoreRuntimeEvent,
+  CoreRuntimeEventHandler,
+  CoreRuntimeEventSubscription,
+  CoreRuntimeEventType,
   CoreRuntimeHealthReport,
   CoreRuntimeHost,
   CoreRuntimeHostConfiguration,
@@ -13,6 +17,7 @@ import type {
 import {
   createCoreRuntimeHost,
   inspectCoreRuntimeHost,
+  subscribeToCoreRuntimeEvent,
   transitionCoreRuntimeHost,
 } from "../src";
 
@@ -136,5 +141,60 @@ describe("core public API", () => {
       action: "dispose",
       state: "disposed",
     });
+  });
+
+  it("subscribes to Runtime lifecycle events through Core", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-events",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const eventType: CoreRuntimeEventType = "runtime.started";
+    const received: CoreRuntimeEvent[] = [];
+    const handler: CoreRuntimeEventHandler = event => {
+      received.push(event);
+    };
+
+    const subscription: CoreRuntimeEventSubscription = subscribeToCoreRuntimeEvent(
+      host,
+      eventType,
+      handler,
+    );
+
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(subscription.eventType).toBe("runtime.started");
+    expect(received.map(event => event.type)).toEqual(["runtime.started"]);
+  });
+
+  it("returns disposable Core Runtime event subscriptions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-event-dispose",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const received: CoreRuntimeEventType[] = [];
+    const subscription = subscribeToCoreRuntimeEvent(
+      host,
+      "runtime.started",
+      event => {
+        received.push(event.type);
+      },
+    );
+
+    await subscription.dispose();
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(received).toEqual([]);
   });
 });

@@ -12,7 +12,7 @@ not a future package layout.
 | --- | --- | --- |
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
-| `@atlas/core` | Active | Root exports for the Core Runtime host entry point, diagnostics helper and lifecycle helper. |
+| `@atlas/core` | Active | Root exports for the Core Runtime host entry point, diagnostics, lifecycle and event helpers. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
@@ -81,6 +81,10 @@ framework-level access boundary.
 Core exposes `transitionCoreRuntimeHost` as a minimal framework-level lifecycle
 boundary over Runtime host lifecycle methods. Runtime remains the owner of
 lifecycle state transitions and lifecycle event publication.
+
+Core exposes `subscribeToCoreRuntimeEvent` as a typed framework-level
+subscription boundary over Runtime host events. Runtime and Kernel remain the
+owners of event publication, ordering and subscription disposal behavior.
 
 Core is intentionally thin in this phase. It provides a stable framework-level
 entry point above Runtime without adding domain, rendering or integration

@@ -39,7 +39,8 @@ quality validation and the delivered results.
 | G2.5.21 | Core Integration Readiness | Completed | - |
 | G2.5.22 | Core Runtime Diagnostics | Completed | - |
 | G2.5.23 | Core Runtime Lifecycle | Completed | - |
-| G2.5.24 | Core Runtime Events | Planned | - |
+| G2.5.24 | Core Runtime Events | Completed | - |
+| G2.5.25 | Core API Review | Planned | - |
 
 ---
 
@@ -382,15 +383,29 @@ Highlights
 
 ---
 
+## G2.5.24 - Core Runtime Events
+
+Exposed Runtime event subscriptions through the Core package boundary.
+
+Highlights
+
+- Added `subscribeToCoreRuntimeEvent`
+- Added Core event type aliases
+- Covered Runtime event delivery through Core
+- Covered disposable Core Runtime event subscriptions
+- Documented Runtime and Kernel event ownership behind the Core boundary
+
+---
+
 # Planned Sprints
 
-## G2.5.24 - Core Runtime Events
+## G2.5.25 - Core API Review
 
 Planned deliverables
 
-- Define Core event subscription helper shape
-- Add Core event contract tests
-- Document Core event boundary
+- Review Core package-root exports
+- Add Core public API coverage for value and type exports
+- Document Core API readiness before integration packages
 
 ---
 

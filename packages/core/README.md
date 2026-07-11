@@ -14,7 +14,8 @@ provides a package-root API for creating a Runtime host through Core without
 requiring consumers to deep-import Runtime internals. It also exposes a small
 Core-level diagnostics helper that reads Runtime health and diagnostic reports
 without moving diagnostic ownership out of Runtime. Core also provides a
-minimal lifecycle transition helper over Runtime host lifecycle methods.
+minimal lifecycle transition helper over Runtime host lifecycle methods and a
+typed event subscription helper for Runtime host events.
 
 ---
 
@@ -27,11 +28,16 @@ minimal lifecycle transition helper over Runtime host lifecycle methods.
 - `CoreRuntimeHealthReport`
 - `CoreRuntimeDiagnosticReport`
 - `CoreRuntimeDiagnostics`
+- `CoreRuntimeEvent`
+- `CoreRuntimeEventType`
+- `CoreRuntimeEventSubscription`
+- `CoreRuntimeEventHandler`
 - `CoreRuntimeLifecycleAction`
 - `CoreRuntimeLifecycleState`
 - `CoreRuntimeLifecycleResult`
 - `createCoreRuntimeHost`
 - `inspectCoreRuntimeHost`
+- `subscribeToCoreRuntimeEvent`
 - `transitionCoreRuntimeHost`
 
 Core currently depends on `@atlas/runtime` and intentionally keeps its public
