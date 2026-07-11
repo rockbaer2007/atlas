@@ -30,6 +30,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * RuntimeHost health reporting derived from module diagnostics.
 * RuntimeHost diagnostic reports using Foundation diagnostics contracts.
 * Runtime diagnostic change events with health transition payloads.
+* Runtime package-root API contract tests.
 
 ### Changed
 

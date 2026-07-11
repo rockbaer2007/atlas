@@ -32,23 +32,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.17 | Runtime Diagnostics Reports | Completed | - |
 | G2.5.18 | Runtime Event Diagnostics | Completed | - |
 | G2.5.19 | Runtime Event Semantics | Completed | - |
-| G2.5.20 | Runtime API Review | Planned | - |
+| G2.5.20 | Runtime API Review | Completed | - |
+| G2.5.21 | Core Integration Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.19 - Runtime Event Semantics
+## G2.5.20 - Runtime API Review
 
 Goal:
 
-Clarify Runtime lifecycle and diagnostic event semantics.
+Review the public Runtime API before Core integration.
 
 Deliverables:
 
-* Synchronous module registration event guarantee
-* Runtime startup event ordering tests
-* Diagnostic event semantics documentation
+* Package-root Runtime API contract tests
+* Public Runtime export review
+* Runtime boundary documentation updates
 * Sprint documentation
 
 Status:
@@ -59,13 +60,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.20 - Runtime API Review
+## G2.5.21 - Core Integration Readiness
 
 Suggested focus:
 
-* Review public Runtime exports before Core integration
-* Align Runtime naming and documentation
-* Add package-root API contract tests
+* Review Core package placeholder boundary
+* Define Core dependency on Runtime
+* Add first Core package-root API contract test
 
 ---
 
@@ -95,6 +96,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.17.md`
 * `docs/sprints/Sprint-G2.5.18.md`
 * `docs/sprints/Sprint-G2.5.19.md`
+* `docs/sprints/Sprint-G2.5.20.md`
 
 ---
 

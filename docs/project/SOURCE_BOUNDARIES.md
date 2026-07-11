@@ -113,6 +113,10 @@ diagnostics and health immediately, but does not publish hidden asynchronous
 diagnostic events. Diagnostic change events are emitted by awaited Runtime
 lifecycle operations.
 
+Runtime public API coverage is enforced through package-root contract tests.
+Consumers should import Runtime APIs from `@atlas/runtime` instead of deep
+source paths.
+
 Runtime does not yet own rendering.
 
 ---

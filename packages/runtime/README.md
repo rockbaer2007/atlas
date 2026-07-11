@@ -79,6 +79,10 @@ Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,
 versions, dependency arrays and initialize functions.
 
+The package-root public API is covered by contract tests. Consumers should
+import Runtime types and values from `@atlas/runtime` rather than deep source
+paths.
+
 ---
 
 # Build Output

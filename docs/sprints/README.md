@@ -35,7 +35,8 @@ quality validation and the delivered results.
 | G2.5.17 | Runtime Diagnostics Reports | Completed | - |
 | G2.5.18 | Runtime Event Diagnostics | Completed | - |
 | G2.5.19 | Runtime Event Semantics | Completed | - |
-| G2.5.20 | Runtime API Review | Planned | - |
+| G2.5.20 | Runtime API Review | Completed | - |
+| G2.5.21 | Core Integration Readiness | Planned | - |
 
 ---
 
@@ -326,15 +327,28 @@ Highlights
 
 ---
 
+## G2.5.20 - Runtime API Review
+
+Reviewed and protected the public Runtime API before Core integration.
+
+Highlights
+
+- Added package-root API contract tests
+- Covered Runtime value exports
+- Covered Runtime type exports
+- Reordered Runtime barrel exports for readability
+
+---
+
 # Planned Sprints
 
-## G2.5.20 - Runtime API Review
+## G2.5.21 - Core Integration Readiness
 
 Planned deliverables
 
-- Review public Runtime exports before Core integration
-- Align Runtime naming and documentation
-- Add package-root API contract tests
+- Review Core package placeholder boundary
+- Define Core dependency on Runtime
+- Add first Core package-root API contract test
 
 ---
 
