@@ -108,6 +108,11 @@ Runtime publishes `runtime.diagnostics.changed` events when aggregate Runtime
 health changes. The event payload includes the previous health state, current
 health state and current health report.
 
+Module registration is a synchronous boundary. It updates Runtime module
+diagnostics and health immediately, but does not publish hidden asynchronous
+diagnostic events. Diagnostic change events are emitted by awaited Runtime
+lifecycle operations.
+
 Runtime does not yet own rendering.
 
 ---

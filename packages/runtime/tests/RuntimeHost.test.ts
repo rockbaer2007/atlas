@@ -21,10 +21,6 @@ const application: Application = {
   },
 };
 
-const waitForDiagnosticsEvent = async (): Promise<void> => {
-  await Promise.resolve();
-};
-
 describe("RuntimeHost", () => {
   it("initializes, starts and publishes lifecycle events", async () => {
     const host = new RuntimeHost(application);
@@ -597,7 +593,29 @@ describe("RuntimeHost", () => {
     });
   });
 
-  it("publishes diagnostic events when runtime health changes", async () => {
+  it("does not publish hidden async diagnostic events during module registration", () => {
+    const host = new RuntimeHost(application);
+    const events: RuntimeDiagnosticEvent[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(event);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-registration",
+        name: "Event registration",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    expect(host.health.health).toBe(RuntimeHealthStates.Degraded);
+    expect(events).toEqual([]);
+  });
+
+  it("publishes diagnostic events when runtime health changes during startup", async () => {
     const host = new RuntimeHost(application);
     const events: RuntimeDiagnosticEvent[] = [];
 
@@ -614,20 +632,12 @@ describe("RuntimeHost", () => {
       },
       module: { async initialize() {} },
     });
-    await waitForDiagnosticsEvent();
 
     await host.start();
 
     expect(events).toMatchObject([
       {
         previousHealth: undefined,
-        currentHealth: RuntimeHealthStates.Degraded,
-        report: {
-          health: RuntimeHealthStates.Degraded,
-        },
-      },
-      {
-        previousHealth: RuntimeHealthStates.Degraded,
         currentHealth: RuntimeHealthStates.Healthy,
         report: {
           health: RuntimeHealthStates.Healthy,
@@ -657,17 +667,12 @@ describe("RuntimeHost", () => {
         },
       },
     });
-    await waitForDiagnosticsEvent();
 
     await expect(host.start()).rejects.toThrow("event failure");
 
     expect(events).toMatchObject([
       {
         previousHealth: undefined,
-        currentHealth: RuntimeHealthStates.Degraded,
-      },
-      {
-        previousHealth: RuntimeHealthStates.Degraded,
         currentHealth: RuntimeHealthStates.Failed,
         report: {
           health: RuntimeHealthStates.Failed,
@@ -678,6 +683,54 @@ describe("RuntimeHost", () => {
           }],
         },
       },
+    ]);
+  });
+
+  it("publishes lifecycle and diagnostic events in startup order", async () => {
+    const host = new RuntimeHost(application);
+    const events: string[] = [];
+
+    host.events.subscribe("runtime.initialized", event => {
+      events.push(event.type);
+    });
+    host.events.subscribe("runtime.module.initialized", event => {
+      events.push(`${event.type}:${event.moduleId}`);
+    });
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(`${event.type}:${event.currentHealth}`);
+    });
+    host.events.subscribe("runtime.started", event => {
+      events.push(event.type);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "first-order",
+        name: "First order",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+    host.registerModule({
+      manifest: {
+        id: "second-order",
+        name: "Second order",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await host.start();
+
+    expect(events).toEqual([
+      "runtime.initialized",
+      "runtime.module.initialized:first-order",
+      "runtime.diagnostics.changed:degraded",
+      "runtime.module.initialized:second-order",
+      "runtime.diagnostics.changed:healthy",
+      "runtime.started",
     ]);
   });
 });

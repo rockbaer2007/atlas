@@ -141,7 +141,6 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       moduleVersion: runtimeModule.manifest.version,
       status: RuntimeModuleStatuses.Registered,
     });
-    void this.publishDiagnosticChangeIfNeeded();
   }
 
   public async start(): Promise<void> {

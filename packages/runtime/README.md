@@ -71,6 +71,10 @@ Runtime publishes `runtime.diagnostics.changed` whenever the aggregate Runtime
 health changes. The event includes the previous health, current health and the
 current health report.
 
+Module registration is synchronous: it updates module diagnostics and health
+immediately, but does not publish hidden asynchronous events. Diagnostic change
+events are emitted from awaited lifecycle work such as startup and shutdown.
+
 Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,
 versions, dependency arrays and initialize functions.

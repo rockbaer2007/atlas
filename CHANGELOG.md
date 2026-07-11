@@ -52,6 +52,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime module diagnostics now aggregate into host health state.
 * Runtime health now maps to stable diagnostic issue codes.
 * Runtime health transitions now publish diagnostic change events.
+* Runtime module registration no longer publishes hidden asynchronous diagnostic events.
 
 ### Fixed
 

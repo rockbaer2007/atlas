@@ -34,7 +34,8 @@ quality validation and the delivered results.
 | G2.5.16 | Runtime Health Reporting | Completed | - |
 | G2.5.17 | Runtime Diagnostics Reports | Completed | - |
 | G2.5.18 | Runtime Event Diagnostics | Completed | - |
-| G2.5.19 | Runtime Event Semantics | Planned | - |
+| G2.5.19 | Runtime Event Semantics | Completed | - |
+| G2.5.20 | Runtime API Review | Planned | - |
 
 ---
 
@@ -312,15 +313,28 @@ Highlights
 
 ---
 
+## G2.5.19 - Runtime Event Semantics
+
+Clarified Runtime lifecycle and diagnostic event semantics.
+
+Highlights
+
+- Kept module registration synchronous
+- Removed hidden asynchronous diagnostic events from registration
+- Documented diagnostic events as awaited lifecycle signals
+- Added startup event ordering tests
+
+---
+
 # Planned Sprints
 
-## G2.5.19 - Runtime Event Semantics
+## G2.5.20 - Runtime API Review
 
 Planned deliverables
 
-- Review Runtime lifecycle and diagnostic event ordering
-- Define sync registration event guarantees
-- Add event ordering tests
+- Review public Runtime exports before Core integration
+- Align Runtime naming and documentation
+- Add package-root API contract tests
 
 ---
 

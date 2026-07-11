@@ -31,23 +31,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.16 | Runtime Health Reporting | Completed | - |
 | G2.5.17 | Runtime Diagnostics Reports | Completed | - |
 | G2.5.18 | Runtime Event Diagnostics | Completed | - |
-| G2.5.19 | Runtime Event Semantics | Planned | - |
+| G2.5.19 | Runtime Event Semantics | Completed | - |
+| G2.5.20 | Runtime API Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.18 - Runtime Event Diagnostics
+## G2.5.19 - Runtime Event Semantics
 
 Goal:
 
-Publish diagnostic events when Runtime health changes.
+Clarify Runtime lifecycle and diagnostic event semantics.
 
 Deliverables:
 
-* Runtime diagnostic change event contract
-* Health transition event publishing
-* Diagnostic event tests
+* Synchronous module registration event guarantee
+* Runtime startup event ordering tests
+* Diagnostic event semantics documentation
 * Sprint documentation
 
 Status:
@@ -58,13 +59,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.19 - Runtime Event Semantics
+## G2.5.20 - Runtime API Review
 
 Suggested focus:
 
-* Review Runtime lifecycle and diagnostic event ordering
-* Define sync registration event guarantees
-* Add event ordering tests
+* Review public Runtime exports before Core integration
+* Align Runtime naming and documentation
+* Add package-root API contract tests
 
 ---
 
@@ -93,6 +94,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.16.md`
 * `docs/sprints/Sprint-G2.5.17.md`
 * `docs/sprints/Sprint-G2.5.18.md`
+* `docs/sprints/Sprint-G2.5.19.md`
 
 ---
 
