@@ -107,10 +107,10 @@ behavior yet.
 first Renderer entry point: `createRendererHostContext` and
 `RendererHostContext`.
 
-Renderer also exposes `createRendererPipeline` and pipeline stage/result type
-contracts. Pipeline stages describe ordered rendering work but Renderer does
-not yet own a rendering execution engine, component output model or theme
-resolution.
+Renderer also exposes `createRendererPipeline`, `executeRendererPipeline` and
+pipeline stage/result type contracts. Pipeline execution runs ordered stages
+sequentially and reports their stage results, but Renderer does not yet own a
+component output model or theme resolution.
 
 Renderer is intentionally thin in this phase. It provides a stable integration
 package boundary above Core without adding component output or theme behavior

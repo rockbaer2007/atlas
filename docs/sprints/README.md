@@ -46,7 +46,8 @@ quality validation and the delivered results.
 | G2.5.28 | Renderer API Review | Completed | - |
 | G2.5.29 | Renderer Pipeline Boundary | Completed | - |
 | G2.5.30 | Renderer Pipeline Review | Completed | - |
-| G2.5.31 | Renderer Pipeline Execution Readiness | Planned | - |
+| G2.5.31 | Renderer Pipeline Execution Readiness | Completed | - |
+| G2.5.32 | Renderer Pipeline Execution Review | Planned | - |
 
 ---
 
@@ -485,15 +486,30 @@ Highlights
 
 ---
 
+## G2.5.31 - Renderer Pipeline Execution Readiness
+
+Defined Renderer pipeline execution result shape and sequential execution
+boundary.
+
+Highlights
+
+- Added `RendererPipelineExecutionResult`
+- Added `executeRendererPipeline`
+- Covered sequential execution order
+- Covered incomplete aggregate execution results
+- Documented that Renderer execution does not yet define component output
+
+---
+
 # Planned Sprints
 
-## G2.5.31 - Renderer Pipeline Execution Readiness
+## G2.5.32 - Renderer Pipeline Execution Review
 
 Planned deliverables
 
-- Define Renderer pipeline execution result shape
-- Add sequential pipeline execution contract tests
-- Document Renderer pipeline execution boundary
+- Review Renderer pipeline execution package-root exports
+- Add incomplete and asynchronous execution coverage
+- Document Renderer execution readiness before output contracts
 
 ---
 

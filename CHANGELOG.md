@@ -21,6 +21,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * `@atlas/kernel` workspace package.
 * `@atlas/renderer` workspace package activation above Core.
 * Renderer pipeline boundary contracts.
+* Renderer sequential pipeline execution helper.
 * `DefaultEventBus` public export from `@atlas/kernel`.
 * `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
 * Runtime service keys for application and EventBus composition.
@@ -69,6 +70,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer public API coverage now protects value and type exports.
 * Renderer now exposes an ordered pipeline stage contract without a rendering engine.
 * Renderer pipeline creation now preserves stage order independently from source arrays.
+* Renderer pipeline execution now reports aggregate completion from stage results.
 
 ### Fixed
 
