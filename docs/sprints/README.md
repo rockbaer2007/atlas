@@ -37,7 +37,8 @@ quality validation and the delivered results.
 | G2.5.19 | Runtime Event Semantics | Completed | - |
 | G2.5.20 | Runtime API Review | Completed | - |
 | G2.5.21 | Core Integration Readiness | Completed | - |
-| G2.5.22 | Core Runtime Diagnostics | Planned | - |
+| G2.5.22 | Core Runtime Diagnostics | Completed | - |
+| G2.5.23 | Core Runtime Lifecycle | Planned | - |
 
 ---
 
@@ -354,15 +355,28 @@ Highlights
 
 ---
 
+## G2.5.22 - Core Runtime Diagnostics
+
+Exposed Runtime diagnostics through the Core package boundary.
+
+Highlights
+
+- Added `inspectCoreRuntimeHost`
+- Added Core diagnostics type aliases
+- Covered healthy and degraded Runtime diagnostics through Core
+- Documented Runtime diagnostic ownership behind the Core boundary
+
+---
+
 # Planned Sprints
 
-## G2.5.22 - Core Runtime Diagnostics
+## G2.5.23 - Core Runtime Lifecycle
 
 Planned deliverables
 
-- Expose Core-level Runtime diagnostics helpers
-- Add Core diagnostics contract tests
-- Document Core diagnostic boundary
+- Define Core lifecycle helper shape
+- Add Core lifecycle contract tests
+- Document Core lifecycle boundary
 
 ---
 

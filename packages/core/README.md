@@ -11,7 +11,9 @@ Active core integration package.
 
 `@atlas/core` is the first framework-level entry point above Runtime. It
 provides a package-root API for creating a Runtime host through Core without
-requiring consumers to deep-import Runtime internals.
+requiring consumers to deep-import Runtime internals. It also exposes a small
+Core-level diagnostics helper that reads Runtime health and diagnostic reports
+without moving diagnostic ownership out of Runtime.
 
 ---
 
@@ -21,7 +23,11 @@ requiring consumers to deep-import Runtime internals.
 
 - `CoreRuntimeHost`
 - `CoreRuntimeHostConfiguration`
+- `CoreRuntimeHealthReport`
+- `CoreRuntimeDiagnosticReport`
+- `CoreRuntimeDiagnostics`
 - `createCoreRuntimeHost`
+- `inspectCoreRuntimeHost`
 
 Core currently depends on `@atlas/runtime` and intentionally keeps its public
 surface compact while higher-level Core concepts are defined.

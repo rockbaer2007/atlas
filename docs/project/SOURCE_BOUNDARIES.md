@@ -12,7 +12,7 @@ not a future package layout.
 | --- | --- | --- |
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
-| `@atlas/core` | Active | Root exports for the Core Runtime host entry point. |
+| `@atlas/core` | Active | Root exports for the Core Runtime host entry point and diagnostics helper. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
@@ -72,6 +72,11 @@ deep-import those implementation files.
 `@atlas/core` depends on `@atlas/runtime`. Its package-root API exposes the
 first Core Runtime entry point: `createCoreRuntimeHost`, `CoreRuntimeHost` and
 `CoreRuntimeHostConfiguration`.
+
+Core also exposes `inspectCoreRuntimeHost` and Core-level diagnostics type
+aliases derived from the Core Runtime host. Runtime remains the owner of health
+aggregation and diagnostic report generation; Core only provides the
+framework-level access boundary.
 
 Core is intentionally thin in this phase. It provides a stable framework-level
 entry point above Runtime without adding domain, rendering or integration
