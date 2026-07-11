@@ -19,6 +19,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Source-boundary documentation.
 * Integration package readiness specification.
 * `@atlas/kernel` workspace package.
+* `@atlas/renderer` workspace package activation above Core.
 * `DefaultEventBus` public export from `@atlas/kernel`.
 * `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
 * Runtime service keys for application and EventBus composition.
@@ -36,6 +37,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Core Runtime lifecycle transition helper above Runtime host lifecycle methods.
 * Core Runtime event subscription helper above Runtime host events.
 * Core package-root API contract tests.
+* Renderer package-root API contract tests.
 * Runtime package-root API contract tests.
 
 ### Changed
@@ -62,6 +64,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime module registration no longer publishes hidden asynchronous diagnostic events.
 * `@atlas/core` is now an active package with a Runtime dependency.
 * Planned integration package dependency direction is now documented above Core.
+* `@atlas/renderer` is now an active package with a Core dependency.
 
 ### Fixed
 

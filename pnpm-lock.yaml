@@ -36,7 +36,11 @@ importers:
         specifier: workspace:*
         version: link:../foundation
 
-  packages/renderer: {}
+  packages/renderer:
+    dependencies:
+      '@atlas/core':
+        specifier: workspace:*
+        version: link:../core
 
   packages/runtime:
     dependencies:

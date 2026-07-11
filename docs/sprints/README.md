@@ -42,7 +42,8 @@ quality validation and the delivered results.
 | G2.5.24 | Core Runtime Events | Completed | - |
 | G2.5.25 | Core API Review | Completed | - |
 | G2.5.26 | Integration Package Readiness | Completed | - |
-| G2.5.27 | Renderer Activation Readiness | Planned | - |
+| G2.5.27 | Renderer Activation Readiness | Completed | - |
+| G2.5.28 | Renderer API Review | Planned | - |
 
 ---
 
@@ -426,15 +427,29 @@ Highlights
 
 ---
 
+## G2.5.27 - Renderer Activation Readiness
+
+Activated Renderer as the first integration package above Core.
+
+Highlights
+
+- Added Renderer dependency on Core
+- Added `createRendererHostContext`
+- Added Renderer host context type
+- Added Renderer package-root API contract tests
+- Updated integration readiness and dependency documentation
+
+---
+
 # Planned Sprints
 
-## G2.5.27 - Renderer Activation Readiness
+## G2.5.28 - Renderer API Review
 
 Planned deliverables
 
-- Define initial Renderer package contract shape
-- Confirm Renderer dependency on Core
-- Add Renderer package-root API contract tests
+- Review Renderer package-root exports
+- Add Renderer public API coverage for value and type exports
+- Document Renderer API readiness before rendering pipeline contracts
 
 ---
 

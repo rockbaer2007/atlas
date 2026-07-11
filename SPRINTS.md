@@ -39,23 +39,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.24 | Core Runtime Events | Completed | - |
 | G2.5.25 | Core API Review | Completed | - |
 | G2.5.26 | Integration Package Readiness | Completed | - |
-| G2.5.27 | Renderer Activation Readiness | Planned | - |
+| G2.5.27 | Renderer Activation Readiness | Completed | - |
+| G2.5.28 | Renderer API Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.26 - Integration Package Readiness
+## G2.5.27 - Renderer Activation Readiness
 
 Goal:
 
-Review planned integration package boundaries and dependency direction above Core.
+Activate Renderer as the first integration package above Core.
 
 Deliverables:
 
-* Integration package readiness specification
-* Planned integration package boundary review
-* Integration dependency direction documentation
+* Initial Renderer package contract
+* Renderer dependency on Core
+* Renderer package-root API contract tests
 * Sprint documentation
 
 Status:
@@ -66,13 +67,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.27 - Renderer Activation Readiness
+## G2.5.28 - Renderer API Review
 
 Suggested focus:
 
-* Define initial Renderer package contract shape
-* Confirm Renderer dependency on Core
-* Add Renderer package-root API contract tests
+* Review Renderer package-root exports
+* Add Renderer public API coverage for value and type exports
+* Document Renderer API readiness before rendering pipeline contracts
 
 ---
 
@@ -109,6 +110,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.24.md`
 * `docs/sprints/Sprint-G2.5.25.md`
 * `docs/sprints/Sprint-G2.5.26.md`
+* `docs/sprints/Sprint-G2.5.27.md`
 
 ---
 

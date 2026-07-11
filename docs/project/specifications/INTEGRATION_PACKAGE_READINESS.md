@@ -5,11 +5,21 @@ above Core.
 
 ---
 
+# Active Integration Packages
+
+The following integration packages are active:
+
+- `@atlas/renderer`
+
+Active integration packages must expose public APIs through the package root
+and must not be imported by Foundation, Kernel, Runtime or Core.
+
+---
+
 # Planned Integration Packages
 
 The following packages remain planned and intentionally empty:
 
-- `@atlas/renderer`
 - `@atlas/theme`
 - `@atlas/homeassistant`
 - `@atlas/devtools`
@@ -26,7 +36,7 @@ activated.
 
 Allowed future direction:
 
-- `@atlas/renderer` may depend on `@atlas/core`.
+- `@atlas/renderer` depends on `@atlas/core`.
 - `@atlas/theme` may depend on `@atlas/core` and later rendering contracts once
   those contracts exist.
 - `@atlas/homeassistant` may depend on `@atlas/core` and later renderer/theme
@@ -54,6 +64,6 @@ Before a planned integration package becomes active, the activating sprint must:
 
 # Next Candidate
 
-`@atlas/renderer` is the next likely activation candidate because rendering is
-the first package expected to consume Core without depending on Home Assistant,
-theme or developer tooling contracts.
+`@atlas/theme` is the next likely activation candidate after Renderer because
+theme contracts are expected to shape rendering output before Home Assistant or
+developer tooling integrations become active.

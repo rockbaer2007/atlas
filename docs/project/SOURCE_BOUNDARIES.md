@@ -14,7 +14,7 @@ not a future package layout.
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
 | `@atlas/core` | Active | Root exports for the Core Runtime host entry point, diagnostics, lifecycle and event helpers. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
-| `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
+| `@atlas/renderer` | Active | Root exports for the Renderer host context entry point. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
 | `@atlas/homeassistant` | Planned | Empty entry point; no public API yet. |
 | `@atlas/devtools` | Planned | Empty entry point; no public API yet. |
@@ -55,10 +55,9 @@ architecture phase defines its public contracts, dependencies and tests.
 
 The current integration readiness candidate order is:
 
-1. `@atlas/renderer`
-2. `@atlas/theme`
-3. `@atlas/homeassistant`
-4. `@atlas/devtools`
+1. `@atlas/theme`
+2. `@atlas/homeassistant`
+3. `@atlas/devtools`
 
 Integration packages may depend on `@atlas/core` only after activation. Lower
 layers must not depend on integration packages.
@@ -99,6 +98,20 @@ owners of event publication, ordering and subscription disposal behavior.
 Core is intentionally thin in this phase. It provides a stable framework-level
 entry point above Runtime without adding domain, rendering or integration
 behavior yet.
+
+---
+
+# Renderer Boundary
+
+`@atlas/renderer` depends on `@atlas/core`. Its package-root API exposes the
+first Renderer entry point: `createRendererHostContext` and
+`RendererHostContext`.
+
+Renderer is intentionally thin in this phase. It provides a stable integration
+package boundary above Core without adding rendering pipeline, component output
+or theme behavior yet.
+
+Lower layers must not depend on Renderer.
 
 ---
 

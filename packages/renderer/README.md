@@ -7,11 +7,23 @@ infrastructure.
 
 # Status
 
-Planned rendering package.
+Active rendering integration package.
 
-Renderer work is intentionally deferred until the foundation and runtime layers
-are stable. Renderer is the next likely activation candidate above
-`@atlas/core`; until then its package root remains an empty placeholder.
+Renderer is the first integration package above `@atlas/core`. It provides a
+small package-root API for creating a renderer host context from a Core Runtime
+host without introducing rendering pipeline behavior yet.
+
+---
+
+# Public API
+
+`@atlas/renderer` exports:
+
+- `RendererHostContext`
+- `createRendererHostContext`
+
+Renderer currently depends on `@atlas/core` and keeps its public surface compact
+while rendering contracts are defined.
 
 ---
 

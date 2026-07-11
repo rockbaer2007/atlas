@@ -8,6 +8,7 @@ Active workspace dependencies:
 - `@atlas/kernel` depends on `@atlas/foundation`.
 - `@atlas/runtime` depends on `@atlas/foundation` and `@atlas/kernel`.
 - `@atlas/core` depends on `@atlas/runtime`.
+- `@atlas/renderer` depends on `@atlas/core`.
 
 Planned packages must stay dependency-light until their owning architecture
 phase defines their public contracts.
