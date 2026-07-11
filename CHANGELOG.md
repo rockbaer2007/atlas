@@ -23,6 +23,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer pipeline boundary contracts.
 * Renderer sequential pipeline execution helper.
 * Renderer output boundary contracts.
+* Renderer target boundary contracts.
 * `DefaultEventBus` public export from `@atlas/kernel`.
 * `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
 * Runtime service keys for application and EventBus composition.
@@ -75,6 +76,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer pipeline execution review now covers empty and asynchronous pipelines.
 * Renderer output now records kind, name and optional string content without targets.
 * Renderer output review now covers optional content and current output kinds.
+* Renderer target contracts now describe target kind, name and optional identifier.
 
 ### Fixed
 

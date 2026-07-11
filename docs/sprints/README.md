@@ -50,7 +50,8 @@ quality validation and the delivered results.
 | G2.5.32 | Renderer Pipeline Execution Review | Completed | - |
 | G2.5.33 | Renderer Output Boundary | Completed | - |
 | G2.5.34 | Renderer Output Review | Completed | - |
-| G2.5.35 | Renderer Target Boundary | Planned | - |
+| G2.5.35 | Renderer Target Boundary | Completed | - |
+| G2.5.36 | Renderer Target Review | Planned | - |
 
 ---
 
@@ -544,15 +545,29 @@ Highlights
 
 ---
 
+## G2.5.35 - Renderer Target Boundary
+
+Defined the first Renderer target contract shape before mounting behavior.
+
+Highlights
+
+- Added `RendererTargetKind`
+- Added `RendererTarget`
+- Added `createRendererTarget`
+- Covered target-independent target creation
+- Documented that targets do not yet mount output
+
+---
+
 # Planned Sprints
 
-## G2.5.35 - Renderer Target Boundary
+## G2.5.36 - Renderer Target Review
 
 Planned deliverables
 
-- Define first Renderer target contract shape
-- Add Renderer target contract tests
-- Document Renderer target boundary before mounting behavior
+- Review Renderer target package-root exports
+- Add Renderer target kind coverage
+- Document Renderer target readiness before mounting contracts
 
 ---
 

@@ -10,12 +10,15 @@ import type {
   RendererPipelineExecutionResult,
   RendererPipelineStage,
   RendererPipelineStageResult,
+  RendererTarget,
+  RendererTargetKind,
 } from "../src";
 import * as Renderer from "../src";
 import {
   createRendererOutput,
   createRendererHostContext,
   createRendererPipeline,
+  createRendererTarget,
   executeRendererPipeline,
 } from "../src";
 
@@ -24,6 +27,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
+    expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
   });
 
@@ -61,9 +65,15 @@ describe("renderer public API", () => {
       name: "type-output",
       content: "ready",
     };
+    const targetKind: RendererTargetKind = "memory";
+    const target: RendererTarget = {
+      kind: targetKind,
+      name: "type-target",
+    };
 
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
+    expect(target.kind).toBe("memory");
     expect(pipeline[0]?.name).toBe("prepare");
     expect(execution.completed).toBe(true);
   });
@@ -136,6 +146,33 @@ describe("renderer public API", () => {
     });
 
     expect([fragment.kind, document.kind]).toEqual(["fragment", "document"]);
+  });
+
+  it("creates Renderer targets without mounting behavior", () => {
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "preview",
+      identifier: "preview-main",
+    });
+
+    expect(target).toEqual({
+      kind: "memory",
+      name: "preview",
+      identifier: "preview-main",
+    });
+  });
+
+  it("creates Renderer targets as immutable copies of the source shape", () => {
+    const source: RendererTarget = {
+      kind: "surface",
+      name: "dashboard",
+      identifier: "dashboard-root",
+    };
+
+    const target = createRendererTarget(source);
+
+    expect(target).toEqual(source);
+    expect(target).not.toBe(source);
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {
