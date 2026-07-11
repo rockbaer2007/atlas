@@ -74,6 +74,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer pipeline execution now reports aggregate completion from stage results.
 * Renderer pipeline execution review now covers empty and asynchronous pipelines.
 * Renderer output now records kind, name and optional string content without targets.
+* Renderer output review now covers optional content and current output kinds.
 
 ### Fixed
 

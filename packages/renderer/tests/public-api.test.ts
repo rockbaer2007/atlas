@@ -113,6 +113,31 @@ describe("renderer public API", () => {
     expect(output).not.toBe(source);
   });
 
+  it("creates Renderer output without optional content", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "empty-fragment",
+    });
+
+    expect(output).toEqual({
+      kind: "fragment",
+      name: "empty-fragment",
+    });
+  });
+
+  it("supports the current Renderer output kinds", () => {
+    const fragment = createRendererOutput({
+      kind: "fragment",
+      name: "card-fragment",
+    });
+    const document = createRendererOutput({
+      kind: "document",
+      name: "dashboard-document",
+    });
+
+    expect([fragment.kind, document.kind]).toEqual(["fragment", "document"]);
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {

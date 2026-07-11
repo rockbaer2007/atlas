@@ -41,7 +41,8 @@ array mutations. Pipeline execution runs stages sequentially and reports their
 stage results without defining component output or theme resolution. Empty
 pipelines complete successfully, and asynchronous stages are awaited before the
 next stage runs. Renderer output currently captures output kind, name and
-optional string content only.
+optional string content only. Output content is optional, and the current output
+kinds are `fragment` and `document`.
 
 ---
 
