@@ -20,6 +20,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Integration package readiness specification.
 * `@atlas/kernel` workspace package.
 * `@atlas/renderer` workspace package activation above Core.
+* Renderer pipeline boundary contracts.
 * `DefaultEventBus` public export from `@atlas/kernel`.
 * `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
 * Runtime service keys for application and EventBus composition.
@@ -66,6 +67,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Planned integration package dependency direction is now documented above Core.
 * `@atlas/renderer` is now an active package with a Core dependency.
 * Renderer public API coverage now protects value and type exports.
+* Renderer now exposes an ordered pipeline stage contract without a rendering engine.
 
 ### Fixed
 

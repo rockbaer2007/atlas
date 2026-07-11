@@ -11,7 +11,8 @@ Active rendering integration package.
 
 Renderer is the first integration package above `@atlas/core`. It provides a
 small package-root API for creating a renderer host context from a Core Runtime
-host without introducing rendering pipeline behavior yet.
+host and defining ordered renderer pipeline stages without executing a full
+rendering engine yet.
 
 ---
 
@@ -20,7 +21,11 @@ host without introducing rendering pipeline behavior yet.
 `@atlas/renderer` exports:
 
 - `RendererHostContext`
+- `RendererPipeline`
+- `RendererPipelineStage`
+- `RendererPipelineStageResult`
 - `createRendererHostContext`
+- `createRendererPipeline`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface

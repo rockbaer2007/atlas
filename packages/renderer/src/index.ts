@@ -4,3 +4,4 @@
  */
 
 export * from "./RendererHostContext";
+export * from "./RendererPipeline";

@@ -41,23 +41,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.26 | Integration Package Readiness | Completed | - |
 | G2.5.27 | Renderer Activation Readiness | Completed | - |
 | G2.5.28 | Renderer API Review | Completed | - |
-| G2.5.29 | Renderer Pipeline Boundary | Planned | - |
+| G2.5.29 | Renderer Pipeline Boundary | Completed | - |
+| G2.5.30 | Renderer Pipeline Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.28 - Renderer API Review
+## G2.5.29 - Renderer Pipeline Boundary
 
 Goal:
 
-Review and protect the Renderer package-root API before rendering pipeline contracts.
+Define the first Renderer pipeline contract shape.
 
 Deliverables:
 
-* Renderer package-root value export coverage
-* Renderer package-root type export coverage
-* Renderer API readiness documentation
+* Renderer pipeline stage contract
+* Renderer pipeline creation helper
+* Renderer pipeline contract tests
 * Sprint documentation
 
 Status:
@@ -68,13 +69,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.29 - Renderer Pipeline Boundary
+## G2.5.30 - Renderer Pipeline Review
 
 Suggested focus:
 
-* Define first Renderer pipeline contract shape
-* Add Renderer pipeline contract tests
-* Document Renderer pipeline boundary
+* Review Renderer pipeline package-root exports
+* Add Renderer pipeline type coverage
+* Document Renderer pipeline readiness before execution contracts
 
 ---
 
@@ -113,6 +114,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.26.md`
 * `docs/sprints/Sprint-G2.5.27.md`
 * `docs/sprints/Sprint-G2.5.28.md`
+* `docs/sprints/Sprint-G2.5.29.md`
 
 ---
 

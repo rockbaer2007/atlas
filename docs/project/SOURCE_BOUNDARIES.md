@@ -14,7 +14,7 @@ not a future package layout.
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
 | `@atlas/core` | Active | Root exports for the Core Runtime host entry point, diagnostics, lifecycle and event helpers. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
-| `@atlas/renderer` | Active | Root exports for the Renderer host context entry point. |
+| `@atlas/renderer` | Active | Root exports for the Renderer host context and pipeline boundary. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
 | `@atlas/homeassistant` | Planned | Empty entry point; no public API yet. |
 | `@atlas/devtools` | Planned | Empty entry point; no public API yet. |
@@ -107,9 +107,14 @@ behavior yet.
 first Renderer entry point: `createRendererHostContext` and
 `RendererHostContext`.
 
+Renderer also exposes `createRendererPipeline` and pipeline stage/result type
+contracts. Pipeline stages describe ordered rendering work but Renderer does
+not yet own a rendering execution engine, component output model or theme
+resolution.
+
 Renderer is intentionally thin in this phase. It provides a stable integration
-package boundary above Core without adding rendering pipeline, component output
-or theme behavior yet.
+package boundary above Core without adding component output or theme behavior
+yet.
 
 Lower layers must not depend on Renderer.
 

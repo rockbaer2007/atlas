@@ -44,7 +44,8 @@ quality validation and the delivered results.
 | G2.5.26 | Integration Package Readiness | Completed | - |
 | G2.5.27 | Renderer Activation Readiness | Completed | - |
 | G2.5.28 | Renderer API Review | Completed | - |
-| G2.5.29 | Renderer Pipeline Boundary | Planned | - |
+| G2.5.29 | Renderer Pipeline Boundary | Completed | - |
+| G2.5.30 | Renderer Pipeline Review | Planned | - |
 
 ---
 
@@ -456,15 +457,29 @@ Highlights
 
 ---
 
+## G2.5.29 - Renderer Pipeline Boundary
+
+Defined the first Renderer pipeline contract shape.
+
+Highlights
+
+- Added `RendererPipelineStage`
+- Added `RendererPipelineStageResult`
+- Added `RendererPipeline`
+- Added `createRendererPipeline`
+- Documented that Renderer does not yet own a rendering execution engine
+
+---
+
 # Planned Sprints
 
-## G2.5.29 - Renderer Pipeline Boundary
+## G2.5.30 - Renderer Pipeline Review
 
 Planned deliverables
 
-- Define first Renderer pipeline contract shape
-- Add Renderer pipeline contract tests
-- Document Renderer pipeline boundary
+- Review Renderer pipeline package-root exports
+- Add Renderer pipeline type coverage
+- Document Renderer pipeline readiness before execution contracts
 
 ---
 
