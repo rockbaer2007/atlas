@@ -17,6 +17,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * GitHub pull request template.
 * Build artifact policy documentation.
 * Source-boundary documentation.
+* Integration package readiness specification.
 * `@atlas/kernel` workspace package.
 * `DefaultEventBus` public export from `@atlas/kernel`.
 * `RuntimeHost` and runtime lifecycle events from `@atlas/runtime`.
@@ -60,6 +61,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime health transitions now publish diagnostic change events.
 * Runtime module registration no longer publishes hidden asynchronous diagnostic events.
 * `@atlas/core` is now an active package with a Runtime dependency.
+* Planned integration package dependency direction is now documented above Core.
 
 ### Fixed
 

@@ -10,7 +10,8 @@ integration support.
 Planned integration package.
 
 Home Assistant support is deferred until the runtime, renderer and theme layers
-provide stable extension points.
+provide stable extension points. This package remains an integration
+placeholder and must not define public APIs before its activation sprint.
 
 ---
 

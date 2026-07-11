@@ -41,7 +41,8 @@ quality validation and the delivered results.
 | G2.5.23 | Core Runtime Lifecycle | Completed | - |
 | G2.5.24 | Core Runtime Events | Completed | - |
 | G2.5.25 | Core API Review | Completed | - |
-| G2.5.26 | Integration Package Readiness | Planned | - |
+| G2.5.26 | Integration Package Readiness | Completed | - |
+| G2.5.27 | Renderer Activation Readiness | Planned | - |
 
 ---
 
@@ -411,15 +412,29 @@ Highlights
 
 ---
 
+## G2.5.26 - Integration Package Readiness
+
+Reviewed planned integration package boundaries and dependency direction above
+Core.
+
+Highlights
+
+- Added integration package readiness specification
+- Confirmed planned integration packages remain empty placeholders
+- Documented future dependency direction from integrations to Core
+- Identified `@atlas/renderer` as the next likely activation candidate
+
+---
+
 # Planned Sprints
 
-## G2.5.26 - Integration Package Readiness
+## G2.5.27 - Renderer Activation Readiness
 
 Planned deliverables
 
-- Review planned integration package boundaries
-- Confirm next active package candidate
-- Document dependency direction from integrations to Core
+- Define initial Renderer package contract shape
+- Confirm Renderer dependency on Core
+- Add Renderer package-root API contract tests
 
 ---
 

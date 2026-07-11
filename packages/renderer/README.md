@@ -10,7 +10,8 @@ infrastructure.
 Planned rendering package.
 
 Renderer work is intentionally deferred until the foundation and runtime layers
-are stable.
+are stable. Renderer is the next likely activation candidate above
+`@atlas/core`; until then its package root remains an empty placeholder.
 
 ---
 

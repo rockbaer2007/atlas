@@ -53,6 +53,16 @@ would need to be supported prematurely.
 No implementation should be added to a placeholder package until its owning
 architecture phase defines its public contracts, dependencies and tests.
 
+The current integration readiness candidate order is:
+
+1. `@atlas/renderer`
+2. `@atlas/theme`
+3. `@atlas/homeassistant`
+4. `@atlas/devtools`
+
+Integration packages may depend on `@atlas/core` only after activation. Lower
+layers must not depend on integration packages.
+
 ---
 
 # Kernel Boundary

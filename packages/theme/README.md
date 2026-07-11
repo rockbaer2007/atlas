@@ -9,7 +9,9 @@ integration.
 
 Planned theme package.
 
-Theme work is intentionally deferred until the rendering model is defined.
+Theme work is intentionally deferred until the rendering model is defined. When
+activated, Theme is expected to depend upward on Core and later rendering
+contracts rather than being consumed by lower layers.
 
 ---
 
