@@ -26,6 +26,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Optional module stop and dispose contracts with reverse-order Runtime shutdown.
 * Module version compatibility validation for Runtime dependencies.
 * Runtime module lifecycle diagnostics with statuses, timing and errors.
+* RuntimeHost configuration contracts and startup configuration validation.
 
 ### Changed
 
@@ -44,6 +45,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Runtime disposal now propagates module shutdown failures without claiming disposal.
 * Incompatible required and present optional module versions now reject startup.
 * Runtime module activation and shutdown failures are now visible in diagnostics.
+* Invalid Runtime application and module configuration now rejects before startup.
 
 ### Fixed
 

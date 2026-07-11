@@ -73,6 +73,77 @@ describe("RuntimeHost", () => {
     expect(host.services.resolve(RuntimeServiceKeys.events)).toBe(host.events);
   });
 
+  it("creates a host from runtime configuration", async () => {
+    const host = new RuntimeHost({
+      application,
+      modules: [{
+        manifest: {
+          id: "configured.module",
+          name: "Configured module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+
+    await host.start();
+
+    expect(host.application).toBe(application);
+    expect(host.moduleDiagnostics).toMatchObject([{
+      moduleId: "configured.module",
+      status: RuntimeModuleStatuses.Initialized,
+    }]);
+  });
+
+  it("rejects invalid runtime application configuration", () => {
+    expect(() => new RuntimeHost({
+      ...application,
+      name: " ",
+    })).toThrow("Runtime application name is required.");
+
+    expect(() => new RuntimeHost({
+      ...application,
+      version: {
+        major: 0,
+        minor: -1,
+        patch: 0,
+      },
+    })).toThrow("Runtime application version minor must be a non-negative integer.");
+  });
+
+  it("rejects invalid runtime module configuration before startup", () => {
+    const host = new RuntimeHost(application);
+
+    expect(() => host.registerModule({
+      manifest: {
+        id: " ",
+        name: "Invalid module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    })).toThrow("Runtime module id is required.");
+
+    expect(host.state).toBe("created");
+  });
+
+  it("rejects invalid runtime module dependency configuration before startup", () => {
+    const host = new RuntimeHost(application);
+
+    expect(() => host.registerModule({
+      manifest: {
+        id: "invalid-dependency",
+        name: "Invalid dependency",
+        version: "1.0.0",
+        dependencies: [{ id: "dependency", version: " " }],
+      },
+      module: { async initialize() {} },
+    })).toThrow("Runtime module dependency version is required");
+
+    expect(host.state).toBe("created");
+  });
+
   it("initializes registered modules and exposes their services", async () => {
     const moduleServiceKey = Symbol("module-service");
     const host = new RuntimeHost(application);

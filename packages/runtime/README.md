@@ -20,6 +20,8 @@ Kernel EventBus.
 `@atlas/runtime` exports:
 
 - `RuntimeHost`
+- `RuntimeHostConfiguration`
+- `RuntimeConfigurationValidator`
 - `RuntimeEvent`
 - `RuntimeModule`
 - `RuntimeModuleSnapshot`
@@ -27,8 +29,10 @@ Kernel EventBus.
 - `RuntimeServiceKeys`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
-`@atlas/kernel` application and event contracts. Consumers may provide their
-own `EventBus`, or use the default `DefaultEventBus`.
+`@atlas/kernel` application and event contracts. Consumers may construct a host
+from a `RuntimeHostConfiguration` or continue using the positional application,
+EventBus and service-container constructor. Consumers may provide their own
+`EventBus`, or use the default `DefaultEventBus`.
 
 `RuntimeHost` owns a Kernel service container and registers its application and
 EventBus under `RuntimeServiceKeys.application` and `RuntimeServiceKeys.events`.
@@ -48,6 +52,10 @@ for restart. Terminal shutdown occurs during `dispose()`: optional module
 `RuntimeHost.moduleDiagnostics` exposes each registered module's lifecycle
 status, version, activation or shutdown duration, timestamps and the latest
 activation or shutdown error.
+
+Runtime configuration is validated before use. Application names and version
+parts must be present and valid; module manifests must define ids, names,
+versions, dependency arrays and initialize functions.
 
 ---
 

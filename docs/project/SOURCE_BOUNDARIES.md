@@ -13,7 +13,7 @@ not a future package layout.
 | `@atlas/foundation` | Active | Root barrel exports for the foundation domains in `src`. |
 | `@atlas/kernel` | Active | Root barrel exports for kernel contracts, containers, DI, modules, event contracts and `DefaultEventBus`. |
 | `@atlas/core` | Planned | Empty entry point; no public API yet. |
-| `@atlas/runtime` | Active | Root exports for runtime lifecycle host and events. |
+| `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
 | `@atlas/renderer` | Planned | Empty entry point; no public API yet. |
 | `@atlas/theme` | Planned | Empty entry point; no public API yet. |
 | `@atlas/homeassistant` | Planned | Empty entry point; no public API yet. |
@@ -70,9 +70,15 @@ deep-import those implementation files.
 # Runtime Boundary
 
 `@atlas/runtime` depends on `@atlas/foundation` and `@atlas/kernel`. Its root
-exports `RuntimeHost` and `RuntimeEvent`. The host owns application lifecycle
-state, a Kernel service container and runtime lifecycle events through an
-`EventBus`. `RuntimeServiceKeys` exposes the application and EventBus entries.
+exports `RuntimeHost`, `RuntimeHostConfiguration`, runtime diagnostics and
+`RuntimeEvent`. The host owns application lifecycle state, a Kernel service
+container and runtime lifecycle events through an `EventBus`.
+`RuntimeServiceKeys` exposes the application and EventBus entries.
+
+`RuntimeHostConfiguration` provides the public object-based host configuration
+boundary. Runtime validates application identity, application version parts,
+module manifests, dependency declarations and module initialize functions before
+configuration is accepted for startup.
 
 `RuntimeModule` registrations are accepted before startup and initialize once
 in dependency order. Missing required dependencies and cycles reject startup;
@@ -89,7 +95,7 @@ dependency order.
 `RuntimeHost.moduleDiagnostics` provides public module lifecycle snapshots with
 status, timing, timestamps and the latest activation or shutdown error.
 
-Runtime does not yet own service registration, module activation or rendering.
+Runtime does not yet own rendering.
 
 ---
 

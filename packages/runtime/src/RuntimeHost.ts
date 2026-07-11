@@ -13,26 +13,50 @@ import {
 } from "@atlas/kernel";
 import type { AsyncDisposable, LifecycleState } from "@atlas/foundation";
 
+import { RuntimeConfigurationValidator } from "./RuntimeConfigurationValidator";
 import type { RuntimeEvent } from "./RuntimeEvent";
+import type { RuntimeHostConfiguration } from "./RuntimeHostConfiguration";
 import type { RuntimeModule } from "./RuntimeModule";
 import type { RuntimeModuleSnapshot } from "./RuntimeModuleSnapshot";
 import { RuntimeModuleStatuses } from "./RuntimeModuleStatus";
 import { RuntimeServiceKeys } from "./RuntimeServiceKeys";
 
 export class RuntimeHost implements ApplicationHost, AsyncDisposable {
+  public readonly application: Application;
+  public readonly events: EventBus;
+  public readonly services: ServiceContainer;
+
   private stateInternal: LifecycleState = "created";
   private readonly modulesInternal: RuntimeModule[] = [];
   private readonly moduleSnapshotsInternal = new Map<string, RuntimeModuleSnapshot>();
   private readonly initializedModuleIds = new Set<string>();
   private readonly moduleResolver = new ModuleDependencyResolver();
+  private readonly configurationValidator = new RuntimeConfigurationValidator();
 
+  public constructor(configuration: RuntimeHostConfiguration);
   public constructor(
-    public readonly application: Application,
-    public readonly events: EventBus = new DefaultEventBus(),
-    public readonly services: ServiceContainer = new DefaultServiceContainer(),
+    application: Application,
+    events?: EventBus,
+    services?: ServiceContainer,
+  );
+  public constructor(
+    applicationOrConfiguration: Application | RuntimeHostConfiguration,
+    events?: EventBus,
+    services?: ServiceContainer,
   ) {
-    this.services.register(RuntimeServiceKeys.application, application);
-    this.services.register(RuntimeServiceKeys.events, events);
+    const configuration = this.toConfiguration(applicationOrConfiguration, events, services);
+
+    this.application = configuration.application;
+    this.events = configuration.events ?? new DefaultEventBus();
+    this.services = configuration.services ?? new DefaultServiceContainer();
+
+    this.configurationValidator.validateApplication(this.application);
+    this.services.register(RuntimeServiceKeys.application, this.application);
+    this.services.register(RuntimeServiceKeys.events, this.events);
+
+    for (const runtimeModule of configuration.modules ?? []) {
+      this.registerModule(runtimeModule);
+    }
   }
 
   public get state(): LifecycleState {
@@ -56,6 +80,8 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
       throw new Error("Runtime modules must be registered before startup.");
     }
 
+    this.configurationValidator.validateModule(runtimeModule);
+
     if (this.modulesInternal.some(
       registered => registered.manifest.id === runtimeModule.manifest.id,
     )) {
@@ -78,6 +104,7 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
     }
 
     if (this.stateInternal === "created") {
+      this.validateConfiguration();
       await this.initialize();
     }
 
@@ -119,6 +146,14 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
   private async initialize(): Promise<void> {
     this.stateInternal = "initialized";
     await this.publish("runtime.initialized");
+  }
+
+  private validateConfiguration(): void {
+    this.configurationValidator.validateApplication(this.application);
+
+    for (const runtimeModule of this.modulesInternal) {
+      this.configurationValidator.validateModule(runtimeModule);
+    }
   }
 
   private async activateModules(): Promise<void> {
@@ -267,6 +302,22 @@ export class RuntimeHost implements ApplicationHost, AsyncDisposable {
 
   private errorMessage(error: unknown): string {
     return error instanceof Error ? error.message : String(error);
+  }
+
+  private toConfiguration(
+    applicationOrConfiguration: Application | RuntimeHostConfiguration,
+    events?: EventBus,
+    services?: ServiceContainer,
+  ): RuntimeHostConfiguration {
+    if ("application" in applicationOrConfiguration) {
+      return applicationOrConfiguration;
+    }
+
+    return {
+      application: applicationOrConfiguration,
+      events,
+      services,
+    };
   }
 
   private ensureAvailable(): void {

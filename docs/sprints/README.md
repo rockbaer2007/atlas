@@ -30,7 +30,8 @@ quality validation and the delivered results.
 | G2.5.12 | Runtime Module Shutdown | Completed | - |
 | G2.5.13 | Runtime Module Versioning | Completed | - |
 | G2.5.14 | Runtime Module Observability | Completed | - |
-| G2.5.15 | Runtime Configuration | Planned | - |
+| G2.5.15 | Runtime Configuration | Completed | - |
+| G2.5.16 | Runtime Health Reporting | Planned | - |
 
 ---
 
@@ -256,15 +257,28 @@ Highlights
 
 ---
 
+## G2.5.15 - Runtime Configuration
+
+Added public RuntimeHost configuration contracts and validation.
+
+Highlights
+
+- Added object-based RuntimeHost configuration
+- Preserved the existing positional constructor
+- Validated application identity and version configuration
+- Validated module manifests and dependency declarations before startup
+
+---
+
 # Planned Sprints
 
-## G2.5.15 - Runtime Configuration
+## G2.5.16 - Runtime Health Reporting
 
 Planned deliverables
 
-- Define RuntimeHost configuration contracts
-- Validate application and module configuration before startup
-- Add configuration validation tests
+- Promote module diagnostics into health reports
+- Define RuntimeHost health summary contract
+- Add health-state aggregation tests
 
 ---
 
