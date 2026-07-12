@@ -49,6 +49,7 @@ descriptive only and do not mount output yet.
 - `createRendererPipeline`
 - `createRendererTarget`
 - `executeRendererPipeline`
+- `findRendererAdapter`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface
@@ -76,7 +77,9 @@ contract state before adapter discovery is introduced. Renderer adapter lookup
 contracts currently describe lookup requests and results without executing
 registry search, adapter selection or conflict resolution behavior. Lookup
 requests and results are stable contract shapes, and lookup results may describe
-matched or missing adapters.
+matched or missing adapters. Renderer adapter registry search currently finds
+the first adapter with a matching name and reports misses without conflict
+resolution or adapter selection policies.
 
 ---
 

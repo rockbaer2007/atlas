@@ -33,6 +33,7 @@ import {
   createRendererPipeline,
   createRendererTarget,
   executeRendererPipeline,
+  findRendererAdapter,
 } from "../src";
 
 describe("renderer public API", () => {
@@ -48,6 +49,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
+    expect(Renderer.findRendererAdapter).toBeTypeOf("function");
   });
 
   it("exports the Renderer package type surface from the package root", () => {
@@ -622,6 +624,53 @@ describe("renderer public API", () => {
 
     expect(created).toEqual(result);
     expect(created).not.toBe(result);
+  });
+
+  it("finds Renderer adapters by name from registries", () => {
+    const memory = createRendererAdapter({
+      name: "memory-preview",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const surface = createRendererAdapter({
+      name: "surface-dashboard",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([memory, surface]);
+
+    const result = findRendererAdapter(
+      registry,
+      createRendererAdapterLookupRequest({
+        name: "surface-dashboard",
+      }),
+    );
+
+    expect(result).toEqual({
+      name: "surface-dashboard",
+      adapter: surface,
+    });
+  });
+
+  it("reports missing Renderer adapters from registries", () => {
+    const registry = createRendererAdapterRegistry([]);
+
+    const result = findRendererAdapter(
+      registry,
+      createRendererAdapterLookupRequest({
+        name: "missing-adapter",
+      }),
+    );
+
+    expect(result).toEqual({
+      name: "missing-adapter",
+    });
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {
