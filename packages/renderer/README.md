@@ -52,6 +52,7 @@ descriptive only and do not mount output yet.
 - `createRendererTarget`
 - `executeRendererPipeline`
 - `findRendererAdapter`
+- `findRendererAdapterConflicts`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface
@@ -85,7 +86,9 @@ resolution or adapter selection policies. Duplicate adapter names currently
 resolve to the first matching adapter in registry order. Renderer adapter
 conflicts currently describe duplicate-name adapter groups without enforcing a
 resolution policy. Empty conflict adapter groups are supported as a valid
-contract state before Renderer defines conflict detection behavior.
+contract state before Renderer defines conflict detection behavior. Renderer
+adapter conflict detection now reports duplicate-name adapter groups from a
+registry without selecting, reordering or resolving those adapters.
 
 ---
 

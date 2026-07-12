@@ -36,6 +36,7 @@ import {
   createRendererTarget,
   executeRendererPipeline,
   findRendererAdapter,
+  findRendererAdapterConflicts,
 } from "../src";
 
 describe("renderer public API", () => {
@@ -53,6 +54,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
+    expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
   });
 
   it("exports the Renderer package type surface from the package root", () => {
@@ -780,6 +782,63 @@ describe("renderer public API", () => {
       name: "empty-conflict",
       adapters: [],
     });
+  });
+
+  it("finds Renderer adapter conflicts by duplicate names", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const unique = createRendererAdapter({
+      name: "unique-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([first, unique, second]);
+
+    const conflicts = findRendererAdapterConflicts(registry);
+
+    expect(conflicts).toEqual([{
+      name: "duplicate-adapter",
+      adapters: [first, second],
+    }]);
+  });
+
+  it("reports no Renderer adapter conflicts for unique names", () => {
+    const first = createRendererAdapter({
+      name: "first-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "second-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([first, second]);
+
+    expect(findRendererAdapterConflicts(registry)).toEqual([]);
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {
