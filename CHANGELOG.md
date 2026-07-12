@@ -79,6 +79,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer target contracts now describe target kind, name and optional identifier.
 * Renderer target review now covers optional identifiers and current target kinds.
 * Renderer mount contracts now describe output-to-target requests and mount results.
+* Renderer mount review now covers current mount result states.
 
 ### Fixed
 

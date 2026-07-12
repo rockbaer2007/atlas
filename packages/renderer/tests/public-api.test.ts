@@ -281,6 +281,49 @@ describe("renderer public API", () => {
     });
   });
 
+  it("creates Renderer mount results as immutable copies of the source shape", () => {
+    const result: RendererMountResult = {
+      mounted: true,
+      output: createRendererOutput({
+        kind: "document",
+        name: "mounted-dashboard",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "dashboard-surface",
+      }),
+    };
+
+    const created = createRendererMountResult(result);
+
+    expect(created).toEqual(result);
+    expect(created).not.toBe(result);
+  });
+
+  it("supports current Renderer mount result states", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "state-tile",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "state-buffer",
+    });
+
+    const pending = createRendererMountResult({
+      mounted: false,
+      output,
+      target,
+    });
+    const mounted = createRendererMountResult({
+      mounted: true,
+      output,
+      target,
+    });
+
+    expect([pending.mounted, mounted.mounted]).toEqual([false, true]);
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {
