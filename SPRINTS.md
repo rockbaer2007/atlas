@@ -51,23 +51,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.36 | Renderer Target Review | Completed | - |
 | G2.5.37 | Renderer Mounting Readiness | Completed | - |
 | G2.5.38 | Renderer Mounting Review | Completed | - |
-| G2.5.39 | Renderer Adapter Readiness | Planned | - |
+| G2.5.39 | Renderer Adapter Readiness | Completed | - |
+| G2.5.40 | Renderer Adapter Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.38 - Renderer Mounting Review
+## G2.5.39 - Renderer Adapter Readiness
 
 Goal:
 
-Review and protect Renderer mount contracts before adapter contracts.
+Define Renderer adapter contracts before concrete platform implementations.
 
 Deliverables:
 
-* Renderer mount package-root review
-* Renderer mount result state coverage
-* Renderer mount result copy coverage
+* Renderer adapter contract
+* Renderer adapter creation helper
+* Renderer adapter contract tests
 * Sprint documentation
 
 Status:
@@ -78,13 +79,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.39 - Renderer Adapter Readiness
+## G2.5.40 - Renderer Adapter Review
 
 Suggested focus:
 
-* Define Renderer adapter contract shape
-* Add Renderer adapter contract tests
-* Document adapter boundary before concrete platform implementations
+* Review Renderer adapter package-root exports
+* Add Renderer adapter naming coverage
+* Document adapter readiness before registration contracts
 
 ---
 
@@ -133,6 +134,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.36.md`
 * `docs/sprints/Sprint-G2.5.37.md`
 * `docs/sprints/Sprint-G2.5.38.md`
+* `docs/sprints/Sprint-G2.5.39.md`
 
 ---
 

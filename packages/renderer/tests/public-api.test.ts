@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 
 import type {
+  RendererAdapter,
+  RendererAdapterMountResult,
   RendererHostContext,
   RendererMountRequest,
   RendererMountResult,
@@ -17,6 +19,7 @@ import type {
 } from "../src";
 import * as Renderer from "../src";
 import {
+  createRendererAdapter,
   createRendererMountRequest,
   createRendererMountResult,
   createRendererOutput,
@@ -28,6 +31,7 @@ import {
 
 describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
+    expect(Renderer.createRendererAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
@@ -85,12 +89,19 @@ describe("renderer public API", () => {
       output,
       target,
     };
+    const adapterResult: RendererAdapterMountResult = mountResult;
+    const adapter: RendererAdapter = {
+      name: "type-adapter",
+      mount: () => adapterResult,
+    };
 
+    expect(adapter.name).toBe("type-adapter");
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
     expect(mountRequest.output.name).toBe("type-output");
     expect(mountResult.mounted).toBe(false);
+    expect(adapter.mount(mountRequest)).toBe(adapterResult);
     expect(pipeline[0]?.name).toBe("prepare");
     expect(execution.completed).toBe(true);
   });
@@ -322,6 +333,84 @@ describe("renderer public API", () => {
     });
 
     expect([pending.mounted, mounted.mounted]).toEqual([false, true]);
+  });
+
+  it("creates Renderer adapters without concrete platform implementations", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "adapter-tile",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "adapter-buffer",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+
+    const adapter = createRendererAdapter({
+      name: "memory-adapter",
+      mount: mountRequest => createRendererMountResult({
+        mounted: true,
+        output: mountRequest.output,
+        target: mountRequest.target,
+      }),
+    });
+
+    expect(adapter.name).toBe("memory-adapter");
+    expect(adapter.mount(request)).toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+  });
+
+  it("creates Renderer adapters as immutable copies of the source shape", () => {
+    const adapter: RendererAdapter = {
+      name: "copy-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    };
+
+    const created = createRendererAdapter(adapter);
+
+    expect(created).toEqual(adapter);
+    expect(created).not.toBe(adapter);
+  });
+
+  it("supports asynchronous Renderer adapter mount contracts", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "async-dashboard",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "async-surface",
+      }),
+    });
+    const adapter = createRendererAdapter({
+      name: "async-adapter",
+      async mount(mountRequest) {
+        await Promise.resolve();
+
+        return createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        });
+      },
+    });
+
+    await expect(adapter.mount(request)).resolves.toEqual({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {

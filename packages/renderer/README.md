@@ -23,6 +23,8 @@ descriptive only and do not mount output yet.
 `@atlas/renderer` exports:
 
 - `RendererHostContext`
+- `RendererAdapter`
+- `RendererAdapterMountResult`
 - `RendererMountRequest`
 - `RendererMountResult`
 - `RendererOutput`
@@ -33,6 +35,7 @@ descriptive only and do not mount output yet.
 - `RendererPipelineStageResult`
 - `RendererTarget`
 - `RendererTargetKind`
+- `createRendererAdapter`
 - `createRendererHostContext`
 - `createRendererMountRequest`
 - `createRendererMountResult`
@@ -56,7 +59,9 @@ the current target kinds are `memory` and `surface`. Renderer mount contracts
 currently describe output-to-target requests and mount results without platform
 adapters, DOM references, Home Assistant surfaces or side effects. Mount
 results currently report only whether the output is mounted, together with the
-output and target contract shapes.
+output and target contract shapes. Renderer adapters currently describe a named
+mount contract that can return a mount result synchronously or asynchronously.
+No adapter registry or concrete platform implementation is defined yet.
 
 ---
 
