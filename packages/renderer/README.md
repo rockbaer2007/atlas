@@ -30,6 +30,8 @@ descriptive only and do not mount output yet.
 - `RendererAdapterLookupResult`
 - `RendererAdapterMountResult`
 - `RendererAdapterRegistry`
+- `RendererAdapterSelectionRequest`
+- `RendererAdapterSelectionResult`
 - `RendererMountRequest`
 - `RendererMountResult`
 - `RendererOutput`
@@ -46,6 +48,8 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterLookupRequest`
 - `createRendererAdapterLookupResult`
 - `createRendererAdapterRegistry`
+- `createRendererAdapterSelectionRequest`
+- `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
 - `createRendererMountRequest`
 - `createRendererMountResult`
@@ -94,7 +98,9 @@ registry without selecting, reordering or resolving those adapters. Empty
 registries do not produce conflict reports. Renderer adapter conflict
 resolution contracts can describe unresolved conflicts or explicitly selected
 adapters, and resolution creation protects embedded conflict adapter lists from
-later source-array mutations. Renderer does not yet define selection policies.
+later source-array mutations. Renderer adapter selection contracts describe
+candidate adapter selection requests and selected or unselected results without
+automatic conflict policies.
 
 ---
 

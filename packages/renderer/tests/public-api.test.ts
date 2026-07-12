@@ -10,6 +10,8 @@ import type {
   RendererAdapterLookupResult,
   RendererAdapterMountResult,
   RendererAdapterRegistry,
+  RendererAdapterSelectionRequest,
+  RendererAdapterSelectionResult,
   RendererHostContext,
   RendererMountRequest,
   RendererMountResult,
@@ -30,6 +32,8 @@ import {
   createRendererAdapterLookupRequest,
   createRendererAdapterLookupResult,
   createRendererAdapterRegistry,
+  createRendererAdapterSelectionRequest,
+  createRendererAdapterSelectionResult,
   createRendererMountRequest,
   createRendererMountResult,
   createRendererOutput,
@@ -49,6 +53,8 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterRegistry).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterSelectionRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
@@ -124,6 +130,14 @@ describe("renderer public API", () => {
     const adapterRegistry: RendererAdapterRegistry = {
       adapters: [adapter],
     };
+    const adapterSelectionRequest: RendererAdapterSelectionRequest = {
+      name: adapter.name,
+      candidates: [adapter],
+    };
+    const adapterSelectionResult: RendererAdapterSelectionResult = {
+      name: adapter.name,
+      adapter,
+    };
     const adapterLookupRequest: RendererAdapterLookupRequest = {
       name: adapter.name,
     };
@@ -136,6 +150,8 @@ describe("renderer public API", () => {
     expect(adapterConflict.adapters[0]).toBe(adapter);
     expect(adapterConflictResolution.conflict).toBe(adapterConflict);
     expect(adapterRegistry.adapters[0]).toBe(adapter);
+    expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
+    expect(adapterSelectionResult.adapter).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);
     expect(adapterLookupResult.adapter).toBe(adapter);
     expect(context.runtime.application.name).toBe("renderer-type-api");
@@ -954,6 +970,94 @@ describe("renderer public API", () => {
     adapters.push(second);
 
     expect(resolution.conflict.adapters).toEqual([first]);
+  });
+
+  it("creates Renderer adapter selection requests", () => {
+    const first = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const selection = createRendererAdapterSelectionRequest({
+      name: "candidate-adapter",
+      candidates: [first, second],
+    });
+
+    expect(selection).toEqual({
+      name: "candidate-adapter",
+      candidates: [first, second],
+    });
+  });
+
+  it("keeps Renderer adapter selection requests independent from source arrays", () => {
+    const first = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const candidates = [first];
+
+    const selection = createRendererAdapterSelectionRequest({
+      name: "candidate-adapter",
+      candidates,
+    });
+    candidates.push(second);
+
+    expect(selection.candidates).toEqual([first]);
+  });
+
+  it("creates Renderer adapter selection results with selected adapters", () => {
+    const adapter = createRendererAdapter({
+      name: "selected-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const result = createRendererAdapterSelectionResult({
+      name: "selected-adapter",
+      adapter,
+    });
+
+    expect(result).toEqual({
+      name: "selected-adapter",
+      adapter,
+    });
+  });
+
+  it("creates Renderer adapter selection results without selected adapters", () => {
+    const result = createRendererAdapterSelectionResult({
+      name: "missing-selection",
+    });
+
+    expect(result).toEqual({
+      name: "missing-selection",
+    });
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {

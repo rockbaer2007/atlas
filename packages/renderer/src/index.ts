@@ -8,6 +8,7 @@ export * from "./RendererAdapter";
 export * from "./RendererAdapterConflict";
 export * from "./RendererAdapterLookup";
 export * from "./RendererAdapterRegistry";
+export * from "./RendererAdapterSelection";
 export * from "./RendererMount";
 export * from "./RendererOutput";
 export * from "./RendererPipeline";
