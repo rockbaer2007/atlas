@@ -47,7 +47,8 @@ pipelines complete successfully, and asynchronous stages are awaited before the
 next stage runs. Renderer output currently captures output kind, name and
 optional string content only. Output content is optional, and the current output
 kinds are `fragment` and `document`. Renderer targets currently capture target
-kind, name and optional identifier only.
+kind, name and optional identifier only. Target identifiers are optional, and
+the current target kinds are `memory` and `surface`.
 
 ---
 

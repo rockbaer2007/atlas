@@ -77,6 +77,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer output now records kind, name and optional string content without targets.
 * Renderer output review now covers optional content and current output kinds.
 * Renderer target contracts now describe target kind, name and optional identifier.
+* Renderer target review now covers optional identifiers and current target kinds.
 
 ### Fixed
 

@@ -175,6 +175,31 @@ describe("renderer public API", () => {
     expect(target).not.toBe(source);
   });
 
+  it("creates Renderer targets without optional identifiers", () => {
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "scratch",
+    });
+
+    expect(target).toEqual({
+      kind: "memory",
+      name: "scratch",
+    });
+  });
+
+  it("supports the current Renderer target kinds", () => {
+    const memory = createRendererTarget({
+      kind: "memory",
+      name: "preview-buffer",
+    });
+    const surface = createRendererTarget({
+      kind: "surface",
+      name: "dashboard-surface",
+    });
+
+    expect([memory.kind, surface.kind]).toEqual(["memory", "surface"]);
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {

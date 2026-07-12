@@ -48,23 +48,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.33 | Renderer Output Boundary | Completed | - |
 | G2.5.34 | Renderer Output Review | Completed | - |
 | G2.5.35 | Renderer Target Boundary | Completed | - |
-| G2.5.36 | Renderer Target Review | Planned | - |
+| G2.5.36 | Renderer Target Review | Completed | - |
+| G2.5.37 | Renderer Mounting Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.35 - Renderer Target Boundary
+## G2.5.36 - Renderer Target Review
 
 Goal:
 
-Define the first Renderer target contract shape before mounting behavior.
+Review and protect Renderer target contracts before mounting behavior.
 
 Deliverables:
 
-* Renderer target type contract
-* Renderer target creation helper
-* Renderer target contract tests
+* Renderer target package-root review
+* Renderer target kind coverage
+* Renderer target optional identifier coverage
 * Sprint documentation
 
 Status:
@@ -75,13 +76,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.36 - Renderer Target Review
+## G2.5.37 - Renderer Mounting Readiness
 
 Suggested focus:
 
-* Review Renderer target package-root exports
-* Add Renderer target kind coverage
-* Document Renderer target readiness before mounting contracts
+* Define Renderer mount request/result contract shape
+* Add Renderer mount contract tests
+* Document Renderer mounting boundary before platform adapters
 
 ---
 
@@ -127,6 +128,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.33.md`
 * `docs/sprints/Sprint-G2.5.34.md`
 * `docs/sprints/Sprint-G2.5.35.md`
+* `docs/sprints/Sprint-G2.5.36.md`
 
 ---
 

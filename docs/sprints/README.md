@@ -51,7 +51,8 @@ quality validation and the delivered results.
 | G2.5.33 | Renderer Output Boundary | Completed | - |
 | G2.5.34 | Renderer Output Review | Completed | - |
 | G2.5.35 | Renderer Target Boundary | Completed | - |
-| G2.5.36 | Renderer Target Review | Planned | - |
+| G2.5.36 | Renderer Target Review | Completed | - |
+| G2.5.37 | Renderer Mounting Readiness | Planned | - |
 
 ---
 
@@ -559,15 +560,28 @@ Highlights
 
 ---
 
+## G2.5.36 - Renderer Target Review
+
+Reviewed and protected Renderer target contracts before mounting behavior.
+
+Highlights
+
+- Reviewed Renderer target package-root exports
+- Covered Renderer targets without optional identifiers
+- Covered current target kinds
+- Documented Renderer target readiness before mounting contracts
+
+---
+
 # Planned Sprints
 
-## G2.5.36 - Renderer Target Review
+## G2.5.37 - Renderer Mounting Readiness
 
 Planned deliverables
 
-- Review Renderer target package-root exports
-- Add Renderer target kind coverage
-- Document Renderer target readiness before mounting contracts
+- Define Renderer mount request/result contract shape
+- Add Renderer mount contract tests
+- Document Renderer mounting boundary before platform adapters
 
 ---
 
