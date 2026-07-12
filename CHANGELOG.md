@@ -83,6 +83,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter contracts now describe named synchronous or asynchronous mount handlers.
 * Renderer adapter review now covers adapter names and mount request delivery.
 * Renderer adapter registries now capture ordered adapter lists before lookup behavior.
+* Renderer adapter registry review now covers empty registry contracts.
 
 ### Fixed
 

@@ -67,7 +67,8 @@ Adapter names are preserved for future registration, and adapter mount handlers
 receive Renderer mount request contracts directly. No adapter registry or
 concrete platform implementation is defined yet. Renderer adapter registries
 currently capture an ordered adapter list without lookup, conflict resolution or
-platform execution behavior.
+platform execution behavior. Empty adapter registries are supported as a valid
+contract state before adapter discovery is introduced.
 
 ---
 

@@ -529,6 +529,14 @@ describe("renderer public API", () => {
     expect(registry.adapters).toEqual([memory]);
   });
 
+  it("creates empty Renderer adapter registries", () => {
+    const registry = createRendererAdapterRegistry([]);
+
+    expect(registry).toEqual({
+      adapters: [],
+    });
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {

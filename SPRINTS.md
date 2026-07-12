@@ -54,23 +54,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.39 | Renderer Adapter Readiness | Completed | - |
 | G2.5.40 | Renderer Adapter Review | Completed | - |
 | G2.5.41 | Renderer Adapter Registry Readiness | Completed | - |
-| G2.5.42 | Renderer Adapter Registry Review | Planned | - |
+| G2.5.42 | Renderer Adapter Registry Review | Completed | - |
+| G2.5.43 | Renderer Adapter Lookup Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.41 - Renderer Adapter Registry Readiness
+## G2.5.42 - Renderer Adapter Registry Review
 
 Goal:
 
-Define Renderer adapter registry contracts before adapter lookup behavior.
+Review and protect Renderer adapter registry contracts before lookup behavior.
 
 Deliverables:
 
-* Renderer adapter registry contract
-* Renderer adapter registry creation helper
-* Renderer adapter registry contract tests
+* Renderer adapter registry package-root review
+* Renderer empty adapter registry coverage
+* Renderer adapter registry boundary documentation
 * Sprint documentation
 
 Status:
@@ -81,13 +82,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.42 - Renderer Adapter Registry Review
+## G2.5.43 - Renderer Adapter Lookup Readiness
 
 Suggested focus:
 
-* Review Renderer adapter registry package-root exports
-* Add empty registry coverage
-* Document registry readiness before adapter lookup behavior
+* Define Renderer adapter lookup contract shape
+* Add Renderer adapter lookup contract tests
+* Document lookup boundary before conflict resolution behavior
 
 ---
 
@@ -139,6 +140,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.39.md`
 * `docs/sprints/Sprint-G2.5.40.md`
 * `docs/sprints/Sprint-G2.5.41.md`
+* `docs/sprints/Sprint-G2.5.42.md`
 
 ---
 
