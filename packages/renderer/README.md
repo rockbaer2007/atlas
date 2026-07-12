@@ -74,7 +74,9 @@ currently capture an ordered adapter list without lookup, conflict resolution or
 platform execution behavior. Empty adapter registries are supported as a valid
 contract state before adapter discovery is introduced. Renderer adapter lookup
 contracts currently describe lookup requests and results without executing
-registry search, adapter selection or conflict resolution behavior.
+registry search, adapter selection or conflict resolution behavior. Lookup
+requests and results are stable contract shapes, and lookup results may describe
+matched or missing adapters.
 
 ---
 

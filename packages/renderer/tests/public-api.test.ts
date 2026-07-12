@@ -593,6 +593,37 @@ describe("renderer public API", () => {
     });
   });
 
+  it("creates Renderer adapter lookup requests as immutable copies of the source shape", () => {
+    const request: RendererAdapterLookupRequest = {
+      name: "memory-preview",
+    };
+
+    const created = createRendererAdapterLookupRequest(request);
+
+    expect(created).toEqual(request);
+    expect(created).not.toBe(request);
+  });
+
+  it("creates Renderer adapter lookup results as immutable copies of the source shape", () => {
+    const adapter = createRendererAdapter({
+      name: "memory-preview",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const result: RendererAdapterLookupResult = {
+      name: adapter.name,
+      adapter,
+    };
+
+    const created = createRendererAdapterLookupResult(result);
+
+    expect(created).toEqual(result);
+    expect(created).not.toBe(result);
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {
