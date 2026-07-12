@@ -96,6 +96,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter conflict resolution review now covers embedded conflict copy behavior.
 * Renderer adapter selection contracts now describe candidate selection requests and results.
 * Renderer adapter selection review now covers empty candidate requests.
+* Renderer adapter selection policy helper now selects the first candidate explicitly.
 
 ### Fixed
 

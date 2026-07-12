@@ -43,6 +43,7 @@ import {
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
+  selectFirstRendererAdapterCandidate,
 } from "../src";
 
 describe("renderer public API", () => {
@@ -64,6 +65,7 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
   });
 
   it("exports the Renderer package type surface from the package root", () => {
@@ -1066,6 +1068,50 @@ describe("renderer public API", () => {
     const result = createRendererAdapterSelectionResult({
       name: "missing-selection",
     });
+
+    expect(result).toEqual({
+      name: "missing-selection",
+    });
+  });
+
+  it("selects the first Renderer adapter candidate", () => {
+    const first = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const result = selectFirstRendererAdapterCandidate(
+      createRendererAdapterSelectionRequest({
+        name: "candidate-adapter",
+        candidates: [first, second],
+      }),
+    );
+
+    expect(result).toEqual({
+      name: "candidate-adapter",
+      adapter: first,
+    });
+  });
+
+  it("reports missing Renderer adapter selection when no candidates exist", () => {
+    const result = selectFirstRendererAdapterCandidate(
+      createRendererAdapterSelectionRequest({
+        name: "missing-selection",
+        candidates: [],
+      }),
+    );
 
     expect(result).toEqual({
       name: "missing-selection",

@@ -26,3 +26,14 @@ export function createRendererAdapterSelectionResult(
     ...result,
   };
 }
+
+export function selectFirstRendererAdapterCandidate(
+  request: RendererAdapterSelectionRequest,
+): RendererAdapterSelectionResult {
+  const adapter = request.candidates[0];
+
+  return createRendererAdapterSelectionResult({
+    name: request.name,
+    ...(adapter ? { adapter } : {}),
+  });
+}
