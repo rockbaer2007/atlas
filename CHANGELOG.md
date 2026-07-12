@@ -91,6 +91,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter conflict contracts now describe duplicate-name adapter groups.
 * Renderer adapter conflict review now covers empty conflict adapter groups.
 * Renderer adapter conflict detection now reports duplicate-name adapter groups.
+* Renderer adapter conflict detection review now covers empty registries.
 
 ### Fixed
 

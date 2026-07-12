@@ -88,7 +88,8 @@ conflicts currently describe duplicate-name adapter groups without enforcing a
 resolution policy. Empty conflict adapter groups are supported as a valid
 contract state before Renderer defines conflict detection behavior. Renderer
 adapter conflict detection now reports duplicate-name adapter groups from a
-registry without selecting, reordering or resolving those adapters.
+registry without selecting, reordering or resolving those adapters. Empty
+registries do not produce conflict reports.
 
 ---
 

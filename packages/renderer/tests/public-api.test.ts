@@ -841,6 +841,12 @@ describe("renderer public API", () => {
     expect(findRendererAdapterConflicts(registry)).toEqual([]);
   });
 
+  it("reports no Renderer adapter conflicts for empty registries", () => {
+    const registry = createRendererAdapterRegistry([]);
+
+    expect(findRendererAdapterConflicts(registry)).toEqual([]);
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {
