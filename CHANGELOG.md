@@ -84,6 +84,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter review now covers adapter names and mount request delivery.
 * Renderer adapter registries now capture ordered adapter lists before lookup behavior.
 * Renderer adapter registry review now covers empty registry contracts.
+* Renderer adapter lookup contracts now describe lookup requests and results before search behavior.
 
 ### Fixed
 

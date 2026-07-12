@@ -4,6 +4,8 @@ import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 
 import type {
   RendererAdapter,
+  RendererAdapterLookupRequest,
+  RendererAdapterLookupResult,
   RendererAdapterMountResult,
   RendererAdapterRegistry,
   RendererHostContext,
@@ -21,6 +23,8 @@ import type {
 import * as Renderer from "../src";
 import {
   createRendererAdapter,
+  createRendererAdapterLookupRequest,
+  createRendererAdapterLookupResult,
   createRendererAdapterRegistry,
   createRendererMountRequest,
   createRendererMountResult,
@@ -34,6 +38,8 @@ import {
 describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.createRendererAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterLookupRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
@@ -100,9 +106,18 @@ describe("renderer public API", () => {
     const adapterRegistry: RendererAdapterRegistry = {
       adapters: [adapter],
     };
+    const adapterLookupRequest: RendererAdapterLookupRequest = {
+      name: adapter.name,
+    };
+    const adapterLookupResult: RendererAdapterLookupResult = {
+      name: adapter.name,
+      adapter,
+    };
 
     expect(adapter.name).toBe("type-adapter");
     expect(adapterRegistry.adapters[0]).toBe(adapter);
+    expect(adapterLookupRequest.name).toBe(adapter.name);
+    expect(adapterLookupResult.adapter).toBe(adapter);
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
@@ -534,6 +549,47 @@ describe("renderer public API", () => {
 
     expect(registry).toEqual({
       adapters: [],
+    });
+  });
+
+  it("creates Renderer adapter lookup requests without performing lookup", () => {
+    const request = createRendererAdapterLookupRequest({
+      name: "memory-preview",
+    });
+
+    expect(request).toEqual({
+      name: "memory-preview",
+    });
+  });
+
+  it("creates Renderer adapter lookup results with matched adapters", () => {
+    const adapter = createRendererAdapter({
+      name: "memory-preview",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const result = createRendererAdapterLookupResult({
+      name: adapter.name,
+      adapter,
+    });
+
+    expect(result).toEqual({
+      name: "memory-preview",
+      adapter,
+    });
+  });
+
+  it("creates Renderer adapter lookup results without matched adapters", () => {
+    const result = createRendererAdapterLookupResult({
+      name: "missing-adapter",
+    });
+
+    expect(result).toEqual({
+      name: "missing-adapter",
     });
   });
 

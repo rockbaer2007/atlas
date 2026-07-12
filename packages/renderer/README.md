@@ -24,6 +24,8 @@ descriptive only and do not mount output yet.
 
 - `RendererHostContext`
 - `RendererAdapter`
+- `RendererAdapterLookupRequest`
+- `RendererAdapterLookupResult`
 - `RendererAdapterMountResult`
 - `RendererAdapterRegistry`
 - `RendererMountRequest`
@@ -37,6 +39,8 @@ descriptive only and do not mount output yet.
 - `RendererTarget`
 - `RendererTargetKind`
 - `createRendererAdapter`
+- `createRendererAdapterLookupRequest`
+- `createRendererAdapterLookupResult`
 - `createRendererAdapterRegistry`
 - `createRendererHostContext`
 - `createRendererMountRequest`
@@ -68,7 +72,9 @@ receive Renderer mount request contracts directly. No adapter registry or
 concrete platform implementation is defined yet. Renderer adapter registries
 currently capture an ordered adapter list without lookup, conflict resolution or
 platform execution behavior. Empty adapter registries are supported as a valid
-contract state before adapter discovery is introduced.
+contract state before adapter discovery is introduced. Renderer adapter lookup
+contracts currently describe lookup requests and results without executing
+registry search, adapter selection or conflict resolution behavior.
 
 ---
 
