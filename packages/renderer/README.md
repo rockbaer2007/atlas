@@ -93,7 +93,8 @@ adapter conflict detection now reports duplicate-name adapter groups from a
 registry without selecting, reordering or resolving those adapters. Empty
 registries do not produce conflict reports. Renderer adapter conflict
 resolution contracts can describe unresolved conflicts or explicitly selected
-adapters, but Renderer does not yet define selection policies.
+adapters, and resolution creation protects embedded conflict adapter lists from
+later source-array mutations. Renderer does not yet define selection policies.
 
 ---
 
