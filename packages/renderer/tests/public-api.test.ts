@@ -5,6 +5,7 @@ import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 import type {
   RendererAdapter,
   RendererAdapterMountResult,
+  RendererAdapterRegistry,
   RendererHostContext,
   RendererMountRequest,
   RendererMountResult,
@@ -20,6 +21,7 @@ import type {
 import * as Renderer from "../src";
 import {
   createRendererAdapter,
+  createRendererAdapterRegistry,
   createRendererMountRequest,
   createRendererMountResult,
   createRendererOutput,
@@ -32,6 +34,7 @@ import {
 describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.createRendererAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
@@ -94,8 +97,12 @@ describe("renderer public API", () => {
       name: "type-adapter",
       mount: () => adapterResult,
     };
+    const adapterRegistry: RendererAdapterRegistry = {
+      adapters: [adapter],
+    };
 
     expect(adapter.name).toBe("type-adapter");
+    expect(adapterRegistry.adapters[0]).toBe(adapter);
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
@@ -472,6 +479,54 @@ describe("renderer public API", () => {
       output: request.output,
       target: request.target,
     });
+  });
+
+  it("creates Renderer adapter registries without lookup behavior", () => {
+    const memory = createRendererAdapter({
+      name: "memory-preview",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const surface = createRendererAdapter({
+      name: "surface-dashboard",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const registry = createRendererAdapterRegistry([memory, surface]);
+
+    expect(registry.adapters).toEqual([memory, surface]);
+  });
+
+  it("keeps Renderer adapter registries independent from source arrays", () => {
+    const memory = createRendererAdapter({
+      name: "memory-preview",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const surface = createRendererAdapter({
+      name: "surface-dashboard",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const adapters = [memory];
+
+    const registry = createRendererAdapterRegistry(adapters);
+    adapters.push(surface);
+
+    expect(registry.adapters).toEqual([memory]);
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {

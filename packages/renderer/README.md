@@ -25,6 +25,7 @@ descriptive only and do not mount output yet.
 - `RendererHostContext`
 - `RendererAdapter`
 - `RendererAdapterMountResult`
+- `RendererAdapterRegistry`
 - `RendererMountRequest`
 - `RendererMountResult`
 - `RendererOutput`
@@ -36,6 +37,7 @@ descriptive only and do not mount output yet.
 - `RendererTarget`
 - `RendererTargetKind`
 - `createRendererAdapter`
+- `createRendererAdapterRegistry`
 - `createRendererHostContext`
 - `createRendererMountRequest`
 - `createRendererMountResult`
@@ -63,7 +65,9 @@ output and target contract shapes. Renderer adapters currently describe a named
 mount contract that can return a mount result synchronously or asynchronously.
 Adapter names are preserved for future registration, and adapter mount handlers
 receive Renderer mount request contracts directly. No adapter registry or
-concrete platform implementation is defined yet.
+concrete platform implementation is defined yet. Renderer adapter registries
+currently capture an ordered adapter list without lookup, conflict resolution or
+platform execution behavior.
 
 ---
 
