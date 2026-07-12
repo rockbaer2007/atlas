@@ -770,6 +770,18 @@ describe("renderer public API", () => {
     expect(conflict.adapters).toEqual([first]);
   });
 
+  it("creates Renderer adapter conflicts without adapters", () => {
+    const conflict = createRendererAdapterConflict({
+      name: "empty-conflict",
+      adapters: [],
+    });
+
+    expect(conflict).toEqual({
+      name: "empty-conflict",
+      adapters: [],
+    });
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {

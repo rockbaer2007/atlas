@@ -84,7 +84,8 @@ the first adapter with a matching name and reports misses without conflict
 resolution or adapter selection policies. Duplicate adapter names currently
 resolve to the first matching adapter in registry order. Renderer adapter
 conflicts currently describe duplicate-name adapter groups without enforcing a
-resolution policy.
+resolution policy. Empty conflict adapter groups are supported as a valid
+contract state before Renderer defines conflict detection behavior.
 
 ---
 

@@ -89,6 +89,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter registry search now finds adapters by name and reports misses.
 * Renderer adapter registry search review now covers first-match behavior.
 * Renderer adapter conflict contracts now describe duplicate-name adapter groups.
+* Renderer adapter conflict review now covers empty conflict adapter groups.
 
 ### Fixed
 
