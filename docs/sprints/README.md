@@ -61,7 +61,8 @@ quality validation and the delivered results.
 | G2.5.43 | Renderer Adapter Lookup Readiness | Completed | - |
 | G2.5.44 | Renderer Adapter Lookup Review | Completed | - |
 | G2.5.45 | Renderer Adapter Registry Search Readiness | Completed | - |
-| G2.5.46 | Renderer Adapter Registry Search Review | Planned | - |
+| G2.5.46 | Renderer Adapter Registry Search Review | Completed | - |
+| G2.5.47 | Renderer Adapter Conflict Readiness | Planned | - |
 
 ---
 
@@ -709,15 +710,28 @@ Highlights
 
 ---
 
+## G2.5.46 - Renderer Adapter Registry Search Review
+
+Reviewed and protected Renderer adapter registry search before conflict
+handling.
+
+Highlights
+
+- Reviewed Renderer adapter registry search package-root exports
+- Covered first-match search behavior
+- Documented search readiness before conflict contracts
+
+---
+
 # Planned Sprints
 
-## G2.5.46 - Renderer Adapter Registry Search Review
+## G2.5.47 - Renderer Adapter Conflict Readiness
 
 Planned deliverables
 
-- Review Renderer adapter registry search package-root exports
-- Add first-match search coverage
-- Document search readiness before conflict resolution behavior
+- Define Renderer adapter conflict contract shape
+- Add duplicate adapter conflict contract tests
+- Document conflict boundary before policy behavior
 
 ---
 

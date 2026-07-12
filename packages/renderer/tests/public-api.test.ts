@@ -673,6 +673,38 @@ describe("renderer public API", () => {
     });
   });
 
+  it("returns the first matching Renderer adapter from registries", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([first, second]);
+
+    const result = findRendererAdapter(
+      registry,
+      createRendererAdapterLookupRequest({
+        name: "duplicate-adapter",
+      }),
+    );
+
+    expect(result).toEqual({
+      name: "duplicate-adapter",
+      adapter: first,
+    });
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {

@@ -58,23 +58,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.43 | Renderer Adapter Lookup Readiness | Completed | - |
 | G2.5.44 | Renderer Adapter Lookup Review | Completed | - |
 | G2.5.45 | Renderer Adapter Registry Search Readiness | Completed | - |
-| G2.5.46 | Renderer Adapter Registry Search Review | Planned | - |
+| G2.5.46 | Renderer Adapter Registry Search Review | Completed | - |
+| G2.5.47 | Renderer Adapter Conflict Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.45 - Renderer Adapter Registry Search Readiness
+## G2.5.46 - Renderer Adapter Registry Search Review
 
 Goal:
 
-Define Renderer adapter registry search before conflict resolution behavior.
+Review and protect Renderer adapter registry search before conflict handling.
 
 Deliverables:
 
-* Renderer adapter registry search helper
-* Renderer adapter search hit coverage
-* Renderer adapter search miss coverage
+* Renderer adapter registry search package-root review
+* Renderer adapter first-match search coverage
+* Renderer adapter search boundary documentation
 * Sprint documentation
 
 Status:
@@ -85,13 +86,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.46 - Renderer Adapter Registry Search Review
+## G2.5.47 - Renderer Adapter Conflict Readiness
 
 Suggested focus:
 
-* Review Renderer adapter registry search package-root exports
-* Add first-match search coverage
-* Document search readiness before conflict resolution behavior
+* Define Renderer adapter conflict contract shape
+* Add duplicate adapter conflict contract tests
+* Document conflict boundary before policy behavior
 
 ---
 
@@ -147,6 +148,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.43.md`
 * `docs/sprints/Sprint-G2.5.44.md`
 * `docs/sprints/Sprint-G2.5.45.md`
+* `docs/sprints/Sprint-G2.5.46.md`
 
 ---
 

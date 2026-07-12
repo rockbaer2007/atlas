@@ -87,6 +87,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter lookup contracts now describe lookup requests and results before search behavior.
 * Renderer adapter lookup review now covers stable lookup request and result shapes.
 * Renderer adapter registry search now finds adapters by name and reports misses.
+* Renderer adapter registry search review now covers first-match behavior.
 
 ### Fixed
 
