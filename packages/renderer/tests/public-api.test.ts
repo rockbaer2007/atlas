@@ -4,6 +4,8 @@ import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 
 import type {
   RendererHostContext,
+  RendererMountRequest,
+  RendererMountResult,
   RendererOutput,
   RendererOutputKind,
   RendererPipeline,
@@ -15,6 +17,8 @@ import type {
 } from "../src";
 import * as Renderer from "../src";
 import {
+  createRendererMountRequest,
+  createRendererMountResult,
   createRendererOutput,
   createRendererHostContext,
   createRendererPipeline,
@@ -25,6 +29,8 @@ import {
 describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
+    expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
@@ -70,10 +76,21 @@ describe("renderer public API", () => {
       kind: targetKind,
       name: "type-target",
     };
+    const mountRequest: RendererMountRequest = {
+      output,
+      target,
+    };
+    const mountResult: RendererMountResult = {
+      mounted: false,
+      output,
+      target,
+    };
 
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
+    expect(mountRequest.output.name).toBe("type-output");
+    expect(mountResult.mounted).toBe(false);
     expect(pipeline[0]?.name).toBe("prepare");
     expect(execution.completed).toBe(true);
   });
@@ -198,6 +215,70 @@ describe("renderer public API", () => {
     });
 
     expect([memory.kind, surface.kind]).toEqual(["memory", "surface"]);
+  });
+
+  it("creates Renderer mount requests without mounting output", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "status-card",
+      content: "online",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "preview",
+    });
+
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+
+    expect(request).toEqual({
+      output,
+      target,
+    });
+  });
+
+  it("creates Renderer mount requests as immutable copies of the source shape", () => {
+    const request: RendererMountRequest = {
+      output: createRendererOutput({
+        kind: "document",
+        name: "dashboard",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "dashboard-surface",
+        identifier: "dashboard-root",
+      }),
+    };
+
+    const created = createRendererMountRequest(request);
+
+    expect(created).toEqual(request);
+    expect(created).not.toBe(request);
+  });
+
+  it("creates Renderer mount results without platform adapters", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "tile",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "wall-panel",
+    });
+
+    const result = createRendererMountResult({
+      mounted: false,
+      output,
+      target,
+    });
+
+    expect(result).toEqual({
+      mounted: false,
+      output,
+      target,
+    });
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {

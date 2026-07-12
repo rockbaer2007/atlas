@@ -23,6 +23,8 @@ descriptive only and do not mount output yet.
 `@atlas/renderer` exports:
 
 - `RendererHostContext`
+- `RendererMountRequest`
+- `RendererMountResult`
 - `RendererOutput`
 - `RendererOutputKind`
 - `RendererPipeline`
@@ -32,6 +34,8 @@ descriptive only and do not mount output yet.
 - `RendererTarget`
 - `RendererTargetKind`
 - `createRendererHostContext`
+- `createRendererMountRequest`
+- `createRendererMountResult`
 - `createRendererOutput`
 - `createRendererPipeline`
 - `createRendererTarget`
@@ -48,7 +52,9 @@ next stage runs. Renderer output currently captures output kind, name and
 optional string content only. Output content is optional, and the current output
 kinds are `fragment` and `document`. Renderer targets currently capture target
 kind, name and optional identifier only. Target identifiers are optional, and
-the current target kinds are `memory` and `surface`.
+the current target kinds are `memory` and `surface`. Renderer mount contracts
+currently describe output-to-target requests and mount results without platform
+adapters, DOM references, Home Assistant surfaces or side effects.
 
 ---
 

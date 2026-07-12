@@ -4,6 +4,7 @@
  */
 
 export * from "./RendererHostContext";
+export * from "./RendererMount";
 export * from "./RendererOutput";
 export * from "./RendererPipeline";
 export * from "./RendererTarget";

@@ -52,7 +52,8 @@ quality validation and the delivered results.
 | G2.5.34 | Renderer Output Review | Completed | - |
 | G2.5.35 | Renderer Target Boundary | Completed | - |
 | G2.5.36 | Renderer Target Review | Completed | - |
-| G2.5.37 | Renderer Mounting Readiness | Planned | - |
+| G2.5.37 | Renderer Mounting Readiness | Completed | - |
+| G2.5.38 | Renderer Mounting Review | Planned | - |
 
 ---
 
@@ -573,15 +574,30 @@ Highlights
 
 ---
 
+## G2.5.37 - Renderer Mounting Readiness
+
+Defined Renderer mount request and result contracts before platform adapters.
+
+Highlights
+
+- Added `RendererMountRequest`
+- Added `RendererMountResult`
+- Added `createRendererMountRequest`
+- Added `createRendererMountResult`
+- Covered output-to-target mount contract creation
+- Documented that mount contracts do not yet perform platform mounting
+
+---
+
 # Planned Sprints
 
-## G2.5.37 - Renderer Mounting Readiness
+## G2.5.38 - Renderer Mounting Review
 
 Planned deliverables
 
-- Define Renderer mount request/result contract shape
-- Add Renderer mount contract tests
-- Document Renderer mounting boundary before platform adapters
+- Review Renderer mount package-root exports
+- Add Renderer mount result state coverage
+- Document Renderer mounting readiness before adapter contracts
 
 ---
 
