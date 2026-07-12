@@ -61,7 +61,9 @@ adapters, DOM references, Home Assistant surfaces or side effects. Mount
 results currently report only whether the output is mounted, together with the
 output and target contract shapes. Renderer adapters currently describe a named
 mount contract that can return a mount result synchronously or asynchronously.
-No adapter registry or concrete platform implementation is defined yet.
+Adapter names are preserved for future registration, and adapter mount handlers
+receive Renderer mount request contracts directly. No adapter registry or
+concrete platform implementation is defined yet.
 
 ---
 

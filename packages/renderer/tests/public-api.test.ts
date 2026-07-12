@@ -413,6 +413,67 @@ describe("renderer public API", () => {
     });
   });
 
+  it("preserves Renderer adapter names for future registration", () => {
+    const adapters = [
+      createRendererAdapter({
+        name: "memory-preview",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      createRendererAdapter({
+        name: "surface-dashboard",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+    ];
+
+    expect(adapters.map(adapter => adapter.name)).toEqual([
+      "memory-preview",
+      "surface-dashboard",
+    ]);
+  });
+
+  it("passes Renderer mount requests to adapter mount handlers", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "handler-tile",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "handler-buffer",
+      }),
+    });
+    let receivedRequest: RendererMountRequest | undefined;
+    const adapter = createRendererAdapter({
+      name: "handler-adapter",
+      mount(mountRequest) {
+        receivedRequest = mountRequest;
+
+        return createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        });
+      },
+    });
+
+    const result = adapter.mount(request);
+
+    expect(receivedRequest).toBe(request);
+    expect(result).toEqual({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
+  });
+
   it("creates a Renderer pipeline from ordered stages", async () => {
     const runtime = createCoreRuntimeHost({
       application: {

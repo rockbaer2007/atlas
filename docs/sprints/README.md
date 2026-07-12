@@ -55,7 +55,8 @@ quality validation and the delivered results.
 | G2.5.37 | Renderer Mounting Readiness | Completed | - |
 | G2.5.38 | Renderer Mounting Review | Completed | - |
 | G2.5.39 | Renderer Adapter Readiness | Completed | - |
-| G2.5.40 | Renderer Adapter Review | Planned | - |
+| G2.5.40 | Renderer Adapter Review | Completed | - |
+| G2.5.41 | Renderer Adapter Registry Readiness | Planned | - |
 
 ---
 
@@ -619,15 +620,29 @@ Highlights
 
 ---
 
+## G2.5.40 - Renderer Adapter Review
+
+Reviewed and protected Renderer adapter contracts before registration
+contracts.
+
+Highlights
+
+- Reviewed Renderer adapter package-root exports
+- Covered Renderer adapter name preservation
+- Covered mount request delivery into adapter handlers
+- Documented adapter readiness before registry contracts
+
+---
+
 # Planned Sprints
 
-## G2.5.40 - Renderer Adapter Review
+## G2.5.41 - Renderer Adapter Registry Readiness
 
 Planned deliverables
 
-- Review Renderer adapter package-root exports
-- Add Renderer adapter naming coverage
-- Document adapter readiness before registration contracts
+- Define Renderer adapter registry contract shape
+- Add Renderer adapter registration tests
+- Document registry boundary before adapter lookup behavior
 
 ---
 
