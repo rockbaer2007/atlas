@@ -5,6 +5,7 @@
 
 export * from "./RendererHostContext";
 export * from "./RendererAdapter";
+export * from "./RendererAdapterConflict";
 export * from "./RendererAdapterLookup";
 export * from "./RendererAdapterRegistry";
 export * from "./RendererMount";

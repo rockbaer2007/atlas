@@ -4,6 +4,7 @@ import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 
 import type {
   RendererAdapter,
+  RendererAdapterConflict,
   RendererAdapterLookupRequest,
   RendererAdapterLookupResult,
   RendererAdapterMountResult,
@@ -23,6 +24,7 @@ import type {
 import * as Renderer from "../src";
 import {
   createRendererAdapter,
+  createRendererAdapterConflict,
   createRendererAdapterLookupRequest,
   createRendererAdapterLookupResult,
   createRendererAdapterRegistry,
@@ -39,6 +41,7 @@ import {
 describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.createRendererAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterConflict).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterRegistry).toBeTypeOf("function");
@@ -105,6 +108,10 @@ describe("renderer public API", () => {
       name: "type-adapter",
       mount: () => adapterResult,
     };
+    const adapterConflict: RendererAdapterConflict = {
+      name: adapter.name,
+      adapters: [adapter],
+    };
     const adapterRegistry: RendererAdapterRegistry = {
       adapters: [adapter],
     };
@@ -117,6 +124,7 @@ describe("renderer public API", () => {
     };
 
     expect(adapter.name).toBe("type-adapter");
+    expect(adapterConflict.adapters[0]).toBe(adapter);
     expect(adapterRegistry.adapters[0]).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);
     expect(adapterLookupResult.adapter).toBe(adapter);
@@ -703,6 +711,63 @@ describe("renderer public API", () => {
       name: "duplicate-adapter",
       adapter: first,
     });
+  });
+
+  it("creates Renderer adapter conflicts for duplicate adapter names", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const conflict = createRendererAdapterConflict({
+      name: "duplicate-adapter",
+      adapters: [first, second],
+    });
+
+    expect(conflict).toEqual({
+      name: "duplicate-adapter",
+      adapters: [first, second],
+    });
+  });
+
+  it("keeps Renderer adapter conflicts independent from source arrays", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const adapters = [first];
+
+    const conflict = createRendererAdapterConflict({
+      name: "duplicate-adapter",
+      adapters,
+    });
+    adapters.push(second);
+
+    expect(conflict.adapters).toEqual([first]);
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {

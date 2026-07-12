@@ -24,6 +24,7 @@ descriptive only and do not mount output yet.
 
 - `RendererHostContext`
 - `RendererAdapter`
+- `RendererAdapterConflict`
 - `RendererAdapterLookupRequest`
 - `RendererAdapterLookupResult`
 - `RendererAdapterMountResult`
@@ -39,6 +40,7 @@ descriptive only and do not mount output yet.
 - `RendererTarget`
 - `RendererTargetKind`
 - `createRendererAdapter`
+- `createRendererAdapterConflict`
 - `createRendererAdapterLookupRequest`
 - `createRendererAdapterLookupResult`
 - `createRendererAdapterRegistry`
@@ -80,7 +82,9 @@ requests and results are stable contract shapes, and lookup results may describe
 matched or missing adapters. Renderer adapter registry search currently finds
 the first adapter with a matching name and reports misses without conflict
 resolution or adapter selection policies. Duplicate adapter names currently
-resolve to the first matching adapter in registry order.
+resolve to the first matching adapter in registry order. Renderer adapter
+conflicts currently describe duplicate-name adapter groups without enforcing a
+resolution policy.
 
 ---
 
