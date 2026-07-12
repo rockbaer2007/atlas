@@ -105,7 +105,8 @@ automatic conflict policies. Empty selection candidate lists are supported as a
 valid request state before policy helpers exist. Renderer now includes an
 explicit first-candidate selection helper that selects the first available
 candidate or reports an unselected result without resolving conflicts
-automatically.
+automatically. First-candidate selection preserves candidate request order and
+remains disconnected from conflict integration.
 
 ---
 

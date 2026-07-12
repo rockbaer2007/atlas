@@ -1105,6 +1105,37 @@ describe("renderer public API", () => {
     });
   });
 
+  it("preserves Renderer adapter candidate order during first-candidate selection", () => {
+    const first = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "candidate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const result = selectFirstRendererAdapterCandidate(
+      createRendererAdapterSelectionRequest({
+        name: "candidate-adapter",
+        candidates: [second, first],
+      }),
+    );
+
+    expect(result).toEqual({
+      name: "candidate-adapter",
+      adapter: second,
+    });
+  });
+
   it("reports missing Renderer adapter selection when no candidates exist", () => {
     const result = selectFirstRendererAdapterCandidate(
       createRendererAdapterSelectionRequest({
