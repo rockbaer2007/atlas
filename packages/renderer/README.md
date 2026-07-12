@@ -25,6 +25,7 @@ descriptive only and do not mount output yet.
 - `RendererHostContext`
 - `RendererAdapter`
 - `RendererAdapterConflict`
+- `RendererAdapterConflictResolution`
 - `RendererAdapterLookupRequest`
 - `RendererAdapterLookupResult`
 - `RendererAdapterMountResult`
@@ -41,6 +42,7 @@ descriptive only and do not mount output yet.
 - `RendererTargetKind`
 - `createRendererAdapter`
 - `createRendererAdapterConflict`
+- `createRendererAdapterConflictResolution`
 - `createRendererAdapterLookupRequest`
 - `createRendererAdapterLookupResult`
 - `createRendererAdapterRegistry`
@@ -89,7 +91,9 @@ resolution policy. Empty conflict adapter groups are supported as a valid
 contract state before Renderer defines conflict detection behavior. Renderer
 adapter conflict detection now reports duplicate-name adapter groups from a
 registry without selecting, reordering or resolving those adapters. Empty
-registries do not produce conflict reports.
+registries do not produce conflict reports. Renderer adapter conflict
+resolution contracts can describe unresolved conflicts or explicitly selected
+adapters, but Renderer does not yet define selection policies.
 
 ---
 

@@ -6,12 +6,27 @@ export type RendererAdapterConflict = Readonly<{
   adapters: readonly RendererAdapter[];
 }>;
 
+export type RendererAdapterConflictResolution = Readonly<{
+  conflict: RendererAdapterConflict;
+  resolved: boolean;
+  adapter?: RendererAdapter;
+}>;
+
 export function createRendererAdapterConflict(
   conflict: RendererAdapterConflict,
 ): RendererAdapterConflict {
   return {
     ...conflict,
     adapters: [...conflict.adapters],
+  };
+}
+
+export function createRendererAdapterConflictResolution(
+  resolution: RendererAdapterConflictResolution,
+): RendererAdapterConflictResolution {
+  return {
+    ...resolution,
+    conflict: createRendererAdapterConflict(resolution.conflict),
   };
 }
 

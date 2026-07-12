@@ -63,23 +63,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.48 | Renderer Adapter Conflict Review | Completed | - |
 | G2.5.49 | Renderer Adapter Conflict Detection Readiness | Completed | - |
 | G2.5.50 | Renderer Adapter Conflict Detection Review | Completed | - |
-| G2.5.51 | Renderer Adapter Conflict Resolution Readiness | Planned | - |
+| G2.5.51 | Renderer Adapter Conflict Resolution Readiness | Completed | - |
+| G2.5.52 | Renderer Adapter Conflict Resolution Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.50 - Renderer Adapter Conflict Detection Review
+## G2.5.51 - Renderer Adapter Conflict Resolution Readiness
 
 Goal:
 
-Review and protect Renderer adapter conflict detection before resolution behavior.
+Define Renderer adapter conflict resolution result contracts before selection policies.
 
 Deliverables:
 
-* Renderer adapter conflict detection package-root review
-* Renderer empty registry conflict detection coverage
-* Renderer adapter conflict detection boundary documentation
+* Renderer adapter conflict resolution result contract
+* Renderer unresolved conflict resolution coverage
+* Renderer explicit adapter resolution coverage
 * Sprint documentation
 
 Status:
@@ -90,13 +91,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.51 - Renderer Adapter Conflict Resolution Readiness
+## G2.5.52 - Renderer Adapter Conflict Resolution Review
 
 Suggested focus:
 
-* Define Renderer adapter conflict resolution result contracts
-* Add unresolved conflict resolution coverage
-* Document resolution boundary before selection policies
+* Review Renderer adapter conflict resolution package-root exports
+* Add conflict resolution copy behavior coverage
+* Document resolution readiness before selection policies
 
 ---
 
@@ -157,6 +158,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.48.md`
 * `docs/sprints/Sprint-G2.5.49.md`
 * `docs/sprints/Sprint-G2.5.50.md`
+* `docs/sprints/Sprint-G2.5.51.md`
 
 ---
 

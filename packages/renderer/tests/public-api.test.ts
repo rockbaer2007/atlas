@@ -5,6 +5,7 @@ import { createCoreRuntimeHost, type CoreRuntimeHost } from "@atlas/core";
 import type {
   RendererAdapter,
   RendererAdapterConflict,
+  RendererAdapterConflictResolution,
   RendererAdapterLookupRequest,
   RendererAdapterLookupResult,
   RendererAdapterMountResult,
@@ -25,6 +26,7 @@ import * as Renderer from "../src";
 import {
   createRendererAdapter,
   createRendererAdapterConflict,
+  createRendererAdapterConflictResolution,
   createRendererAdapterLookupRequest,
   createRendererAdapterLookupResult,
   createRendererAdapterRegistry,
@@ -43,6 +45,7 @@ describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.createRendererAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterConflict).toBeTypeOf("function");
+    expect(Renderer.createRendererAdapterConflictResolution).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterRegistry).toBeTypeOf("function");
@@ -114,6 +117,10 @@ describe("renderer public API", () => {
       name: adapter.name,
       adapters: [adapter],
     };
+    const adapterConflictResolution: RendererAdapterConflictResolution = {
+      conflict: adapterConflict,
+      resolved: false,
+    };
     const adapterRegistry: RendererAdapterRegistry = {
       adapters: [adapter],
     };
@@ -127,6 +134,7 @@ describe("renderer public API", () => {
 
     expect(adapter.name).toBe("type-adapter");
     expect(adapterConflict.adapters[0]).toBe(adapter);
+    expect(adapterConflictResolution.conflict).toBe(adapterConflict);
     expect(adapterRegistry.adapters[0]).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);
     expect(adapterLookupResult.adapter).toBe(adapter);
@@ -845,6 +853,75 @@ describe("renderer public API", () => {
     const registry = createRendererAdapterRegistry([]);
 
     expect(findRendererAdapterConflicts(registry)).toEqual([]);
+  });
+
+  it("creates unresolved Renderer adapter conflict resolutions", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "duplicate-adapter",
+      adapters: [first, second],
+    });
+
+    const resolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: false,
+    });
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: false,
+    });
+    expect(resolution.conflict).not.toBe(conflict);
+  });
+
+  it("creates Renderer adapter conflict resolutions with explicit adapters", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "duplicate-adapter",
+      adapters: [first, second],
+    });
+
+    const resolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      adapter: second,
+    });
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: true,
+      adapter: second,
+    });
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {
