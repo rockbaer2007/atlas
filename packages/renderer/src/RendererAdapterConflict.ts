@@ -1,5 +1,9 @@
 import type { RendererAdapter } from "./RendererAdapter";
 import type { RendererAdapterRegistry } from "./RendererAdapterRegistry";
+import {
+  createRendererAdapterSelectionRequest,
+  selectFirstRendererAdapterCandidate,
+} from "./RendererAdapterSelection";
 
 export type RendererAdapterConflict = Readonly<{
   name: string;
@@ -47,4 +51,21 @@ export function findRendererAdapterConflicts(
       name,
       adapters,
     }));
+}
+
+export function resolveRendererAdapterConflictWithFirstCandidate(
+  conflict: RendererAdapterConflict,
+): RendererAdapterConflictResolution {
+  const selection = selectFirstRendererAdapterCandidate(
+    createRendererAdapterSelectionRequest({
+      name: conflict.name,
+      candidates: conflict.adapters,
+    }),
+  );
+
+  return createRendererAdapterConflictResolution({
+    conflict,
+    resolved: Boolean(selection.adapter),
+    ...(selection.adapter ? { adapter: selection.adapter } : {}),
+  });
 }

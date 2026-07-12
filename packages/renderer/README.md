@@ -59,6 +59,7 @@ descriptive only and do not mount output yet.
 - `executeRendererPipeline`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `resolveRendererAdapterConflictWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
@@ -106,7 +107,10 @@ valid request state before policy helpers exist. Renderer now includes an
 explicit first-candidate selection helper that selects the first available
 candidate or reports an unselected result without resolving conflicts
 automatically. First-candidate selection preserves candidate request order and
-remains disconnected from conflict integration.
+remains disconnected from conflict integration. Renderer adapter conflicts can
+now be resolved through first-candidate selection, while registry lookup,
+platform mounting, Home Assistant cards, device targets and theme resolution
+remain outside this integration boundary.
 
 ---
 

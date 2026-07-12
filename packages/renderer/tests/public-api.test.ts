@@ -43,6 +43,7 @@ import {
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
+  resolveRendererAdapterConflictWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
 } from "../src";
 
@@ -65,6 +66,7 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
   });
 
@@ -972,6 +974,52 @@ describe("renderer public API", () => {
     adapters.push(second);
 
     expect(resolution.conflict.adapters).toEqual([first]);
+  });
+
+  it("resolves Renderer adapter conflicts with first-candidate selection", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "duplicate-adapter",
+      adapters: [first, second],
+    });
+
+    const resolution = resolveRendererAdapterConflictWithFirstCandidate(conflict);
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: true,
+      adapter: first,
+    });
+    expect(resolution.conflict).not.toBe(conflict);
+  });
+
+  it("keeps Renderer adapter conflicts unresolved when first-candidate selection is empty", () => {
+    const conflict = createRendererAdapterConflict({
+      name: "empty-conflict",
+      adapters: [],
+    });
+
+    const resolution = resolveRendererAdapterConflictWithFirstCandidate(conflict);
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: false,
+    });
   });
 
   it("creates Renderer adapter selection requests", () => {
