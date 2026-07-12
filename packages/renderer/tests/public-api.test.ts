@@ -1029,6 +1029,18 @@ describe("renderer public API", () => {
     expect(selection.candidates).toEqual([first]);
   });
 
+  it("creates Renderer adapter selection requests without candidates", () => {
+    const selection = createRendererAdapterSelectionRequest({
+      name: "empty-selection",
+      candidates: [],
+    });
+
+    expect(selection).toEqual({
+      name: "empty-selection",
+      candidates: [],
+    });
+  });
+
   it("creates Renderer adapter selection results with selected adapters", () => {
     const adapter = createRendererAdapter({
       name: "selected-adapter",

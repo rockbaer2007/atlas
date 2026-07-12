@@ -100,7 +100,8 @@ resolution contracts can describe unresolved conflicts or explicitly selected
 adapters, and resolution creation protects embedded conflict adapter lists from
 later source-array mutations. Renderer adapter selection contracts describe
 candidate adapter selection requests and selected or unselected results without
-automatic conflict policies.
+automatic conflict policies. Empty selection candidate lists are supported as a
+valid request state before policy helpers exist.
 
 ---
 
