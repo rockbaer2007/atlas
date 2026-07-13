@@ -59,6 +59,7 @@ descriptive only and do not mount output yet.
 - `executeRendererPipeline`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `mountResolvedRendererAdapter`
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -116,7 +117,9 @@ conflict copy boundaries so later source-array mutations do not alter produced
 resolutions. Renderer adapter registry conflicts can now be resolved through
 first-candidate selection without executing platform mounting or changing
 registry lookup behavior. Registry conflict resolutions preserve duplicate
-conflict order from registry insertion order.
+conflict order from registry insertion order. Resolved adapter choices can now
+drive guarded mount execution, while unresolved choices return an unmounted
+result without invoking an adapter.
 
 ---
 

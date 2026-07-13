@@ -1,6 +1,11 @@
 import type { RendererAdapter } from "./RendererAdapter";
 import type { RendererAdapterRegistry } from "./RendererAdapterRegistry";
 import {
+  createRendererMountResult,
+  type RendererMountRequest,
+  type RendererMountResult,
+} from "./RendererMount";
+import {
   createRendererAdapterSelectionRequest,
   selectFirstRendererAdapterCandidate,
 } from "./RendererAdapterSelection";
@@ -75,4 +80,19 @@ export function resolveRendererAdapterRegistryConflictsWithFirstCandidate(
 ): readonly RendererAdapterConflictResolution[] {
   return findRendererAdapterConflicts(registry)
     .map(resolveRendererAdapterConflictWithFirstCandidate);
+}
+
+export async function mountResolvedRendererAdapter(
+  resolution: RendererAdapterConflictResolution,
+  request: RendererMountRequest,
+): Promise<RendererMountResult> {
+  if (!resolution.resolved || !resolution.adapter) {
+    return createRendererMountResult({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+    });
+  }
+
+  return resolution.adapter.mount(request);
 }
