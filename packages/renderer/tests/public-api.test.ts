@@ -829,13 +829,13 @@ describe("renderer public API", () => {
     });
     const registry = createRendererPlatformAdapterRegistry([first, second]);
 
-    expect(findRendererPlatformAdapterConflicts(registry)).toEqual([]);
+    expect(Renderer.findRendererPlatformAdapterConflicts(registry)).toEqual([]);
   });
 
   it("reports no Renderer platform adapter conflicts for empty registries", () => {
     const registry = createRendererPlatformAdapterRegistry([]);
 
-    expect(findRendererPlatformAdapterConflicts(registry)).toEqual([]);
+    expect(Renderer.findRendererPlatformAdapterConflicts(registry)).toEqual([]);
   });
 
   it("creates Renderer platform adapter registries without lookup behavior", () => {

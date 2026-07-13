@@ -164,7 +164,9 @@ those conflicts automatically. Empty platform adapter conflict groups are
 supported through the package root and remain copy-protected before conflict
 detection behavior exists. Renderer platform adapter conflict detection now
 reports duplicate-platform adapter groups from registries without selecting or
-resolving those adapters.
+resolving those adapters. Unique and empty platform adapter registries are
+protected through the package root as no-conflict states before resolution
+behavior exists.
 
 ---
 

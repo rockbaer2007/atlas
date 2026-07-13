@@ -90,23 +90,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.75 | Renderer Platform Adapter Conflict Readiness | Completed | - |
 | G2.5.76 | Renderer Platform Adapter Conflict Review | Completed | - |
 | G2.5.77 | Renderer Platform Adapter Conflict Detection Readiness | Completed | - |
-| G2.5.78 | Renderer Platform Adapter Conflict Detection Review | Planned | - |
+| G2.5.78 | Renderer Platform Adapter Conflict Detection Review | Completed | - |
+| G2.5.79 | Renderer Platform Adapter Conflict Resolution Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.77 - Renderer Platform Adapter Conflict Detection Readiness
+## G2.5.78 - Renderer Platform Adapter Conflict Detection Review
 
 Goal:
 
-Add platform adapter conflict detection from registries before resolution behavior.
+Review and protect Renderer platform adapter conflict detection before resolution behavior.
 
 Deliverables:
 
-* Renderer platform adapter conflict detection helper
-* Duplicate platform conflict detection coverage
-* Platform adapter conflict detection documentation
+* Renderer platform adapter conflict detection package-root export review
+* Unique and empty registry conflict detection coverage
+* Platform adapter conflict detection readiness documentation
 * Sprint documentation
 
 Status:
@@ -117,13 +118,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.78 - Renderer Platform Adapter Conflict Detection Review
+## G2.5.79 - Renderer Platform Adapter Conflict Resolution Readiness
 
 Suggested focus:
 
-* Review Renderer platform adapter conflict detection package-root exports
-* Cover unique and empty registry conflict detection behavior
-* Document platform adapter conflict detection readiness before resolution behavior
+* Define Renderer platform adapter conflict resolution contract
+* Cover unresolved and resolved platform adapter conflict resolutions
+* Document platform adapter conflict resolution readiness before selection policies
 
 ---
 
@@ -211,6 +212,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.75.md`
 * `docs/sprints/Sprint-G2.5.76.md`
 * `docs/sprints/Sprint-G2.5.77.md`
+* `docs/sprints/Sprint-G2.5.78.md`
 
 ---
 
