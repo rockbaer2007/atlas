@@ -69,6 +69,7 @@ descriptive only and do not mount output yet.
 - `executeRendererPipeline`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `findRendererPlatformAdapter`
 - `inspectRendererMountResult`
 - `mountResolvedRendererAdapter`
 - `resolveRendererAdapterConflictWithFirstCandidate`
@@ -150,7 +151,9 @@ adapter lookup behavior is introduced. Renderer platform adapter lookup
 contracts now describe platform lookup requests and matched or missing platform
 adapter results without executing registry search. Platform adapter lookup
 requests and results are protected through package-root copy behavior before
-registry search is introduced.
+registry search is introduced. Renderer platform adapter registry search now
+finds the first platform adapter with a matching platform and reports misses
+without selection, conflict handling or concrete platform execution.
 
 ---
 

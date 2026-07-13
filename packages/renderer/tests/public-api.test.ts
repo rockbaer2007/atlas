@@ -52,6 +52,7 @@ import {
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
+  findRendererPlatformAdapter,
   inspectRendererMountResult,
   mountResolvedRendererAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
@@ -82,6 +83,7 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
     expect(Renderer.RendererMountDiagnosticCodes.MountFailed).toBe("renderer.mount.failed");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
@@ -803,6 +805,101 @@ describe("renderer public API", () => {
     expect(createdRequest).not.toBe(request);
     expect(createdResult).toEqual(result);
     expect(createdResult).not.toBe(result);
+  });
+
+  it("finds Renderer platform adapters by platform from registries", () => {
+    const memory = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "memory-search-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const surface = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "surface-search-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const registry = createRendererPlatformAdapterRegistry([memory, surface]);
+
+    const result = findRendererPlatformAdapter(
+      registry,
+      createRendererPlatformAdapterLookupRequest({
+        platform: "surface",
+      }),
+    );
+
+    expect(result).toEqual({
+      platform: "surface",
+      platformAdapter: surface,
+    });
+  });
+
+  it("reports missing Renderer platform adapters from registries", () => {
+    const registry = createRendererPlatformAdapterRegistry([]);
+
+    const result = findRendererPlatformAdapter(
+      registry,
+      createRendererPlatformAdapterLookupRequest({
+        platform: "missing-platform",
+      }),
+    );
+
+    expect(result).toEqual({
+      platform: "missing-platform",
+    });
+  });
+
+  it("finds the first Renderer platform adapter for duplicate platforms", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-surface-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-surface-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const registry = createRendererPlatformAdapterRegistry([first, second]);
+
+    const result = findRendererPlatformAdapter(
+      registry,
+      createRendererPlatformAdapterLookupRequest({
+        platform: "surface",
+      }),
+    );
+
+    expect(result).toEqual({
+      platform: "surface",
+      platformAdapter: first,
+    });
   });
 
   it("creates Renderer adapter registries without lookup behavior", () => {
