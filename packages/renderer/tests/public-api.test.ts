@@ -703,10 +703,11 @@ describe("renderer public API", () => {
     platformAdapters.push(surface);
 
     expect(registry.platformAdapters).toEqual([memory]);
+    expect(registry.platformAdapters).not.toBe(platformAdapters);
   });
 
   it("creates empty Renderer platform adapter registries", () => {
-    const registry = createRendererPlatformAdapterRegistry([]);
+    const registry = Renderer.createRendererPlatformAdapterRegistry([]);
 
     expect(registry).toEqual({
       platformAdapters: [],

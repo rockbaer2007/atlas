@@ -140,7 +140,9 @@ Assistant card or device integration behavior. Platform adapter capability
 lists are copied at creation time, and empty capability lists remain a valid
 contract state before concrete platform integrations exist. Renderer platform
 adapter registries now capture ordered platform adapter lists without lookup,
-selection, conflict handling or concrete integration execution.
+selection, conflict handling or concrete integration execution. Empty platform
+adapter registries are supported through the package root before platform
+adapter lookup behavior is introduced.
 
 ---
 

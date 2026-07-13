@@ -111,6 +111,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter boundary contracts now describe platform adapter metadata.
 * Renderer platform adapter review now covers capability copy behavior and empty capability lists.
 * Renderer platform adapter registry contracts now capture ordered platform adapter lists.
+* Renderer platform adapter registry review now protects package-root empty registry creation.
 
 ### Fixed
 
