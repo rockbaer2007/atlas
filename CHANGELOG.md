@@ -123,6 +123,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter conflict resolution contracts now describe unresolved and resolved states.
 * Renderer platform adapter conflict resolution review now protects package-root copy behavior.
 * Renderer platform adapter selection contracts now describe candidate selection requests and results.
+* Renderer platform adapter selection review now covers empty candidate requests.
 
 ### Fixed
 

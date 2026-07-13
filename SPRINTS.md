@@ -94,23 +94,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.79 | Renderer Platform Adapter Conflict Resolution Readiness | Completed | - |
 | G2.5.80 | Renderer Platform Adapter Conflict Resolution Review | Completed | - |
 | G2.5.81 | Renderer Platform Adapter Selection Readiness | Completed | - |
-| G2.5.82 | Renderer Platform Adapter Selection Review | Planned | - |
+| G2.5.82 | Renderer Platform Adapter Selection Review | Completed | - |
+| G2.5.83 | Renderer Platform Adapter Selection Policy Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.81 - Renderer Platform Adapter Selection Readiness
+## G2.5.82 - Renderer Platform Adapter Selection Review
 
 Goal:
 
-Define Renderer platform adapter selection request and result contracts before automatic conflict policies.
+Review and protect Renderer platform adapter selection contracts before policy helpers.
 
 Deliverables:
 
-* Renderer platform adapter selection request contract
-* Renderer platform adapter selection result contract
-* Selected and unselected platform adapter coverage
+* Renderer platform adapter selection package-root export review
+* Empty platform adapter candidate selection request coverage
+* Platform adapter selection boundary documentation
 * Sprint documentation
 
 Status:
@@ -121,13 +122,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.82 - Renderer Platform Adapter Selection Review
+## G2.5.83 - Renderer Platform Adapter Selection Policy Readiness
 
 Suggested focus:
 
-* Review Renderer platform adapter selection package-root exports
-* Add empty candidate selection request coverage
-* Document platform adapter selection readiness before policy helpers
+* Define Renderer platform adapter first-candidate selection helper
+* Add selected and missing policy helper coverage
+* Document platform adapter policy helper boundary before automatic conflict resolution
 
 ---
 
@@ -219,6 +220,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.79.md`
 * `docs/sprints/Sprint-G2.5.80.md`
 * `docs/sprints/Sprint-G2.5.81.md`
+* `docs/sprints/Sprint-G2.5.82.md`
 
 ---
 

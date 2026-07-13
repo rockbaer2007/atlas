@@ -1078,6 +1078,18 @@ describe("renderer public API", () => {
     expect(request.candidates).not.toBe(candidates);
   });
 
+  it("reviews Renderer platform adapter selection requests with empty candidates through the package root", () => {
+    const request = Renderer.createRendererPlatformAdapterSelectionRequest({
+      platform: "surface",
+      candidates: [],
+    });
+
+    expect(request).toEqual({
+      platform: "surface",
+      candidates: [],
+    });
+  });
+
   it("creates selected Renderer platform adapter selection results", () => {
     const platformAdapter = createRendererPlatformAdapter({
       platform: "memory",

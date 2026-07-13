@@ -178,7 +178,9 @@ defining selection policies. Platform adapter conflict resolution review
 protects package-root exports and embedded conflict copy behavior before
 selection policies exist. Renderer platform adapter selection contracts now
 describe platform-specific candidate selection requests and selected or
-unselected platform adapter results without automatic conflict policies.
+unselected platform adapter results without automatic conflict policies. Empty
+platform adapter selection candidate lists are supported as a valid request
+state before policy helpers exist.
 
 ---
 
