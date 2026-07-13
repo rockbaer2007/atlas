@@ -127,7 +127,9 @@ asynchronous adapter mount handlers before platform-specific adapters exist.
 Rejected resolved adapter mounts return unmounted results with optional error
 messages. Non-Error adapter mount rejections are stringified for stable failure
 reporting. Renderer mount failures can now be inspected as Foundation-compatible
-diagnostic reports without introducing platform-specific diagnostics.
+diagnostic reports without introducing platform-specific diagnostics. Successful
+Renderer mount results now produce empty successful diagnostic reports, keeping
+the diagnostics contract ready for future platform adapters.
 
 ---
 

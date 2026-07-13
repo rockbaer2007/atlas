@@ -81,7 +81,8 @@ quality validation and the delivered results.
 | G2.5.63 | Renderer Adapter Mount Failure Readiness | Completed | - |
 | G2.5.64 | Renderer Adapter Mount Failure Review | Completed | - |
 | G2.5.65 | Renderer Adapter Mount Diagnostics Readiness | Completed | - |
-| G2.5.66 | Renderer Adapter Mount Diagnostics Review | Planned | - |
+| G2.5.66 | Renderer Adapter Mount Diagnostics Review | Completed | - |
+| G2.5.67 | Renderer Platform Adapter Boundary Readiness | Planned | - |
 
 ---
 
@@ -998,15 +999,28 @@ Highlights
 
 ---
 
+## G2.5.66 - Renderer Adapter Mount Diagnostics Review
+
+Reviewed and protected Renderer adapter mount diagnostics before
+platform-specific adapters.
+
+Highlights
+
+- Reviewed Renderer mount diagnostics package-root exports
+- Covered successful mount diagnostic reporting
+- Documented diagnostics readiness before platform adapters
+
+---
+
 # Planned Sprints
 
-## G2.5.66 - Renderer Adapter Mount Diagnostics Review
+## G2.5.67 - Renderer Platform Adapter Boundary Readiness
 
 Planned deliverables
 
-- Review Renderer mount diagnostics package-root exports
-- Add successful mount diagnostic coverage
-- Document diagnostics readiness before platform-specific adapters
+- Define first platform adapter boundary contracts
+- Keep Home Assistant card behavior outside Renderer core
+- Document platform adapter readiness before concrete integrations
 
 ---
 

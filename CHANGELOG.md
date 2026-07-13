@@ -107,6 +107,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer resolved adapter mounting now reports rejected adapter mounts.
 * Renderer adapter mount failure review now covers non-Error rejections.
 * Renderer mount failures can now be inspected as Foundation-compatible diagnostic reports.
+* Renderer mount diagnostics review now covers package-root exports and successful reports.
 
 ### Fixed
 

@@ -13,6 +13,7 @@ import type {
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
   RendererHostContext,
+  RendererMountDiagnosticReport,
   RendererMountRequest,
   RendererMountResult,
   RendererOutput,
@@ -70,6 +71,7 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
+    expect(Renderer.RendererMountDiagnosticCodes.MountFailed).toBe("renderer.mount.failed");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
@@ -124,6 +126,15 @@ describe("renderer public API", () => {
       output,
       target,
     };
+    const mountDiagnosticReport: RendererMountDiagnosticReport = {
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
+    };
     const adapterResult: RendererAdapterMountResult = mountResult;
     const adapter: RendererAdapter = {
       name: "type-adapter",
@@ -169,6 +180,7 @@ describe("renderer public API", () => {
     expect(target.kind).toBe("memory");
     expect(mountRequest.output.name).toBe("type-output");
     expect(mountResult.mounted).toBe(false);
+    expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
     expect(pipeline[0]?.name).toBe("prepare");
     expect(execution.completed).toBe(true);
@@ -1406,6 +1418,32 @@ describe("renderer public API", () => {
           message: "adapter mount failed",
           severity: "error",
         }],
+      },
+    });
+  });
+
+  it("creates diagnostics for successful Renderer mount results", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "successful-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "successful-diagnostic-target",
+    });
+    const result = createRendererMountResult({
+      mounted: true,
+      output,
+      target,
+    });
+
+    expect(inspectRendererMountResult(result)).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: true,
+        issues: [],
       },
     });
   });

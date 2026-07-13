@@ -78,23 +78,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.63 | Renderer Adapter Mount Failure Readiness | Completed | - |
 | G2.5.64 | Renderer Adapter Mount Failure Review | Completed | - |
 | G2.5.65 | Renderer Adapter Mount Diagnostics Readiness | Completed | - |
-| G2.5.66 | Renderer Adapter Mount Diagnostics Review | Planned | - |
+| G2.5.66 | Renderer Adapter Mount Diagnostics Review | Completed | - |
+| G2.5.67 | Renderer Platform Adapter Boundary Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.65 - Renderer Adapter Mount Diagnostics Readiness
+## G2.5.66 - Renderer Adapter Mount Diagnostics Review
 
 Goal:
 
-Define Renderer adapter mount diagnostics before platform-specific adapters.
+Review and protect Renderer adapter mount diagnostics before platform-specific adapters.
 
 Deliverables:
 
-* Renderer mount diagnostic helper
-* Renderer mount failure diagnostic issue coverage
-* Renderer diagnostics boundary documentation
+* Renderer mount diagnostics package-root export review
+* Successful Renderer mount diagnostic coverage
+* Renderer diagnostics readiness documentation
 * Sprint documentation
 
 Status:
@@ -105,13 +106,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.66 - Renderer Adapter Mount Diagnostics Review
+## G2.5.67 - Renderer Platform Adapter Boundary Readiness
 
 Suggested focus:
 
-* Review Renderer mount diagnostics package-root exports
-* Add successful mount diagnostic coverage
-* Document diagnostics readiness before platform-specific adapters
+* Define first platform adapter boundary contracts
+* Keep Home Assistant card behavior outside Renderer core
+* Document platform adapter readiness before concrete integrations
 
 ---
 
@@ -187,6 +188,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.63.md`
 * `docs/sprints/Sprint-G2.5.64.md`
 * `docs/sprints/Sprint-G2.5.65.md`
+* `docs/sprints/Sprint-G2.5.66.md`
 
 ---
 
