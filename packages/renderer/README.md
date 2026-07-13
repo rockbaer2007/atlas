@@ -46,6 +46,8 @@ descriptive only and do not mount output yet.
 - `RendererPlatformAdapterLookupRequest`
 - `RendererPlatformAdapterLookupResult`
 - `RendererPlatformAdapterRegistry`
+- `RendererPlatformAdapterSelectionRequest`
+- `RendererPlatformAdapterSelectionResult`
 - `RendererPipelineStage`
 - `RendererPipelineStageResult`
 - `RendererTarget`
@@ -69,6 +71,8 @@ descriptive only and do not mount output yet.
 - `createRendererPlatformAdapterLookupRequest`
 - `createRendererPlatformAdapterLookupResult`
 - `createRendererPlatformAdapterRegistry`
+- `createRendererPlatformAdapterSelectionRequest`
+- `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
 - `executeRendererPipeline`
 - `findRendererAdapter`
@@ -172,7 +176,9 @@ behavior exists. Renderer platform adapter conflict resolution contracts can now
 describe unresolved conflicts or explicitly selected platform adapters without
 defining selection policies. Platform adapter conflict resolution review
 protects package-root exports and embedded conflict copy behavior before
-selection policies exist.
+selection policies exist. Renderer platform adapter selection contracts now
+describe platform-specific candidate selection requests and selected or
+unselected platform adapter results without automatic conflict policies.
 
 ---
 

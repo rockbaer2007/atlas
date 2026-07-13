@@ -17,4 +17,5 @@ export * from "./RendererPlatformAdapter";
 export * from "./RendererPlatformAdapterConflict";
 export * from "./RendererPlatformAdapterLookup";
 export * from "./RendererPlatformAdapterRegistry";
+export * from "./RendererPlatformAdapterSelection";
 export * from "./RendererTarget";

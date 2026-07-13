@@ -26,6 +26,8 @@ import type {
   RendererPlatformAdapterLookupRequest,
   RendererPlatformAdapterLookupResult,
   RendererPlatformAdapterRegistry,
+  RendererPlatformAdapterSelectionRequest,
+  RendererPlatformAdapterSelectionResult,
   RendererPipelineStage,
   RendererPipelineStageResult,
   RendererTarget,
@@ -52,6 +54,8 @@ import {
   createRendererPlatformAdapterLookupRequest,
   createRendererPlatformAdapterLookupResult,
   createRendererPlatformAdapterRegistry,
+  createRendererPlatformAdapterSelectionRequest,
+  createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
   executeRendererPipeline,
   findRendererAdapter,
@@ -86,6 +90,8 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterRegistry).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
@@ -185,6 +191,14 @@ describe("renderer public API", () => {
       platform: platformAdapter.platform,
       platformAdapter,
     };
+    const platformAdapterSelectionRequest: RendererPlatformAdapterSelectionRequest = {
+      platform: platformAdapter.platform,
+      candidates: [platformAdapter],
+    };
+    const platformAdapterSelectionResult: RendererPlatformAdapterSelectionResult = {
+      platform: platformAdapter.platform,
+      platformAdapter,
+    };
     const adapterConflict: RendererAdapterConflict = {
       name: adapter.name,
       adapters: [adapter],
@@ -227,6 +241,8 @@ describe("renderer public API", () => {
     expect(platformAdapterRegistry.platformAdapters[0]).toBe(platformAdapter);
     expect(platformAdapterLookupRequest.platform).toBe(platformAdapter.platform);
     expect(platformAdapterLookupResult.platformAdapter).toBe(platformAdapter);
+    expect(platformAdapterSelectionRequest.candidates[0]).toBe(platformAdapter);
+    expect(platformAdapterSelectionResult.platformAdapter).toBe(platformAdapter);
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
@@ -998,6 +1014,103 @@ describe("renderer public API", () => {
       platformAdapter: first,
     });
     expect(resolution.conflict.platformAdapters).not.toBe(platformAdapters);
+  });
+
+  it("creates Renderer platform adapter selection requests", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "platform-selection-request-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const request = createRendererPlatformAdapterSelectionRequest({
+      platform: "surface",
+      candidates: [platformAdapter],
+    });
+
+    expect(request).toEqual({
+      platform: "surface",
+      candidates: [platformAdapter],
+    });
+  });
+
+  it("keeps Renderer platform adapter selection requests independent from source arrays", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-platform-selection-request-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-platform-selection-request-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const candidates = [first];
+
+    const request = createRendererPlatformAdapterSelectionRequest({
+      platform: "surface",
+      candidates,
+    });
+    candidates.push(second);
+
+    expect(request.candidates).toEqual([first]);
+    expect(request.candidates).not.toBe(candidates);
+  });
+
+  it("creates selected Renderer platform adapter selection results", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "selected-platform-selection-result-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const result = createRendererPlatformAdapterSelectionResult({
+      platform: "memory",
+      platformAdapter,
+    });
+
+    expect(result).toEqual({
+      platform: "memory",
+      platformAdapter,
+    });
+  });
+
+  it("creates unselected Renderer platform adapter selection results", () => {
+    const result = createRendererPlatformAdapterSelectionResult({
+      platform: "surface",
+    });
+
+    expect(result).toEqual({
+      platform: "surface",
+    });
   });
 
   it("creates Renderer platform adapter registries without lookup behavior", () => {
