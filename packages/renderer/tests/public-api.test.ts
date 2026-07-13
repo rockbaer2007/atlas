@@ -1121,6 +1121,65 @@ describe("renderer public API", () => {
     expect(resolutions).toEqual([]);
   });
 
+  it("preserves Renderer adapter registry conflict resolution order", () => {
+    const firstMemory = createRendererAdapter({
+      name: "memory-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const firstSurface = createRendererAdapter({
+      name: "surface-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const secondMemory = createRendererAdapter({
+      name: "memory-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const secondSurface = createRendererAdapter({
+      name: "surface-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([
+      firstMemory,
+      firstSurface,
+      secondMemory,
+      secondSurface,
+    ]);
+
+    const resolutions = resolveRendererAdapterRegistryConflictsWithFirstCandidate(registry);
+
+    expect(resolutions).toEqual([{
+      conflict: {
+        name: "memory-adapter",
+        adapters: [firstMemory, secondMemory],
+      },
+      resolved: true,
+      adapter: firstMemory,
+    }, {
+      conflict: {
+        name: "surface-adapter",
+        adapters: [firstSurface, secondSurface],
+      },
+      resolved: true,
+      adapter: firstSurface,
+    }]);
+  });
+
   it("creates Renderer adapter selection requests", () => {
     const first = createRendererAdapter({
       name: "candidate-adapter",
