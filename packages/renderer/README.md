@@ -170,7 +170,9 @@ resolving those adapters. Unique and empty platform adapter registries are
 protected through the package root as no-conflict states before resolution
 behavior exists. Renderer platform adapter conflict resolution contracts can now
 describe unresolved conflicts or explicitly selected platform adapters without
-defining selection policies.
+defining selection policies. Platform adapter conflict resolution review
+protects package-root exports and embedded conflict copy behavior before
+selection policies exist.
 
 ---
 

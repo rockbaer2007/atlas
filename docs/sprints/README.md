@@ -95,7 +95,8 @@ quality validation and the delivered results.
 | G2.5.77 | Renderer Platform Adapter Conflict Detection Readiness | Completed | - |
 | G2.5.78 | Renderer Platform Adapter Conflict Detection Review | Completed | - |
 | G2.5.79 | Renderer Platform Adapter Conflict Resolution Readiness | Completed | - |
-| G2.5.80 | Renderer Platform Adapter Conflict Resolution Review | Planned | - |
+| G2.5.80 | Renderer Platform Adapter Conflict Resolution Review | Completed | - |
+| G2.5.81 | Renderer Platform Adapter Selection Readiness | Planned | - |
 
 ---
 
@@ -1210,15 +1211,29 @@ Highlights
 
 ---
 
+## G2.5.80 - Renderer Platform Adapter Conflict Resolution Review
+
+Reviewed and protected Renderer platform adapter conflict resolution contracts
+before selection policies.
+
+Highlights
+
+- Reviewed `RendererPlatformAdapterConflictResolution` package-root export
+- Reviewed `createRendererPlatformAdapterConflictResolution` package-root export
+- Covered embedded platform adapter conflict copy behavior through the package root
+- Documented platform adapter conflict resolution readiness before selection policies
+
+---
+
 # Planned Sprints
 
-## G2.5.80 - Renderer Platform Adapter Conflict Resolution Review
+## G2.5.81 - Renderer Platform Adapter Selection Readiness
 
 Planned deliverables
 
-- Review Renderer platform adapter conflict resolution package-root exports
-- Cover embedded conflict copy behavior
-- Document platform adapter conflict resolution readiness before selection policies
+- Define Renderer platform adapter selection request and result contracts
+- Cover selected and unselected platform adapter states
+- Document platform adapter selection boundary before automatic conflict policies
 
 ---
 

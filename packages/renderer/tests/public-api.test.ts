@@ -951,6 +951,55 @@ describe("renderer public API", () => {
     expect(resolution.conflict.platformAdapters).not.toBe(platformAdapters);
   });
 
+  it("reviews Renderer platform adapter conflict resolutions through the package root", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-package-root-resolution-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-package-root-resolution-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const platformAdapters = [first];
+    const conflict: RendererPlatformAdapterConflict = {
+      platform: "surface",
+      platformAdapters,
+    };
+
+    const resolution = Renderer.createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter: first,
+    });
+    platformAdapters.push(second);
+
+    expect(resolution).toEqual({
+      conflict: {
+        platform: "surface",
+        platformAdapters: [first],
+      },
+      resolved: true,
+      platformAdapter: first,
+    });
+    expect(resolution.conflict.platformAdapters).not.toBe(platformAdapters);
+  });
+
   it("creates Renderer platform adapter registries without lookup behavior", () => {
     const memory = createRendererPlatformAdapter({
       platform: "memory",
