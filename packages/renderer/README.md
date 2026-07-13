@@ -60,6 +60,7 @@ descriptive only and do not mount output yet.
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
 - `resolveRendererAdapterConflictWithFirstCandidate`
+- `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
@@ -112,7 +113,9 @@ now be resolved through first-candidate selection, while registry lookup,
 platform mounting, Home Assistant cards, device targets and theme resolution
 remain outside this integration boundary. Conflict integration preserves
 conflict copy boundaries so later source-array mutations do not alter produced
-resolutions.
+resolutions. Renderer adapter registry conflicts can now be resolved through
+first-candidate selection without executing platform mounting or changing
+registry lookup behavior.
 
 ---
 

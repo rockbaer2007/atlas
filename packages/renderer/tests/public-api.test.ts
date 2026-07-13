@@ -44,6 +44,7 @@ import {
   findRendererAdapter,
   findRendererAdapterConflicts,
   resolveRendererAdapterConflictWithFirstCandidate,
+  resolveRendererAdapterRegistryConflictsWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
 } from "../src";
 
@@ -67,6 +68,7 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
   });
 
@@ -1054,6 +1056,69 @@ describe("renderer public API", () => {
       adapter: first,
     });
     expect(resolution.conflict.adapters).toEqual([first]);
+  });
+
+  it("resolves Renderer adapter registry conflicts with first-candidate selection", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const unique = createRendererAdapter({
+      name: "unique-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([first, unique, second]);
+
+    const resolutions = resolveRendererAdapterRegistryConflictsWithFirstCandidate(registry);
+
+    expect(resolutions).toEqual([{
+      conflict: {
+        name: "duplicate-adapter",
+        adapters: [first, second],
+      },
+      resolved: true,
+      adapter: first,
+    }]);
+  });
+
+  it("reports no Renderer adapter registry conflict resolutions for unique registries", () => {
+    const first = createRendererAdapter({
+      name: "first-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "second-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([first, second]);
+
+    const resolutions = resolveRendererAdapterRegistryConflictsWithFirstCandidate(registry);
+
+    expect(resolutions).toEqual([]);
   });
 
   it("creates Renderer adapter selection requests", () => {

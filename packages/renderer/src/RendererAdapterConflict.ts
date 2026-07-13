@@ -69,3 +69,10 @@ export function resolveRendererAdapterConflictWithFirstCandidate(
     ...(selection.adapter ? { adapter: selection.adapter } : {}),
   });
 }
+
+export function resolveRendererAdapterRegistryConflictsWithFirstCandidate(
+  registry: RendererAdapterRegistry,
+): readonly RendererAdapterConflictResolution[] {
+  return findRendererAdapterConflicts(registry)
+    .map(resolveRendererAdapterConflictWithFirstCandidate);
+}

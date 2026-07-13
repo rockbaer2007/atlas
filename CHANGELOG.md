@@ -100,6 +100,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer adapter selection policy review now protects candidate order.
 * Renderer adapter conflicts can now resolve through first-candidate selection.
 * Renderer adapter conflict integration review now protects copy boundaries.
+* Renderer adapter registry conflicts can now resolve through first-candidate selection.
 
 ### Fixed
 
