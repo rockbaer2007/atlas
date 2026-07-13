@@ -116,6 +116,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter lookup review now protects package-root copy behavior.
 * Renderer platform adapter registry search now finds platform adapters by platform.
 * Renderer platform adapter registry search review now protects package-root first-match behavior.
+* Renderer platform adapter conflict contracts now describe duplicate platform adapter groups.
 
 ### Fixed
 

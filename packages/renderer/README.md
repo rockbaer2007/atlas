@@ -41,6 +41,7 @@ descriptive only and do not mount output yet.
 - `RendererPipeline`
 - `RendererPipelineExecutionResult`
 - `RendererPlatformAdapter`
+- `RendererPlatformAdapterConflict`
 - `RendererPlatformAdapterLookupRequest`
 - `RendererPlatformAdapterLookupResult`
 - `RendererPlatformAdapterRegistry`
@@ -62,6 +63,7 @@ descriptive only and do not mount output yet.
 - `createRendererOutput`
 - `createRendererPipeline`
 - `createRendererPlatformAdapter`
+- `createRendererPlatformAdapterConflict`
 - `createRendererPlatformAdapterLookupRequest`
 - `createRendererPlatformAdapterLookupResult`
 - `createRendererPlatformAdapterRegistry`
@@ -155,7 +157,9 @@ registry search is introduced. Renderer platform adapter registry search now
 finds the first platform adapter with a matching platform and reports misses
 without selection, conflict handling or concrete platform execution. Platform
 adapter search is protected through the package root and remains first-match
-behavior before conflict handling exists.
+behavior before conflict handling exists. Renderer platform adapter conflicts
+now describe duplicate-platform adapter groups without detecting or resolving
+those conflicts automatically.
 
 ---
 
