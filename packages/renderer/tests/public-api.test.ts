@@ -1022,6 +1022,40 @@ describe("renderer public API", () => {
     });
   });
 
+  it("keeps Renderer adapter conflict integration independent from source arrays", () => {
+    const first = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "duplicate-adapter",
+      mount: request => createRendererMountResult({
+        mounted: true,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const adapters = [first];
+    const conflict = createRendererAdapterConflict({
+      name: "duplicate-adapter",
+      adapters,
+    });
+
+    const resolution = resolveRendererAdapterConflictWithFirstCandidate(conflict);
+    adapters.push(second);
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: true,
+      adapter: first,
+    });
+    expect(resolution.conflict.adapters).toEqual([first]);
+  });
+
   it("creates Renderer adapter selection requests", () => {
     const first = createRendererAdapter({
       name: "candidate-adapter",

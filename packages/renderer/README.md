@@ -110,7 +110,9 @@ automatically. First-candidate selection preserves candidate request order and
 remains disconnected from conflict integration. Renderer adapter conflicts can
 now be resolved through first-candidate selection, while registry lookup,
 platform mounting, Home Assistant cards, device targets and theme resolution
-remain outside this integration boundary.
+remain outside this integration boundary. Conflict integration preserves
+conflict copy boundaries so later source-array mutations do not alter produced
+resolutions.
 
 ---
 

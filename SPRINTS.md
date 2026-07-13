@@ -70,23 +70,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.55 | Renderer Adapter Selection Policy Readiness | Completed | - |
 | G2.5.56 | Renderer Adapter Selection Policy Review | Completed | - |
 | G2.5.57 | Renderer Adapter Conflict Integration Readiness | Completed | - |
-| G2.5.58 | Renderer Adapter Conflict Integration Review | Planned | - |
+| G2.5.58 | Renderer Adapter Conflict Integration Review | Completed | - |
+| G2.5.59 | Renderer Adapter Registry Resolution Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.57 - Renderer Adapter Conflict Integration Readiness
+## G2.5.58 - Renderer Adapter Conflict Integration Review
 
 Goal:
 
-Define Renderer adapter conflict integration through first-candidate selection before platform mounting.
+Review and protect Renderer adapter conflict integration before registry-level resolution.
 
 Deliverables:
 
-* Renderer adapter conflict-to-selection integration helper
-* Renderer duplicate conflict integration coverage
-* Renderer empty conflict integration coverage
+* Renderer adapter conflict integration package-root review
+* Renderer conflict integration copy-boundary coverage
+* Renderer adapter conflict integration boundary documentation
 * Sprint documentation
 
 Status:
@@ -97,13 +98,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.58 - Renderer Adapter Conflict Integration Review
+## G2.5.59 - Renderer Adapter Registry Resolution Readiness
 
 Suggested focus:
 
-* Review Renderer adapter conflict integration package-root exports
-* Add conflict integration copy-boundary coverage
-* Document conflict integration readiness before platform mounting
+* Define Renderer adapter registry conflict resolution helper
+* Add duplicate registry resolution coverage
+* Document registry resolution boundary before platform mounting
 
 ---
 
@@ -171,6 +172,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.55.md`
 * `docs/sprints/Sprint-G2.5.56.md`
 * `docs/sprints/Sprint-G2.5.57.md`
+* `docs/sprints/Sprint-G2.5.58.md`
 
 ---
 
