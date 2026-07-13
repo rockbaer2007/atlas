@@ -850,7 +850,7 @@ describe("renderer public API", () => {
   it("reports missing Renderer platform adapters from registries", () => {
     const registry = createRendererPlatformAdapterRegistry([]);
 
-    const result = findRendererPlatformAdapter(
+    const result = Renderer.findRendererPlatformAdapter(
       registry,
       createRendererPlatformAdapterLookupRequest({
         platform: "missing-platform",
@@ -860,6 +860,7 @@ describe("renderer public API", () => {
     expect(result).toEqual({
       platform: "missing-platform",
     });
+    expect(result.platformAdapter).toBeUndefined();
   });
 
   it("finds the first Renderer platform adapter for duplicate platforms", () => {
@@ -889,7 +890,7 @@ describe("renderer public API", () => {
     });
     const registry = createRendererPlatformAdapterRegistry([first, second]);
 
-    const result = findRendererPlatformAdapter(
+    const result = Renderer.findRendererPlatformAdapter(
       registry,
       createRendererPlatformAdapterLookupRequest({
         platform: "surface",

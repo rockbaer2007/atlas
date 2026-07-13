@@ -153,7 +153,9 @@ adapter results without executing registry search. Platform adapter lookup
 requests and results are protected through package-root copy behavior before
 registry search is introduced. Renderer platform adapter registry search now
 finds the first platform adapter with a matching platform and reports misses
-without selection, conflict handling or concrete platform execution.
+without selection, conflict handling or concrete platform execution. Platform
+adapter search is protected through the package root and remains first-match
+behavior before conflict handling exists.
 
 ---
 
