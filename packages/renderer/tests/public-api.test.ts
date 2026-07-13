@@ -20,6 +20,7 @@ import type {
   RendererOutputKind,
   RendererPipeline,
   RendererPipelineExecutionResult,
+  RendererPlatformAdapter,
   RendererPipelineStage,
   RendererPipelineStageResult,
   RendererTarget,
@@ -40,6 +41,7 @@ import {
   createRendererOutput,
   createRendererHostContext,
   createRendererPipeline,
+  createRendererPlatformAdapter,
   createRendererTarget,
   executeRendererPipeline,
   findRendererAdapter,
@@ -66,6 +68,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
@@ -140,6 +143,11 @@ describe("renderer public API", () => {
       name: "type-adapter",
       mount: () => adapterResult,
     };
+    const platformAdapter: RendererPlatformAdapter = {
+      platform: "type-platform",
+      adapter,
+      capabilities: ["mount"],
+    };
     const adapterConflict: RendererAdapterConflict = {
       name: adapter.name,
       adapters: [adapter],
@@ -175,6 +183,8 @@ describe("renderer public API", () => {
     expect(adapterSelectionResult.adapter).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);
     expect(adapterLookupResult.adapter).toBe(adapter);
+    expect(platformAdapter.adapter).toBe(adapter);
+    expect(platformAdapter.capabilities).toEqual(["mount"]);
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
@@ -552,6 +562,50 @@ describe("renderer public API", () => {
       output: request.output,
       target: request.target,
     });
+  });
+
+  it("creates Renderer platform adapters without concrete platform behavior", () => {
+    const adapter = createRendererAdapter({
+      name: "platform-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "generic-platform",
+      adapter,
+      capabilities: ["mount"],
+    });
+
+    expect(platformAdapter).toEqual({
+      platform: "generic-platform",
+      adapter,
+      capabilities: ["mount"],
+    });
+  });
+
+  it("keeps Renderer platform adapter capabilities independent from source arrays", () => {
+    const adapter = createRendererAdapter({
+      name: "capability-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const capabilities = ["mount"];
+
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "capability-platform",
+      adapter,
+      capabilities,
+    });
+    capabilities.push("theme");
+
+    expect(platformAdapter.capabilities).toEqual(["mount"]);
   });
 
   it("creates Renderer adapter registries without lookup behavior", () => {

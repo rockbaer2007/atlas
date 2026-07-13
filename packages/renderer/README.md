@@ -40,6 +40,7 @@ descriptive only and do not mount output yet.
 - `RendererOutputKind`
 - `RendererPipeline`
 - `RendererPipelineExecutionResult`
+- `RendererPlatformAdapter`
 - `RendererPipelineStage`
 - `RendererPipelineStageResult`
 - `RendererTarget`
@@ -57,6 +58,7 @@ descriptive only and do not mount output yet.
 - `createRendererMountResult`
 - `createRendererOutput`
 - `createRendererPipeline`
+- `createRendererPlatformAdapter`
 - `createRendererTarget`
 - `executeRendererPipeline`
 - `findRendererAdapter`
@@ -129,7 +131,10 @@ messages. Non-Error adapter mount rejections are stringified for stable failure
 reporting. Renderer mount failures can now be inspected as Foundation-compatible
 diagnostic reports without introducing platform-specific diagnostics. Successful
 Renderer mount results now produce empty successful diagnostic reports, keeping
-the diagnostics contract ready for future platform adapters.
+the diagnostics contract ready for future platform adapters. Renderer platform
+adapter contracts now describe platform metadata, the underlying Renderer
+adapter and declared capabilities without introducing concrete DOM, Home
+Assistant card or device integration behavior.
 
 ---
 
