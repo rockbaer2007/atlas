@@ -765,13 +765,14 @@ describe("renderer public API", () => {
   });
 
   it("creates Renderer platform adapter lookup results without matched platform adapters", () => {
-    const result = createRendererPlatformAdapterLookupResult({
+    const result = Renderer.createRendererPlatformAdapterLookupResult({
       platform: "missing-platform",
     });
 
     expect(result).toEqual({
       platform: "missing-platform",
     });
+    expect(result.platformAdapter).toBeUndefined();
   });
 
   it("creates Renderer platform adapter lookup contracts as immutable copies", () => {
@@ -795,8 +796,8 @@ describe("renderer public API", () => {
       platformAdapter,
     };
 
-    const createdRequest = createRendererPlatformAdapterLookupRequest(request);
-    const createdResult = createRendererPlatformAdapterLookupResult(result);
+    const createdRequest = Renderer.createRendererPlatformAdapterLookupRequest(request);
+    const createdResult = Renderer.createRendererPlatformAdapterLookupResult(result);
 
     expect(createdRequest).toEqual(request);
     expect(createdRequest).not.toBe(request);

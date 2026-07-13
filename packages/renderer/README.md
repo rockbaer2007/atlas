@@ -148,7 +148,9 @@ selection, conflict handling or concrete integration execution. Empty platform
 adapter registries are supported through the package root before platform
 adapter lookup behavior is introduced. Renderer platform adapter lookup
 contracts now describe platform lookup requests and matched or missing platform
-adapter results without executing registry search.
+adapter results without executing registry search. Platform adapter lookup
+requests and results are protected through package-root copy behavior before
+registry search is introduced.
 
 ---
 
