@@ -159,7 +159,9 @@ without selection, conflict handling or concrete platform execution. Platform
 adapter search is protected through the package root and remains first-match
 behavior before conflict handling exists. Renderer platform adapter conflicts
 now describe duplicate-platform adapter groups without detecting or resolving
-those conflicts automatically.
+those conflicts automatically. Empty platform adapter conflict groups are
+supported through the package root and remain copy-protected before conflict
+detection behavior exists.
 
 ---
 

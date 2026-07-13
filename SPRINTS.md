@@ -88,23 +88,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.73 | Renderer Platform Adapter Registry Search Readiness | Completed | - |
 | G2.5.74 | Renderer Platform Adapter Registry Search Review | Completed | - |
 | G2.5.75 | Renderer Platform Adapter Conflict Readiness | Completed | - |
-| G2.5.76 | Renderer Platform Adapter Conflict Review | Planned | - |
+| G2.5.76 | Renderer Platform Adapter Conflict Review | Completed | - |
+| G2.5.77 | Renderer Platform Adapter Conflict Detection Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.75 - Renderer Platform Adapter Conflict Readiness
+## G2.5.76 - Renderer Platform Adapter Conflict Review
 
 Goal:
 
-Define Renderer platform adapter conflict contracts before detection behavior.
+Review and protect Renderer platform adapter conflict contracts before detection behavior.
 
 Deliverables:
 
-* Renderer platform adapter conflict contract
-* Renderer platform adapter conflict creation helper
-* Platform adapter conflict boundary tests
+* Renderer platform adapter conflict package-root export review
+* Empty platform adapter conflict group coverage
+* Platform adapter conflict readiness documentation
 * Sprint documentation
 
 Status:
@@ -115,13 +116,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.76 - Renderer Platform Adapter Conflict Review
+## G2.5.77 - Renderer Platform Adapter Conflict Detection Readiness
 
 Suggested focus:
 
-* Review Renderer platform adapter conflict package-root exports
-* Cover empty platform adapter conflict groups
-* Document platform adapter conflict readiness before detection behavior
+* Add platform adapter conflict detection from registries
+* Cover duplicate platform conflict detection
+* Document platform adapter conflict detection readiness before resolution behavior
 
 ---
 
@@ -207,6 +208,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.73.md`
 * `docs/sprints/Sprint-G2.5.74.md`
 * `docs/sprints/Sprint-G2.5.75.md`
+* `docs/sprints/Sprint-G2.5.76.md`
 
 ---
 

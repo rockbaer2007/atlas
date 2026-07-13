@@ -739,15 +739,18 @@ describe("renderer public API", () => {
   });
 
   it("creates empty Renderer platform adapter conflicts", () => {
-    const conflict = createRendererPlatformAdapterConflict({
+    const platformAdapters: RendererPlatformAdapter[] = [];
+
+    const conflict = Renderer.createRendererPlatformAdapterConflict({
       platform: "empty-platform",
-      platformAdapters: [],
+      platformAdapters,
     });
 
     expect(conflict).toEqual({
       platform: "empty-platform",
       platformAdapters: [],
     });
+    expect(conflict.platformAdapters).not.toBe(platformAdapters);
   });
 
   it("creates Renderer platform adapter registries without lookup behavior", () => {
