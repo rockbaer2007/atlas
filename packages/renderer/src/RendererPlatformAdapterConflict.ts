@@ -6,12 +6,27 @@ export type RendererPlatformAdapterConflict = Readonly<{
   platformAdapters: readonly RendererPlatformAdapter[];
 }>;
 
+export type RendererPlatformAdapterConflictResolution = Readonly<{
+  conflict: RendererPlatformAdapterConflict;
+  resolved: boolean;
+  platformAdapter?: RendererPlatformAdapter;
+}>;
+
 export function createRendererPlatformAdapterConflict(
   conflict: RendererPlatformAdapterConflict,
 ): RendererPlatformAdapterConflict {
   return {
     ...conflict,
     platformAdapters: [...conflict.platformAdapters],
+  };
+}
+
+export function createRendererPlatformAdapterConflictResolution(
+  resolution: RendererPlatformAdapterConflictResolution,
+): RendererPlatformAdapterConflictResolution {
+  return {
+    ...resolution,
+    conflict: createRendererPlatformAdapterConflict(resolution.conflict),
   };
 }
 

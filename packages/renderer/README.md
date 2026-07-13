@@ -42,6 +42,7 @@ descriptive only and do not mount output yet.
 - `RendererPipelineExecutionResult`
 - `RendererPlatformAdapter`
 - `RendererPlatformAdapterConflict`
+- `RendererPlatformAdapterConflictResolution`
 - `RendererPlatformAdapterLookupRequest`
 - `RendererPlatformAdapterLookupResult`
 - `RendererPlatformAdapterRegistry`
@@ -64,6 +65,7 @@ descriptive only and do not mount output yet.
 - `createRendererPipeline`
 - `createRendererPlatformAdapter`
 - `createRendererPlatformAdapterConflict`
+- `createRendererPlatformAdapterConflictResolution`
 - `createRendererPlatformAdapterLookupRequest`
 - `createRendererPlatformAdapterLookupResult`
 - `createRendererPlatformAdapterRegistry`
@@ -166,7 +168,9 @@ detection behavior exists. Renderer platform adapter conflict detection now
 reports duplicate-platform adapter groups from registries without selecting or
 resolving those adapters. Unique and empty platform adapter registries are
 protected through the package root as no-conflict states before resolution
-behavior exists.
+behavior exists. Renderer platform adapter conflict resolution contracts can now
+describe unresolved conflicts or explicitly selected platform adapters without
+defining selection policies.
 
 ---
 

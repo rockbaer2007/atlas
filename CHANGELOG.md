@@ -120,6 +120,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter conflict review now protects package-root empty conflict groups.
 * Renderer platform adapter conflict detection now reports duplicate-platform adapter groups.
 * Renderer platform adapter conflict detection review now protects package-root no-conflict behavior.
+* Renderer platform adapter conflict resolution contracts now describe unresolved and resolved states.
 
 ### Fixed
 

@@ -22,6 +22,7 @@ import type {
   RendererPipelineExecutionResult,
   RendererPlatformAdapter,
   RendererPlatformAdapterConflict,
+  RendererPlatformAdapterConflictResolution,
   RendererPlatformAdapterLookupRequest,
   RendererPlatformAdapterLookupResult,
   RendererPlatformAdapterRegistry,
@@ -47,6 +48,7 @@ import {
   createRendererPipeline,
   createRendererPlatformAdapter,
   createRendererPlatformAdapterConflict,
+  createRendererPlatformAdapterConflictResolution,
   createRendererPlatformAdapterLookupRequest,
   createRendererPlatformAdapterLookupResult,
   createRendererPlatformAdapterRegistry,
@@ -80,6 +82,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterConflict).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapterConflictResolution).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterRegistry).toBeTypeOf("function");
@@ -171,6 +174,10 @@ describe("renderer public API", () => {
       platform: platformAdapter.platform,
       platformAdapters: [platformAdapter],
     };
+    const platformAdapterConflictResolution: RendererPlatformAdapterConflictResolution = {
+      conflict: platformAdapterConflict,
+      resolved: false,
+    };
     const platformAdapterLookupRequest: RendererPlatformAdapterLookupRequest = {
       platform: platformAdapter.platform,
     };
@@ -216,6 +223,7 @@ describe("renderer public API", () => {
     expect(platformAdapter.adapter).toBe(adapter);
     expect(platformAdapter.capabilities).toEqual(["mount"]);
     expect(platformAdapterConflict.platformAdapters[0]).toBe(platformAdapter);
+    expect(platformAdapterConflictResolution.conflict).toBe(platformAdapterConflict);
     expect(platformAdapterRegistry.platformAdapters[0]).toBe(platformAdapter);
     expect(platformAdapterLookupRequest.platform).toBe(platformAdapter.platform);
     expect(platformAdapterLookupResult.platformAdapter).toBe(platformAdapter);
@@ -836,6 +844,111 @@ describe("renderer public API", () => {
     const registry = createRendererPlatformAdapterRegistry([]);
 
     expect(Renderer.findRendererPlatformAdapterConflicts(registry)).toEqual([]);
+  });
+
+  it("creates unresolved Renderer platform adapter conflict resolutions", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "unresolved-platform-conflict-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: false,
+    });
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: false,
+    });
+    expect(resolution.conflict).not.toBe(conflict);
+  });
+
+  it("creates resolved Renderer platform adapter conflict resolutions", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "resolved-platform-conflict-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "memory",
+      platformAdapters: [platformAdapter],
+    });
+
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+    expect(resolution.platformAdapter).toBe(platformAdapter);
+    expect(resolution.conflict).not.toBe(conflict);
+  });
+
+  it("keeps Renderer platform adapter conflict resolution conflicts independent from source arrays", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-resolution-copy-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-resolution-copy-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const platformAdapters = [first];
+    const conflict: RendererPlatformAdapterConflict = {
+      platform: "surface",
+      platformAdapters,
+    };
+
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter: first,
+    });
+    platformAdapters.push(second);
+
+    expect(resolution.conflict.platformAdapters).toEqual([first]);
+    expect(resolution.conflict.platformAdapters).not.toBe(platformAdapters);
   });
 
   it("creates Renderer platform adapter registries without lookup behavior", () => {
