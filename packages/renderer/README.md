@@ -122,7 +122,8 @@ drive guarded mount execution, while unresolved choices return an unmounted
 result without invoking an adapter. Resolved adapter mounting supports
 asynchronous adapter mount handlers before platform-specific adapters exist.
 Rejected resolved adapter mounts return unmounted results with optional error
-messages.
+messages. Non-Error adapter mount rejections are stringified for stable failure
+reporting.
 
 ---
 

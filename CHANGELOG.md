@@ -105,6 +105,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer resolved adapter choices can now drive guarded mount execution.
 * Renderer resolved adapter mounting review now covers asynchronous adapters.
 * Renderer resolved adapter mounting now reports rejected adapter mounts.
+* Renderer adapter mount failure review now covers non-Error rejections.
 
 ### Fixed
 

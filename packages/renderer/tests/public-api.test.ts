@@ -1338,6 +1338,45 @@ describe("renderer public API", () => {
     });
   });
 
+  it("reports non-Error resolved Renderer adapter mount rejections as strings", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "string-failed-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "string-failed-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const adapter = createRendererAdapter({
+      name: "string-failed-adapter",
+      async mount() {
+        await Promise.resolve();
+
+        throw "adapter mount failed as string";
+      },
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "string-failed-adapter",
+      adapters: [adapter],
+    });
+    const resolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      adapter,
+    });
+
+    await expect(mountResolvedRendererAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
+      error: "adapter mount failed as string",
+    });
+  });
+
   it("creates Renderer adapter selection requests", () => {
     const first = createRendererAdapter({
       name: "candidate-adapter",

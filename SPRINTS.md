@@ -76,23 +76,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.61 | Renderer Adapter Resolved Mounting Readiness | Completed | - |
 | G2.5.62 | Renderer Adapter Resolved Mounting Review | Completed | - |
 | G2.5.63 | Renderer Adapter Mount Failure Readiness | Completed | - |
-| G2.5.64 | Renderer Adapter Mount Failure Review | Planned | - |
+| G2.5.64 | Renderer Adapter Mount Failure Review | Completed | - |
+| G2.5.65 | Renderer Adapter Mount Diagnostics Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.63 - Renderer Adapter Mount Failure Readiness
+## G2.5.64 - Renderer Adapter Mount Failure Review
 
 Goal:
 
-Define Renderer adapter mount failure result behavior before platform-specific adapters.
+Review and protect Renderer adapter mount failure behavior before platform-specific adapters.
 
 Deliverables:
 
-* Renderer mount result failure metadata
-* Renderer rejected adapter mount coverage
-* Renderer mount failure boundary documentation
+* Renderer mount failure package-root type review
+* Renderer non-Error rejection coverage
+* Renderer mount failure readiness documentation
 * Sprint documentation
 
 Status:
@@ -103,13 +104,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.64 - Renderer Adapter Mount Failure Review
+## G2.5.65 - Renderer Adapter Mount Diagnostics Readiness
 
 Suggested focus:
 
-* Review Renderer mount failure package-root types
-* Add non-Error mount rejection coverage
-* Document mount failure readiness before platform-specific adapters
+* Define Renderer adapter mount diagnostic helper
+* Add mount failure diagnostic issue coverage
+* Document diagnostics boundary before platform-specific adapters
 
 ---
 
@@ -183,6 +184,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.61.md`
 * `docs/sprints/Sprint-G2.5.62.md`
 * `docs/sprints/Sprint-G2.5.63.md`
+* `docs/sprints/Sprint-G2.5.64.md`
 
 ---
 
