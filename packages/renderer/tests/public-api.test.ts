@@ -1257,6 +1257,48 @@ describe("renderer public API", () => {
     });
   });
 
+  it("awaits asynchronous resolved Renderer adapter mounts", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "async-resolved-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "async-resolved-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const adapter = createRendererAdapter({
+      name: "async-resolved-adapter",
+      async mount(mountRequest) {
+        await Promise.resolve();
+
+        return createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        });
+      },
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "async-resolved-adapter",
+      adapters: [adapter],
+    });
+    const resolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      adapter,
+    });
+
+    await expect(mountResolvedRendererAdapter(resolution, request)).resolves.toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+  });
+
   it("creates Renderer adapter selection requests", () => {
     const first = createRendererAdapter({
       name: "candidate-adapter",

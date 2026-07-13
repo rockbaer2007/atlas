@@ -119,7 +119,8 @@ first-candidate selection without executing platform mounting or changing
 registry lookup behavior. Registry conflict resolutions preserve duplicate
 conflict order from registry insertion order. Resolved adapter choices can now
 drive guarded mount execution, while unresolved choices return an unmounted
-result without invoking an adapter.
+result without invoking an adapter. Resolved adapter mounting supports
+asynchronous adapter mount handlers before platform-specific adapters exist.
 
 ---
 

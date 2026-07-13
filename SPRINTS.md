@@ -74,23 +74,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.59 | Renderer Adapter Registry Resolution Readiness | Completed | - |
 | G2.5.60 | Renderer Adapter Registry Resolution Review | Completed | - |
 | G2.5.61 | Renderer Adapter Resolved Mounting Readiness | Completed | - |
-| G2.5.62 | Renderer Adapter Resolved Mounting Review | Planned | - |
+| G2.5.62 | Renderer Adapter Resolved Mounting Review | Completed | - |
+| G2.5.63 | Renderer Adapter Mount Failure Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.61 - Renderer Adapter Resolved Mounting Readiness
+## G2.5.62 - Renderer Adapter Resolved Mounting Review
 
 Goal:
 
-Define guarded mounting for resolved Renderer adapter choices before platform-specific adapters.
+Review and protect guarded mounting for resolved Renderer adapter choices before platform-specific adapters.
 
 Deliverables:
 
-* Renderer resolved adapter mount helper
-* Renderer resolved adapter mount coverage
-* Renderer unresolved adapter mount coverage
+* Renderer resolved adapter mount package-root review
+* Renderer asynchronous resolved adapter mount coverage
+* Renderer resolved mounting boundary documentation
 * Sprint documentation
 
 Status:
@@ -101,13 +102,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.62 - Renderer Adapter Resolved Mounting Review
+## G2.5.63 - Renderer Adapter Mount Failure Readiness
 
 Suggested focus:
 
-* Review Renderer resolved adapter mount package-root exports
-* Add asynchronous resolved adapter mount coverage
-* Document resolved mounting readiness before platform-specific adapters
+* Define Renderer adapter mount failure result behavior
+* Add rejected adapter mount coverage
+* Document mount failure boundary before platform-specific adapters
 
 ---
 
@@ -179,6 +180,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.59.md`
 * `docs/sprints/Sprint-G2.5.60.md`
 * `docs/sprints/Sprint-G2.5.61.md`
+* `docs/sprints/Sprint-G2.5.62.md`
 
 ---
 
