@@ -34,6 +34,8 @@ descriptive only and do not mount output yet.
 - `RendererAdapterSelectionResult`
 - `RendererMountRequest`
 - `RendererMountResult`
+- `RendererMountDiagnosticCodes`
+- `RendererMountDiagnosticReport`
 - `RendererOutput`
 - `RendererOutputKind`
 - `RendererPipeline`
@@ -59,6 +61,7 @@ descriptive only and do not mount output yet.
 - `executeRendererPipeline`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `inspectRendererMountResult`
 - `mountResolvedRendererAdapter`
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
@@ -123,7 +126,8 @@ result without invoking an adapter. Resolved adapter mounting supports
 asynchronous adapter mount handlers before platform-specific adapters exist.
 Rejected resolved adapter mounts return unmounted results with optional error
 messages. Non-Error adapter mount rejections are stringified for stable failure
-reporting.
+reporting. Renderer mount failures can now be inspected as Foundation-compatible
+diagnostic reports without introducing platform-specific diagnostics.
 
 ---
 

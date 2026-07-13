@@ -43,6 +43,7 @@ import {
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
+  inspectRendererMountResult,
   mountResolvedRendererAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
@@ -68,6 +69,7 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
@@ -1374,6 +1376,37 @@ describe("renderer public API", () => {
       output,
       target,
       error: "adapter mount failed as string",
+    });
+  });
+
+  it("creates diagnostics for failed Renderer mount results", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "diagnostic-target",
+    });
+    const result = createRendererMountResult({
+      mounted: false,
+      output,
+      target,
+      error: "adapter mount failed",
+    });
+
+    expect(inspectRendererMountResult(result)).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: "renderer.mount.failed",
+          message: "adapter mount failed",
+          severity: "error",
+        }],
+      },
     });
   });
 

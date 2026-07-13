@@ -10,6 +10,7 @@ export * from "./RendererAdapterLookup";
 export * from "./RendererAdapterRegistry";
 export * from "./RendererAdapterSelection";
 export * from "./RendererMount";
+export * from "./RendererMountDiagnostics";
 export * from "./RendererOutput";
 export * from "./RendererPipeline";
 export * from "./RendererTarget";
