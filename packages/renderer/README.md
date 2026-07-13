@@ -134,7 +134,9 @@ Renderer mount results now produce empty successful diagnostic reports, keeping
 the diagnostics contract ready for future platform adapters. Renderer platform
 adapter contracts now describe platform metadata, the underlying Renderer
 adapter and declared capabilities without introducing concrete DOM, Home
-Assistant card or device integration behavior.
+Assistant card or device integration behavior. Platform adapter capability
+lists are copied at creation time, and empty capability lists remain a valid
+contract state before concrete platform integrations exist.
 
 ---
 

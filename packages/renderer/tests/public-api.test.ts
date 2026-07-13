@@ -606,6 +606,30 @@ describe("renderer public API", () => {
     capabilities.push("theme");
 
     expect(platformAdapter.capabilities).toEqual(["mount"]);
+    expect(platformAdapter.capabilities).not.toBe(capabilities);
+  });
+
+  it("creates Renderer platform adapters without declared capabilities", () => {
+    const adapter = createRendererAdapter({
+      name: "empty-capability-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "empty-capability-platform",
+      adapter,
+      capabilities: [],
+    });
+
+    expect(platformAdapter).toEqual({
+      platform: "empty-capability-platform",
+      adapter,
+      capabilities: [],
+    });
   });
 
   it("creates Renderer adapter registries without lookup behavior", () => {
