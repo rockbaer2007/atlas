@@ -84,6 +84,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
+- `selectFirstRendererPlatformAdapterCandidate`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface
@@ -181,6 +182,9 @@ describe platform-specific candidate selection requests and selected or
 unselected platform adapter results without automatic conflict policies. Empty
 platform adapter selection candidate lists are supported as a valid request
 state before policy helpers exist.
+Renderer platform adapter first-candidate selection now selects the first
+available platform adapter candidate or reports an unselected result without
+resolving conflicts automatically.
 
 ---
 

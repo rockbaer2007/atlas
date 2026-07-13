@@ -26,3 +26,14 @@ export function createRendererPlatformAdapterSelectionResult(
     ...result,
   };
 }
+
+export function selectFirstRendererPlatformAdapterCandidate(
+  request: RendererPlatformAdapterSelectionRequest,
+): RendererPlatformAdapterSelectionResult {
+  const platformAdapter = request.candidates[0];
+
+  return createRendererPlatformAdapterSelectionResult({
+    platform: request.platform,
+    ...(platformAdapter ? { platformAdapter } : {}),
+  });
+}

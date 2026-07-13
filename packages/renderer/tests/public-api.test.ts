@@ -67,6 +67,7 @@ import {
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
+  selectFirstRendererPlatformAdapterCandidate,
 } from "../src";
 
 describe("renderer public API", () => {
@@ -104,6 +105,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
+    expect(Renderer.selectFirstRendererPlatformAdapterCandidate).toBeTypeOf("function");
   });
 
   it("exports the Renderer package type surface from the package root", () => {
@@ -2438,6 +2440,58 @@ describe("renderer public API", () => {
 
     expect(result).toEqual({
       name: "missing-selection",
+    });
+  });
+
+  it("selects the first Renderer platform adapter candidate", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-platform-policy-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-platform-policy-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const result = selectFirstRendererPlatformAdapterCandidate(
+      createRendererPlatformAdapterSelectionRequest({
+        platform: "surface",
+        candidates: [first, second],
+      }),
+    );
+
+    expect(result).toEqual({
+      platform: "surface",
+      platformAdapter: first,
+    });
+  });
+
+  it("reports missing Renderer platform adapter selection when no candidates exist", () => {
+    const result = selectFirstRendererPlatformAdapterCandidate(
+      createRendererPlatformAdapterSelectionRequest({
+        platform: "surface",
+        candidates: [],
+      }),
+    );
+
+    expect(result).toEqual({
+      platform: "surface",
     });
   });
 
