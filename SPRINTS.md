@@ -81,23 +81,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.66 | Renderer Adapter Mount Diagnostics Review | Completed | - |
 | G2.5.67 | Renderer Platform Adapter Boundary Readiness | Completed | - |
 | G2.5.68 | Renderer Platform Adapter Boundary Review | Completed | - |
-| G2.5.69 | Renderer Platform Adapter Registry Readiness | Planned | - |
+| G2.5.69 | Renderer Platform Adapter Registry Readiness | Completed | - |
+| G2.5.70 | Renderer Platform Adapter Registry Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.68 - Renderer Platform Adapter Boundary Review
+## G2.5.69 - Renderer Platform Adapter Registry Readiness
 
 Goal:
 
-Review and protect Renderer platform adapter boundary contracts before concrete integrations.
+Define Renderer platform adapter registry contracts before concrete integrations.
 
 Deliverables:
 
-* Renderer platform adapter package-root export review
-* Platform adapter capability copy coverage
-* Platform adapter readiness documentation
+* Renderer platform adapter registry contract
+* Renderer platform adapter registry creation helper
+* Platform adapter registry boundary tests
 * Sprint documentation
 
 Status:
@@ -108,13 +109,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.69 - Renderer Platform Adapter Registry Readiness
+## G2.5.70 - Renderer Platform Adapter Registry Review
 
 Suggested focus:
 
-* Define Renderer platform adapter registry contracts
-* Preserve platform adapter registry copy boundaries
-* Document platform adapter registry readiness before concrete integrations
+* Review Renderer platform adapter registry package-root exports
+* Cover empty platform adapter registry behavior
+* Document platform adapter registry readiness before lookup behavior
 
 ---
 
@@ -193,6 +194,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.66.md`
 * `docs/sprints/Sprint-G2.5.67.md`
 * `docs/sprints/Sprint-G2.5.68.md`
+* `docs/sprints/Sprint-G2.5.69.md`
 
 ---
 

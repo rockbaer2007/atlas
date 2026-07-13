@@ -41,6 +41,7 @@ descriptive only and do not mount output yet.
 - `RendererPipeline`
 - `RendererPipelineExecutionResult`
 - `RendererPlatformAdapter`
+- `RendererPlatformAdapterRegistry`
 - `RendererPipelineStage`
 - `RendererPipelineStageResult`
 - `RendererTarget`
@@ -59,6 +60,7 @@ descriptive only and do not mount output yet.
 - `createRendererOutput`
 - `createRendererPipeline`
 - `createRendererPlatformAdapter`
+- `createRendererPlatformAdapterRegistry`
 - `createRendererTarget`
 - `executeRendererPipeline`
 - `findRendererAdapter`
@@ -136,7 +138,9 @@ adapter contracts now describe platform metadata, the underlying Renderer
 adapter and declared capabilities without introducing concrete DOM, Home
 Assistant card or device integration behavior. Platform adapter capability
 lists are copied at creation time, and empty capability lists remain a valid
-contract state before concrete platform integrations exist.
+contract state before concrete platform integrations exist. Renderer platform
+adapter registries now capture ordered platform adapter lists without lookup,
+selection, conflict handling or concrete integration execution.
 
 ---
 

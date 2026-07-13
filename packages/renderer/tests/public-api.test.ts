@@ -21,6 +21,7 @@ import type {
   RendererPipeline,
   RendererPipelineExecutionResult,
   RendererPlatformAdapter,
+  RendererPlatformAdapterRegistry,
   RendererPipelineStage,
   RendererPipelineStageResult,
   RendererTarget,
@@ -42,6 +43,7 @@ import {
   createRendererHostContext,
   createRendererPipeline,
   createRendererPlatformAdapter,
+  createRendererPlatformAdapterRegistry,
   createRendererTarget,
   executeRendererPipeline,
   findRendererAdapter,
@@ -69,6 +71,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
@@ -148,6 +151,9 @@ describe("renderer public API", () => {
       adapter,
       capabilities: ["mount"],
     };
+    const platformAdapterRegistry: RendererPlatformAdapterRegistry = {
+      platformAdapters: [platformAdapter],
+    };
     const adapterConflict: RendererAdapterConflict = {
       name: adapter.name,
       adapters: [adapter],
@@ -185,6 +191,7 @@ describe("renderer public API", () => {
     expect(adapterLookupResult.adapter).toBe(adapter);
     expect(platformAdapter.adapter).toBe(adapter);
     expect(platformAdapter.capabilities).toEqual(["mount"]);
+    expect(platformAdapterRegistry.platformAdapters[0]).toBe(platformAdapter);
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
@@ -629,6 +636,80 @@ describe("renderer public API", () => {
       platform: "empty-capability-platform",
       adapter,
       capabilities: [],
+    });
+  });
+
+  it("creates Renderer platform adapter registries without lookup behavior", () => {
+    const memory = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "memory-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const surface = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "surface-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const registry = createRendererPlatformAdapterRegistry([memory, surface]);
+
+    expect(registry).toEqual({
+      platformAdapters: [memory, surface],
+    });
+  });
+
+  it("keeps Renderer platform adapter registries independent from source arrays", () => {
+    const memory = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "memory-registry-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const surface = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "surface-registry-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const platformAdapters = [memory];
+
+    const registry = createRendererPlatformAdapterRegistry(platformAdapters);
+    platformAdapters.push(surface);
+
+    expect(registry.platformAdapters).toEqual([memory]);
+  });
+
+  it("creates empty Renderer platform adapter registries", () => {
+    const registry = createRendererPlatformAdapterRegistry([]);
+
+    expect(registry).toEqual({
+      platformAdapters: [],
     });
   });
 
