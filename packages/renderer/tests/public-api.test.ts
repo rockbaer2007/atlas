@@ -1299,6 +1299,45 @@ describe("renderer public API", () => {
     });
   });
 
+  it("reports rejected resolved Renderer adapter mounts as unmounted results", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "failed-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "failed-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const adapter = createRendererAdapter({
+      name: "failed-adapter",
+      async mount() {
+        await Promise.resolve();
+
+        throw new Error("adapter mount failed");
+      },
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "failed-adapter",
+      adapters: [adapter],
+    });
+    const resolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      adapter,
+    });
+
+    await expect(mountResolvedRendererAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
+      error: "adapter mount failed",
+    });
+  });
+
   it("creates Renderer adapter selection requests", () => {
     const first = createRendererAdapter({
       name: "candidate-adapter",

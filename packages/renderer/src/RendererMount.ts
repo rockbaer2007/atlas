@@ -10,6 +10,7 @@ export type RendererMountResult = Readonly<{
   mounted: boolean;
   output: RendererOutput;
   target: RendererTarget;
+  error?: string;
 }>;
 
 export function createRendererMountRequest(

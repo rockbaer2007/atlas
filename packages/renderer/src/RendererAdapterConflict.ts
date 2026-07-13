@@ -94,5 +94,14 @@ export async function mountResolvedRendererAdapter(
     });
   }
 
-  return resolution.adapter.mount(request);
+  try {
+    return await resolution.adapter.mount(request);
+  } catch (error) {
+    return createRendererMountResult({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
