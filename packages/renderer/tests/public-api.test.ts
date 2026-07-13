@@ -21,6 +21,8 @@ import type {
   RendererPipeline,
   RendererPipelineExecutionResult,
   RendererPlatformAdapter,
+  RendererPlatformAdapterLookupRequest,
+  RendererPlatformAdapterLookupResult,
   RendererPlatformAdapterRegistry,
   RendererPipelineStage,
   RendererPipelineStageResult,
@@ -43,6 +45,8 @@ import {
   createRendererHostContext,
   createRendererPipeline,
   createRendererPlatformAdapter,
+  createRendererPlatformAdapterLookupRequest,
+  createRendererPlatformAdapterLookupResult,
   createRendererPlatformAdapterRegistry,
   createRendererTarget,
   executeRendererPipeline,
@@ -71,6 +75,8 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapterLookupRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererPlatformAdapterLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
@@ -154,6 +160,13 @@ describe("renderer public API", () => {
     const platformAdapterRegistry: RendererPlatformAdapterRegistry = {
       platformAdapters: [platformAdapter],
     };
+    const platformAdapterLookupRequest: RendererPlatformAdapterLookupRequest = {
+      platform: platformAdapter.platform,
+    };
+    const platformAdapterLookupResult: RendererPlatformAdapterLookupResult = {
+      platform: platformAdapter.platform,
+      platformAdapter,
+    };
     const adapterConflict: RendererAdapterConflict = {
       name: adapter.name,
       adapters: [adapter],
@@ -192,6 +205,8 @@ describe("renderer public API", () => {
     expect(platformAdapter.adapter).toBe(adapter);
     expect(platformAdapter.capabilities).toEqual(["mount"]);
     expect(platformAdapterRegistry.platformAdapters[0]).toBe(platformAdapter);
+    expect(platformAdapterLookupRequest.platform).toBe(platformAdapter.platform);
+    expect(platformAdapterLookupResult.platformAdapter).toBe(platformAdapter);
     expect(context.runtime.application.name).toBe("renderer-type-api");
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
@@ -712,6 +727,81 @@ describe("renderer public API", () => {
     expect(registry).toEqual({
       platformAdapters: [],
     });
+  });
+
+  it("creates Renderer platform adapter lookup requests without performing lookup", () => {
+    const request = createRendererPlatformAdapterLookupRequest({
+      platform: "memory",
+    });
+
+    expect(request).toEqual({
+      platform: "memory",
+    });
+  });
+
+  it("creates Renderer platform adapter lookup results with matched platform adapters", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "surface-lookup-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const result = createRendererPlatformAdapterLookupResult({
+      platform: platformAdapter.platform,
+      platformAdapter,
+    });
+
+    expect(result).toEqual({
+      platform: "surface",
+      platformAdapter,
+    });
+  });
+
+  it("creates Renderer platform adapter lookup results without matched platform adapters", () => {
+    const result = createRendererPlatformAdapterLookupResult({
+      platform: "missing-platform",
+    });
+
+    expect(result).toEqual({
+      platform: "missing-platform",
+    });
+  });
+
+  it("creates Renderer platform adapter lookup contracts as immutable copies", () => {
+    const request: RendererPlatformAdapterLookupRequest = {
+      platform: "copy-platform",
+    };
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "copy-platform",
+      adapter: createRendererAdapter({
+        name: "copy-platform-adapter",
+        mount: mountRequest => createRendererMountResult({
+          mounted: false,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const result: RendererPlatformAdapterLookupResult = {
+      platform: "copy-platform",
+      platformAdapter,
+    };
+
+    const createdRequest = createRendererPlatformAdapterLookupRequest(request);
+    const createdResult = createRendererPlatformAdapterLookupResult(result);
+
+    expect(createdRequest).toEqual(request);
+    expect(createdRequest).not.toBe(request);
+    expect(createdResult).toEqual(result);
+    expect(createdResult).not.toBe(result);
   });
 
   it("creates Renderer adapter registries without lookup behavior", () => {

@@ -41,6 +41,8 @@ descriptive only and do not mount output yet.
 - `RendererPipeline`
 - `RendererPipelineExecutionResult`
 - `RendererPlatformAdapter`
+- `RendererPlatformAdapterLookupRequest`
+- `RendererPlatformAdapterLookupResult`
 - `RendererPlatformAdapterRegistry`
 - `RendererPipelineStage`
 - `RendererPipelineStageResult`
@@ -60,6 +62,8 @@ descriptive only and do not mount output yet.
 - `createRendererOutput`
 - `createRendererPipeline`
 - `createRendererPlatformAdapter`
+- `createRendererPlatformAdapterLookupRequest`
+- `createRendererPlatformAdapterLookupResult`
 - `createRendererPlatformAdapterRegistry`
 - `createRendererTarget`
 - `executeRendererPipeline`
@@ -142,7 +146,9 @@ contract state before concrete platform integrations exist. Renderer platform
 adapter registries now capture ordered platform adapter lists without lookup,
 selection, conflict handling or concrete integration execution. Empty platform
 adapter registries are supported through the package root before platform
-adapter lookup behavior is introduced.
+adapter lookup behavior is introduced. Renderer platform adapter lookup
+contracts now describe platform lookup requests and matched or missing platform
+adapter results without executing registry search.
 
 ---
 

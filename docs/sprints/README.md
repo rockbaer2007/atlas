@@ -86,7 +86,8 @@ quality validation and the delivered results.
 | G2.5.68 | Renderer Platform Adapter Boundary Review | Completed | - |
 | G2.5.69 | Renderer Platform Adapter Registry Readiness | Completed | - |
 | G2.5.70 | Renderer Platform Adapter Registry Review | Completed | - |
-| G2.5.71 | Renderer Platform Adapter Lookup Readiness | Planned | - |
+| G2.5.71 | Renderer Platform Adapter Lookup Readiness | Completed | - |
+| G2.5.72 | Renderer Platform Adapter Lookup Review | Planned | - |
 
 ---
 
@@ -1072,14 +1073,29 @@ Highlights
 
 ---
 
+## G2.5.71 - Renderer Platform Adapter Lookup Readiness
+
+Defined Renderer platform adapter lookup contracts before registry search
+behavior.
+
+Highlights
+
+- Added `RendererPlatformAdapterLookupRequest`
+- Added `RendererPlatformAdapterLookupResult`
+- Added platform adapter lookup contract creation helpers
+- Covered matched and missing platform adapter lookup results
+- Documented platform adapter lookup readiness before registry search behavior
+
+---
+
 # Planned Sprints
 
-## G2.5.71 - Renderer Platform Adapter Lookup Readiness
+## G2.5.72 - Renderer Platform Adapter Lookup Review
 
 Planned deliverables
 
-- Define Renderer platform adapter lookup request and result contracts
-- Cover platform adapter lookup contract creation
+- Review Renderer platform adapter lookup package-root exports
+- Cover platform adapter lookup copy behavior
 - Document platform adapter lookup readiness before registry search behavior
 
 ---
