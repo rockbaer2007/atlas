@@ -146,7 +146,12 @@ quality validation and the delivered results.
 | G2.5.128 | Core Runtime Event Awaiting Review | Completed | - |
 | G2.5.129 | Core Runtime Module Event Review | Completed | - |
 | G2.5.130 | Core Runtime Event Subscription Review | Completed | - |
-| G2.5.131 | Core Lifecycle Review | Planned | - |
+| G2.5.131 | Core Lifecycle Review | Completed | - |
+| G2.5.132 | Core Lifecycle Restart Review | Completed | - |
+| G2.5.133 | Core Lifecycle Idempotency Review | Completed | - |
+| G2.5.134 | Core Lifecycle Error Propagation Review | Completed | - |
+| G2.5.135 | Core Lifecycle State Alignment Review | Completed | - |
+| G2.5.136 | Core Runtime Host Review | Planned | - |
 
 ---
 
@@ -1904,15 +1909,75 @@ Highlights
 
 ---
 
+## G2.5.131 - Core Lifecycle Review
+
+Reviewed Core lifecycle transition helper after Runtime event reviews.
+
+Highlights
+
+- Protected `transitionCoreRuntimeHost` as a Runtime lifecycle pass-through
+- Confirmed Core does not introduce a separate lifecycle state machine
+- Documented lifecycle errors as Runtime-owned
+
+---
+
+## G2.5.132 - Core Lifecycle Restart Review
+
+Reviewed Core restart lifecycle behavior.
+
+Highlights
+
+- Covered restart through Core after Runtime startup
+- Confirmed restart returns a running Runtime state
+- Protected restart as a direct Runtime lifecycle action
+
+---
+
+## G2.5.133 - Core Lifecycle Idempotency Review
+
+Reviewed Runtime lifecycle idempotency through Core transitions.
+
+Highlights
+
+- Covered no-op stop through Core before startup
+- Covered repeated dispose through Core
+- Confirmed Core reports the Runtime state after idempotent transitions
+
+---
+
+## G2.5.134 - Core Lifecycle Error Propagation Review
+
+Reviewed Runtime lifecycle failure propagation through Core.
+
+Highlights
+
+- Covered module activation failure through Core lifecycle transition
+- Confirmed Core does not swallow Runtime lifecycle errors
+- Protected Runtime state after failed Core transition
+
+---
+
+## G2.5.135 - Core Lifecycle State Alignment Review
+
+Reviewed Core lifecycle result state alignment with Runtime.
+
+Highlights
+
+- Covered transition results matching Runtime host state
+- Confirmed Core lifecycle result actions mirror requested actions
+- Documented next Core Runtime host review step
+
+---
+
 # Planned Sprints
 
-## G2.5.131 - Core Lifecycle Review
+## G2.5.136 - Core Runtime Host Review
 
 Planned deliverables
 
-- Review Core lifecycle transition helper after Runtime event reviews
-- Confirm Core lifecycle transitions preserve Runtime states
-- Protect Core lifecycle transition errors and idempotent behavior
+- Review Core Runtime host creation after lifecycle and event reviews
+- Confirm Core host configuration remains a Runtime pass-through
+- Protect Core host module registration and diagnostics integration
 
 ---
 

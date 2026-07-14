@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Core lifecycle review now protects Runtime lifecycle pass-through results,
+  idempotency, events and error propagation through Core.
 * Core Runtime event review now protects pass-through lifecycle, module,
   diagnostic and subscription disposal behavior above Runtime.
 * Runtime lifecycle event review now protects lifecycle payloads, awaited

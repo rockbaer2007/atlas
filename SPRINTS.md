@@ -143,23 +143,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.128 | Core Runtime Event Awaiting Review | Completed | - |
 | G2.5.129 | Core Runtime Module Event Review | Completed | - |
 | G2.5.130 | Core Runtime Event Subscription Review | Completed | - |
-| G2.5.131 | Core Lifecycle Review | Planned | - |
+| G2.5.131 | Core Lifecycle Review | Completed | - |
+| G2.5.132 | Core Lifecycle Restart Review | Completed | - |
+| G2.5.133 | Core Lifecycle Idempotency Review | Completed | - |
+| G2.5.134 | Core Lifecycle Error Propagation Review | Completed | - |
+| G2.5.135 | Core Lifecycle State Alignment Review | Completed | - |
+| G2.5.136 | Core Runtime Host Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.130 - Core Runtime Event Subscription Review
+## G2.5.135 - Core Lifecycle State Alignment Review
 
 Goal:
 
-Review and protect Core Runtime event subscription disposal behavior.
+Review and protect Core lifecycle result state alignment with Runtime.
 
 Deliverables:
 
-* Core event subscription disposal coverage
-* Runtime event pass-through documentation
-* Core event helper review
+* Core lifecycle result state coverage
+* Runtime lifecycle pass-through documentation
+* Core lifecycle helper review
 * Sprint documentation
 
 Status:
@@ -170,13 +175,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.131 - Core Lifecycle Review
+## G2.5.136 - Core Runtime Host Review
 
 Suggested focus:
 
-* Review Core lifecycle transition helper after Runtime event reviews
-* Confirm Core lifecycle transitions preserve Runtime states
-* Protect Core lifecycle transition errors and idempotent behavior
+* Review Core Runtime host creation after lifecycle and event reviews
+* Confirm Core host configuration remains a Runtime pass-through
+* Protect Core host module registration and diagnostics integration
 
 ---
 
@@ -317,6 +322,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.128.md`
 * `docs/sprints/Sprint-G2.5.129.md`
 * `docs/sprints/Sprint-G2.5.130.md`
+* `docs/sprints/Sprint-G2.5.131.md`
+* `docs/sprints/Sprint-G2.5.132.md`
+* `docs/sprints/Sprint-G2.5.133.md`
+* `docs/sprints/Sprint-G2.5.134.md`
+* `docs/sprints/Sprint-G2.5.135.md`
 
 ---
 

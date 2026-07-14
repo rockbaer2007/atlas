@@ -310,6 +310,145 @@ describe("core public API", () => {
     });
   });
 
+  it("restarts Runtime lifecycle through Core", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-restart",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+    const restarted = await transitionCoreRuntimeHost(host, "restart");
+
+    expect(restarted).toEqual({
+      action: "restart",
+      state: "running",
+    });
+  });
+
+  it("preserves Runtime lifecycle idempotency through Core transitions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-lifecycle-idempotent",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    const stopped = await transitionCoreRuntimeHost(host, "stop");
+    const disposed = await transitionCoreRuntimeHost(host, "dispose");
+    const disposedAgain = await transitionCoreRuntimeHost(host, "dispose");
+
+    expect(stopped).toEqual({
+      action: "stop",
+      state: "created",
+    });
+    expect(disposed).toEqual({
+      action: "dispose",
+      state: "disposed",
+    });
+    expect(disposedAgain).toEqual({
+      action: "dispose",
+      state: "disposed",
+    });
+  });
+
+  it("preserves Runtime lifecycle events during Core transitions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-lifecycle-events",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const events: CoreRuntimeEventType[] = [];
+
+    subscribeToCoreRuntimeEvent(host, "runtime.initialized", event => {
+      events.push(event.type);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.started", event => {
+      events.push(event.type);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.stopped", event => {
+      events.push(event.type);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.disposed", event => {
+      events.push(event.type);
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+    await transitionCoreRuntimeHost(host, "dispose");
+
+    expect(events).toEqual([
+      "runtime.initialized",
+      "runtime.started",
+      "runtime.stopped",
+      "runtime.disposed",
+    ]);
+  });
+
+  it("propagates Runtime lifecycle failures through Core transitions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-lifecycle-failure",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "core-failing-module",
+          name: "Core failing module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: {
+          async initialize() {
+            throw new Error("core lifecycle failure");
+          },
+        },
+      }],
+    });
+
+    await expect(transitionCoreRuntimeHost(host, "start")).rejects.toThrow(
+      "core lifecycle failure",
+    );
+    expect(host.state).toBe("initialized");
+  });
+
+  it("keeps Core lifecycle results aligned with Runtime host state", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-lifecycle-state",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    const started = await transitionCoreRuntimeHost(host, "start");
+    expect(started.state).toBe(host.state);
+
+    const stopped = await transitionCoreRuntimeHost(host, "stop");
+
+    expect(stopped.state).toBe(host.state);
+  });
+
   it("subscribes to Runtime lifecycle events through Core", async () => {
     const host = createCoreRuntimeHost({
       application: {

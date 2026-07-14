@@ -25,6 +25,11 @@ Core Runtime event subscriptions are also pass-through boundaries. Core does
 not reclassify lifecycle, module lifecycle or diagnostic events; event payloads,
 awaiting behavior and subscription disposal remain owned by Runtime and Kernel.
 
+Core lifecycle transitions are thin Runtime pass-throughs. `transitionCoreRuntimeHost`
+invokes the requested Runtime lifecycle method and reports the resulting
+Runtime state without swallowing errors or adding a separate Core lifecycle
+state machine.
+
 ---
 
 # Public API
