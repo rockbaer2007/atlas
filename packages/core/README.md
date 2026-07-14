@@ -35,6 +35,11 @@ forwards application configuration, custom event buses, custom service
 containers and initial modules to Runtime, while Runtime continues to own
 validation, module ordering, diagnostics and lifecycle behavior.
 
+The Core package root intentionally exposes only the compact value helpers
+needed above Runtime. Type aliases document the Core boundary, while Runtime
+continues to own the underlying host, diagnostics, events and lifecycle
+behavior.
+
 ---
 
 # Public API

@@ -161,7 +161,27 @@ quality validation and the delivered results.
 | G2.5.143 | Core Runtime Host Module Isolation Review | Completed | - |
 | G2.5.144 | Core Runtime Host Diagnostics Review | Completed | - |
 | G2.5.145 | Core Runtime Host Boundary Review | Completed | - |
-| G2.5.146 | Core Public API Review | Planned | - |
+| G2.5.146 | Core Public API Review | Completed | - |
+| G2.5.147 | Core Public API Value Surface Review | Completed | - |
+| G2.5.148 | Core Public API Type Surface Review | Completed | - |
+| G2.5.149 | Core Public API Boundary Documentation Review | Completed | - |
+| G2.5.150 | Core Public API Return-To-Renderer Review | Completed | - |
+| G2.5.151 | Renderer Host Context Review | Completed | - |
+| G2.5.152 | Renderer Host Context Runtime Boundary Review | Completed | - |
+| G2.5.153 | Renderer Host Context Identity Review | Completed | - |
+| G2.5.154 | Renderer Host Context Contract Independence Review | Completed | - |
+| G2.5.155 | Renderer Host Context Pipeline Review | Completed | - |
+| G2.5.156 | Renderer Host Context Diagnostics Review | Completed | - |
+| G2.5.157 | Renderer Host Context Documentation Review | Completed | - |
+| G2.5.158 | Renderer Host Context Public API Review | Completed | - |
+| G2.5.159 | Renderer Host Context Runtime Ownership Review | Completed | - |
+| G2.5.160 | Renderer Host Context Boundary Review | Completed | - |
+| G2.5.161 | Renderer Core Boundary Review | Completed | - |
+| G2.5.162 | Renderer Core Boundary Pipeline Review | Completed | - |
+| G2.5.163 | Renderer Core Boundary Diagnostics Review | Completed | - |
+| G2.5.164 | Renderer Core Boundary Documentation Review | Completed | - |
+| G2.5.165 | Renderer Core Boundary Return-To-Pipeline Review | Completed | - |
+| G2.5.166 | Renderer Pipeline Review | Planned | - |
 
 ---
 
@@ -2099,15 +2119,280 @@ Highlights
 
 ---
 
+## G2.5.146 - Core Public API Review
+
+Reviewed Core package-root exports after diagnostics, events, lifecycle and host passes.
+
+Highlights
+
+- Protected Core package-root values after Runtime host coverage
+- Confirmed Core remains a compact entry point above Runtime
+- Prepared the return to Renderer boundary work
+
+---
+
+## G2.5.147 - Core Public API Value Surface Review
+
+Reviewed the compact Core package-root value surface.
+
+Highlights
+
+- Covered exact package-root value exports
+- Confirmed only Core helper values are exported at runtime
+- Protected Core against accidental value-surface growth
+
+---
+
+## G2.5.148 - Core Public API Type Surface Review
+
+Reviewed Core type aliases after host, lifecycle, event and diagnostics passes.
+
+Highlights
+
+- Reused existing type-surface coverage
+- Confirmed Core type aliases document the Runtime boundary
+- Kept Runtime ownership behind Core types
+
+---
+
+## G2.5.149 - Core Public API Boundary Documentation Review
+
+Reviewed Core public API boundary documentation.
+
+Highlights
+
+- Documented compact Core package-root value helpers
+- Clarified Core type aliases versus Runtime ownership
+- Kept Core API documentation aligned with tests
+
+---
+
+## G2.5.150 - Core Public API Return-To-Renderer Review
+
+Closed the Core public API review before returning to Renderer.
+
+Highlights
+
+- Confirmed Core diagnostics, events, lifecycle and host reviews are covered
+- Kept Core public API compact
+- Returned planned work to Renderer host context boundary
+
+---
+
+## G2.5.151 - Renderer Host Context Review
+
+Reviewed Renderer host contexts after Core public API review.
+
+Highlights
+
+- Protected Renderer host context creation above Core Runtime hosts
+- Confirmed Renderer host contexts remain small
+- Reopened Renderer work through the Core boundary
+
+---
+
+## G2.5.152 - Renderer Host Context Runtime Boundary Review
+
+Reviewed Runtime boundary behavior in Renderer host contexts.
+
+Highlights
+
+- Covered live Core Runtime state through Renderer host context
+- Confirmed Renderer does not reclassify Runtime health
+- Protected Runtime pass-through behavior in Renderer
+
+---
+
+## G2.5.153 - Renderer Host Context Identity Review
+
+Reviewed Core Runtime identity preservation in Renderer host contexts.
+
+Highlights
+
+- Covered multiple Renderer contexts for the same Runtime host
+- Confirmed contexts are distinct but share the Runtime reference
+- Protected Runtime identity from cloning
+
+---
+
+## G2.5.154 - Renderer Host Context Contract Independence Review
+
+Reviewed Renderer host context independence from output and target contracts.
+
+Highlights
+
+- Covered host context shape beside output and target contracts
+- Confirmed output and target creation do not affect Runtime context
+- Protected Renderer contract separation
+
+---
+
+## G2.5.155 - Renderer Host Context Pipeline Review
+
+Reviewed Renderer host contexts inside pipeline execution.
+
+Highlights
+
+- Covered pipeline stages receiving the same Runtime context
+- Confirmed pipeline execution preserves Runtime ownership
+- Protected stage results around host context use
+
+---
+
+## G2.5.156 - Renderer Host Context Diagnostics Review
+
+Reviewed Core Runtime diagnostics through Renderer host contexts.
+
+Highlights
+
+- Covered degraded Runtime diagnostics through Renderer context
+- Confirmed diagnostic issue codes are not reclassified
+- Protected Core Runtime diagnostic visibility
+
+---
+
+## G2.5.157 - Renderer Host Context Documentation Review
+
+Reviewed Renderer host context boundary documentation.
+
+Highlights
+
+- Documented Renderer host contexts as thin Core Runtime references
+- Clarified no cloning, wrapping or reclassification
+- Kept documentation aligned with tests
+
+---
+
+## G2.5.158 - Renderer Host Context Public API Review
+
+Reviewed Renderer host context package-root API behavior.
+
+Highlights
+
+- Covered `createRendererHostContext` through package-root tests
+- Confirmed context behavior remains public API protected
+- Kept Renderer host context as the Core bridge
+
+---
+
+## G2.5.159 - Renderer Host Context Runtime Ownership Review
+
+Reviewed Runtime ownership across Renderer host contexts.
+
+Highlights
+
+- Confirmed Runtime state, health, diagnostics and lifecycle remain Core-owned
+- Protected Renderer from introducing a Runtime wrapper
+- Kept Runtime ownership visible through context references
+
+---
+
+## G2.5.160 - Renderer Host Context Boundary Review
+
+Closed Renderer host context boundary review.
+
+Highlights
+
+- Confirmed host context identity, diagnostics and pipeline behavior
+- Documented Runtime pass-through boundary
+- Prepared broader Renderer/Core boundary review
+
+---
+
+## G2.5.161 - Renderer Core Boundary Review
+
+Reviewed the broader Renderer/Core boundary after host context coverage.
+
+Highlights
+
+- Confirmed Renderer depends upward on Core
+- Protected Runtime ownership behind Renderer context
+- Kept concrete integration behavior outside Renderer
+
+---
+
+## G2.5.162 - Renderer Core Boundary Pipeline Review
+
+Reviewed Renderer/Core boundary inside pipeline stages.
+
+Highlights
+
+- Covered pipeline execution with Core Runtime context
+- Confirmed stages receive unchanged Renderer context
+- Protected pipeline readiness after host context review
+
+---
+
+## G2.5.163 - Renderer Core Boundary Diagnostics Review
+
+Reviewed diagnostics visibility across the Renderer/Core boundary.
+
+Highlights
+
+- Covered Runtime diagnostic report visibility through Renderer
+- Confirmed issue codes remain Runtime-owned
+- Protected diagnostic pass-through behavior before pipeline review
+
+---
+
+## G2.5.164 - Renderer Core Boundary Documentation Review
+
+Reviewed documentation for the Renderer/Core boundary.
+
+Highlights
+
+- Documented host contexts as thin Core Runtime references
+- Clarified no Runtime cloning or wrapping in Renderer
+- Kept README aligned with package tests
+
+---
+
+## G2.5.165 - Renderer Core Boundary Return-To-Pipeline Review
+
+Reviewed the Renderer/Core boundary before returning to pipeline work.
+
+Highlights
+
+- Confirmed Renderer host context boundary coverage is complete
+- Prepared next sprint for Renderer pipeline review
+- Kept Core Runtime behavior outside Renderer ownership
+
+---
+
 # Planned Sprints
 
-## G2.5.146 - Core Public API Review
+## G2.5.166 - Renderer Pipeline Review
 
 Planned deliverables
 
-- Review Core package-root exports after diagnostics, events, lifecycle and host passes
-- Confirm Core public API surface remains compact
-- Protect Core type and value exports before returning to Renderer
+- Review Renderer pipeline contracts after host context boundary work
+- Confirm pipeline execution keeps Core Runtime context pass-through behavior
+- Protect pipeline stage result ordering and failure boundaries
+
+---
+
+## Completed Sprint Records
+
+- [G2.5.146 - Core Public API Review](Sprint-G2.5.146.md)
+- [G2.5.147 - Core Public API Value Surface Review](Sprint-G2.5.147.md)
+- [G2.5.148 - Core Public API Type Surface Review](Sprint-G2.5.148.md)
+- [G2.5.149 - Core Public API Boundary Documentation Review](Sprint-G2.5.149.md)
+- [G2.5.150 - Core Public API Return-To-Renderer Review](Sprint-G2.5.150.md)
+- [G2.5.151 - Renderer Host Context Review](Sprint-G2.5.151.md)
+- [G2.5.152 - Renderer Host Context Runtime Boundary Review](Sprint-G2.5.152.md)
+- [G2.5.153 - Renderer Host Context Identity Review](Sprint-G2.5.153.md)
+- [G2.5.154 - Renderer Host Context Contract Independence Review](Sprint-G2.5.154.md)
+- [G2.5.155 - Renderer Host Context Pipeline Review](Sprint-G2.5.155.md)
+- [G2.5.156 - Renderer Host Context Diagnostics Review](Sprint-G2.5.156.md)
+- [G2.5.157 - Renderer Host Context Documentation Review](Sprint-G2.5.157.md)
+- [G2.5.158 - Renderer Host Context Public API Review](Sprint-G2.5.158.md)
+- [G2.5.159 - Renderer Host Context Runtime Ownership Review](Sprint-G2.5.159.md)
+- [G2.5.160 - Renderer Host Context Boundary Review](Sprint-G2.5.160.md)
+- [G2.5.161 - Renderer Core Boundary Review](Sprint-G2.5.161.md)
+- [G2.5.162 - Renderer Core Boundary Pipeline Review](Sprint-G2.5.162.md)
+- [G2.5.163 - Renderer Core Boundary Diagnostics Review](Sprint-G2.5.163.md)
+- [G2.5.164 - Renderer Core Boundary Documentation Review](Sprint-G2.5.164.md)
+- [G2.5.165 - Renderer Core Boundary Return-To-Pipeline Review](Sprint-G2.5.165.md)
 
 ---
 

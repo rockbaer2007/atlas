@@ -213,6 +213,11 @@ Renderer platform adapter contracts remain metadata-driven before concrete
 integrations; platform names and capability lists do not trigger special DOM or
 Home Assistant behavior inside Renderer.
 
+Renderer host contexts remain thin references to Core Runtime hosts. Renderer
+does not clone, wrap or reclassify Runtime state, diagnostics, events or
+lifecycle behavior; pipelines receive the same Core Runtime host reference that
+was used to create the context.
+
 ---
 
 # Build Output

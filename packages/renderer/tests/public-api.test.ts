@@ -280,6 +280,136 @@ describe("renderer public API", () => {
     expect(context.runtime.application.name).toBe("renderer-api");
   });
 
+  it("keeps Renderer host context as a read-through Core Runtime boundary", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-context-runtime",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+
+    await runtime.start();
+
+    expect(context.runtime).toBe(runtime);
+    expect(context.runtime.state).toBe("running");
+    expect(context.runtime.health.health).toBe("healthy");
+  });
+
+  it("does not clone Core Runtime hosts when creating Renderer host contexts", () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-context-identity",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+
+    const first = Renderer.createRendererHostContext(runtime);
+    const second = Renderer.createRendererHostContext(runtime);
+
+    expect(first).not.toBe(second);
+    expect(first.runtime).toBe(runtime);
+    expect(second.runtime).toBe(runtime);
+  });
+
+  it("keeps Renderer host context independent from rendering output and target contracts", () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-context-independent",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "context-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "context-target",
+    });
+
+    expect(context).toEqual({ runtime });
+    expect(output.name).toBe("context-output");
+    expect(target.name).toBe("context-target");
+  });
+
+  it("passes Renderer host contexts to pipeline stages without changing Runtime ownership", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-context-pipeline",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const pipeline = createRendererPipeline([{
+      name: "inspect-runtime",
+      run: rendererContext => ({
+        stage: rendererContext.runtime.application.name,
+        completed: rendererContext.runtime === runtime,
+      }),
+    }]);
+
+    await expect(executeRendererPipeline(context, pipeline)).resolves.toEqual({
+      completed: true,
+      stages: [{
+        stage: "renderer-context-pipeline",
+        completed: true,
+      }],
+    });
+  });
+
+  it("surfaces Core Runtime diagnostics through Renderer host contexts without reclassification", () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-context-diagnostics",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "renderer-context-module",
+          name: "Renderer context module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+    const context = createRendererHostContext(runtime);
+
+    expect(context.runtime.diagnostics).toMatchObject({
+      context: {
+        component: "runtime:renderer-context-diagnostics",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: "runtime.module.degraded",
+        }],
+      },
+    });
+  });
+
   it("creates Renderer output without binding it to a render target", () => {
     const output = createRendererOutput({
       kind: "fragment",

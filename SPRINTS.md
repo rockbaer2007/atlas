@@ -158,23 +158,42 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.143 | Core Runtime Host Module Isolation Review | Completed | - |
 | G2.5.144 | Core Runtime Host Diagnostics Review | Completed | - |
 | G2.5.145 | Core Runtime Host Boundary Review | Completed | - |
-| G2.5.146 | Core Public API Review | Planned | - |
+| G2.5.146 | Core Public API Review | Completed | - |
+| G2.5.147 | Core Public API Value Surface Review | Completed | - |
+| G2.5.148 | Core Public API Type Surface Review | Completed | - |
+| G2.5.149 | Core Public API Boundary Documentation Review | Completed | - |
+| G2.5.150 | Core Public API Return-To-Renderer Review | Completed | - |
+| G2.5.151 | Renderer Host Context Review | Completed | - |
+| G2.5.152 | Renderer Host Context Runtime Boundary Review | Completed | - |
+| G2.5.153 | Renderer Host Context Identity Review | Completed | - |
+| G2.5.154 | Renderer Host Context Contract Independence Review | Completed | - |
+| G2.5.155 | Renderer Host Context Pipeline Review | Completed | - |
+| G2.5.156 | Renderer Host Context Diagnostics Review | Completed | - |
+| G2.5.157 | Renderer Host Context Documentation Review | Completed | - |
+| G2.5.158 | Renderer Host Context Public API Review | Completed | - |
+| G2.5.159 | Renderer Host Context Runtime Ownership Review | Completed | - |
+| G2.5.160 | Renderer Host Context Boundary Review | Completed | - |
+| G2.5.161 | Renderer Core Boundary Review | Completed | - |
+| G2.5.162 | Renderer Core Boundary Pipeline Review | Completed | - |
+| G2.5.163 | Renderer Core Boundary Diagnostics Review | Completed | - |
+| G2.5.164 | Renderer Core Boundary Documentation Review | Completed | - |
+| G2.5.165 | Renderer Core Boundary Return-To-Pipeline Review | Completed | - |
+| G2.5.166 | Renderer Pipeline Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.145 - Core Runtime Host Boundary Review
+## G2.5.165 - Renderer Core Boundary Return-To-Pipeline Review
 
 Goal:
 
-Review and protect the Core Runtime host boundary after host creation coverage.
+Review and protect the Renderer/Core boundary before returning to pipeline work.
 
 Deliverables:
 
-* Core Runtime host boundary documentation
-* Runtime ownership confirmation
-* Core public API preparation
+* Renderer/Core boundary review
+* Pipeline readiness documentation
 * Sprint documentation
 
 Status:
@@ -185,13 +204,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.146 - Core Public API Review
+## G2.5.166 - Renderer Pipeline Review
 
 Suggested focus:
 
-* Review Core package-root exports after diagnostics, events, lifecycle and host passes
-* Confirm Core public API surface remains compact
-* Protect Core type and value exports before returning to Renderer
+* Review Renderer pipeline contracts after host context boundary work
+* Confirm pipeline execution keeps Core Runtime context pass-through behavior
+* Protect pipeline stage result ordering and failure boundaries
 
 ---
 
@@ -347,6 +366,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.143.md`
 * `docs/sprints/Sprint-G2.5.144.md`
 * `docs/sprints/Sprint-G2.5.145.md`
+* `docs/sprints/Sprint-G2.5.146.md`
+* `docs/sprints/Sprint-G2.5.147.md`
+* `docs/sprints/Sprint-G2.5.148.md`
+* `docs/sprints/Sprint-G2.5.149.md`
+* `docs/sprints/Sprint-G2.5.150.md`
+* `docs/sprints/Sprint-G2.5.151.md`
+* `docs/sprints/Sprint-G2.5.152.md`
+* `docs/sprints/Sprint-G2.5.153.md`
+* `docs/sprints/Sprint-G2.5.154.md`
+* `docs/sprints/Sprint-G2.5.155.md`
+* `docs/sprints/Sprint-G2.5.156.md`
+* `docs/sprints/Sprint-G2.5.157.md`
+* `docs/sprints/Sprint-G2.5.158.md`
+* `docs/sprints/Sprint-G2.5.159.md`
+* `docs/sprints/Sprint-G2.5.160.md`
+* `docs/sprints/Sprint-G2.5.161.md`
+* `docs/sprints/Sprint-G2.5.162.md`
+* `docs/sprints/Sprint-G2.5.163.md`
+* `docs/sprints/Sprint-G2.5.164.md`
+* `docs/sprints/Sprint-G2.5.165.md`
 
 ---
 

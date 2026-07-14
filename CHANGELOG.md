@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Core public API review now protects the compact Core package-root value
+  surface before returning to Renderer boundary work.
+* Renderer host context review now protects Core Runtime host pass-through,
+  diagnostics visibility and pipeline context ownership.
 * Core Runtime host review now protects configuration, custom events/services,
   module registration, validation and diagnostics pass-through behavior.
 * Core lifecycle review now protects Runtime lifecycle pass-through results,

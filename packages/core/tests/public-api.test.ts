@@ -103,6 +103,15 @@ describe("core public API", () => {
     expect(Core.subscribeToCoreRuntimeEvent).toBeTypeOf("function");
   });
 
+  it("keeps the Core package value surface compact", () => {
+    expect(Object.keys(Core).sort()).toEqual([
+      "createCoreRuntimeHost",
+      "inspectCoreRuntimeHost",
+      "subscribeToCoreRuntimeEvent",
+      "transitionCoreRuntimeHost",
+    ]);
+  });
+
   it("exports the Core package type surface from the package root", () => {
     const configuration: CoreRuntimeHostConfiguration = {
       application: {
