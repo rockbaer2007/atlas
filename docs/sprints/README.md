@@ -99,7 +99,8 @@ quality validation and the delivered results.
 | G2.5.81 | Renderer Platform Adapter Selection Readiness | Completed | - |
 | G2.5.82 | Renderer Platform Adapter Selection Review | Completed | - |
 | G2.5.83 | Renderer Platform Adapter Selection Policy Readiness | Completed | - |
-| G2.5.84 | Renderer Platform Adapter Selection Policy Review | Planned | - |
+| G2.5.84 | Renderer Platform Adapter Selection Policy Review | Completed | - |
+| G2.5.85 | Renderer Platform Adapter Conflict Integration Readiness | Planned | - |
 
 ---
 
@@ -1274,15 +1275,28 @@ Highlights
 
 ---
 
+## G2.5.84 - Renderer Platform Adapter Selection Policy Review
+
+Reviewed and protected Renderer platform adapter selection policy behavior
+before conflict integration.
+
+Highlights
+
+- Reviewed `selectFirstRendererPlatformAdapterCandidate` package-root export
+- Covered first-candidate platform adapter order preservation
+- Documented platform adapter policy readiness before conflict integration
+
+---
+
 # Planned Sprints
 
-## G2.5.84 - Renderer Platform Adapter Selection Policy Review
+## G2.5.85 - Renderer Platform Adapter Conflict Integration Readiness
 
 Planned deliverables
 
-- Review Renderer platform adapter selection policy package-root exports
-- Add first-candidate platform adapter candidate order coverage
-- Document platform adapter policy readiness before conflict integration
+- Define Renderer platform adapter conflict-to-selection integration helper
+- Add duplicate platform adapter conflict integration coverage
+- Document platform adapter conflict integration boundary before concrete mounting
 
 ---
 

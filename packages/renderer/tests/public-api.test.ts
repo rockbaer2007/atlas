@@ -2482,6 +2482,45 @@ describe("renderer public API", () => {
     });
   });
 
+  it("preserves Renderer platform adapter candidate order during first-candidate selection", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-platform-order-policy-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-platform-order-policy-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const result = Renderer.selectFirstRendererPlatformAdapterCandidate(
+      createRendererPlatformAdapterSelectionRequest({
+        platform: "surface",
+        candidates: [second, first],
+      }),
+    );
+
+    expect(result).toEqual({
+      platform: "surface",
+      platformAdapter: second,
+    });
+  });
+
   it("reports missing Renderer platform adapter selection when no candidates exist", () => {
     const result = selectFirstRendererPlatformAdapterCandidate(
       createRendererPlatformAdapterSelectionRequest({

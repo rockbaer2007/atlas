@@ -184,7 +184,8 @@ platform adapter selection candidate lists are supported as a valid request
 state before policy helpers exist.
 Renderer platform adapter first-candidate selection now selects the first
 available platform adapter candidate or reports an unselected result without
-resolving conflicts automatically.
+resolving conflicts automatically. Platform adapter selection policy review
+protects candidate order before conflict integration exists.
 
 ---
 

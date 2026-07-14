@@ -125,6 +125,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter selection contracts now describe candidate selection requests and results.
 * Renderer platform adapter selection review now covers empty candidate requests.
 * Renderer platform adapter selection policy helper now selects the first candidate explicitly.
+* Renderer platform adapter selection policy review now protects candidate order.
 
 ### Fixed
 
