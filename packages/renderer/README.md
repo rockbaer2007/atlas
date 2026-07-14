@@ -200,7 +200,8 @@ registry lookup behavior. Registry conflict resolutions preserve duplicate
 platform conflict order from registry insertion order.
 Resolved platform adapter choices can now drive guarded mount execution through
 their underlying Renderer adapter, while unresolved choices return an unmounted
-result without invoking an adapter.
+result without invoking an adapter. Resolved platform adapter mounting supports
+asynchronous adapter mount handlers before concrete integrations exist.
 
 ---
 

@@ -2559,6 +2559,52 @@ describe("renderer public API", () => {
     });
   });
 
+  it("awaits asynchronous resolved Renderer platform adapter mounts", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "async-resolved-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "async-resolved-platform-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "async-resolved-platform-adapter",
+        async mount(mountRequest) {
+          await Promise.resolve();
+
+          return createRendererMountResult({
+            mounted: true,
+            output: mountRequest.output,
+            target: mountRequest.target,
+          });
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+
+    await expect(Renderer.mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+  });
+
   it("creates diagnostics for failed Renderer mount results", () => {
     const output = createRendererOutput({
       kind: "fragment",
