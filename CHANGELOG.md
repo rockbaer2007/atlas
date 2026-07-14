@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Devtools activation readiness now tracks internal activation, dependency and
+  closed public API checks before concrete diagnostics tooling work.
 * Theme activation readiness now tracks internal activation, dependency and
   closed public API checks before concrete theme model work.
 * Home Assistant integration boundary readiness now tracks internal activation,

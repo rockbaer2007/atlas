@@ -118,23 +118,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.103 | Theme Activation Gate Readiness | Completed | - |
 | G2.5.104 | Theme Dependency Boundary Review | Completed | - |
 | G2.5.105 | Theme Public API Closure Review | Completed | - |
-| G2.5.106 | Devtools Activation Readiness | Planned | - |
+| G2.5.106 | Devtools Activation Readiness | Completed | - |
+| G2.5.107 | Devtools Activation Boundary Review | Completed | - |
+| G2.5.108 | Devtools Activation Gate Readiness | Completed | - |
+| G2.5.109 | Devtools Dependency Boundary Review | Completed | - |
+| G2.5.110 | Devtools Public API Closure Review | Completed | - |
+| G2.5.111 | Core Diagnostics Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.105 - Theme Public API Closure Review
+## G2.5.110 - Devtools Public API Closure Review
 
 Goal:
 
-Review and protect the closed Theme package-root API before activation.
+Review and protect the closed Devtools package-root API before activation.
 
 Deliverables:
 
-* Theme package-root closure coverage
+* Devtools package-root closure coverage
 * Internal readiness helpers kept outside public exports
-* Theme activation boundary documentation
+* Devtools activation boundary documentation
 * Sprint documentation
 
 Status:
@@ -145,13 +150,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.106 - Devtools Activation Readiness
+## G2.5.111 - Core Diagnostics Review
 
 Suggested focus:
 
-* Review `@atlas/devtools` activation preconditions
-* Define devtools diagnostics boundary for future runtime inspection
-* Keep devtools public API closed until activation criteria are met
+* Review Core diagnostic helper alignment after integration package readiness
+* Confirm Runtime diagnostic reports remain the source of truth
+* Prepare the next public API review pass above Runtime
 
 ---
 
@@ -267,6 +272,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.103.md`
 * `docs/sprints/Sprint-G2.5.104.md`
 * `docs/sprints/Sprint-G2.5.105.md`
+* `docs/sprints/Sprint-G2.5.106.md`
+* `docs/sprints/Sprint-G2.5.107.md`
+* `docs/sprints/Sprint-G2.5.108.md`
+* `docs/sprints/Sprint-G2.5.109.md`
+* `docs/sprints/Sprint-G2.5.110.md`
 
 ---
 

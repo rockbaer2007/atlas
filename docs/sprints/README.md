@@ -121,7 +121,12 @@ quality validation and the delivered results.
 | G2.5.103 | Theme Activation Gate Readiness | Completed | - |
 | G2.5.104 | Theme Dependency Boundary Review | Completed | - |
 | G2.5.105 | Theme Public API Closure Review | Completed | - |
-| G2.5.106 | Devtools Activation Readiness | Planned | - |
+| G2.5.106 | Devtools Activation Readiness | Completed | - |
+| G2.5.107 | Devtools Activation Boundary Review | Completed | - |
+| G2.5.108 | Devtools Activation Gate Readiness | Completed | - |
+| G2.5.109 | Devtools Dependency Boundary Review | Completed | - |
+| G2.5.110 | Devtools Public API Closure Review | Completed | - |
+| G2.5.111 | Core Diagnostics Review | Planned | - |
 
 ---
 
@@ -1579,15 +1584,75 @@ Highlights
 
 ---
 
+## G2.5.106 - Devtools Activation Readiness
+
+Defined Devtools activation readiness before concrete diagnostics tooling work.
+
+Highlights
+
+- Added internal Devtools activation boundary status and required layer checks
+- Kept Devtools inspection-only before runtime inspection tooling
+- Documented the package as pre-activation and API-closed
+
+---
+
+## G2.5.107 - Devtools Activation Boundary Review
+
+Reviewed Devtools activation boundary invariants before activation.
+
+Highlights
+
+- Covered required Foundation, Kernel, Runtime and Core layer expectations
+- Confirmed Devtools does not mutate workspace or runtime state before activation
+- Protected the planned activation status through package tests
+
+---
+
+## G2.5.108 - Devtools Activation Gate Readiness
+
+Added internal Devtools activation gate readiness.
+
+Highlights
+
+- Reported Devtools activation as inactive before stable diagnostics handoff
+- Preserved missing layer requirements in activation diagnostics
+- Kept activation state separate from public package exports
+
+---
+
+## G2.5.109 - Devtools Dependency Boundary Review
+
+Reviewed Devtools dependency boundaries before activation.
+
+Highlights
+
+- Added dependency boundary checks for concrete pre-activation packages
+- Protected the package from early Renderer, Theme, Home Assistant and build tool coupling
+- Documented deferred Devtools dependency direction
+
+---
+
+## G2.5.110 - Devtools Public API Closure Review
+
+Reviewed and protected Devtools public API closure before activation.
+
+Highlights
+
+- Verified the package root still exports no public API values
+- Kept internal readiness helpers out of the package root
+- Documented the next Core diagnostics review step
+
+---
+
 # Planned Sprints
 
-## G2.5.106 - Devtools Activation Readiness
+## G2.5.111 - Core Diagnostics Review
 
 Planned deliverables
 
-- Review `@atlas/devtools` activation preconditions
-- Define devtools diagnostics boundary for future runtime inspection
-- Keep devtools public API closed until activation criteria are met
+- Review Core diagnostic helper alignment after integration package readiness
+- Confirm Runtime diagnostic reports remain the source of truth
+- Prepare the next public API review pass above Runtime
 
 ---
 
