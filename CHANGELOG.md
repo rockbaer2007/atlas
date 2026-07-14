@@ -130,6 +130,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter conflict integration review now protects copy boundaries.
 * Renderer platform adapter registry conflicts can now resolve through first-candidate selection.
 * Renderer platform adapter registry resolution review now protects conflict ordering.
+* Renderer resolved platform adapter choices can now drive guarded mount execution.
 
 ### Fixed
 

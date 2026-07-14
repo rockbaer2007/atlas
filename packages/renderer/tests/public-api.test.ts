@@ -64,6 +64,7 @@ import {
   findRendererPlatformAdapterConflicts,
   inspectRendererMountResult,
   mountResolvedRendererAdapter,
+  mountResolvedRendererPlatformAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
   resolveRendererPlatformAdapterConflictWithFirstCandidate,
@@ -104,6 +105,7 @@ describe("renderer public API", () => {
     expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
     expect(Renderer.RendererMountDiagnosticCodes.MountFailed).toBe("renderer.mount.failed");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
+    expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
@@ -2471,6 +2473,89 @@ describe("renderer public API", () => {
       output,
       target,
       error: "adapter mount failed as string",
+    });
+  });
+
+  it("mounts resolved Renderer platform adapter conflict resolutions", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "resolved-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "resolved-platform-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "resolved-platform-mount-adapter",
+        mount: mountRequest => createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+
+    await expect(mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+  });
+
+  it("does not mount unresolved Renderer platform adapter conflict resolutions", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "unresolved-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "unresolved-platform-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "unresolved-platform-mount-adapter",
+        mount: () => createRendererMountResult({
+          mounted: true,
+          output,
+          target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: false,
+    });
+
+    await expect(mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
     });
   });
 
