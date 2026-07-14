@@ -110,7 +110,8 @@ quality validation and the delivered results.
 | G2.5.92 | Renderer Platform Adapter Mount Failure Review | Completed | - |
 | G2.5.93 | Renderer Platform Adapter Mount Diagnostics Readiness | Completed | - |
 | G2.5.94 | Renderer Platform Adapter Mount Diagnostics Review | Completed | - |
-| G2.5.95 | Renderer Platform Adapter Integration Boundary Review | Planned | - |
+| G2.5.95 | Renderer Platform Adapter Integration Boundary Review | Completed | - |
+| G2.5.96 | Home Assistant Integration Boundary Readiness | Planned | - |
 
 ---
 
@@ -1434,15 +1435,28 @@ Highlights
 
 ---
 
+## G2.5.95 - Renderer Platform Adapter Integration Boundary Review
+
+Reviewed Renderer platform adapter integration boundary before concrete
+integrations.
+
+Highlights
+
+- Reviewed platform adapter metadata boundary before concrete integrations
+- Covered Home Assistant-style platform metadata without special Renderer behavior
+- Documented Renderer integration boundary before activating Home Assistant APIs
+
+---
+
 # Planned Sprints
 
-## G2.5.95 - Renderer Platform Adapter Integration Boundary Review
+## G2.5.96 - Home Assistant Integration Boundary Readiness
 
 Planned deliverables
 
-- Review platform adapter contracts before concrete integrations
-- Document Renderer platform adapter integration boundary
-- Prepare next integration package direction without adding concrete behavior
+- Review `@atlas/homeassistant` activation preconditions
+- Define Home Assistant integration boundary above Renderer
+- Keep Home Assistant public API closed until activation criteria are met
 
 ---
 

@@ -209,6 +209,9 @@ Platform adapter mount failures can now be inspected as Foundation-compatible
 diagnostic reports without introducing concrete platform diagnostics.
 Successful platform adapter mount results now produce empty successful
 diagnostic reports, keeping diagnostics ready for concrete integrations.
+Renderer platform adapter contracts remain metadata-driven before concrete
+integrations; platform names and capability lists do not trigger special DOM or
+Home Assistant behavior inside Renderer.
 
 ---
 

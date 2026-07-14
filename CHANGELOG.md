@@ -136,6 +136,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter mount failure review now covers non-Error rejections.
 * Renderer platform adapter mount failures can now be inspected as diagnostic reports.
 * Renderer platform adapter mount diagnostics review now covers successful reports.
+* Renderer platform adapter integration boundary review now keeps concrete platform behavior outside Renderer.
 
 ### Fixed
 

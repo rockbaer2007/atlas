@@ -107,23 +107,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.92 | Renderer Platform Adapter Mount Failure Review | Completed | - |
 | G2.5.93 | Renderer Platform Adapter Mount Diagnostics Readiness | Completed | - |
 | G2.5.94 | Renderer Platform Adapter Mount Diagnostics Review | Completed | - |
-| G2.5.95 | Renderer Platform Adapter Integration Boundary Review | Planned | - |
+| G2.5.95 | Renderer Platform Adapter Integration Boundary Review | Completed | - |
+| G2.5.96 | Home Assistant Integration Boundary Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.94 - Renderer Platform Adapter Mount Diagnostics Review
+## G2.5.95 - Renderer Platform Adapter Integration Boundary Review
 
 Goal:
 
-Review and protect Renderer platform adapter mount diagnostics before concrete integrations.
+Review Renderer platform adapter integration boundary before concrete integrations.
 
 Deliverables:
 
-* Renderer platform adapter mount diagnostics package-root export review
-* Successful platform adapter mount diagnostic coverage
-* Platform adapter diagnostics readiness documentation
+* Platform adapter metadata boundary review
+* Concrete platform behavior exclusion coverage
+* Renderer integration boundary documentation
 * Sprint documentation
 
 Status:
@@ -134,13 +135,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.95 - Renderer Platform Adapter Integration Boundary Review
+## G2.5.96 - Home Assistant Integration Boundary Readiness
 
 Suggested focus:
 
-* Review platform adapter contracts before concrete integrations
-* Document Renderer platform adapter integration boundary
-* Prepare next integration package direction without adding concrete behavior
+* Review `@atlas/homeassistant` activation preconditions
+* Define Home Assistant integration boundary above Renderer
+* Keep Home Assistant public API closed until activation criteria are met
 
 ---
 
@@ -245,6 +246,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.92.md`
 * `docs/sprints/Sprint-G2.5.93.md`
 * `docs/sprints/Sprint-G2.5.94.md`
+* `docs/sprints/Sprint-G2.5.95.md`
 
 ---
 

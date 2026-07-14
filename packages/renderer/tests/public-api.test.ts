@@ -2789,6 +2789,49 @@ describe("renderer public API", () => {
     });
   });
 
+  it("keeps Renderer platform adapter mounting independent from concrete platform metadata", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "boundary-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "boundary-platform-target",
+      identifier: "ha-card-preview",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "boundary-platform-adapter",
+        mount: mountRequest => createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        }),
+      }),
+      capabilities: [],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "home-assistant",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+
+    await expect(Renderer.mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+  });
+
   it("creates diagnostics for failed Renderer mount results", () => {
     const output = createRendererOutput({
       kind: "fragment",
