@@ -178,22 +178,27 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.163 | Renderer Core Boundary Diagnostics Review | Completed | - |
 | G2.5.164 | Renderer Core Boundary Documentation Review | Completed | - |
 | G2.5.165 | Renderer Core Boundary Return-To-Pipeline Review | Completed | - |
-| G2.5.166 | Renderer Pipeline Review | Planned | - |
+| G2.5.166 | Renderer Pipeline Review | Completed | - |
+| G2.5.167 | Renderer Pipeline Context Review | Completed | - |
+| G2.5.168 | Renderer Pipeline Result Ordering Review | Completed | - |
+| G2.5.169 | Renderer Pipeline Completion Boundary Review | Completed | - |
+| G2.5.170 | Renderer Pipeline Failure Boundary Review | Completed | - |
+| G2.5.171 | Renderer Output Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.165 - Renderer Core Boundary Return-To-Pipeline Review
+## G2.5.170 - Renderer Pipeline Failure Boundary Review
 
 Goal:
 
-Review and protect the Renderer/Core boundary before returning to pipeline work.
+Review and protect Renderer pipeline failure boundaries before returning to output work.
 
 Deliverables:
 
-* Renderer/Core boundary review
-* Pipeline readiness documentation
+* Renderer pipeline rejection coverage
+* Failure boundary documentation
 * Sprint documentation
 
 Status:
@@ -204,13 +209,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.166 - Renderer Pipeline Review
+## G2.5.171 - Renderer Output Review
 
 Suggested focus:
 
-* Review Renderer pipeline contracts after host context boundary work
-* Confirm pipeline execution keeps Core Runtime context pass-through behavior
-* Protect pipeline stage result ordering and failure boundaries
+* Review Renderer output contracts after pipeline boundary closure
+* Confirm output remains independent from targets, adapters and platforms
+* Protect output kind, name and optional content behavior
 
 ---
 
@@ -386,6 +391,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.163.md`
 * `docs/sprints/Sprint-G2.5.164.md`
 * `docs/sprints/Sprint-G2.5.165.md`
+* `docs/sprints/Sprint-G2.5.166.md`
+* `docs/sprints/Sprint-G2.5.167.md`
+* `docs/sprints/Sprint-G2.5.168.md`
+* `docs/sprints/Sprint-G2.5.169.md`
+* `docs/sprints/Sprint-G2.5.170.md`
 
 ---
 

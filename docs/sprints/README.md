@@ -181,7 +181,12 @@ quality validation and the delivered results.
 | G2.5.163 | Renderer Core Boundary Diagnostics Review | Completed | - |
 | G2.5.164 | Renderer Core Boundary Documentation Review | Completed | - |
 | G2.5.165 | Renderer Core Boundary Return-To-Pipeline Review | Completed | - |
-| G2.5.166 | Renderer Pipeline Review | Planned | - |
+| G2.5.166 | Renderer Pipeline Review | Completed | - |
+| G2.5.167 | Renderer Pipeline Context Review | Completed | - |
+| G2.5.168 | Renderer Pipeline Result Ordering Review | Completed | - |
+| G2.5.169 | Renderer Pipeline Completion Boundary Review | Completed | - |
+| G2.5.170 | Renderer Pipeline Failure Boundary Review | Completed | - |
+| G2.5.171 | Renderer Output Review | Planned | - |
 
 ---
 
@@ -2359,15 +2364,75 @@ Highlights
 
 ---
 
+## G2.5.166 - Renderer Pipeline Review
+
+Reviewed Renderer pipeline contracts after host context boundary work.
+
+Highlights
+
+- Confirmed pipeline execution remains a thin ordered stage runner
+- Protected pipeline execution after Renderer/Core boundary review
+- Kept output, target, adapter and platform behavior outside pipeline ownership
+
+---
+
+## G2.5.167 - Renderer Pipeline Context Review
+
+Reviewed Renderer host context pass-through during pipeline execution.
+
+Highlights
+
+- Confirmed every pipeline stage receives the same Renderer host context
+- Protected Core Runtime reference identity through pipeline execution
+- Kept pipeline stages from wrapping or replacing host context state
+
+---
+
+## G2.5.168 - Renderer Pipeline Result Ordering Review
+
+Reviewed Renderer pipeline stage result ordering.
+
+Highlights
+
+- Confirmed collected stage results remain in stage completion order
+- Protected asynchronous and synchronous stage ordering together
+- Kept pipeline execution from re-sorting or reclassifying stage results
+
+---
+
+## G2.5.169 - Renderer Pipeline Completion Boundary Review
+
+Reviewed Renderer pipeline completion aggregation.
+
+Highlights
+
+- Confirmed mixed stage completion reports an incomplete pipeline
+- Preserved every stage result even when one stage is incomplete
+- Kept incomplete stages separate from thrown execution failures
+
+---
+
+## G2.5.170 - Renderer Pipeline Failure Boundary Review
+
+Reviewed Renderer pipeline rejection behavior.
+
+Highlights
+
+- Confirmed rejected stages reject pipeline execution
+- Protected failure short-circuit behavior before later stages run
+- Documented pipeline failure boundaries before output review
+
+---
+
 # Planned Sprints
 
-## G2.5.166 - Renderer Pipeline Review
+## G2.5.171 - Renderer Output Review
 
 Planned deliverables
 
-- Review Renderer pipeline contracts after host context boundary work
-- Confirm pipeline execution keeps Core Runtime context pass-through behavior
-- Protect pipeline stage result ordering and failure boundaries
+- Review Renderer output contracts after pipeline boundary closure
+- Confirm output remains independent from targets, adapters and platforms
+- Protect output kind, name and optional content behavior
 
 ---
 
@@ -2393,6 +2458,11 @@ Planned deliverables
 - [G2.5.163 - Renderer Core Boundary Diagnostics Review](Sprint-G2.5.163.md)
 - [G2.5.164 - Renderer Core Boundary Documentation Review](Sprint-G2.5.164.md)
 - [G2.5.165 - Renderer Core Boundary Return-To-Pipeline Review](Sprint-G2.5.165.md)
+- [G2.5.166 - Renderer Pipeline Review](Sprint-G2.5.166.md)
+- [G2.5.167 - Renderer Pipeline Context Review](Sprint-G2.5.167.md)
+- [G2.5.168 - Renderer Pipeline Result Ordering Review](Sprint-G2.5.168.md)
+- [G2.5.169 - Renderer Pipeline Completion Boundary Review](Sprint-G2.5.169.md)
+- [G2.5.170 - Renderer Pipeline Failure Boundary Review](Sprint-G2.5.170.md)
 
 ---
 

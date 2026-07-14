@@ -96,7 +96,10 @@ ordered stage boundary without linking the resulting pipeline to later source
 array mutations. Pipeline execution runs stages sequentially and reports their
 stage results without defining component output or theme resolution. Empty
 pipelines complete successfully, and asynchronous stages are awaited before the
-next stage runs. Renderer output currently captures output kind, name and
+next stage runs. Pipeline execution passes the same Renderer host context to
+every stage, preserves stage result objects in completion order and rejects on
+stage failures without running later stages. Renderer output currently captures
+output kind, name and
 optional string content only. Output content is optional, and the current output
 kinds are `fragment` and `document`. Renderer targets currently capture target
 kind, name and optional identifier only. Target identifiers are optional, and

@@ -3487,4 +3487,227 @@ describe("renderer public API", () => {
     expect(order).toEqual(["async-first", "sync-second"]);
     expect(result.completed).toBe(true);
   });
+
+  it("passes the same Renderer host context to every pipeline stage", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-pipeline-context",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const seenContexts: RendererHostContext[] = [];
+    const pipeline = createRendererPipeline([{
+      name: "first-context",
+      run(rendererContext) {
+        seenContexts.push(rendererContext);
+
+        return {
+          stage: "first-context",
+          completed: rendererContext.runtime === runtime,
+        };
+      },
+    }, {
+      name: "second-context",
+      run(rendererContext) {
+        seenContexts.push(rendererContext);
+
+        return {
+          stage: "second-context",
+          completed: rendererContext === context,
+        };
+      },
+    }]);
+
+    const result = await executeRendererPipeline(context, pipeline);
+
+    expect(seenContexts).toEqual([context, context]);
+    expect(result.completed).toBe(true);
+  });
+
+  it("keeps Renderer pipeline execution results in stage completion order", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-pipeline-result-order",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const pipeline = createRendererPipeline([{
+      name: "prepare",
+      async run() {
+        await Promise.resolve();
+
+        return {
+          stage: "prepare-result",
+          completed: true,
+        };
+      },
+    }, {
+      name: "render",
+      run: () => ({
+        stage: "render-result",
+        completed: true,
+      }),
+    }, {
+      name: "mount",
+      run: () => ({
+        stage: "mount-result",
+        completed: true,
+      }),
+    }]);
+
+    const result = await executeRendererPipeline(context, pipeline);
+
+    expect(result.stages.map(stage => stage.stage)).toEqual([
+      "prepare-result",
+      "render-result",
+      "mount-result",
+    ]);
+  });
+
+  it("marks Renderer pipeline execution incomplete when any stage is incomplete", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-pipeline-mixed-completion",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const pipeline = createRendererPipeline([{
+      name: "ready",
+      run: () => ({
+        stage: "ready",
+        completed: true,
+      }),
+    }, {
+      name: "blocked",
+      run: () => ({
+        stage: "blocked",
+        completed: false,
+      }),
+    }, {
+      name: "skipped",
+      run: () => ({
+        stage: "skipped",
+        completed: true,
+      }),
+    }]);
+
+    const result = await executeRendererPipeline(context, pipeline);
+
+    expect(result).toEqual({
+      completed: false,
+      stages: [{
+        stage: "ready",
+        completed: true,
+      }, {
+        stage: "blocked",
+        completed: false,
+      }, {
+        stage: "skipped",
+        completed: true,
+      }],
+    });
+  });
+
+  it("preserves Renderer pipeline stage result objects without wrapping them", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-pipeline-result-identity",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const firstResult: RendererPipelineStageResult = {
+      stage: "identity-first",
+      completed: true,
+    };
+    const secondResult: RendererPipelineStageResult = {
+      stage: "identity-second",
+      completed: true,
+    };
+
+    const result = await executeRendererPipeline(
+      context,
+      createRendererPipeline([{
+        name: "identity-first",
+        run: () => firstResult,
+      }, {
+        name: "identity-second",
+        async run() {
+          await Promise.resolve();
+
+          return secondResult;
+        },
+      }]),
+    );
+
+    expect(result.stages[0]).toBe(firstResult);
+    expect(result.stages[1]).toBe(secondResult);
+  });
+
+  it("stops Renderer pipeline execution when a stage rejects", async () => {
+    const runtime = createCoreRuntimeHost({
+      application: {
+        name: "renderer-pipeline-rejection",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const context = createRendererHostContext(runtime);
+    const order: string[] = [];
+    const pipeline = createRendererPipeline([{
+      name: "before-rejection",
+      run() {
+        order.push("before-rejection");
+
+        return {
+          stage: "before-rejection",
+          completed: true,
+        };
+      },
+    }, {
+      name: "rejecting-stage",
+      async run() {
+        order.push("rejecting-stage");
+
+        throw new Error("renderer pipeline rejected");
+      },
+    }, {
+      name: "after-rejection",
+      run() {
+        order.push("after-rejection");
+
+        return {
+          stage: "after-rejection",
+          completed: true,
+        };
+      },
+    }]);
+
+    await expect(executeRendererPipeline(context, pipeline)).rejects.toThrow(
+      "renderer pipeline rejected",
+    );
+    expect(order).toEqual(["before-rejection", "rejecting-stage"]);
+  });
 });

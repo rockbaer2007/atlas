@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer pipeline review now protects host context pass-through, stage result
+  ordering, mixed completion and rejection boundaries before output work.
 * Core public API review now protects the compact Core package-root value
   surface before returning to Renderer boundary work.
 * Renderer host context review now protects Core Runtime host pass-through,
