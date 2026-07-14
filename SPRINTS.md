@@ -108,23 +108,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.93 | Renderer Platform Adapter Mount Diagnostics Readiness | Completed | - |
 | G2.5.94 | Renderer Platform Adapter Mount Diagnostics Review | Completed | - |
 | G2.5.95 | Renderer Platform Adapter Integration Boundary Review | Completed | - |
-| G2.5.96 | Home Assistant Integration Boundary Readiness | Planned | - |
+| G2.5.96 | Home Assistant Integration Boundary Readiness | Completed | - |
+| G2.5.97 | Home Assistant Integration Boundary Review | Completed | - |
+| G2.5.98 | Home Assistant Activation Gate Readiness | Completed | - |
+| G2.5.99 | Home Assistant Dependency Boundary Review | Completed | - |
+| G2.5.100 | Home Assistant Public API Closure Review | Completed | - |
+| G2.5.101 | Theme Activation Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.95 - Renderer Platform Adapter Integration Boundary Review
+## G2.5.100 - Home Assistant Public API Closure Review
 
 Goal:
 
-Review Renderer platform adapter integration boundary before concrete integrations.
+Review and protect the closed Home Assistant package-root API before activation.
 
 Deliverables:
 
-* Platform adapter metadata boundary review
-* Concrete platform behavior exclusion coverage
-* Renderer integration boundary documentation
+* Home Assistant package-root closure coverage
+* Internal readiness helpers kept outside public exports
+* Home Assistant integration boundary documentation
 * Sprint documentation
 
 Status:
@@ -135,13 +140,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.96 - Home Assistant Integration Boundary Readiness
+## G2.5.101 - Theme Activation Readiness
 
 Suggested focus:
 
-* Review `@atlas/homeassistant` activation preconditions
-* Define Home Assistant integration boundary above Renderer
-* Keep Home Assistant public API closed until activation criteria are met
+* Review `@atlas/theme` activation preconditions
+* Define theme model boundary for future renderer integration
+* Keep theme public API closed until activation criteria are met
 
 ---
 
@@ -247,6 +252,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.93.md`
 * `docs/sprints/Sprint-G2.5.94.md`
 * `docs/sprints/Sprint-G2.5.95.md`
+* `docs/sprints/Sprint-G2.5.96.md`
+* `docs/sprints/Sprint-G2.5.97.md`
+* `docs/sprints/Sprint-G2.5.98.md`
+* `docs/sprints/Sprint-G2.5.99.md`
+* `docs/sprints/Sprint-G2.5.100.md`
 
 ---
 

@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Home Assistant integration boundary readiness now tracks internal activation,
+  dependency and closed public API checks before concrete integration work.
 * Repository governance documentation.
 * `ATLAS.md` project constitution.
 * `ROADMAP.md` strategic development roadmap.

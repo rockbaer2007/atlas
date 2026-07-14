@@ -111,7 +111,12 @@ quality validation and the delivered results.
 | G2.5.93 | Renderer Platform Adapter Mount Diagnostics Readiness | Completed | - |
 | G2.5.94 | Renderer Platform Adapter Mount Diagnostics Review | Completed | - |
 | G2.5.95 | Renderer Platform Adapter Integration Boundary Review | Completed | - |
-| G2.5.96 | Home Assistant Integration Boundary Readiness | Planned | - |
+| G2.5.96 | Home Assistant Integration Boundary Readiness | Completed | - |
+| G2.5.97 | Home Assistant Integration Boundary Review | Completed | - |
+| G2.5.98 | Home Assistant Activation Gate Readiness | Completed | - |
+| G2.5.99 | Home Assistant Dependency Boundary Review | Completed | - |
+| G2.5.100 | Home Assistant Public API Closure Review | Completed | - |
+| G2.5.101 | Theme Activation Readiness | Planned | - |
 
 ---
 
@@ -1448,15 +1453,76 @@ Highlights
 
 ---
 
+## G2.5.96 - Home Assistant Integration Boundary Readiness
+
+Defined internal Home Assistant integration boundary readiness before concrete
+integration work.
+
+Highlights
+
+- Added internal Home Assistant boundary status and required layer checks
+- Kept Home Assistant behavior above Renderer platform metadata
+- Documented the package as pre-activation and API-closed
+
+---
+
+## G2.5.97 - Home Assistant Integration Boundary Review
+
+Reviewed Home Assistant integration boundary invariants before activation.
+
+Highlights
+
+- Covered required runtime, renderer and theme layer expectations
+- Confirmed Renderer remains metadata-only for Home Assistant surfaces
+- Protected the planned integration status through package tests
+
+---
+
+## G2.5.98 - Home Assistant Activation Gate Readiness
+
+Added internal Home Assistant activation gate readiness.
+
+Highlights
+
+- Reported Home Assistant activation as inactive before stable layer handoff
+- Preserved missing layer requirements in activation diagnostics
+- Kept activation state separate from public package exports
+
+---
+
+## G2.5.99 - Home Assistant Dependency Boundary Review
+
+Reviewed Home Assistant dependency boundaries before activation.
+
+Highlights
+
+- Added dependency boundary checks for concrete pre-activation packages
+- Protected the package from early Renderer, Runtime, Theme and websocket coupling
+- Documented deferred Home Assistant dependency direction
+
+---
+
+## G2.5.100 - Home Assistant Public API Closure Review
+
+Reviewed and protected Home Assistant public API closure before activation.
+
+Highlights
+
+- Verified the package root still exports no public API values
+- Kept internal readiness helpers out of the package root
+- Documented the next theme activation readiness step
+
+---
+
 # Planned Sprints
 
-## G2.5.96 - Home Assistant Integration Boundary Readiness
+## G2.5.101 - Theme Activation Readiness
 
 Planned deliverables
 
-- Review `@atlas/homeassistant` activation preconditions
-- Define Home Assistant integration boundary above Renderer
-- Keep Home Assistant public API closed until activation criteria are met
+- Review `@atlas/theme` activation preconditions
+- Define theme model boundary for future renderer integration
+- Keep theme public API closed until activation criteria are met
 
 ---
 

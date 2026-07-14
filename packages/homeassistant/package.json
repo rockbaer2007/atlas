@@ -7,6 +7,6 @@
   "scripts": {
     "build": "tsc -b",
     "check": "tsc --noEmit",
-    "test": "echo \"No tests yet\""
+    "test": "vitest"
   }
 }
