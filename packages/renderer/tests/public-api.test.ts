@@ -1075,6 +1075,51 @@ describe("renderer public API", () => {
     expect(resolution.conflict).not.toBe(conflict);
   });
 
+  it("keeps Renderer platform adapter conflict integrations independent from source arrays", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-platform-conflict-copy-integration-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-platform-conflict-copy-integration-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const platformAdapters = [first];
+    const conflict: RendererPlatformAdapterConflict = {
+      platform: "surface",
+      platformAdapters,
+    };
+
+    const resolution = Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate(conflict);
+    platformAdapters.push(second);
+
+    expect(resolution).toEqual({
+      conflict: {
+        platform: "surface",
+        platformAdapters: [first],
+      },
+      resolved: true,
+      platformAdapter: first,
+    });
+    expect(resolution.conflict.platformAdapters).not.toBe(platformAdapters);
+  });
+
   it("creates Renderer platform adapter selection requests", () => {
     const platformAdapter = createRendererPlatformAdapter({
       platform: "surface",
