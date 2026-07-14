@@ -113,23 +113,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.98 | Home Assistant Activation Gate Readiness | Completed | - |
 | G2.5.99 | Home Assistant Dependency Boundary Review | Completed | - |
 | G2.5.100 | Home Assistant Public API Closure Review | Completed | - |
-| G2.5.101 | Theme Activation Readiness | Planned | - |
+| G2.5.101 | Theme Activation Readiness | Completed | - |
+| G2.5.102 | Theme Activation Boundary Review | Completed | - |
+| G2.5.103 | Theme Activation Gate Readiness | Completed | - |
+| G2.5.104 | Theme Dependency Boundary Review | Completed | - |
+| G2.5.105 | Theme Public API Closure Review | Completed | - |
+| G2.5.106 | Devtools Activation Readiness | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.100 - Home Assistant Public API Closure Review
+## G2.5.105 - Theme Public API Closure Review
 
 Goal:
 
-Review and protect the closed Home Assistant package-root API before activation.
+Review and protect the closed Theme package-root API before activation.
 
 Deliverables:
 
-* Home Assistant package-root closure coverage
+* Theme package-root closure coverage
 * Internal readiness helpers kept outside public exports
-* Home Assistant integration boundary documentation
+* Theme activation boundary documentation
 * Sprint documentation
 
 Status:
@@ -140,13 +145,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.101 - Theme Activation Readiness
+## G2.5.106 - Devtools Activation Readiness
 
 Suggested focus:
 
-* Review `@atlas/theme` activation preconditions
-* Define theme model boundary for future renderer integration
-* Keep theme public API closed until activation criteria are met
+* Review `@atlas/devtools` activation preconditions
+* Define devtools diagnostics boundary for future runtime inspection
+* Keep devtools public API closed until activation criteria are met
 
 ---
 
@@ -257,6 +262,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.98.md`
 * `docs/sprints/Sprint-G2.5.99.md`
 * `docs/sprints/Sprint-G2.5.100.md`
+* `docs/sprints/Sprint-G2.5.101.md`
+* `docs/sprints/Sprint-G2.5.102.md`
+* `docs/sprints/Sprint-G2.5.103.md`
+* `docs/sprints/Sprint-G2.5.104.md`
+* `docs/sprints/Sprint-G2.5.105.md`
 
 ---
 

@@ -116,7 +116,12 @@ quality validation and the delivered results.
 | G2.5.98 | Home Assistant Activation Gate Readiness | Completed | - |
 | G2.5.99 | Home Assistant Dependency Boundary Review | Completed | - |
 | G2.5.100 | Home Assistant Public API Closure Review | Completed | - |
-| G2.5.101 | Theme Activation Readiness | Planned | - |
+| G2.5.101 | Theme Activation Readiness | Completed | - |
+| G2.5.102 | Theme Activation Boundary Review | Completed | - |
+| G2.5.103 | Theme Activation Gate Readiness | Completed | - |
+| G2.5.104 | Theme Dependency Boundary Review | Completed | - |
+| G2.5.105 | Theme Public API Closure Review | Completed | - |
+| G2.5.106 | Devtools Activation Readiness | Planned | - |
 
 ---
 
@@ -1514,15 +1519,75 @@ Highlights
 
 ---
 
+## G2.5.101 - Theme Activation Readiness
+
+Defined Theme activation readiness before concrete theme model work.
+
+Highlights
+
+- Added internal Theme activation boundary status and required layer checks
+- Kept Theme behavior token-only before Renderer integration
+- Documented the package as pre-activation and API-closed
+
+---
+
+## G2.5.102 - Theme Activation Boundary Review
+
+Reviewed Theme activation boundary invariants before activation.
+
+Highlights
+
+- Covered required Core and Renderer layer expectations
+- Confirmed Theme does not inject styles before activation
+- Protected the planned activation status through package tests
+
+---
+
+## G2.5.103 - Theme Activation Gate Readiness
+
+Added internal Theme activation gate readiness.
+
+Highlights
+
+- Reported Theme activation as inactive before stable layer handoff
+- Preserved missing layer requirements in activation diagnostics
+- Kept activation state separate from public package exports
+
+---
+
+## G2.5.104 - Theme Dependency Boundary Review
+
+Reviewed Theme dependency boundaries before activation.
+
+Highlights
+
+- Added dependency boundary checks for concrete pre-activation packages
+- Protected the package from early Renderer, Runtime, Home Assistant and styling library coupling
+- Documented deferred Theme dependency direction
+
+---
+
+## G2.5.105 - Theme Public API Closure Review
+
+Reviewed and protected Theme public API closure before activation.
+
+Highlights
+
+- Verified the package root still exports no public API values
+- Kept internal readiness helpers out of the package root
+- Documented the next Devtools activation readiness step
+
+---
+
 # Planned Sprints
 
-## G2.5.101 - Theme Activation Readiness
+## G2.5.106 - Devtools Activation Readiness
 
 Planned deliverables
 
-- Review `@atlas/theme` activation preconditions
-- Define theme model boundary for future renderer integration
-- Keep theme public API closed until activation criteria are met
+- Review `@atlas/devtools` activation preconditions
+- Define devtools diagnostics boundary for future runtime inspection
+- Keep devtools public API closed until activation criteria are met
 
 ---
 
