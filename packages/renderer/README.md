@@ -195,7 +195,8 @@ conflict integration preserves conflict copy boundaries so later source-array
 mutations do not alter produced resolutions.
 Renderer platform adapter registry conflicts can now be resolved through
 first-candidate selection without executing concrete mounting or changing
-registry lookup behavior.
+registry lookup behavior. Registry conflict resolutions preserve duplicate
+platform conflict order from registry insertion order.
 
 ---
 
