@@ -339,6 +339,153 @@ describe("core public API", () => {
     expect(received.map(event => event.type)).toEqual(["runtime.started"]);
   });
 
+  it("preserves Runtime lifecycle event payloads through Core subscriptions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-event-payload",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const received: CoreRuntimeEvent[] = [];
+
+    subscribeToCoreRuntimeEvent(host, "runtime.initialized", event => {
+      received.push(event);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.started", event => {
+      received.push(event);
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(received.map(event => event.type)).toEqual([
+      "runtime.initialized",
+      "runtime.started",
+    ]);
+    expect(received[0]?.timestamp).toBeInstanceOf(Date);
+    expect(received[1]?.timestamp).toBeInstanceOf(Date);
+  });
+
+  it("awaits Runtime lifecycle event handlers subscribed through Core", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-event-await",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const order: string[] = [];
+
+    subscribeToCoreRuntimeEvent(host, "runtime.initialized", async event => {
+      order.push(`${event.type}:start`);
+      await Promise.resolve();
+      order.push(`${event.type}:end`);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.started", event => {
+      order.push(event.type);
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(order).toEqual([
+      "runtime.initialized:start",
+      "runtime.initialized:end",
+      "runtime.started",
+    ]);
+  });
+
+  it("preserves Runtime module lifecycle event payloads through Core subscriptions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-module-events",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "core-module-event",
+          name: "Core module event",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: {
+          async initialize() {},
+          async stop() {},
+          async dispose() {},
+        },
+      }],
+    });
+    const received: string[] = [];
+
+    subscribeToCoreRuntimeEvent(host, "runtime.module.initialized", event => {
+      received.push(`${event.type}:${event.moduleId}:${event.timestamp instanceof Date}`);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.module.stopped", event => {
+      received.push(`${event.type}:${event.moduleId}:${event.timestamp instanceof Date}`);
+    });
+    subscribeToCoreRuntimeEvent(host, "runtime.module.disposed", event => {
+      received.push(`${event.type}:${event.moduleId}:${event.timestamp instanceof Date}`);
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+    await transitionCoreRuntimeHost(host, "dispose");
+
+    expect(received).toEqual([
+      "runtime.module.initialized:core-module-event:true",
+      "runtime.module.stopped:core-module-event:true",
+      "runtime.module.disposed:core-module-event:true",
+    ]);
+  });
+
+  it("preserves Runtime diagnostic event payloads through Core subscriptions", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-diagnostic-events",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "core-diagnostic-event",
+          name: "Core diagnostic event",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+    const received: CoreRuntimeEvent[] = [];
+
+    subscribeToCoreRuntimeEvent(host, "runtime.diagnostics.changed", event => {
+      received.push(event);
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(received).toMatchObject([{
+      type: "runtime.diagnostics.changed",
+      previousHealth: undefined,
+      currentHealth: "healthy",
+      report: {
+        applicationName: "core-diagnostic-events",
+        health: "healthy",
+      },
+    }]);
+    expect(received[0]?.timestamp).toBeInstanceOf(Date);
+  });
+
   it("returns disposable Core Runtime event subscriptions", async () => {
     const host = createCoreRuntimeHost({
       application: {
@@ -363,5 +510,31 @@ describe("core public API", () => {
     await transitionCoreRuntimeHost(host, "start");
 
     expect(received).toEqual([]);
+  });
+
+  it("disposes Runtime event subscriptions created through Core without affecting others", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-event-dispose-one",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    });
+    const received: string[] = [];
+    const first = subscribeToCoreRuntimeEvent(host, "runtime.started", event => {
+      received.push(`first:${event.type}`);
+    });
+
+    subscribeToCoreRuntimeEvent(host, "runtime.started", event => {
+      received.push(`second:${event.type}`);
+    });
+
+    await first.dispose();
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(received).toEqual(["second:runtime.started"]);
   });
 });

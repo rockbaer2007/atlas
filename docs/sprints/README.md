@@ -141,7 +141,12 @@ quality validation and the delivered results.
 | G2.5.123 | Runtime Lifecycle Event Awaiting Review | Completed | - |
 | G2.5.124 | Runtime Module Lifecycle Event Payload Review | Completed | - |
 | G2.5.125 | Runtime Terminal Lifecycle Event Review | Completed | - |
-| G2.5.126 | Core Runtime Event Review | Planned | - |
+| G2.5.126 | Core Runtime Event Review | Completed | - |
+| G2.5.127 | Core Runtime Event Payload Review | Completed | - |
+| G2.5.128 | Core Runtime Event Awaiting Review | Completed | - |
+| G2.5.129 | Core Runtime Module Event Review | Completed | - |
+| G2.5.130 | Core Runtime Event Subscription Review | Completed | - |
+| G2.5.131 | Core Lifecycle Review | Planned | - |
 
 ---
 
@@ -1839,15 +1844,75 @@ Highlights
 
 ---
 
+## G2.5.126 - Core Runtime Event Review
+
+Reviewed Core event subscription helper against Runtime lifecycle contracts.
+
+Highlights
+
+- Protected Core Runtime event subscriptions as pass-through Runtime boundaries
+- Confirmed Core does not reclassify Runtime events
+- Documented Runtime and Kernel ownership of event payloads and disposal
+
+---
+
+## G2.5.127 - Core Runtime Event Payload Review
+
+Reviewed Runtime lifecycle event payloads through Core subscriptions.
+
+Highlights
+
+- Covered `runtime.initialized` and `runtime.started` payloads through Core
+- Confirmed Runtime timestamps are preserved through Core
+- Protected event type ordering above Runtime
+
+---
+
+## G2.5.128 - Core Runtime Event Awaiting Review
+
+Reviewed awaited Runtime event handlers subscribed through Core.
+
+Highlights
+
+- Covered async Core-subscribed Runtime lifecycle handlers
+- Confirmed Runtime awaits handlers before later lifecycle events
+- Kept awaiting behavior owned by Runtime and Kernel
+
+---
+
+## G2.5.129 - Core Runtime Module Event Review
+
+Reviewed Runtime module lifecycle and diagnostic events through Core.
+
+Highlights
+
+- Covered module lifecycle event module ids and timestamps through Core
+- Covered diagnostic event payloads through Core
+- Confirmed Core preserves Runtime event payload shape
+
+---
+
+## G2.5.130 - Core Runtime Event Subscription Review
+
+Reviewed Core Runtime event subscription disposal behavior.
+
+Highlights
+
+- Covered disposing one Core-created Runtime event subscription
+- Confirmed disposal does not affect other subscribers
+- Documented Core event subscriptions as direct Runtime pass-throughs
+
+---
+
 # Planned Sprints
 
-## G2.5.126 - Core Runtime Event Review
+## G2.5.131 - Core Lifecycle Review
 
 Planned deliverables
 
-- Review Core event subscription helper against Runtime lifecycle contracts
-- Confirm Core does not reclassify Runtime events
-- Protect Core event subscription disposal after Runtime event reviews
+- Review Core lifecycle transition helper after Runtime event reviews
+- Confirm Core lifecycle transitions preserve Runtime states
+- Protect Core lifecycle transition errors and idempotent behavior
 
 ---
 

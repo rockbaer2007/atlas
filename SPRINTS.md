@@ -138,23 +138,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.123 | Runtime Lifecycle Event Awaiting Review | Completed | - |
 | G2.5.124 | Runtime Module Lifecycle Event Payload Review | Completed | - |
 | G2.5.125 | Runtime Terminal Lifecycle Event Review | Completed | - |
-| G2.5.126 | Core Runtime Event Review | Planned | - |
+| G2.5.126 | Core Runtime Event Review | Completed | - |
+| G2.5.127 | Core Runtime Event Payload Review | Completed | - |
+| G2.5.128 | Core Runtime Event Awaiting Review | Completed | - |
+| G2.5.129 | Core Runtime Module Event Review | Completed | - |
+| G2.5.130 | Core Runtime Event Subscription Review | Completed | - |
+| G2.5.131 | Core Lifecycle Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.125 - Runtime Terminal Lifecycle Event Review
+## G2.5.130 - Core Runtime Event Subscription Review
 
 Goal:
 
-Review and protect terminal Runtime lifecycle event behavior.
+Review and protect Core Runtime event subscription disposal behavior.
 
 Deliverables:
 
-* Duplicate terminal lifecycle event suppression coverage
-* Shutdown lifecycle subscriber awaiting coverage
-* Runtime lifecycle event documentation
+* Core event subscription disposal coverage
+* Runtime event pass-through documentation
+* Core event helper review
 * Sprint documentation
 
 Status:
@@ -165,13 +170,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.126 - Core Runtime Event Review
+## G2.5.131 - Core Lifecycle Review
 
 Suggested focus:
 
-* Review Core event subscription helper against Runtime lifecycle contracts
-* Confirm Core does not reclassify Runtime events
-* Protect Core event subscription disposal after Runtime event reviews
+* Review Core lifecycle transition helper after Runtime event reviews
+* Confirm Core lifecycle transitions preserve Runtime states
+* Protect Core lifecycle transition errors and idempotent behavior
 
 ---
 
@@ -307,6 +312,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.123.md`
 * `docs/sprints/Sprint-G2.5.124.md`
 * `docs/sprints/Sprint-G2.5.125.md`
+* `docs/sprints/Sprint-G2.5.126.md`
+* `docs/sprints/Sprint-G2.5.127.md`
+* `docs/sprints/Sprint-G2.5.128.md`
+* `docs/sprints/Sprint-G2.5.129.md`
+* `docs/sprints/Sprint-G2.5.130.md`
 
 ---
 

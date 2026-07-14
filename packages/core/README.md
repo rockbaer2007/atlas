@@ -21,6 +21,10 @@ Core diagnostics remain a read-through boundary over Runtime. `inspectCoreRuntim
 does not cache, normalize or reclassify Runtime health, diagnostic context or
 issues; Runtime remains the source of truth for diagnostic reports.
 
+Core Runtime event subscriptions are also pass-through boundaries. Core does
+not reclassify lifecycle, module lifecycle or diagnostic events; event payloads,
+awaiting behavior and subscription disposal remain owned by Runtime and Kernel.
+
 ---
 
 # Public API
