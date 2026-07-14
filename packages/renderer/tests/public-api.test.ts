@@ -2605,6 +2605,49 @@ describe("renderer public API", () => {
     });
   });
 
+  it("reports rejected resolved Renderer platform adapter mounts as unmounted results", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "failed-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "failed-platform-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "failed-platform-adapter",
+        async mount() {
+          await Promise.resolve();
+
+          throw new Error("platform adapter mount failed");
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+
+    await expect(mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
+      error: "platform adapter mount failed",
+    });
+  });
+
   it("creates diagnostics for failed Renderer mount results", () => {
     const output = createRendererOutput({
       kind: "fragment",
