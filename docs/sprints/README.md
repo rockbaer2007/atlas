@@ -151,7 +151,17 @@ quality validation and the delivered results.
 | G2.5.133 | Core Lifecycle Idempotency Review | Completed | - |
 | G2.5.134 | Core Lifecycle Error Propagation Review | Completed | - |
 | G2.5.135 | Core Lifecycle State Alignment Review | Completed | - |
-| G2.5.136 | Core Runtime Host Review | Planned | - |
+| G2.5.136 | Core Runtime Host Review | Completed | - |
+| G2.5.137 | Core Runtime Host Configuration Review | Completed | - |
+| G2.5.138 | Core Runtime Host Services Review | Completed | - |
+| G2.5.139 | Core Runtime Host Event Bus Review | Completed | - |
+| G2.5.140 | Core Runtime Host Module Registration Review | Completed | - |
+| G2.5.141 | Core Runtime Host Module Dependency Review | Completed | - |
+| G2.5.142 | Core Runtime Host Validation Review | Completed | - |
+| G2.5.143 | Core Runtime Host Module Isolation Review | Completed | - |
+| G2.5.144 | Core Runtime Host Diagnostics Review | Completed | - |
+| G2.5.145 | Core Runtime Host Boundary Review | Completed | - |
+| G2.5.146 | Core Public API Review | Planned | - |
 
 ---
 
@@ -1969,15 +1979,135 @@ Highlights
 
 ---
 
+## G2.5.136 - Core Runtime Host Review
+
+Reviewed Core Runtime host creation after lifecycle and event reviews.
+
+Highlights
+
+- Protected `createCoreRuntimeHost` as a Runtime host creation boundary
+- Confirmed Core does not wrap RuntimeHost with a separate host abstraction
+- Documented Runtime ownership of host behavior
+
+---
+
+## G2.5.137 - Core Runtime Host Configuration Review
+
+Reviewed Core Runtime host configuration pass-through.
+
+Highlights
+
+- Covered application configuration preservation through Core
+- Confirmed Runtime application version reporting remains intact
+- Protected Core host configuration typing
+
+---
+
+## G2.5.138 - Core Runtime Host Services Review
+
+Reviewed custom Runtime services through Core host creation.
+
+Highlights
+
+- Covered custom service container pass-through
+- Confirmed Runtime application and event services are registered
+- Protected Runtime service ownership behind Core
+
+---
+
+## G2.5.139 - Core Runtime Host Event Bus Review
+
+Reviewed custom Runtime event bus pass-through through Core.
+
+Highlights
+
+- Covered custom event bus identity through Core host creation
+- Confirmed Core subscriptions attach to the configured Runtime event bus
+- Protected Runtime lifecycle event publication through Core host creation
+
+---
+
+## G2.5.140 - Core Runtime Host Module Registration Review
+
+Reviewed configured Runtime module registration through Core host creation.
+
+Highlights
+
+- Covered initial module registration from Core host configuration
+- Confirmed registered modules make Runtime health degraded before startup
+- Protected module registration as Runtime-owned behavior
+
+---
+
+## G2.5.141 - Core Runtime Host Module Dependency Review
+
+Reviewed configured Runtime module dependency activation through Core.
+
+Highlights
+
+- Covered dependency-ordered activation from Core-created hosts
+- Confirmed Core does not alter Runtime dependency resolution
+- Protected healthy Runtime state after dependency activation
+
+---
+
+## G2.5.142 - Core Runtime Host Validation Review
+
+Reviewed Runtime validation errors through Core host creation.
+
+Highlights
+
+- Covered invalid application configuration through Core
+- Covered invalid configured modules through Core
+- Confirmed Runtime validation errors are not reclassified by Core
+
+---
+
+## G2.5.143 - Core Runtime Host Module Isolation Review
+
+Reviewed Core Runtime host module list isolation.
+
+Highlights
+
+- Covered configured module arrays after Core host creation
+- Confirmed later source array mutation does not register extra modules
+- Protected Runtime-owned module list copies
+
+---
+
+## G2.5.144 - Core Runtime Host Diagnostics Review
+
+Reviewed diagnostics integration for Core-created Runtime hosts.
+
+Highlights
+
+- Covered immediate diagnostics for configured modules
+- Confirmed Runtime diagnostic context and issue codes surface through Core
+- Protected Core host diagnostics as Runtime pass-through behavior
+
+---
+
+## G2.5.145 - Core Runtime Host Boundary Review
+
+Reviewed the Core Runtime host boundary after host creation coverage.
+
+Highlights
+
+- Documented Runtime ownership of validation, modules, events and diagnostics
+- Confirmed Core remains a compact host creation entry point
+- Planned the next Core public API review step
+
+---
+
 # Planned Sprints
 
-## G2.5.136 - Core Runtime Host Review
+## G2.5.146 - Core Public API Review
 
 Planned deliverables
 
-- Review Core Runtime host creation after lifecycle and event reviews
-- Confirm Core host configuration remains a Runtime pass-through
-- Protect Core host module registration and diagnostics integration
+- Review Core package-root exports after diagnostics, events, lifecycle and host passes
+- Confirm Core public API surface remains compact
+- Protect Core type and value exports before returning to Renderer
 
 ---
 

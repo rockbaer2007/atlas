@@ -148,23 +148,33 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.133 | Core Lifecycle Idempotency Review | Completed | - |
 | G2.5.134 | Core Lifecycle Error Propagation Review | Completed | - |
 | G2.5.135 | Core Lifecycle State Alignment Review | Completed | - |
-| G2.5.136 | Core Runtime Host Review | Planned | - |
+| G2.5.136 | Core Runtime Host Review | Completed | - |
+| G2.5.137 | Core Runtime Host Configuration Review | Completed | - |
+| G2.5.138 | Core Runtime Host Services Review | Completed | - |
+| G2.5.139 | Core Runtime Host Event Bus Review | Completed | - |
+| G2.5.140 | Core Runtime Host Module Registration Review | Completed | - |
+| G2.5.141 | Core Runtime Host Module Dependency Review | Completed | - |
+| G2.5.142 | Core Runtime Host Validation Review | Completed | - |
+| G2.5.143 | Core Runtime Host Module Isolation Review | Completed | - |
+| G2.5.144 | Core Runtime Host Diagnostics Review | Completed | - |
+| G2.5.145 | Core Runtime Host Boundary Review | Completed | - |
+| G2.5.146 | Core Public API Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.135 - Core Lifecycle State Alignment Review
+## G2.5.145 - Core Runtime Host Boundary Review
 
 Goal:
 
-Review and protect Core lifecycle result state alignment with Runtime.
+Review and protect the Core Runtime host boundary after host creation coverage.
 
 Deliverables:
 
-* Core lifecycle result state coverage
-* Runtime lifecycle pass-through documentation
-* Core lifecycle helper review
+* Core Runtime host boundary documentation
+* Runtime ownership confirmation
+* Core public API preparation
 * Sprint documentation
 
 Status:
@@ -175,13 +185,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.136 - Core Runtime Host Review
+## G2.5.146 - Core Public API Review
 
 Suggested focus:
 
-* Review Core Runtime host creation after lifecycle and event reviews
-* Confirm Core host configuration remains a Runtime pass-through
-* Protect Core host module registration and diagnostics integration
+* Review Core package-root exports after diagnostics, events, lifecycle and host passes
+* Confirm Core public API surface remains compact
+* Protect Core type and value exports before returning to Renderer
 
 ---
 
@@ -327,6 +337,16 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.133.md`
 * `docs/sprints/Sprint-G2.5.134.md`
 * `docs/sprints/Sprint-G2.5.135.md`
+* `docs/sprints/Sprint-G2.5.136.md`
+* `docs/sprints/Sprint-G2.5.137.md`
+* `docs/sprints/Sprint-G2.5.138.md`
+* `docs/sprints/Sprint-G2.5.139.md`
+* `docs/sprints/Sprint-G2.5.140.md`
+* `docs/sprints/Sprint-G2.5.141.md`
+* `docs/sprints/Sprint-G2.5.142.md`
+* `docs/sprints/Sprint-G2.5.143.md`
+* `docs/sprints/Sprint-G2.5.144.md`
+* `docs/sprints/Sprint-G2.5.145.md`
 
 ---
 

@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Core Runtime host review now protects configuration, custom events/services,
+  module registration, validation and diagnostics pass-through behavior.
 * Core lifecycle review now protects Runtime lifecycle pass-through results,
   idempotency, events and error propagation through Core.
 * Core Runtime event review now protects pass-through lifecycle, module,

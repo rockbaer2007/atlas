@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 
+import type { Event, EventBus, EventHandler, EventSubscription, ServiceContainer } from "@atlas/kernel";
+import { RuntimeServiceKeys } from "@atlas/runtime";
+
 import type {
   CoreRuntimeDiagnosticReport,
   CoreRuntimeDiagnostics,
@@ -21,6 +24,76 @@ import {
   subscribeToCoreRuntimeEvent,
   transitionCoreRuntimeHost,
 } from "../src";
+
+class CoreTestEventBus implements EventBus {
+  public readonly subscribed: string[] = [];
+  public readonly published: Event[] = [];
+
+  private readonly handlers = new Map<string, EventHandler<Event>[]>();
+
+  subscribe<T extends Event>(
+    eventType: string,
+    handler: EventHandler<T>,
+  ): EventSubscription {
+    this.subscribed.push(eventType);
+    const handlers = this.handlers.get(eventType) ?? [];
+    handlers.push(handler as EventHandler<Event>);
+    this.handlers.set(eventType, handlers);
+
+    return {
+      id: `core-test-${this.subscribed.length}`,
+      eventType,
+      dispose: async () => {
+        this.handlers.set(
+          eventType,
+          (this.handlers.get(eventType) ?? []).filter(registered =>
+            registered !== handler as EventHandler<Event>,
+          ),
+        );
+      },
+    };
+  }
+
+  async publish<T extends Event>(event: T): Promise<void> {
+    this.published.push(event);
+
+    for (const handler of this.handlers.get(event.type) ?? []) {
+      await Promise.resolve(handler(event));
+    }
+  }
+
+  clear(): void {
+    this.handlers.clear();
+  }
+}
+
+class CoreTestServiceContainer implements ServiceContainer {
+  private readonly instances = new Map<symbol, unknown>();
+
+  add<T>(_descriptor: Parameters<ServiceContainer["add"]>[0]): void {
+    // Test container only needs registered Runtime singleton instances.
+  }
+
+  register<T>(key: symbol, instance: T): void {
+    this.instances.set(key, instance);
+  }
+
+  descriptors(): readonly [] {
+    return [];
+  }
+
+  contains(key: symbol): boolean {
+    return this.instances.has(key);
+  }
+
+  resolve<T>(key: symbol): T {
+    if (!this.instances.has(key)) {
+      throw new Error(`Service not registered: ${String(key)}`);
+    }
+
+    return this.instances.get(key) as T;
+  }
+}
 
 describe("core public API", () => {
   it("exports the Core package value surface from the package root", () => {
@@ -83,6 +156,243 @@ describe("core public API", () => {
 
     expect(host.application.name).toBe("core-api");
     expect(host.state).toBe("created");
+  });
+
+  it("preserves Runtime application configuration through the Core host boundary", () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-configuration",
+        version: {
+          major: 1,
+          minor: 2,
+          patch: 3,
+        },
+      },
+    });
+
+    expect(host.application).toEqual({
+      name: "core-host-configuration",
+      version: {
+        major: 1,
+        minor: 2,
+        patch: 3,
+      },
+    });
+    expect(host.health.applicationVersion).toBe("1.2.3");
+  });
+
+  it("passes custom Runtime services through Core host creation", () => {
+    const services = new CoreTestServiceContainer();
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-services",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      services,
+    });
+
+    expect(host.services).toBe(services);
+    expect(services.resolve(RuntimeServiceKeys.application)).toBe(host.application);
+    expect(services.resolve(RuntimeServiceKeys.events)).toBe(host.events);
+  });
+
+  it("passes custom Runtime event buses through Core host creation", async () => {
+    const events = new CoreTestEventBus();
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-events",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      events,
+    });
+
+    subscribeToCoreRuntimeEvent(host, "runtime.started", () => {});
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(host.events).toBe(events);
+    expect(events.subscribed).toEqual(["runtime.started"]);
+    expect(events.published.map(event => event.type)).toEqual([
+      "runtime.initialized",
+      "runtime.started",
+    ]);
+  });
+
+  it("registers configured Runtime modules through Core host creation", () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-modules",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "core-host-module",
+          name: "Core host module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+
+    expect(host.modules.map(module => module.manifest.id)).toEqual(["core-host-module"]);
+    expect(inspectCoreRuntimeHost(host).health.health).toBe("degraded");
+  });
+
+  it("activates configured Runtime modules in dependency order through Core", async () => {
+    const order: string[] = [];
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-module-order",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "dependent-module",
+          name: "Dependent module",
+          version: "1.0.0",
+          dependencies: [{ id: "dependency-module", version: "1.0.0" }],
+        },
+        module: {
+          async initialize() {
+            order.push("dependent-module");
+          },
+        },
+      }, {
+        manifest: {
+          id: "dependency-module",
+          name: "Dependency module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: {
+          async initialize() {
+            order.push("dependency-module");
+          },
+        },
+      }],
+    });
+
+    await transitionCoreRuntimeHost(host, "start");
+
+    expect(order).toEqual(["dependency-module", "dependent-module"]);
+    expect(host.health.health).toBe("healthy");
+  });
+
+  it("preserves Runtime configuration validation errors through Core host creation", () => {
+    expect(() => createCoreRuntimeHost({
+      application: {
+        name: "",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+    })).toThrow("Runtime application name is required.");
+
+    expect(() => createCoreRuntimeHost({
+      application: {
+        name: "core-invalid-module",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "",
+          name: "Invalid module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    })).toThrow("Runtime module id is required.");
+  });
+
+  it("keeps Core Runtime host module lists independent from source arrays", () => {
+    const modules = [{
+      manifest: {
+        id: "source-module",
+        name: "Source module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    }];
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-module-copy",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules,
+    });
+    modules.push({
+      manifest: {
+        id: "late-module",
+        name: "Late module",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    expect(host.modules.map(module => module.manifest.id)).toEqual(["source-module"]);
+  });
+
+  it("surfaces configured Runtime host diagnostics through Core immediately", () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-host-diagnostics",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "diagnostic-module",
+          name: "Diagnostic module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+
+    expect(inspectCoreRuntimeHost(host).report).toMatchObject({
+      context: {
+        component: "runtime:core-host-diagnostics",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: "runtime.module.degraded",
+        }],
+      },
+    });
   });
 
   it("inspects Runtime health through the Core package root", () => {

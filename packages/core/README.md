@@ -30,6 +30,11 @@ invokes the requested Runtime lifecycle method and reports the resulting
 Runtime state without swallowing errors or adding a separate Core lifecycle
 state machine.
 
+Core Runtime host creation remains a Runtime pass-through. `createCoreRuntimeHost`
+forwards application configuration, custom event buses, custom service
+containers and initial modules to Runtime, while Runtime continues to own
+validation, module ordering, diagnostics and lifecycle behavior.
+
 ---
 
 # Public API
