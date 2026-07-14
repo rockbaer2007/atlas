@@ -207,6 +207,8 @@ error messages. Non-Error platform adapter mount rejections are stringified for
 stable failure reporting.
 Platform adapter mount failures can now be inspected as Foundation-compatible
 diagnostic reports without introducing concrete platform diagnostics.
+Successful platform adapter mount results now produce empty successful
+diagnostic reports, keeping diagnostics ready for concrete integrations.
 
 ---
 

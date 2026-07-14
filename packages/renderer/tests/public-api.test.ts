@@ -2742,6 +2742,53 @@ describe("renderer public API", () => {
     });
   });
 
+  it("creates diagnostics for successful Renderer platform adapter mount results", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "successful-platform-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "successful-platform-diagnostic-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "successful-platform-diagnostic-adapter",
+        mount: mountRequest => createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(Renderer.inspectRendererMountResult(result)).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
+    });
+  });
+
   it("creates diagnostics for failed Renderer mount results", () => {
     const output = createRendererOutput({
       kind: "fragment",
