@@ -203,7 +203,8 @@ their underlying Renderer adapter, while unresolved choices return an unmounted
 result without invoking an adapter. Resolved platform adapter mounting supports
 asynchronous adapter mount handlers before concrete integrations exist.
 Rejected resolved platform adapter mounts return unmounted results with optional
-error messages.
+error messages. Non-Error platform adapter mount rejections are stringified for
+stable failure reporting.
 
 ---
 

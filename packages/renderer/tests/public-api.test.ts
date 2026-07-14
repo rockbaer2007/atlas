@@ -2648,6 +2648,49 @@ describe("renderer public API", () => {
     });
   });
 
+  it("reports non-Error resolved Renderer platform adapter mount rejections as strings", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "string-failed-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "string-failed-platform-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "string-failed-platform-adapter",
+        async mount() {
+          await Promise.resolve();
+
+          throw "platform adapter mount failed as string";
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+
+    await expect(Renderer.mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
+      error: "platform adapter mount failed as string",
+    });
+  });
+
   it("creates diagnostics for failed Renderer mount results", () => {
     const output = createRendererOutput({
       kind: "fragment",
