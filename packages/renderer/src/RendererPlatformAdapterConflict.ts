@@ -1,5 +1,9 @@
 import type { RendererPlatformAdapter } from "./RendererPlatformAdapter";
 import type { RendererPlatformAdapterRegistry } from "./RendererPlatformAdapterRegistry";
+import {
+  createRendererPlatformAdapterSelectionRequest,
+  selectFirstRendererPlatformAdapterCandidate,
+} from "./RendererPlatformAdapterSelection";
 
 export type RendererPlatformAdapterConflict = Readonly<{
   platform: string;
@@ -47,4 +51,21 @@ export function findRendererPlatformAdapterConflicts(
       platform,
       platformAdapters,
     }));
+}
+
+export function resolveRendererPlatformAdapterConflictWithFirstCandidate(
+  conflict: RendererPlatformAdapterConflict,
+): RendererPlatformAdapterConflictResolution {
+  const selection = selectFirstRendererPlatformAdapterCandidate(
+    createRendererPlatformAdapterSelectionRequest({
+      platform: conflict.platform,
+      candidates: conflict.platformAdapters,
+    }),
+  );
+
+  return createRendererPlatformAdapterConflictResolution({
+    conflict,
+    resolved: Boolean(selection.platformAdapter),
+    ...(selection.platformAdapter ? { platformAdapter: selection.platformAdapter } : {}),
+  });
 }

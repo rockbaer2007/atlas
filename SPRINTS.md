@@ -97,23 +97,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.82 | Renderer Platform Adapter Selection Review | Completed | - |
 | G2.5.83 | Renderer Platform Adapter Selection Policy Readiness | Completed | - |
 | G2.5.84 | Renderer Platform Adapter Selection Policy Review | Completed | - |
-| G2.5.85 | Renderer Platform Adapter Conflict Integration Readiness | Planned | - |
+| G2.5.85 | Renderer Platform Adapter Conflict Integration Readiness | Completed | - |
+| G2.5.86 | Renderer Platform Adapter Conflict Integration Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.84 - Renderer Platform Adapter Selection Policy Review
+## G2.5.85 - Renderer Platform Adapter Conflict Integration Readiness
 
 Goal:
 
-Review and protect Renderer platform adapter selection policy behavior before conflict integration.
+Define Renderer platform adapter conflict integration through first-candidate selection before concrete mounting.
 
 Deliverables:
 
-* Renderer platform adapter selection policy package-root export review
-* First-candidate platform adapter order coverage
-* Platform adapter selection policy boundary documentation
+* Renderer platform adapter conflict-to-selection integration helper
+* Duplicate platform adapter conflict integration coverage
+* Empty platform adapter conflict integration coverage
 * Sprint documentation
 
 Status:
@@ -124,13 +125,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.85 - Renderer Platform Adapter Conflict Integration Readiness
+## G2.5.86 - Renderer Platform Adapter Conflict Integration Review
 
 Suggested focus:
 
-* Define Renderer platform adapter conflict-to-selection integration helper
-* Add duplicate platform adapter conflict integration coverage
-* Document platform adapter conflict integration boundary before concrete mounting
+* Review Renderer platform adapter conflict integration package-root exports
+* Add platform adapter conflict integration copy-boundary coverage
+* Document platform adapter conflict integration readiness before registry resolution
 
 ---
 
@@ -225,6 +226,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.82.md`
 * `docs/sprints/Sprint-G2.5.83.md`
 * `docs/sprints/Sprint-G2.5.84.md`
+* `docs/sprints/Sprint-G2.5.85.md`
 
 ---
 

@@ -126,6 +126,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer platform adapter selection review now covers empty candidate requests.
 * Renderer platform adapter selection policy helper now selects the first candidate explicitly.
 * Renderer platform adapter selection policy review now protects candidate order.
+* Renderer platform adapter conflicts can now resolve through first-candidate selection.
 
 ### Fixed
 

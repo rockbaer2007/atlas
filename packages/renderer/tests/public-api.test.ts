@@ -66,6 +66,7 @@ import {
   mountResolvedRendererAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
+  resolveRendererPlatformAdapterConflictWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererPlatformAdapterCandidate,
 } from "../src";
@@ -104,6 +105,7 @@ describe("renderer public API", () => {
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererPlatformAdapterCandidate).toBeTypeOf("function");
   });
@@ -1016,6 +1018,61 @@ describe("renderer public API", () => {
       platformAdapter: first,
     });
     expect(resolution.conflict.platformAdapters).not.toBe(platformAdapters);
+  });
+
+  it("resolves Renderer platform adapter conflicts with first-candidate selection", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-platform-conflict-integration-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-platform-conflict-integration-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [first, second],
+    });
+
+    const resolution = resolveRendererPlatformAdapterConflictWithFirstCandidate(conflict);
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: true,
+      platformAdapter: first,
+    });
+    expect(resolution.conflict).not.toBe(conflict);
+  });
+
+  it("reports unresolved Renderer platform adapter conflicts when no candidates exist", () => {
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [],
+    });
+
+    const resolution = resolveRendererPlatformAdapterConflictWithFirstCandidate(conflict);
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: false,
+    });
+    expect(resolution.conflict).not.toBe(conflict);
   });
 
   it("creates Renderer platform adapter selection requests", () => {

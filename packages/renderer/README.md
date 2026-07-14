@@ -83,6 +83,7 @@ descriptive only and do not mount output yet.
 - `mountResolvedRendererAdapter`
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
+- `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
 
@@ -186,6 +187,9 @@ Renderer platform adapter first-candidate selection now selects the first
 available platform adapter candidate or reports an unselected result without
 resolving conflicts automatically. Platform adapter selection policy review
 protects candidate order before conflict integration exists.
+Renderer platform adapter conflicts can now be resolved through first-candidate
+selection, while concrete mounting, Home Assistant cards, device targets and
+theme resolution remain outside this integration boundary.
 
 ---
 
