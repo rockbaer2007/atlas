@@ -646,6 +646,67 @@ describe("RuntimeHost", () => {
     ]);
   });
 
+  it("publishes diagnostic events with stable payload details", async () => {
+    const host = new RuntimeHost(application);
+    const events: RuntimeDiagnosticEvent[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(event);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-payload",
+        name: "Event payload",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await host.start();
+
+    expect(events).toHaveLength(1);
+    expect(events[0]?.type).toBe("runtime.diagnostics.changed");
+    expect(events[0]?.timestamp).toBeInstanceOf(Date);
+    expect(events[0]?.previousHealth).toBeUndefined();
+    expect(events[0]?.currentHealth).toBe(RuntimeHealthStates.Healthy);
+    expect(events[0]?.report).toMatchObject({
+      applicationName: "demo",
+      state: "initialized",
+      health: RuntimeHealthStates.Healthy,
+      modules: [{
+        moduleId: "event-payload",
+        health: RuntimeHealthStates.Healthy,
+        status: RuntimeModuleStatuses.Initialized,
+      }],
+    });
+  });
+
+  it("does not publish duplicate diagnostic events when health stays unchanged", async () => {
+    const host = new RuntimeHost(application);
+    const events: RuntimeDiagnosticEvent[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(event);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-duplicate",
+        name: "Event duplicate",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await host.start();
+    await host.stop();
+
+    expect(events.map(event => event.currentHealth)).toEqual([RuntimeHealthStates.Healthy]);
+  });
+
   it("publishes failed diagnostic events when module activation fails", async () => {
     const host = new RuntimeHost(application);
     const events: RuntimeDiagnosticEvent[] = [];
@@ -684,6 +745,80 @@ describe("RuntimeHost", () => {
         },
       },
     ]);
+  });
+
+  it("awaits diagnostic event subscribers before startup completes", async () => {
+    const host = new RuntimeHost(application);
+    const order: string[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", async event => {
+      order.push(`diagnostic:${event.currentHealth}:start`);
+      await Promise.resolve();
+      order.push(`diagnostic:${event.currentHealth}:end`);
+    });
+    host.events.subscribe("runtime.started", event => {
+      order.push(event.type);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-awaited",
+        name: "Event awaited",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: { async initialize() {} },
+    });
+
+    await host.start();
+
+    expect(order).toEqual([
+      "diagnostic:healthy:start",
+      "diagnostic:healthy:end",
+      "runtime.started",
+    ]);
+  });
+
+  it("publishes diagnostic events during shutdown when health changes", async () => {
+    const host = new RuntimeHost(application);
+    const events: RuntimeDiagnosticEvent[] = [];
+
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(event);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "event-shutdown",
+        name: "Event shutdown",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {},
+        async stop() {},
+      },
+    });
+
+    await host.start();
+    await host.dispose();
+
+    expect(events.map(event => ({
+      previousHealth: event.previousHealth,
+      currentHealth: event.currentHealth,
+      moduleHealth: event.report.modules[0]?.health,
+      moduleStatus: event.report.modules[0]?.status,
+    }))).toEqual([{
+      previousHealth: undefined,
+      currentHealth: RuntimeHealthStates.Healthy,
+      moduleHealth: RuntimeHealthStates.Healthy,
+      moduleStatus: RuntimeModuleStatuses.Initialized,
+    }, {
+      previousHealth: RuntimeHealthStates.Healthy,
+      currentHealth: RuntimeHealthStates.Degraded,
+      moduleHealth: RuntimeHealthStates.Degraded,
+      moduleStatus: RuntimeModuleStatuses.Stopped,
+    }]);
   });
 
   it("publishes lifecycle and diagnostic events in startup order", async () => {
@@ -731,6 +866,48 @@ describe("RuntimeHost", () => {
       "runtime.module.initialized:second-order",
       "runtime.diagnostics.changed:healthy",
       "runtime.started",
+    ]);
+  });
+
+  it("publishes lifecycle and diagnostic events in shutdown order", async () => {
+    const host = new RuntimeHost(application);
+    const events: string[] = [];
+
+    host.events.subscribe("runtime.stopped", event => {
+      events.push(event.type);
+    });
+    host.events.subscribe("runtime.module.stopped", event => {
+      events.push(`${event.type}:${event.moduleId}`);
+    });
+    host.events.subscribe<RuntimeDiagnosticEvent>("runtime.diagnostics.changed", event => {
+      events.push(`${event.type}:${event.currentHealth}`);
+    });
+    host.events.subscribe("runtime.disposed", event => {
+      events.push(event.type);
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "shutdown-order",
+        name: "Shutdown order",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {},
+        async stop() {},
+      },
+    });
+
+    await host.start();
+    events.length = 0;
+    await host.dispose();
+
+    expect(events).toEqual([
+      "runtime.stopped",
+      "runtime.module.stopped:shutdown-order",
+      "runtime.diagnostics.changed:degraded",
+      "runtime.disposed",
     ]);
   });
 });

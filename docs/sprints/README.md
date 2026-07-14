@@ -131,7 +131,12 @@ quality validation and the delivered results.
 | G2.5.113 | Core Diagnostics Context Review | Completed | - |
 | G2.5.114 | Core Diagnostics Issue Severity Review | Completed | - |
 | G2.5.115 | Core Diagnostics Snapshot Boundary Review | Completed | - |
-| G2.5.116 | Runtime Diagnostics Event Review | Planned | - |
+| G2.5.116 | Runtime Diagnostics Event Review | Completed | - |
+| G2.5.117 | Runtime Diagnostics Event Payload Review | Completed | - |
+| G2.5.118 | Runtime Diagnostics Event Suppression Review | Completed | - |
+| G2.5.119 | Runtime Diagnostics Event Awaiting Review | Completed | - |
+| G2.5.120 | Runtime Diagnostics Shutdown Ordering Review | Completed | - |
+| G2.5.121 | Runtime Lifecycle Event Review | Planned | - |
 
 ---
 
@@ -1709,15 +1714,75 @@ Highlights
 
 ---
 
+## G2.5.116 - Runtime Diagnostics Event Review
+
+Reviewed Runtime diagnostic event behavior after Core diagnostics review.
+
+Highlights
+
+- Protected `runtime.diagnostics.changed` as an awaited lifecycle signal
+- Confirmed diagnostic events are emitted only from lifecycle work
+- Documented diagnostic event duplicate suppression
+
+---
+
+## G2.5.117 - Runtime Diagnostics Event Payload Review
+
+Reviewed Runtime diagnostic event payload stability.
+
+Highlights
+
+- Covered diagnostic event type, timestamp, previous health and current health
+- Confirmed event reports represent the lifecycle moment being published
+- Protected health report module payloads inside diagnostic events
+
+---
+
+## G2.5.118 - Runtime Diagnostics Event Suppression Review
+
+Reviewed Runtime diagnostic event suppression when health remains unchanged.
+
+Highlights
+
+- Covered suppression of duplicate diagnostic events
+- Confirmed stopping a healthy Runtime without health change does not emit extra diagnostics
+- Documented diagnostic event emission as aggregate health-change driven
+
+---
+
+## G2.5.119 - Runtime Diagnostics Event Awaiting Review
+
+Reviewed awaited Runtime diagnostic event subscribers.
+
+Highlights
+
+- Covered async diagnostic event subscribers during startup
+- Confirmed `runtime.started` waits for diagnostic subscribers
+- Protected diagnostic events as awaited lifecycle signals
+
+---
+
+## G2.5.120 - Runtime Diagnostics Shutdown Ordering Review
+
+Reviewed Runtime diagnostic event ordering during shutdown.
+
+Highlights
+
+- Covered shutdown diagnostic events when module health changes
+- Confirmed module stop events precede shutdown diagnostic changes
+- Protected `runtime.disposed` ordering after diagnostic subscribers
+
+---
+
 # Planned Sprints
 
-## G2.5.116 - Runtime Diagnostics Event Review
+## G2.5.121 - Runtime Lifecycle Event Review
 
 Planned deliverables
 
-- Review `runtime.diagnostics.changed` event payload stability
-- Confirm diagnostic events remain awaited lifecycle signals
-- Protect Runtime diagnostic event ordering after Core review
+- Review Runtime lifecycle event payload stability
+- Confirm module lifecycle events remain ordered around diagnostics
+- Protect startup and shutdown lifecycle event contracts
 
 ---
 

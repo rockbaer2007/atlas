@@ -128,23 +128,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.113 | Core Diagnostics Context Review | Completed | - |
 | G2.5.114 | Core Diagnostics Issue Severity Review | Completed | - |
 | G2.5.115 | Core Diagnostics Snapshot Boundary Review | Completed | - |
-| G2.5.116 | Runtime Diagnostics Event Review | Planned | - |
+| G2.5.116 | Runtime Diagnostics Event Review | Completed | - |
+| G2.5.117 | Runtime Diagnostics Event Payload Review | Completed | - |
+| G2.5.118 | Runtime Diagnostics Event Suppression Review | Completed | - |
+| G2.5.119 | Runtime Diagnostics Event Awaiting Review | Completed | - |
+| G2.5.120 | Runtime Diagnostics Shutdown Ordering Review | Completed | - |
+| G2.5.121 | Runtime Lifecycle Event Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.115 - Core Diagnostics Snapshot Boundary Review
+## G2.5.120 - Runtime Diagnostics Shutdown Ordering Review
 
 Goal:
 
-Review and protect the Core diagnostics boundary over Runtime module snapshots.
+Review and protect Runtime diagnostic event ordering during shutdown.
 
 Deliverables:
 
-* Runtime snapshot boundary coverage through Core diagnostics
-* Core read-through diagnostics documentation
-* Runtime diagnostic ownership review
+* Shutdown diagnostic event ordering coverage
+* Runtime diagnostic event lifecycle documentation
+* Awaited lifecycle signal review
 * Sprint documentation
 
 Status:
@@ -155,13 +160,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.116 - Runtime Diagnostics Event Review
+## G2.5.121 - Runtime Lifecycle Event Review
 
 Suggested focus:
 
-* Review `runtime.diagnostics.changed` event payload stability
-* Confirm diagnostic events remain awaited lifecycle signals
-* Protect Runtime diagnostic event ordering after Core review
+* Review Runtime lifecycle event payload stability
+* Confirm module lifecycle events remain ordered around diagnostics
+* Protect startup and shutdown lifecycle event contracts
 
 ---
 
@@ -287,6 +292,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.113.md`
 * `docs/sprints/Sprint-G2.5.114.md`
 * `docs/sprints/Sprint-G2.5.115.md`
+* `docs/sprints/Sprint-G2.5.116.md`
+* `docs/sprints/Sprint-G2.5.117.md`
+* `docs/sprints/Sprint-G2.5.118.md`
+* `docs/sprints/Sprint-G2.5.119.md`
+* `docs/sprints/Sprint-G2.5.120.md`
 
 ---
 

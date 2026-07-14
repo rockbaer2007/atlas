@@ -69,7 +69,9 @@ the reported condition.
 
 Runtime publishes `runtime.diagnostics.changed` whenever the aggregate Runtime
 health changes. The event includes the previous health, current health and the
-current health report.
+current health report. Diagnostic events are suppressed when health remains
+unchanged and their subscribers are awaited before the surrounding lifecycle
+transition continues.
 
 Module registration is synchronous: it updates module diagnostics and health
 immediately, but does not publish hidden asynchronous events. Diagnostic change

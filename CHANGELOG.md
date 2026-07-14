@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Runtime diagnostics event review now protects diagnostic event payloads,
+  duplicate suppression and awaited lifecycle ordering.
 * Core diagnostics review now protects read-through Runtime diagnostic context,
   issue severity and live health inspection through Core.
 * Devtools activation readiness now tracks internal activation, dependency and
