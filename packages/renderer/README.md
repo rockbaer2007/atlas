@@ -84,6 +84,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
+- `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
 
@@ -192,6 +193,9 @@ selection, while concrete mounting, Home Assistant cards, device targets and
 theme resolution remain outside this integration boundary. Platform adapter
 conflict integration preserves conflict copy boundaries so later source-array
 mutations do not alter produced resolutions.
+Renderer platform adapter registry conflicts can now be resolved through
+first-candidate selection without executing concrete mounting or changing
+registry lookup behavior.
 
 ---
 

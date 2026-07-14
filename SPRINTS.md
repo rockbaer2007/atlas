@@ -99,23 +99,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.84 | Renderer Platform Adapter Selection Policy Review | Completed | - |
 | G2.5.85 | Renderer Platform Adapter Conflict Integration Readiness | Completed | - |
 | G2.5.86 | Renderer Platform Adapter Conflict Integration Review | Completed | - |
-| G2.5.87 | Renderer Platform Adapter Registry Resolution Readiness | Planned | - |
+| G2.5.87 | Renderer Platform Adapter Registry Resolution Readiness | Completed | - |
+| G2.5.88 | Renderer Platform Adapter Registry Resolution Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.86 - Renderer Platform Adapter Conflict Integration Review
+## G2.5.87 - Renderer Platform Adapter Registry Resolution Readiness
 
 Goal:
 
-Review and protect Renderer platform adapter conflict integration before registry-level resolution.
+Define Renderer platform adapter registry conflict resolution before concrete mounting.
 
 Deliverables:
 
-* Renderer platform adapter conflict integration package-root export review
-* Platform adapter conflict integration copy-boundary coverage
-* Platform adapter conflict integration boundary documentation
+* Renderer platform adapter registry conflict resolution helper
+* Duplicate platform adapter registry resolution coverage
+* Unique platform adapter registry resolution coverage
 * Sprint documentation
 
 Status:
@@ -126,13 +127,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.87 - Renderer Platform Adapter Registry Resolution Readiness
+## G2.5.88 - Renderer Platform Adapter Registry Resolution Review
 
 Suggested focus:
 
-* Define Renderer platform adapter registry conflict resolution helper
-* Add duplicate platform adapter registry resolution coverage
-* Document platform adapter registry resolution boundary before concrete mounting
+* Review Renderer platform adapter registry resolution package-root exports
+* Add platform adapter registry resolution ordering coverage
+* Document platform adapter registry resolution readiness before concrete mounting
 
 ---
 
@@ -229,6 +230,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.84.md`
 * `docs/sprints/Sprint-G2.5.85.md`
 * `docs/sprints/Sprint-G2.5.86.md`
+* `docs/sprints/Sprint-G2.5.87.md`
 
 ---
 

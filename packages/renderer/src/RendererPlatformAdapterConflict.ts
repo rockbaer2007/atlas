@@ -69,3 +69,10 @@ export function resolveRendererPlatformAdapterConflictWithFirstCandidate(
     ...(selection.platformAdapter ? { platformAdapter: selection.platformAdapter } : {}),
   });
 }
+
+export function resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate(
+  registry: RendererPlatformAdapterRegistry,
+): readonly RendererPlatformAdapterConflictResolution[] {
+  return findRendererPlatformAdapterConflicts(registry)
+    .map(resolveRendererPlatformAdapterConflictWithFirstCandidate);
+}
