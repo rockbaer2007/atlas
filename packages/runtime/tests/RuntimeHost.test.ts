@@ -869,6 +869,106 @@ describe("RuntimeHost", () => {
     ]);
   });
 
+  it("publishes runtime lifecycle events with stable payload details", async () => {
+    const host = new RuntimeHost(application);
+    const events: Array<{ type: string; timestamp: Date }> = [];
+
+    host.events.subscribe("runtime.initialized", event => {
+      events.push({
+        type: event.type,
+        timestamp: event.timestamp,
+      });
+    });
+    host.events.subscribe("runtime.started", event => {
+      events.push({
+        type: event.type,
+        timestamp: event.timestamp,
+      });
+    });
+
+    await host.start();
+
+    expect(events.map(event => event.type)).toEqual([
+      "runtime.initialized",
+      "runtime.started",
+    ]);
+    expect(events[0]?.timestamp).toBeInstanceOf(Date);
+    expect(events[1]?.timestamp).toBeInstanceOf(Date);
+  });
+
+  it("awaits runtime lifecycle subscribers during startup", async () => {
+    const host = new RuntimeHost(application);
+    const order: string[] = [];
+
+    host.events.subscribe("runtime.initialized", async event => {
+      order.push(`${event.type}:start`);
+      await Promise.resolve();
+      order.push(`${event.type}:end`);
+    });
+    host.events.subscribe("runtime.started", event => {
+      order.push(event.type);
+    });
+
+    await host.start();
+
+    expect(order).toEqual([
+      "runtime.initialized:start",
+      "runtime.initialized:end",
+      "runtime.started",
+    ]);
+  });
+
+  it("publishes module lifecycle events with module ids and timestamps", async () => {
+    const host = new RuntimeHost(application);
+    const events: Array<{ type: string; moduleId: string; timestamp: Date }> = [];
+
+    host.events.subscribe("runtime.module.initialized", event => {
+      events.push({
+        type: event.type,
+        moduleId: event.moduleId,
+        timestamp: event.timestamp,
+      });
+    });
+    host.events.subscribe("runtime.module.stopped", event => {
+      events.push({
+        type: event.type,
+        moduleId: event.moduleId,
+        timestamp: event.timestamp,
+      });
+    });
+    host.events.subscribe("runtime.module.disposed", event => {
+      events.push({
+        type: event.type,
+        moduleId: event.moduleId,
+        timestamp: event.timestamp,
+      });
+    });
+
+    host.registerModule({
+      manifest: {
+        id: "module-event-payload",
+        name: "Module event payload",
+        version: "1.0.0",
+        dependencies: [],
+      },
+      module: {
+        async initialize() {},
+        async stop() {},
+        async dispose() {},
+      },
+    });
+
+    await host.start();
+    await host.dispose();
+
+    expect(events.map(event => `${event.type}:${event.moduleId}`)).toEqual([
+      "runtime.module.initialized:module-event-payload",
+      "runtime.module.stopped:module-event-payload",
+      "runtime.module.disposed:module-event-payload",
+    ]);
+    expect(events.every(event => event.timestamp instanceof Date)).toBe(true);
+  });
+
   it("publishes lifecycle and diagnostic events in shutdown order", async () => {
     const host = new RuntimeHost(application);
     const events: string[] = [];
@@ -907,6 +1007,52 @@ describe("RuntimeHost", () => {
       "runtime.stopped",
       "runtime.module.stopped:shutdown-order",
       "runtime.diagnostics.changed:degraded",
+      "runtime.disposed",
+    ]);
+  });
+
+  it("awaits runtime lifecycle subscribers during shutdown", async () => {
+    const host = new RuntimeHost(application);
+    const order: string[] = [];
+
+    host.events.subscribe("runtime.stopped", async event => {
+      order.push(`${event.type}:start`);
+      await Promise.resolve();
+      order.push(`${event.type}:end`);
+    });
+    host.events.subscribe("runtime.disposed", event => {
+      order.push(event.type);
+    });
+
+    await host.start();
+    await host.dispose();
+
+    expect(order).toEqual([
+      "runtime.stopped:start",
+      "runtime.stopped:end",
+      "runtime.disposed",
+    ]);
+  });
+
+  it("does not publish duplicate terminal lifecycle events", async () => {
+    const host = new RuntimeHost(application);
+    const events: string[] = [];
+
+    host.events.subscribe("runtime.stopped", event => {
+      events.push(event.type);
+    });
+    host.events.subscribe("runtime.disposed", event => {
+      events.push(event.type);
+    });
+
+    await host.start();
+    await host.stop();
+    await host.stop();
+    await host.dispose();
+    await host.dispose();
+
+    expect(events).toEqual([
+      "runtime.stopped",
       "runtime.disposed",
     ]);
   });

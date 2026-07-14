@@ -136,7 +136,12 @@ quality validation and the delivered results.
 | G2.5.118 | Runtime Diagnostics Event Suppression Review | Completed | - |
 | G2.5.119 | Runtime Diagnostics Event Awaiting Review | Completed | - |
 | G2.5.120 | Runtime Diagnostics Shutdown Ordering Review | Completed | - |
-| G2.5.121 | Runtime Lifecycle Event Review | Planned | - |
+| G2.5.121 | Runtime Lifecycle Event Review | Completed | - |
+| G2.5.122 | Runtime Lifecycle Event Payload Review | Completed | - |
+| G2.5.123 | Runtime Lifecycle Event Awaiting Review | Completed | - |
+| G2.5.124 | Runtime Module Lifecycle Event Payload Review | Completed | - |
+| G2.5.125 | Runtime Terminal Lifecycle Event Review | Completed | - |
+| G2.5.126 | Core Runtime Event Review | Planned | - |
 
 ---
 
@@ -1774,15 +1779,75 @@ Highlights
 
 ---
 
+## G2.5.121 - Runtime Lifecycle Event Review
+
+Reviewed Runtime lifecycle event contracts after diagnostic event review.
+
+Highlights
+
+- Protected lifecycle event payload shape and timestamps
+- Confirmed lifecycle subscribers are awaited between transitions
+- Documented module lifecycle event payload expectations
+
+---
+
+## G2.5.122 - Runtime Lifecycle Event Payload Review
+
+Reviewed Runtime host lifecycle event payload stability.
+
+Highlights
+
+- Covered `runtime.initialized` and `runtime.started` event payloads
+- Confirmed lifecycle events include timestamps
+- Protected lifecycle event type ordering during startup
+
+---
+
+## G2.5.123 - Runtime Lifecycle Event Awaiting Review
+
+Reviewed awaited Runtime lifecycle event subscribers.
+
+Highlights
+
+- Covered async `runtime.initialized` subscribers
+- Confirmed `runtime.started` waits for initialization subscribers
+- Documented lifecycle events as awaited signals
+
+---
+
+## G2.5.124 - Runtime Module Lifecycle Event Payload Review
+
+Reviewed Runtime module lifecycle event payloads.
+
+Highlights
+
+- Covered module initialized, stopped and disposed event payloads
+- Confirmed module lifecycle events include module ids and timestamps
+- Protected module event payloads around shutdown
+
+---
+
+## G2.5.125 - Runtime Terminal Lifecycle Event Review
+
+Reviewed terminal Runtime lifecycle event behavior.
+
+Highlights
+
+- Covered awaited shutdown lifecycle subscribers
+- Confirmed `runtime.disposed` waits for `runtime.stopped` subscribers
+- Protected duplicate terminal event suppression for repeated stop and dispose calls
+
+---
+
 # Planned Sprints
 
-## G2.5.121 - Runtime Lifecycle Event Review
+## G2.5.126 - Core Runtime Event Review
 
 Planned deliverables
 
-- Review Runtime lifecycle event payload stability
-- Confirm module lifecycle events remain ordered around diagnostics
-- Protect startup and shutdown lifecycle event contracts
+- Review Core event subscription helper against Runtime lifecycle contracts
+- Confirm Core does not reclassify Runtime events
+- Protect Core event subscription disposal after Runtime event reviews
 
 ---
 

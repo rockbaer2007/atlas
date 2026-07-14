@@ -76,6 +76,9 @@ transition continues.
 Module registration is synchronous: it updates module diagnostics and health
 immediately, but does not publish hidden asynchronous events. Diagnostic change
 events are emitted from awaited lifecycle work such as startup and shutdown.
+Runtime lifecycle events include timestamps, module lifecycle events include
+module ids, and lifecycle event subscribers are awaited before the next
+lifecycle event is published.
 
 Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,
