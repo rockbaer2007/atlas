@@ -17,6 +17,10 @@ without moving diagnostic ownership out of Runtime. Core also provides a
 minimal lifecycle transition helper over Runtime host lifecycle methods and a
 typed event subscription helper for Runtime host events.
 
+Core diagnostics remain a read-through boundary over Runtime. `inspectCoreRuntimeHost`
+does not cache, normalize or reclassify Runtime health, diagnostic context or
+issues; Runtime remains the source of truth for diagnostic reports.
+
 ---
 
 # Public API

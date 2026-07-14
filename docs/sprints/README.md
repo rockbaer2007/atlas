@@ -126,7 +126,12 @@ quality validation and the delivered results.
 | G2.5.108 | Devtools Activation Gate Readiness | Completed | - |
 | G2.5.109 | Devtools Dependency Boundary Review | Completed | - |
 | G2.5.110 | Devtools Public API Closure Review | Completed | - |
-| G2.5.111 | Core Diagnostics Review | Planned | - |
+| G2.5.111 | Core Diagnostics Review | Completed | - |
+| G2.5.112 | Core Diagnostics Live Readiness | Completed | - |
+| G2.5.113 | Core Diagnostics Context Review | Completed | - |
+| G2.5.114 | Core Diagnostics Issue Severity Review | Completed | - |
+| G2.5.115 | Core Diagnostics Snapshot Boundary Review | Completed | - |
+| G2.5.116 | Runtime Diagnostics Event Review | Planned | - |
 
 ---
 
@@ -1644,15 +1649,75 @@ Highlights
 
 ---
 
+## G2.5.111 - Core Diagnostics Review
+
+Reviewed Core diagnostic helper alignment after integration package readiness.
+
+Highlights
+
+- Protected Core diagnostics as a read-through boundary over Runtime
+- Confirmed Runtime diagnostic reports remain the source of truth
+- Documented Core diagnostic ownership limits
+
+---
+
+## G2.5.112 - Core Diagnostics Live Readiness
+
+Protected live Runtime diagnostic inspection through Core.
+
+Highlights
+
+- Covered Core diagnostics before and after Runtime startup
+- Confirmed `inspectCoreRuntimeHost` does not cache old health reports
+- Kept live diagnostic state owned by Runtime
+
+---
+
+## G2.5.113 - Core Diagnostics Context Review
+
+Reviewed Runtime diagnostic context preservation through Core.
+
+Highlights
+
+- Covered Runtime diagnostic context component names through Core
+- Confirmed Runtime application versions are preserved in diagnostic reports
+- Documented Core as a pass-through diagnostic reader
+
+---
+
+## G2.5.114 - Core Diagnostics Issue Severity Review
+
+Reviewed Runtime diagnostic issue severity preservation through Core.
+
+Highlights
+
+- Covered failed Runtime module diagnostics through Core
+- Confirmed Runtime diagnostic issue codes and severities are not reclassified
+- Protected Runtime failure messages at the Core boundary
+
+---
+
+## G2.5.115 - Core Diagnostics Snapshot Boundary Review
+
+Reviewed Core diagnostics boundary over Runtime module snapshots.
+
+Highlights
+
+- Covered module health summaries through Core diagnostics
+- Confirmed Runtime module snapshots are not exposed as a new Core-owned API
+- Documented next Runtime diagnostic event review step
+
+---
+
 # Planned Sprints
 
-## G2.5.111 - Core Diagnostics Review
+## G2.5.116 - Runtime Diagnostics Event Review
 
 Planned deliverables
 
-- Review Core diagnostic helper alignment after integration package readiness
-- Confirm Runtime diagnostic reports remain the source of truth
-- Prepare the next public API review pass above Runtime
+- Review `runtime.diagnostics.changed` event payload stability
+- Confirm diagnostic events remain awaited lifecycle signals
+- Protect Runtime diagnostic event ordering after Core review
 
 ---
 

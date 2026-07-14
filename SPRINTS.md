@@ -123,23 +123,28 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.108 | Devtools Activation Gate Readiness | Completed | - |
 | G2.5.109 | Devtools Dependency Boundary Review | Completed | - |
 | G2.5.110 | Devtools Public API Closure Review | Completed | - |
-| G2.5.111 | Core Diagnostics Review | Planned | - |
+| G2.5.111 | Core Diagnostics Review | Completed | - |
+| G2.5.112 | Core Diagnostics Live Readiness | Completed | - |
+| G2.5.113 | Core Diagnostics Context Review | Completed | - |
+| G2.5.114 | Core Diagnostics Issue Severity Review | Completed | - |
+| G2.5.115 | Core Diagnostics Snapshot Boundary Review | Completed | - |
+| G2.5.116 | Runtime Diagnostics Event Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.110 - Devtools Public API Closure Review
+## G2.5.115 - Core Diagnostics Snapshot Boundary Review
 
 Goal:
 
-Review and protect the closed Devtools package-root API before activation.
+Review and protect the Core diagnostics boundary over Runtime module snapshots.
 
 Deliverables:
 
-* Devtools package-root closure coverage
-* Internal readiness helpers kept outside public exports
-* Devtools activation boundary documentation
+* Runtime snapshot boundary coverage through Core diagnostics
+* Core read-through diagnostics documentation
+* Runtime diagnostic ownership review
 * Sprint documentation
 
 Status:
@@ -150,13 +155,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.111 - Core Diagnostics Review
+## G2.5.116 - Runtime Diagnostics Event Review
 
 Suggested focus:
 
-* Review Core diagnostic helper alignment after integration package readiness
-* Confirm Runtime diagnostic reports remain the source of truth
-* Prepare the next public API review pass above Runtime
+* Review `runtime.diagnostics.changed` event payload stability
+* Confirm diagnostic events remain awaited lifecycle signals
+* Protect Runtime diagnostic event ordering after Core review
 
 ---
 
@@ -277,6 +282,11 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.108.md`
 * `docs/sprints/Sprint-G2.5.109.md`
 * `docs/sprints/Sprint-G2.5.110.md`
+* `docs/sprints/Sprint-G2.5.111.md`
+* `docs/sprints/Sprint-G2.5.112.md`
+* `docs/sprints/Sprint-G2.5.113.md`
+* `docs/sprints/Sprint-G2.5.114.md`
+* `docs/sprints/Sprint-G2.5.115.md`
 
 ---
 

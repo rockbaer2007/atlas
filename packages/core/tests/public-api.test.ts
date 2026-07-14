@@ -135,6 +135,128 @@ describe("core public API", () => {
     expect(diagnostics.report.result.issues[0]?.code).toBe("runtime.module.degraded");
   });
 
+  it("reads live Runtime diagnostics through Core without caching reports", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-live-diagnostics",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "live-module",
+          name: "Live module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+
+    const before = inspectCoreRuntimeHost(host);
+    await host.start();
+    const after = inspectCoreRuntimeHost(host);
+
+    expect(before.health.health).toBe("degraded");
+    expect(before.report.result.ok).toBe(false);
+    expect(after.health.health).toBe("healthy");
+    expect(after.report.result.ok).toBe(true);
+    expect(after.report.result.issues).toEqual([]);
+  });
+
+  it("preserves Runtime diagnostic context through Core inspection", () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-context-diagnostics",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 3,
+        },
+      },
+    });
+
+    const diagnostics = inspectCoreRuntimeHost(host);
+
+    expect(diagnostics.report.context).toEqual({
+      component: "runtime:core-context-diagnostics",
+      version: "0.2.3",
+    });
+  });
+
+  it("preserves Runtime diagnostic issue severity through Core inspection", async () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-failed-diagnostics",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "failed-module",
+          name: "Failed module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: {
+          async initialize() {
+            throw new Error("core diagnostic failure");
+          },
+        },
+      }],
+    });
+
+    await expect(host.start()).rejects.toThrow("core diagnostic failure");
+    const diagnostics = inspectCoreRuntimeHost(host);
+
+    expect(diagnostics.health.health).toBe("failed");
+    expect(diagnostics.report.result.issues).toEqual([{
+      code: "runtime.module.failed",
+      message: "Runtime module failed: failed-module - core diagnostic failure",
+      severity: "error",
+    }]);
+  });
+
+  it("keeps Core diagnostic inspection separate from Runtime module snapshots", () => {
+    const host = createCoreRuntimeHost({
+      application: {
+        name: "core-snapshot-diagnostics",
+        version: {
+          major: 0,
+          minor: 2,
+          patch: 0,
+        },
+      },
+      modules: [{
+        manifest: {
+          id: "snapshot-module",
+          name: "Snapshot module",
+          version: "1.0.0",
+          dependencies: [],
+        },
+        module: { async initialize() {} },
+      }],
+    });
+
+    const diagnostics = inspectCoreRuntimeHost(host);
+
+    expect(diagnostics.health.modules).toEqual([{
+      moduleId: "snapshot-module",
+      moduleVersion: "1.0.0",
+      health: "degraded",
+      status: "registered",
+    }]);
+    expect(diagnostics.report.result.issues[0]?.message).toBe(
+      "Runtime module is degraded: snapshot-module (registered)",
+    );
+  });
+
   it("transitions Runtime lifecycle through the Core package root", async () => {
     const host = createCoreRuntimeHost({
       application: {
