@@ -105,23 +105,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.90 | Renderer Platform Adapter Resolved Mounting Review | Completed | - |
 | G2.5.91 | Renderer Platform Adapter Mount Failure Readiness | Completed | - |
 | G2.5.92 | Renderer Platform Adapter Mount Failure Review | Completed | - |
-| G2.5.93 | Renderer Platform Adapter Mount Diagnostics Readiness | Planned | - |
+| G2.5.93 | Renderer Platform Adapter Mount Diagnostics Readiness | Completed | - |
+| G2.5.94 | Renderer Platform Adapter Mount Diagnostics Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.92 - Renderer Platform Adapter Mount Failure Review
+## G2.5.93 - Renderer Platform Adapter Mount Diagnostics Readiness
 
 Goal:
 
-Review and protect Renderer platform adapter mount failure behavior before diagnostics.
+Define Renderer platform adapter mount diagnostics before concrete integrations.
 
 Deliverables:
 
-* Renderer platform adapter mount failure package-root type review
-* Non-Error platform adapter rejection coverage
-* Platform adapter mount failure readiness documentation
+* Renderer platform adapter mount diagnostic flow
+* Platform adapter mount failure diagnostic issue coverage
+* Platform adapter diagnostics boundary documentation
 * Sprint documentation
 
 Status:
@@ -132,13 +133,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.93 - Renderer Platform Adapter Mount Diagnostics Readiness
+## G2.5.94 - Renderer Platform Adapter Mount Diagnostics Review
 
 Suggested focus:
 
-* Define Renderer platform adapter mount diagnostic flow
-* Add platform adapter mount failure diagnostic issue coverage
-* Document platform adapter diagnostics boundary before concrete integrations
+* Review Renderer platform adapter mount diagnostics package-root exports
+* Add successful platform adapter mount diagnostic coverage
+* Document platform adapter diagnostics readiness before concrete integrations
 
 ---
 
@@ -241,6 +242,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.90.md`
 * `docs/sprints/Sprint-G2.5.91.md`
 * `docs/sprints/Sprint-G2.5.92.md`
+* `docs/sprints/Sprint-G2.5.93.md`
 
 ---
 

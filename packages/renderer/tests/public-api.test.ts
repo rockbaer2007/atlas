@@ -2691,6 +2691,57 @@ describe("renderer public API", () => {
     });
   });
 
+  it("creates diagnostics for failed Renderer platform adapter mount results", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "diagnostic-platform-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "diagnostic-platform-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "diagnostic-platform-adapter",
+        async mount() {
+          await Promise.resolve();
+
+          throw new Error("platform adapter diagnostic failure");
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(inspectRendererMountResult(result)).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: "renderer.mount.failed",
+          message: "platform adapter diagnostic failure",
+          severity: "error",
+        }],
+      },
+    });
+  });
+
   it("creates diagnostics for failed Renderer mount results", () => {
     const output = createRendererOutput({
       kind: "fragment",

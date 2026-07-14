@@ -205,6 +205,8 @@ asynchronous adapter mount handlers before concrete integrations exist.
 Rejected resolved platform adapter mounts return unmounted results with optional
 error messages. Non-Error platform adapter mount rejections are stringified for
 stable failure reporting.
+Platform adapter mount failures can now be inspected as Foundation-compatible
+diagnostic reports without introducing concrete platform diagnostics.
 
 ---
 

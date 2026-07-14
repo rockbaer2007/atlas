@@ -134,6 +134,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer resolved platform adapter mounting review now covers asynchronous adapters.
 * Renderer resolved platform adapter mounting now reports rejected adapter mounts.
 * Renderer platform adapter mount failure review now covers non-Error rejections.
+* Renderer platform adapter mount failures can now be inspected as diagnostic reports.
 
 ### Fixed
 
