@@ -453,23 +453,63 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.438 | Renderer Mounting Preparation Review | Completed | - |
 | G2.5.439 | Integration Closure Protection Review | Completed | - |
 | G2.5.440 | Return-To-Renderer-Mounting Review | Completed | - |
-| G2.5.441 | Renderer Output Mount Request Review | Planned | - |
+| G2.5.441 | Renderer Output Mount Request Review | Completed | - |
+| G2.5.442 | Renderer Mount Plan Contract Review | Completed | - |
+| G2.5.443 | Renderer Mount Plan Strategy Review | Completed | - |
+| G2.5.444 | Renderer Mount Plan Status Review | Completed | - |
+| G2.5.445 | Renderer Mount Plan Quality Gate Review | Completed | - |
+| G2.5.446 | Renderer Default Mount Plan Review | Completed | - |
+| G2.5.447 | Renderer Mount Plan Request Reference Review | Completed | - |
+| G2.5.448 | Renderer Mount Plan Copy Review | Completed | - |
+| G2.5.449 | Renderer Mount Plan Report Review | Completed | - |
+| G2.5.450 | Renderer Mount Plan Report Copy Review | Completed | - |
+| G2.5.451 | Renderer Mount Plan Readiness Review | Completed | - |
+| G2.5.452 | Renderer Incomplete Mount Plan Review | Completed | - |
+| G2.5.453 | Renderer Mount Plan Execution Boundary Review | Completed | - |
+| G2.5.454 | Renderer Mount Plan Package Root Review | Completed | - |
+| G2.5.455 | Renderer Mount Plan Type Surface Review | Completed | - |
+| G2.5.456 | Renderer Mount Plan Documentation Review | Completed | - |
+| G2.5.457 | Renderer Mount Plan Regression Review | Completed | - |
+| G2.5.458 | Renderer Mount Plan Changelog Review | Completed | - |
+| G2.5.459 | Renderer Mount Plan Sprint Documentation Review | Completed | - |
+| G2.5.460 | Renderer Mount Plan Return-To-Mounting Review | Completed | - |
+| G2.5.461 | Renderer Mount Plan Boundary Review | Completed | - |
+| G2.5.462 | Renderer Mount Plan Manual Strategy Review | Completed | - |
+| G2.5.463 | Renderer Mount Plan Adapter Strategy Review | Completed | - |
+| G2.5.464 | Renderer Mount Plan Platform Strategy Review | Completed | - |
+| G2.5.465 | Renderer Mount Plan Gate Completeness Review | Completed | - |
+| G2.5.466 | Renderer Mount Plan Output Report Review | Completed | - |
+| G2.5.467 | Renderer Mount Plan Target Report Review | Completed | - |
+| G2.5.468 | Renderer Mount Plan Mutation Review | Completed | - |
+| G2.5.469 | Renderer Mount Plan No-DOM Review | Completed | - |
+| G2.5.470 | Renderer Mount Plan No-Theme Review | Completed | - |
+| G2.5.471 | Renderer Mount Plan No-Home-Assistant Review | Completed | - |
+| G2.5.472 | Renderer Mount Plan Adapter Isolation Review | Completed | - |
+| G2.5.473 | Renderer Mount Plan Diagnostics Gate Review | Completed | - |
+| G2.5.474 | Renderer Mount Plan Request Boundary Review | Completed | - |
+| G2.5.475 | Renderer Mount Plan Result Boundary Review | Completed | - |
+| G2.5.476 | Renderer Mount Plan Public API Closure Review | Completed | - |
+| G2.5.477 | Renderer Mount Plan Readiness Documentation Review | Completed | - |
+| G2.5.478 | Renderer Mount Plan Workspace Regression Review | Completed | - |
+| G2.5.479 | Renderer Mount Plan Integration Closure Review | Completed | - |
+| G2.5.480 | Renderer Mount Plan Return-To-Execution Review | Completed | - |
+| G2.5.481 | Renderer Mount Plan Execution Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.440 - Return-To-Renderer-Mounting Review
+## G2.5.480 - Renderer Mount Plan Return-To-Execution Review
 
 Goal:
 
-Select and protect the next concrete framework capability direction.
+Define Renderer mount planning before execution behavior expands.
 
 Deliverables:
 
-* Renderer mounting capability direction
-* Capability owner and risk metadata
-* Protected integration closures
+* Renderer mount plan contracts
+* Mount plan readiness reports
+* Mount plan package-root exports
 * Sprint documentation
 
 Status:
@@ -480,13 +520,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.441 - Renderer Output Mount Request Review
+## G2.5.481 - Renderer Mount Plan Execution Review
 
 Suggested focus:
 
-* Define the next Renderer output mount request capability increment
-* Keep mounting contracts descriptive before DOM or Home Assistant binding
-* Preserve Theme, Home Assistant and Devtools API closure
+* Decide whether mount plans should drive guarded adapter execution
+* Keep execution generic and independent from DOM, Theme and Home Assistant
+* Preserve existing mount request/result boundaries
 
 ---
 
@@ -937,6 +977,46 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.438.md`
 * `docs/sprints/Sprint-G2.5.439.md`
 * `docs/sprints/Sprint-G2.5.440.md`
+* `docs/sprints/Sprint-G2.5.441.md`
+* `docs/sprints/Sprint-G2.5.442.md`
+* `docs/sprints/Sprint-G2.5.443.md`
+* `docs/sprints/Sprint-G2.5.444.md`
+* `docs/sprints/Sprint-G2.5.445.md`
+* `docs/sprints/Sprint-G2.5.446.md`
+* `docs/sprints/Sprint-G2.5.447.md`
+* `docs/sprints/Sprint-G2.5.448.md`
+* `docs/sprints/Sprint-G2.5.449.md`
+* `docs/sprints/Sprint-G2.5.450.md`
+* `docs/sprints/Sprint-G2.5.451.md`
+* `docs/sprints/Sprint-G2.5.452.md`
+* `docs/sprints/Sprint-G2.5.453.md`
+* `docs/sprints/Sprint-G2.5.454.md`
+* `docs/sprints/Sprint-G2.5.455.md`
+* `docs/sprints/Sprint-G2.5.456.md`
+* `docs/sprints/Sprint-G2.5.457.md`
+* `docs/sprints/Sprint-G2.5.458.md`
+* `docs/sprints/Sprint-G2.5.459.md`
+* `docs/sprints/Sprint-G2.5.460.md`
+* `docs/sprints/Sprint-G2.5.461.md`
+* `docs/sprints/Sprint-G2.5.462.md`
+* `docs/sprints/Sprint-G2.5.463.md`
+* `docs/sprints/Sprint-G2.5.464.md`
+* `docs/sprints/Sprint-G2.5.465.md`
+* `docs/sprints/Sprint-G2.5.466.md`
+* `docs/sprints/Sprint-G2.5.467.md`
+* `docs/sprints/Sprint-G2.5.468.md`
+* `docs/sprints/Sprint-G2.5.469.md`
+* `docs/sprints/Sprint-G2.5.470.md`
+* `docs/sprints/Sprint-G2.5.471.md`
+* `docs/sprints/Sprint-G2.5.472.md`
+* `docs/sprints/Sprint-G2.5.473.md`
+* `docs/sprints/Sprint-G2.5.474.md`
+* `docs/sprints/Sprint-G2.5.475.md`
+* `docs/sprints/Sprint-G2.5.476.md`
+* `docs/sprints/Sprint-G2.5.477.md`
+* `docs/sprints/Sprint-G2.5.478.md`
+* `docs/sprints/Sprint-G2.5.479.md`
+* `docs/sprints/Sprint-G2.5.480.md`
 
 ---
 

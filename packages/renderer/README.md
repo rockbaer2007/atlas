@@ -36,6 +36,11 @@ descriptive only and do not mount output yet.
 - `RendererMountResult`
 - `RendererMountDiagnosticCodes`
 - `RendererMountDiagnosticReport`
+- `RendererMountPlan`
+- `RendererMountPlanQualityGate`
+- `RendererMountPlanReport`
+- `RendererMountPlanStatus`
+- `RendererMountPlanStrategy`
 - `RendererOutput`
 - `RendererOutputKind`
 - `RendererPipeline`
@@ -61,6 +66,8 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterSelectionRequest`
 - `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
+- `createDefaultRendererMountPlan`
+- `createRendererMountPlan`
 - `createRendererMountRequest`
 - `createRendererMountResult`
 - `createRendererOutput`
@@ -79,7 +86,9 @@ descriptive only and do not mount output yet.
 - `findRendererAdapterConflicts`
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
+- `inspectRendererMountPlan`
 - `inspectRendererMountResult`
+- `isRendererMountPlanReady`
 - `mountResolvedRendererAdapter`
 - `mountResolvedRendererPlatformAdapter`
 - `resolveRendererAdapterConflictWithFirstCandidate`
@@ -264,6 +273,13 @@ conflict resolution, guarded mounting and diagnostics as ordinary Renderer data.
 Renderer does not export Home Assistant activation helpers, does not create
 cards, dashboards or themes, and does not add concrete platform fields to mount
 results or diagnostic reports.
+
+Renderer mount planning describes the next output-to-target mounting capability
+before concrete execution changes. Mount plans capture a request, strategy,
+planned status and quality gates, copy quality gate lists away from caller-owned
+arrays, report output and target names without executing adapter mount handlers,
+and keep plans free of mounted state, adapter metadata, platform metadata, DOM
+bindings, Home Assistant surfaces and Theme bindings.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

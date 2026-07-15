@@ -14,6 +14,11 @@ import type {
   RendererAdapterSelectionResult,
   RendererHostContext,
   RendererMountDiagnosticReport,
+  RendererMountPlan,
+  RendererMountPlanQualityGate,
+  RendererMountPlanReport,
+  RendererMountPlanStatus,
+  RendererMountPlanStrategy,
   RendererMountRequest,
   RendererMountResult,
   RendererOutput,
@@ -44,6 +49,8 @@ import {
   createRendererAdapterSelectionRequest,
   createRendererAdapterSelectionResult,
   createRendererMountRequest,
+  createDefaultRendererMountPlan,
+  createRendererMountPlan,
   createRendererMountResult,
   createRendererOutput,
   createRendererHostContext,
@@ -63,6 +70,8 @@ import {
   findRendererPlatformAdapter,
   findRendererPlatformAdapterConflicts,
   inspectRendererMountResult,
+  inspectRendererMountPlan,
+  isRendererMountPlanReady,
   mountResolvedRendererAdapter,
   mountResolvedRendererPlatformAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
@@ -84,6 +93,8 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
+    expect(Renderer.createDefaultRendererMountPlan).toBeTypeOf("function");
+    expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
@@ -102,7 +113,9 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.inspectRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
+    expect(Renderer.isRendererMountPlanReady).toBeTypeOf("function");
     expect(Renderer.RendererMountDiagnosticCodes.MountFailed).toBe("renderer.mount.failed");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
@@ -156,6 +169,24 @@ describe("renderer public API", () => {
     const mountRequest: RendererMountRequest = {
       output,
       target,
+    };
+    const mountPlanStatus: RendererMountPlanStatus = "planned";
+    const mountPlanStrategy: RendererMountPlanStrategy = "manual";
+    const mountPlanQualityGate: RendererMountPlanQualityGate = "request";
+    const mountPlan: RendererMountPlan = {
+      name: "type-mount-plan",
+      status: mountPlanStatus,
+      strategy: mountPlanStrategy,
+      request: mountRequest,
+      qualityGates: [mountPlanQualityGate],
+    };
+    const mountPlanReport: RendererMountPlanReport = {
+      planned: true,
+      name: mountPlan.name,
+      strategy: mountPlan.strategy,
+      outputName: output.name,
+      targetName: target.name,
+      qualityGates: mountPlan.qualityGates,
     };
     const mountResult: RendererMountResult = {
       mounted: false,
@@ -255,6 +286,8 @@ describe("renderer public API", () => {
     expect(output.kind).toBe("fragment");
     expect(target.kind).toBe("memory");
     expect(mountRequest.output.name).toBe("type-output");
+    expect(mountPlan.request).toBe(mountRequest);
+    expect(mountPlanReport.outputName).toBe(output.name);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
@@ -678,6 +711,214 @@ describe("renderer public API", () => {
     });
     expect(request).not.toHaveProperty("mounted");
     expect(request).not.toHaveProperty("error");
+  });
+
+  it("creates Renderer mount plans for output-to-target requests", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "plan-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "plan-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+
+    const plan = createRendererMountPlan({
+      name: "plan-boundary",
+      status: "planned",
+      strategy: "manual",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    expect(plan).toEqual({
+      name: "plan-boundary",
+      status: "planned",
+      strategy: "manual",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+    expect(plan.request).toBe(request);
+  });
+
+  it("creates default Renderer mount plans from requests", () => {
+    const output = createRendererOutput({
+      kind: "document",
+      name: "default-plan-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "default-plan-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+
+    expect(Renderer.createDefaultRendererMountPlan(request)).toEqual({
+      name: "default-plan-output->default-plan-target",
+      status: "planned",
+      strategy: "manual",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+  });
+
+  it("keeps Renderer mount plan quality gates independent from source arrays", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "copy-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "copy-plan-target",
+      }),
+    });
+    const qualityGates: RendererMountPlanQualityGate[] = ["request", "output"];
+
+    const plan = createRendererMountPlan({
+      name: "copy-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates,
+    });
+
+    qualityGates.push("target");
+
+    expect(plan.qualityGates).toEqual(["request", "output"]);
+    expect(plan.qualityGates).not.toBe(qualityGates);
+  });
+
+  it("reports Renderer mount plan readiness details", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "report-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "report-plan-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+
+    expect(inspectRendererMountPlan(plan)).toEqual({
+      planned: true,
+      name: "report-plan-output->report-plan-target",
+      strategy: "manual",
+      outputName: "report-plan-output",
+      targetName: "report-plan-target",
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+  });
+
+  it("keeps Renderer mount plan reports independent from later plan mutations", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "mutation-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "mutation-plan-target",
+      }),
+    });
+    const plan = {
+      ...createDefaultRendererMountPlan(request),
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    };
+    const report = inspectRendererMountPlan(plan);
+
+    plan.qualityGates.push("request");
+
+    expect(report.qualityGates).toEqual(["request", "output", "target", "diagnostics"]);
+    expect(report.qualityGates).not.toBe(plan.qualityGates);
+  });
+
+  it("checks Renderer mount plan readiness without mounting", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "ready-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "ready-plan-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+
+    expect(isRendererMountPlanReady(plan)).toBe(true);
+    expect(plan).not.toHaveProperty("mounted");
+    expect(plan).not.toHaveProperty("adapter");
+    expect(plan).not.toHaveProperty("platform");
+  });
+
+  it("rejects incomplete Renderer mount plans as not ready", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "incomplete-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "incomplete-plan-target",
+      }),
+    });
+
+    const plan = createRendererMountPlan({
+      name: "incomplete-plan",
+      status: "planned",
+      strategy: "platform-adapter",
+      request,
+      qualityGates: ["request", "output"],
+    });
+
+    expect(isRendererMountPlanReady(plan)).toBe(false);
+  });
+
+  it("keeps Renderer mount planning separate from adapter execution", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "no-exec-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "no-exec-plan-target",
+      }),
+    });
+    let mounted = false;
+    const adapter = createRendererAdapter({
+      name: "no-exec-plan-adapter",
+      mount: mountRequest => {
+        mounted = true;
+
+        return createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        });
+      },
+    });
+
+    const plan = createRendererMountPlan({
+      name: "no-exec-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    expect(isRendererMountPlanReady(plan)).toBe(true);
+    expect(adapter.name).toBe("no-exec-plan-adapter");
+    expect(mounted).toBe(false);
   });
 
   it("creates Renderer mount results without platform adapters", () => {

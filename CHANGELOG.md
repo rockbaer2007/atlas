@@ -14,6 +14,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Framework capability direction now selects Renderer output-to-target mounting
   as the next concrete capability while keeping Theme, Home Assistant and
   Devtools public APIs closed.
+* Renderer mount planning now describes output-to-target mount plans,
+  readiness gates and plan reports without executing adapters or binding to
+  concrete platforms.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

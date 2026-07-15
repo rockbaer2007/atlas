@@ -11,6 +11,7 @@ export * from "./RendererAdapterRegistry";
 export * from "./RendererAdapterSelection";
 export * from "./RendererMount";
 export * from "./RendererMountDiagnostics";
+export * from "./RendererMountPlan";
 export * from "./RendererOutput";
 export * from "./RendererPipeline";
 export * from "./RendererPlatformAdapter";
