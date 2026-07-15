@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer platform adapter selection review now protects request references,
+  empty platform states, selected and missing result shape, and no-mount
+  first-candidate behavior.
 * Renderer platform adapter conflict review now protects conflict references,
   duplicate grouping, resolution shape and guarded mount failure boundaries.
 * Renderer platform adapter registry and lookup review now protects platform

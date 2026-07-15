@@ -213,15 +213,20 @@ adapter conflict resolution contracts can now describe unresolved conflicts or
 explicitly selected platform adapters without defining selection policies.
 Unresolved resolutions omit platformAdapter fields, resolved resolutions
 preserve selected platform adapter references, and embedded conflict lists stay
-copy-protected. Renderer platform adapter selection contracts now
-describe platform-specific candidate selection requests and selected or
-unselected platform adapter results without automatic conflict policies. Empty
-platform adapter selection candidate lists are supported as a valid request
-state before policy helpers exist.
+copy-protected. Renderer platform adapter selection contracts now describe
+platform-specific candidate selection requests and selected or unselected
+platform adapter results without automatic conflict policies. Selection requests
+preserve platform adapter candidate references while protecting candidate lists
+from source-array mutation. Empty platform adapter selection candidate lists are
+supported as a valid request state, and explicit empty platform names remain
+request data without normalization. Selection results preserve selected platform
+adapter references, omit platformAdapter fields for unselected results and keep
+explicit empty platform names as result data.
 Renderer platform adapter first-candidate selection now selects the first
 available platform adapter candidate or reports an unselected result without
 resolving conflicts automatically. Platform adapter selection policy review
-protects candidate order before conflict integration exists.
+protects candidate order and confirms selection does not invoke platform
+adapter mount handlers before conflict integration or guarded mounting.
 Renderer platform adapter conflicts can now be resolved through first-candidate
 selection without invoking selected platform adapter mount handlers, while
 concrete mounting, Home Assistant cards, device targets and theme resolution

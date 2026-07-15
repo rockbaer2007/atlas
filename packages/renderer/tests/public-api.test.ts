@@ -1981,6 +1981,38 @@ describe("renderer public API", () => {
     });
   });
 
+  it("keeps Renderer platform adapter selection candidates as platform adapter references", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "platform-selection-reference-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const request = Renderer.createRendererPlatformAdapterSelectionRequest({
+      platform: platformAdapter.platform,
+      candidates: [platformAdapter],
+    });
+
+    expect(request.candidates[0]).toBe(platformAdapter);
+  });
+
+  it("preserves explicit empty Renderer platform adapter selection platforms", () => {
+    const request = createRendererPlatformAdapterSelectionRequest({
+      platform: "",
+      candidates: [],
+    });
+
+    expect(request.platform).toBe("");
+    expect(Object.hasOwn(request, "platform")).toBe(true);
+  });
+
   it("creates selected Renderer platform adapter selection results", () => {
     const platformAdapter = createRendererPlatformAdapter({
       platform: "memory",
@@ -2004,6 +2036,7 @@ describe("renderer public API", () => {
       platform: "memory",
       platformAdapter,
     });
+    expect(result.platformAdapter).toBe(platformAdapter);
   });
 
   it("creates unselected Renderer platform adapter selection results", () => {
@@ -2014,6 +2047,16 @@ describe("renderer public API", () => {
     expect(result).toEqual({
       platform: "surface",
     });
+    expect(Object.hasOwn(result, "platformAdapter")).toBe(false);
+  });
+
+  it("preserves explicit empty Renderer platform adapter selection result platforms", () => {
+    const result = Renderer.createRendererPlatformAdapterSelectionResult({
+      platform: "",
+    });
+
+    expect(result.platform).toBe("");
+    expect(Object.hasOwn(result, "platform")).toBe(true);
   });
 
   it("creates Renderer platform adapter registries without lookup behavior", () => {
@@ -4303,6 +4346,7 @@ describe("renderer public API", () => {
       platform: "surface",
       platformAdapter: first,
     });
+    expect(result.platformAdapter).toBe(first);
   });
 
   it("preserves Renderer platform adapter candidate order during first-candidate selection", () => {
@@ -4344,6 +4388,36 @@ describe("renderer public API", () => {
     });
   });
 
+  it("selects Renderer platform adapter candidates without invoking mount handlers", () => {
+    let mounted = false;
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "platform-selection-no-mount-adapter",
+        mount: request => {
+          mounted = true;
+
+          return createRendererMountResult({
+            mounted: true,
+            output: request.output,
+            target: request.target,
+          });
+        },
+      }),
+      capabilities: ["mount"],
+    });
+
+    const result = selectFirstRendererPlatformAdapterCandidate(
+      createRendererPlatformAdapterSelectionRequest({
+        platform: platformAdapter.platform,
+        candidates: [platformAdapter],
+      }),
+    );
+
+    expect(result.platformAdapter).toBe(platformAdapter);
+    expect(mounted).toBe(false);
+  });
+
   it("reports missing Renderer platform adapter selection when no candidates exist", () => {
     const result = selectFirstRendererPlatformAdapterCandidate(
       createRendererPlatformAdapterSelectionRequest({
@@ -4355,6 +4429,7 @@ describe("renderer public API", () => {
     expect(result).toEqual({
       platform: "surface",
     });
+    expect(Object.hasOwn(result, "platformAdapter")).toBe(false);
   });
 
   it("creates a Renderer pipeline from ordered stages", async () => {
