@@ -366,7 +366,27 @@ quality validation and the delivered results.
 | G2.5.348 | Renderer Platform Adapter Integration Boundary Closure Review | Completed | - |
 | G2.5.349 | Renderer Platform Adapter Integration Regression Review | Completed | - |
 | G2.5.350 | Renderer Platform Adapter Return-To-Home-Assistant Review | Completed | - |
-| G2.5.351 | Home Assistant Integration Review | Planned | - |
+| G2.5.351 | Home Assistant Integration Review | Completed | - |
+| G2.5.352 | Home Assistant Package Root Closure Review | Completed | - |
+| G2.5.353 | Home Assistant Boundary Shape Review | Completed | - |
+| G2.5.354 | Home Assistant Required Layer Order Review | Completed | - |
+| G2.5.355 | Home Assistant Boundary Copy Review | Completed | - |
+| G2.5.356 | Home Assistant Renderer Boundary Review | Completed | - |
+| G2.5.357 | Home Assistant Public API Closure Review | Completed | - |
+| G2.5.358 | Home Assistant Public API Reason Review | Completed | - |
+| G2.5.359 | Home Assistant Activation Gate Review | Completed | - |
+| G2.5.360 | Home Assistant Activation Gate Copy Review | Completed | - |
+| G2.5.361 | Home Assistant Activation Gate Reason Review | Completed | - |
+| G2.5.362 | Home Assistant Dependency Boundary Review | Completed | - |
+| G2.5.363 | Home Assistant Allowed Dependency Review | Completed | - |
+| G2.5.364 | Home Assistant Forbidden Dependency Ordering Review | Completed | - |
+| G2.5.365 | Home Assistant Dependency Report Copy Review | Completed | - |
+| G2.5.366 | Home Assistant Integration Documentation Review | Completed | - |
+| G2.5.367 | Home Assistant Activation Documentation Review | Completed | - |
+| G2.5.368 | Home Assistant Boundary Closure Review | Completed | - |
+| G2.5.369 | Home Assistant Integration Regression Review | Completed | - |
+| G2.5.370 | Home Assistant Return-To-Theme Review | Completed | - |
+| G2.5.371 | Theme Integration Review | Planned | - |
 
 ---
 
@@ -4764,15 +4784,255 @@ Highlights
 
 ---
 
+## G2.5.351 - Home Assistant Integration Review
+
+Reviewed Home Assistant integration boundaries after Renderer platform adapter closure.
+
+Highlights
+
+- Confirmed Home Assistant remains planned and pre-activation
+- Confirmed the package root remains closed
+- Protected readiness before concrete Home Assistant implementation work
+
+---
+
+## G2.5.352 - Home Assistant Package Root Closure Review
+
+Reviewed Home Assistant package-root closure.
+
+Highlights
+
+- Confirmed concrete Home Assistant helpers are absent from the package root
+- Kept websocket, card and dashboard helpers internal or unimplemented
+- Preserved public API closure before activation
+
+---
+
+## G2.5.353 - Home Assistant Boundary Shape Review
+
+Reviewed Home Assistant integration boundary shape.
+
+Highlights
+
+- Confirmed boundary shape remains planned metadata
+- Kept cards, websocket clients and services outside the boundary object
+- Preserved package and integration identity
+
+---
+
+## G2.5.354 - Home Assistant Required Layer Order Review
+
+Reviewed Home Assistant required layer ordering.
+
+Highlights
+
+- Confirmed runtime, renderer and theme remain the required layer order
+- Preserved activation readiness ordering
+- Kept layer requirements explicit
+
+---
+
+## G2.5.355 - Home Assistant Boundary Copy Review
+
+Reviewed Home Assistant boundary copy behavior.
+
+Highlights
+
+- Confirmed independently created boundaries do not share layer arrays
+- Preserved required layer values across boundary instances
+- Kept boundary creation deterministic
+
+---
+
+## G2.5.356 - Home Assistant Renderer Boundary Review
+
+Reviewed Home Assistant renderer boundary metadata.
+
+Highlights
+
+- Confirmed Renderer remains platform-metadata-only for Home Assistant
+- Confirmed concrete mounting stays disabled
+- Kept card mounting and theme binding outside Renderer boundary metadata
+
+---
+
+## G2.5.357 - Home Assistant Public API Closure Review
+
+Reviewed Home Assistant public API closure.
+
+Highlights
+
+- Confirmed public API state remains closed
+- Confirmed the package root exports no concrete API
+- Preserved closure before activation
+
+---
+
+## G2.5.358 - Home Assistant Public API Reason Review
+
+Reviewed Home Assistant public API closure reason.
+
+Highlights
+
+- Confirmed closure reason remains stable
+- Preserved runtime, renderer and theme extension point wording
+- Kept activation rationale visible
+
+---
+
+## G2.5.359 - Home Assistant Activation Gate Review
+
+Reviewed Home Assistant activation gate behavior.
+
+Highlights
+
+- Confirmed activation remains inactive
+- Confirmed missing layers remain visible
+- Confirmed public API closure is reflected in gate reports
+
+---
+
+## G2.5.360 - Home Assistant Activation Gate Copy Review
+
+Reviewed Home Assistant activation gate copy behavior.
+
+Highlights
+
+- Confirmed gate reports copy missing layer arrays
+- Confirmed later source mutations do not alter gate reports
+- Preserved activation diagnostics stability
+
+---
+
+## G2.5.361 - Home Assistant Activation Gate Reason Review
+
+Reviewed Home Assistant activation gate reason behavior.
+
+Highlights
+
+- Confirmed gate reports reuse the public API closure reason
+- Preserved activation rationale in inactive gate reports
+- Kept gate reports aligned with boundary metadata
+
+---
+
+## G2.5.362 - Home Assistant Dependency Boundary Review
+
+Reviewed Home Assistant dependency boundaries.
+
+Highlights
+
+- Confirmed Renderer, Runtime, Theme and Home Assistant websocket dependencies remain forbidden before activation
+- Preserved dependency boundary reports
+- Kept concrete dependencies outside the package
+
+---
+
+## G2.5.363 - Home Assistant Allowed Dependency Review
+
+Reviewed allowed pre-activation dependencies.
+
+Highlights
+
+- Confirmed Foundation and Core dependencies remain allowed before activation
+- Kept forbidden dependency checks focused on concrete activation layers
+- Preserved dependency direction readiness
+
+---
+
+## G2.5.364 - Home Assistant Forbidden Dependency Ordering Review
+
+Reviewed forbidden dependency ordering.
+
+Highlights
+
+- Confirmed forbidden dependency reports preserve source order
+- Confirmed duplicate forbidden dependencies remain visible
+- Kept reports useful for package hygiene
+
+---
+
+## G2.5.365 - Home Assistant Dependency Report Copy Review
+
+Reviewed dependency report copy behavior.
+
+Highlights
+
+- Confirmed dependency boundary reports do not reuse caller arrays
+- Confirmed later dependency mutations do not alter reports
+- Preserved report independence
+
+---
+
+## G2.5.366 - Home Assistant Integration Documentation Review
+
+Reviewed Home Assistant integration documentation.
+
+Highlights
+
+- Documented required layer ordering and pre-activation status
+- Documented package-root closure before activation
+- Kept concrete integration work deferred
+
+---
+
+## G2.5.367 - Home Assistant Activation Documentation Review
+
+Reviewed Home Assistant activation documentation.
+
+Highlights
+
+- Documented activation gate copy behavior
+- Documented dependency boundary ordering
+- Preserved activation rationale
+
+---
+
+## G2.5.368 - Home Assistant Boundary Closure Review
+
+Reviewed Home Assistant boundary closure.
+
+Highlights
+
+- Confirmed integration, activation and dependency boundaries are protected
+- Kept changes within internal readiness checks
+- Prepared return to Theme review
+
+---
+
+## G2.5.369 - Home Assistant Integration Regression Review
+
+Reviewed Home Assistant integration regression coverage.
+
+Highlights
+
+- Confirmed Home Assistant boundary tests cover closure, activation and dependencies
+- Preserved package-root closure
+- Kept concrete Home Assistant behavior outside the package
+
+---
+
+## G2.5.370 - Home Assistant Return-To-Theme Review
+
+Reviewed readiness to return from Home Assistant work to Theme work.
+
+Highlights
+
+- Confirmed Home Assistant integration boundaries are covered
+- Confirmed activation remains closed before stable layers
+- Prepared next sprint for Theme integration review
+
+---
+
 # Planned Sprints
 
-## G2.5.351 - Home Assistant Integration Review
+## G2.5.371 - Theme Integration Review
 
 Planned deliverables
 
-- Review Home Assistant integration boundaries after Renderer platform adapter closure
-- Confirm Home Assistant package remains closed until required layers are stable
-- Protect activation readiness before concrete Home Assistant implementation work
+- Review Theme integration boundaries after Home Assistant closure
+- Confirm Theme package remains closed until required layers are stable
+- Protect activation readiness before concrete Theme implementation work
 
 ---
 
@@ -4983,6 +5243,26 @@ Planned deliverables
 - [G2.5.348 - Renderer Platform Adapter Integration Boundary Closure Review](Sprint-G2.5.348.md)
 - [G2.5.349 - Renderer Platform Adapter Integration Regression Review](Sprint-G2.5.349.md)
 - [G2.5.350 - Renderer Platform Adapter Return-To-Home-Assistant Review](Sprint-G2.5.350.md)
+- [G2.5.351 - Home Assistant Integration Review](Sprint-G2.5.351.md)
+- [G2.5.352 - Home Assistant Package Root Closure Review](Sprint-G2.5.352.md)
+- [G2.5.353 - Home Assistant Boundary Shape Review](Sprint-G2.5.353.md)
+- [G2.5.354 - Home Assistant Required Layer Order Review](Sprint-G2.5.354.md)
+- [G2.5.355 - Home Assistant Boundary Copy Review](Sprint-G2.5.355.md)
+- [G2.5.356 - Home Assistant Renderer Boundary Review](Sprint-G2.5.356.md)
+- [G2.5.357 - Home Assistant Public API Closure Review](Sprint-G2.5.357.md)
+- [G2.5.358 - Home Assistant Public API Reason Review](Sprint-G2.5.358.md)
+- [G2.5.359 - Home Assistant Activation Gate Review](Sprint-G2.5.359.md)
+- [G2.5.360 - Home Assistant Activation Gate Copy Review](Sprint-G2.5.360.md)
+- [G2.5.361 - Home Assistant Activation Gate Reason Review](Sprint-G2.5.361.md)
+- [G2.5.362 - Home Assistant Dependency Boundary Review](Sprint-G2.5.362.md)
+- [G2.5.363 - Home Assistant Allowed Dependency Review](Sprint-G2.5.363.md)
+- [G2.5.364 - Home Assistant Forbidden Dependency Ordering Review](Sprint-G2.5.364.md)
+- [G2.5.365 - Home Assistant Dependency Report Copy Review](Sprint-G2.5.365.md)
+- [G2.5.366 - Home Assistant Integration Documentation Review](Sprint-G2.5.366.md)
+- [G2.5.367 - Home Assistant Activation Documentation Review](Sprint-G2.5.367.md)
+- [G2.5.368 - Home Assistant Boundary Closure Review](Sprint-G2.5.368.md)
+- [G2.5.369 - Home Assistant Integration Regression Review](Sprint-G2.5.369.md)
+- [G2.5.370 - Home Assistant Return-To-Theme Review](Sprint-G2.5.370.md)
 
 ---
 

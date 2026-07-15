@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Home Assistant integration review now protects package-root closure,
+  required-layer ordering, activation gate copies, dependency boundary ordering
+  and pre-activation dependency independence.
 * Renderer platform adapter integration review now protects Home Assistant-style
   metadata as Renderer-only data across adapters, registry, lookup, selection,
   conflict resolution, mounting and diagnostics.

@@ -363,23 +363,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.348 | Renderer Platform Adapter Integration Boundary Closure Review | Completed | - |
 | G2.5.349 | Renderer Platform Adapter Integration Regression Review | Completed | - |
 | G2.5.350 | Renderer Platform Adapter Return-To-Home-Assistant Review | Completed | - |
-| G2.5.351 | Home Assistant Integration Review | Planned | - |
+| G2.5.351 | Home Assistant Integration Review | Completed | - |
+| G2.5.352 | Home Assistant Package Root Closure Review | Completed | - |
+| G2.5.353 | Home Assistant Boundary Shape Review | Completed | - |
+| G2.5.354 | Home Assistant Required Layer Order Review | Completed | - |
+| G2.5.355 | Home Assistant Boundary Copy Review | Completed | - |
+| G2.5.356 | Home Assistant Renderer Boundary Review | Completed | - |
+| G2.5.357 | Home Assistant Public API Closure Review | Completed | - |
+| G2.5.358 | Home Assistant Public API Reason Review | Completed | - |
+| G2.5.359 | Home Assistant Activation Gate Review | Completed | - |
+| G2.5.360 | Home Assistant Activation Gate Copy Review | Completed | - |
+| G2.5.361 | Home Assistant Activation Gate Reason Review | Completed | - |
+| G2.5.362 | Home Assistant Dependency Boundary Review | Completed | - |
+| G2.5.363 | Home Assistant Allowed Dependency Review | Completed | - |
+| G2.5.364 | Home Assistant Forbidden Dependency Ordering Review | Completed | - |
+| G2.5.365 | Home Assistant Dependency Report Copy Review | Completed | - |
+| G2.5.366 | Home Assistant Integration Documentation Review | Completed | - |
+| G2.5.367 | Home Assistant Activation Documentation Review | Completed | - |
+| G2.5.368 | Home Assistant Boundary Closure Review | Completed | - |
+| G2.5.369 | Home Assistant Integration Regression Review | Completed | - |
+| G2.5.370 | Home Assistant Return-To-Theme Review | Completed | - |
+| G2.5.371 | Theme Integration Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.350 - Renderer Platform Adapter Return-To-Home-Assistant Review
+## G2.5.370 - Home Assistant Return-To-Theme Review
 
 Goal:
 
-Review and protect platform adapter integration boundaries before returning to Home Assistant work.
+Review and protect Home Assistant integration boundaries before returning to Theme work.
 
 Deliverables:
 
-* Platform adapter integration coverage
-* Home Assistant metadata boundary coverage
-* Home Assistant readiness documentation
+* Home Assistant boundary coverage
+* Activation and dependency boundary coverage
+* Theme readiness documentation
 * Sprint documentation
 
 Status:
@@ -390,13 +410,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.351 - Home Assistant Integration Review
+## G2.5.371 - Theme Integration Review
 
 Suggested focus:
 
-* Review Home Assistant integration boundaries after Renderer platform adapter closure
-* Confirm Home Assistant package remains closed until required layers are stable
-* Protect activation readiness before concrete Home Assistant implementation work
+* Review Theme integration boundaries after Home Assistant closure
+* Confirm Theme package remains closed until required layers are stable
+* Protect activation readiness before concrete Theme implementation work
 
 ---
 
@@ -757,6 +777,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.348.md`
 * `docs/sprints/Sprint-G2.5.349.md`
 * `docs/sprints/Sprint-G2.5.350.md`
+* `docs/sprints/Sprint-G2.5.351.md`
+* `docs/sprints/Sprint-G2.5.352.md`
+* `docs/sprints/Sprint-G2.5.353.md`
+* `docs/sprints/Sprint-G2.5.354.md`
+* `docs/sprints/Sprint-G2.5.355.md`
+* `docs/sprints/Sprint-G2.5.356.md`
+* `docs/sprints/Sprint-G2.5.357.md`
+* `docs/sprints/Sprint-G2.5.358.md`
+* `docs/sprints/Sprint-G2.5.359.md`
+* `docs/sprints/Sprint-G2.5.360.md`
+* `docs/sprints/Sprint-G2.5.361.md`
+* `docs/sprints/Sprint-G2.5.362.md`
+* `docs/sprints/Sprint-G2.5.363.md`
+* `docs/sprints/Sprint-G2.5.364.md`
+* `docs/sprints/Sprint-G2.5.365.md`
+* `docs/sprints/Sprint-G2.5.366.md`
+* `docs/sprints/Sprint-G2.5.367.md`
+* `docs/sprints/Sprint-G2.5.368.md`
+* `docs/sprints/Sprint-G2.5.369.md`
+* `docs/sprints/Sprint-G2.5.370.md`
 
 ---
 

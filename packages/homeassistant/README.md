@@ -18,6 +18,13 @@ boundary. These checks define the required Atlas layers, keep concrete Home
 Assistant behavior above Renderer, and verify that the package root remains
 closed before activation.
 
+The integration boundary remains planned and metadata-only. Required layers are
+kept in runtime, renderer and theme order, activation gate reports copy missing
+layer lists away from source boundary objects, and dependency boundary reports
+preserve forbidden dependency order while staying independent from caller-owned
+arrays. The package root intentionally exports no concrete card, websocket,
+dashboard, service or activation helpers before activation.
+
 Concrete Home Assistant dependencies, websocket clients, card mounting and
 theme binding remain outside this package until the activation gate is opened
 in a later sprint.
