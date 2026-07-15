@@ -17,6 +17,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount planning now describes output-to-target mount plans,
   readiness gates and plan reports without executing adapters or binding to
   concrete platforms.
+* Renderer mount plan execution now routes ready plans through generic guarded
+  adapter and platform-adapter resolutions while preserving manual non-execution
+  and integration-free result boundaries.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

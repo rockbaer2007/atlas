@@ -16,6 +16,7 @@ import type {
   RendererMountDiagnosticReport,
   RendererMountPlan,
   RendererMountPlanQualityGate,
+  RendererMountPlanExecution,
   RendererMountPlanReport,
   RendererMountPlanStatus,
   RendererMountPlanStrategy,
@@ -64,6 +65,7 @@ import {
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
+  executeRendererMountPlan,
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
@@ -108,6 +110,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
+    expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
@@ -187,6 +190,9 @@ describe("renderer public API", () => {
       outputName: output.name,
       targetName: target.name,
       qualityGates: mountPlan.qualityGates,
+    };
+    const mountPlanExecution: RendererMountPlanExecution = {
+      plan: mountPlan,
     };
     const mountResult: RendererMountResult = {
       mounted: false,
@@ -288,6 +294,7 @@ describe("renderer public API", () => {
     expect(mountRequest.output.name).toBe("type-output");
     expect(mountPlan.request).toBe(mountRequest);
     expect(mountPlanReport.outputName).toBe(output.name);
+    expect(mountPlanExecution.plan).toBe(mountPlan);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
@@ -919,6 +926,262 @@ describe("renderer public API", () => {
     expect(isRendererMountPlanReady(plan)).toBe(true);
     expect(adapter.name).toBe("no-exec-plan-adapter");
     expect(mounted).toBe(false);
+  });
+
+  it("executes manual Renderer mount plans as unmounted planning results", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "manual-execution-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "manual-execution-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+
+    await expect(executeRendererMountPlan({ plan })).resolves.toEqual({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+    });
+  });
+
+  it("rejects incomplete Renderer mount plans during execution", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "incomplete-execution-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "incomplete-execution-target",
+      }),
+    });
+    const plan = createRendererMountPlan({
+      name: "incomplete-execution-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates: ["request"],
+    });
+
+    await expect(Renderer.executeRendererMountPlan({ plan })).resolves.toEqual({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+      error: "Renderer mount plan is not ready.",
+    });
+  });
+
+  it("reports missing adapter resolutions for adapter Renderer mount plans", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "missing-adapter-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "missing-adapter-plan-target",
+      }),
+    });
+    const plan = createRendererMountPlan({
+      name: "missing-adapter-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    await expect(executeRendererMountPlan({ plan })).resolves.toEqual({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+      error: "Renderer mount plan adapter resolution is missing.",
+    });
+  });
+
+  it("executes adapter Renderer mount plans through resolved adapter choices", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "adapter-execution-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "adapter-execution-target",
+      }),
+    });
+    const adapter = createRendererAdapter({
+      name: "adapter-execution",
+      mount: mountRequest => createRendererMountResult({
+        mounted: true,
+        output: mountRequest.output,
+        target: mountRequest.target,
+      }),
+    });
+    const conflict = createRendererAdapterConflict({
+      name: adapter.name,
+      adapters: [adapter],
+    });
+    const adapterResolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: true,
+      adapter,
+    });
+    const plan = createRendererMountPlan({
+      name: "adapter-execution-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    await expect(executeRendererMountPlan({ plan, adapterResolution })).resolves.toEqual({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
+  });
+
+  it("preserves adapter mount plan request references for rejected adapter executions", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "adapter-error-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "adapter-error-plan-target",
+      }),
+    });
+    const adapter = createRendererAdapter({
+      name: "adapter-error-execution",
+      mount: () => {
+        throw new Error("planned adapter mount failed");
+      },
+    });
+    const adapterResolution = createRendererAdapterConflictResolution({
+      conflict: createRendererAdapterConflict({
+        name: adapter.name,
+        adapters: [adapter],
+      }),
+      resolved: true,
+      adapter,
+    });
+    const plan = createRendererMountPlan({
+      name: "adapter-error-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    const result = await executeRendererMountPlan({ plan, adapterResolution });
+
+    expect(result.output).toBe(request.output);
+    expect(result.target).toBe(request.target);
+    expect(result.error).toBe("planned adapter mount failed");
+  });
+
+  it("reports missing platform adapter resolutions for platform Renderer mount plans", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "missing-platform-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "missing-platform-plan-target",
+      }),
+    });
+    const plan = createRendererMountPlan({
+      name: "missing-platform-plan",
+      status: "planned",
+      strategy: "platform-adapter",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    await expect(executeRendererMountPlan({ plan })).resolves.toEqual({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+      error: "Renderer mount plan platform adapter resolution is missing.",
+    });
+  });
+
+  it("executes platform Renderer mount plans through resolved platform adapter choices", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "platform-execution-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "platform-execution-target",
+      }),
+    });
+    const adapter = createRendererAdapter({
+      name: "platform-execution-adapter",
+      mount: mountRequest => createRendererMountResult({
+        mounted: true,
+        output: mountRequest.output,
+        target: mountRequest.target,
+      }),
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "platform-execution",
+      adapter,
+      capabilities: ["mount"],
+    });
+    const platformAdapterResolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: platformAdapter.platform,
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+    const plan = createRendererMountPlan({
+      name: "platform-execution-plan",
+      status: "planned",
+      strategy: "platform-adapter",
+      request,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+    });
+
+    await expect(
+      executeRendererMountPlan({ plan, platformAdapterResolution }),
+    ).resolves.toEqual({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
+  });
+
+  it("keeps Renderer mount plan execution results free of plan metadata", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "metadata-free-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "metadata-free-plan-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+
+    const result = await executeRendererMountPlan({ plan });
+
+    expect(result).not.toHaveProperty("plan");
+    expect(result).not.toHaveProperty("strategy");
+    expect(result).not.toHaveProperty("qualityGates");
+    expect(result).not.toHaveProperty("platform");
+    expect(result).not.toHaveProperty("theme");
+    expect(result).not.toHaveProperty("homeAssistant");
   });
 
   it("creates Renderer mount results without platform adapters", () => {
