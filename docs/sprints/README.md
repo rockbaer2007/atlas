@@ -346,7 +346,27 @@ quality validation and the delivered results.
 | G2.5.328 | Renderer Platform Adapter Diagnostic Boundary Closure Review | Completed | - |
 | G2.5.329 | Renderer Platform Adapter Diagnostic Regression Review | Completed | - |
 | G2.5.330 | Renderer Platform Adapter Diagnostic Return-To-Integration Review | Completed | - |
-| G2.5.331 | Renderer Platform Adapter Integration Review | Planned | - |
+| G2.5.331 | Renderer Platform Adapter Integration Review | Completed | - |
+| G2.5.332 | Renderer Platform Adapter Integration Package Root Review | Completed | - |
+| G2.5.333 | Renderer Platform Adapter Home Assistant Metadata Review | Completed | - |
+| G2.5.334 | Renderer Platform Adapter Capability Integration Boundary Review | Completed | - |
+| G2.5.335 | Renderer Platform Adapter Registry Integration Boundary Review | Completed | - |
+| G2.5.336 | Renderer Platform Adapter Lookup Integration Boundary Review | Completed | - |
+| G2.5.337 | Renderer Platform Adapter Selection Integration Boundary Review | Completed | - |
+| G2.5.338 | Renderer Platform Adapter Conflict Integration Boundary Review | Completed | - |
+| G2.5.339 | Renderer Platform Adapter Mount Integration Boundary Review | Completed | - |
+| G2.5.340 | Renderer Platform Adapter Diagnostic Integration Boundary Review | Completed | - |
+| G2.5.341 | Renderer Platform Adapter Home Assistant Export Boundary Review | Completed | - |
+| G2.5.342 | Renderer Platform Adapter Card Boundary Review | Completed | - |
+| G2.5.343 | Renderer Platform Adapter Dashboard Boundary Review | Completed | - |
+| G2.5.344 | Renderer Platform Adapter Theme Boundary Review | Completed | - |
+| G2.5.345 | Renderer Platform Adapter Activation Boundary Review | Completed | - |
+| G2.5.346 | Renderer Platform Adapter Integration Documentation Review | Completed | - |
+| G2.5.347 | Renderer Platform Adapter Home Assistant Documentation Review | Completed | - |
+| G2.5.348 | Renderer Platform Adapter Integration Boundary Closure Review | Completed | - |
+| G2.5.349 | Renderer Platform Adapter Integration Regression Review | Completed | - |
+| G2.5.350 | Renderer Platform Adapter Return-To-Home-Assistant Review | Completed | - |
+| G2.5.351 | Home Assistant Integration Review | Planned | - |
 
 ---
 
@@ -4504,15 +4524,255 @@ Highlights
 
 ---
 
+## G2.5.331 - Renderer Platform Adapter Integration Review
+
+Reviewed platform adapter integration boundaries after diagnostics closure.
+
+Highlights
+
+- Confirmed concrete platform behavior remains outside Renderer core
+- Confirmed Home Assistant-style metadata stays ordinary Renderer data
+- Prepared Home Assistant-specific follow-up work
+
+---
+
+## G2.5.332 - Renderer Platform Adapter Integration Package Root Review
+
+Reviewed Renderer package-root integration boundaries.
+
+Highlights
+
+- Confirmed Renderer does not export Home Assistant activation helpers
+- Confirmed Renderer does not export Home Assistant card creation helpers
+- Kept Home Assistant-specific APIs outside Renderer
+
+---
+
+## G2.5.333 - Renderer Platform Adapter Home Assistant Metadata Review
+
+Reviewed Home Assistant-style platform metadata.
+
+Highlights
+
+- Confirmed Home Assistant platform adapters stay metadata-only
+- Preserved platform adapter shape with platform, adapter and capabilities
+- Avoided concrete Home Assistant activation state
+
+---
+
+## G2.5.334 - Renderer Platform Adapter Capability Integration Boundary Review
+
+Reviewed platform adapter capability boundaries.
+
+Highlights
+
+- Confirmed capability names do not enable concrete integrations
+- Kept card, dashboard and theme strings as metadata
+- Preserved platform adapter shape
+
+---
+
+## G2.5.335 - Renderer Platform Adapter Registry Integration Boundary Review
+
+Reviewed registry integration boundaries.
+
+Highlights
+
+- Confirmed Home Assistant-style entries remain registry metadata
+- Preserved platform adapter references in registries
+- Avoided activation and card registry fields
+
+---
+
+## G2.5.336 - Renderer Platform Adapter Lookup Integration Boundary Review
+
+Reviewed lookup integration boundaries.
+
+Highlights
+
+- Confirmed lookup returns platform adapter references only
+- Kept Home Assistant card and dashboard behavior outside lookup results
+- Preserved missing and matched result shape
+
+---
+
+## G2.5.337 - Renderer Platform Adapter Selection Integration Boundary Review
+
+Reviewed selection integration boundaries.
+
+Highlights
+
+- Confirmed selection returns platform adapter references only
+- Kept selected results free of card, theme and mount state
+- Preserved data-only selection behavior
+
+---
+
+## G2.5.338 - Renderer Platform Adapter Conflict Integration Boundary Review
+
+Reviewed conflict integration boundaries.
+
+Highlights
+
+- Confirmed conflict resolution remains metadata-only
+- Kept Home Assistant activation and card fields outside resolutions
+- Preserved first-candidate conflict behavior
+
+---
+
+## G2.5.339 - Renderer Platform Adapter Mount Integration Boundary Review
+
+Reviewed mount integration boundaries.
+
+Highlights
+
+- Confirmed Home Assistant-style platform mounts return generic mount results
+- Kept mount results free of platform, card and theme metadata
+- Preserved output and target references
+
+---
+
+## G2.5.340 - Renderer Platform Adapter Diagnostic Integration Boundary Review
+
+Reviewed diagnostic integration boundaries.
+
+Highlights
+
+- Confirmed platform diagnostics remain generic mount diagnostics
+- Kept concrete platform metadata outside diagnostic reports
+- Preserved Renderer mount diagnostic ownership
+
+---
+
+## G2.5.341 - Renderer Platform Adapter Home Assistant Export Boundary Review
+
+Reviewed Home Assistant export boundaries from Renderer.
+
+Highlights
+
+- Confirmed Home Assistant helper names are absent from the Renderer package root
+- Kept Home Assistant package ownership separate
+- Preserved Renderer public API shape
+
+---
+
+## G2.5.342 - Renderer Platform Adapter Card Boundary Review
+
+Reviewed card integration boundaries.
+
+Highlights
+
+- Confirmed Renderer does not create Home Assistant cards
+- Kept card capability strings as metadata
+- Preserved platform adapter contract shape
+
+---
+
+## G2.5.343 - Renderer Platform Adapter Dashboard Boundary Review
+
+Reviewed dashboard integration boundaries.
+
+Highlights
+
+- Confirmed Renderer does not create dashboards
+- Kept dashboard capability strings as metadata
+- Preserved lookup and selection result shape
+
+---
+
+## G2.5.344 - Renderer Platform Adapter Theme Boundary Review
+
+Reviewed theme integration boundaries.
+
+Highlights
+
+- Confirmed Renderer platform adapters do not apply themes
+- Kept theme capability strings as metadata
+- Preserved mount result neutrality
+
+---
+
+## G2.5.345 - Renderer Platform Adapter Activation Boundary Review
+
+Reviewed activation integration boundaries.
+
+Highlights
+
+- Confirmed Renderer does not activate Home Assistant integrations
+- Kept activation state outside platform adapter registries and resolutions
+- Preserved Home Assistant package ownership
+
+---
+
+## G2.5.346 - Renderer Platform Adapter Integration Documentation Review
+
+Reviewed platform adapter integration documentation.
+
+Highlights
+
+- Documented Renderer platform adapter integration boundaries
+- Documented metadata-only behavior across platform flows
+- Kept concrete integrations outside Renderer docs
+
+---
+
+## G2.5.347 - Renderer Platform Adapter Home Assistant Documentation Review
+
+Reviewed Home Assistant metadata documentation.
+
+Highlights
+
+- Documented Home Assistant-style metadata as ordinary Renderer data
+- Documented that Renderer does not create cards, dashboards or themes
+- Prepared Home Assistant follow-up work
+
+---
+
+## G2.5.348 - Renderer Platform Adapter Integration Boundary Closure Review
+
+Reviewed platform adapter integration boundary closure.
+
+Highlights
+
+- Confirmed integration boundaries are protected for this pass
+- Kept changes within existing public API
+- Prepared return to Home Assistant review
+
+---
+
+## G2.5.349 - Renderer Platform Adapter Integration Regression Review
+
+Reviewed platform adapter integration regression coverage.
+
+Highlights
+
+- Confirmed renderer public API tests cover integration boundaries
+- Preserved package-root and metadata-only behavior
+- Kept concrete platform behavior outside Renderer
+
+---
+
+## G2.5.350 - Renderer Platform Adapter Return-To-Home-Assistant Review
+
+Reviewed readiness to return from Renderer platform adapter work to Home Assistant work.
+
+Highlights
+
+- Confirmed Renderer platform adapter integration boundaries are covered
+- Confirmed Home Assistant-specific behavior remains outside Renderer
+- Prepared next sprint for Home Assistant integration review
+
+---
+
 # Planned Sprints
 
-## G2.5.331 - Renderer Platform Adapter Integration Review
+## G2.5.351 - Home Assistant Integration Review
 
 Planned deliverables
 
-- Review Renderer platform adapter integration boundaries after diagnostics closure
-- Confirm concrete platform behavior remains outside Renderer core
-- Protect integration readiness before Home Assistant-specific implementation work
+- Review Home Assistant integration boundaries after Renderer platform adapter closure
+- Confirm Home Assistant package remains closed until required layers are stable
+- Protect activation readiness before concrete Home Assistant implementation work
 
 ---
 
@@ -4703,6 +4963,26 @@ Planned deliverables
 - [G2.5.328 - Renderer Platform Adapter Diagnostic Boundary Closure Review](Sprint-G2.5.328.md)
 - [G2.5.329 - Renderer Platform Adapter Diagnostic Regression Review](Sprint-G2.5.329.md)
 - [G2.5.330 - Renderer Platform Adapter Diagnostic Return-To-Integration Review](Sprint-G2.5.330.md)
+- [G2.5.331 - Renderer Platform Adapter Integration Review](Sprint-G2.5.331.md)
+- [G2.5.332 - Renderer Platform Adapter Integration Package Root Review](Sprint-G2.5.332.md)
+- [G2.5.333 - Renderer Platform Adapter Home Assistant Metadata Review](Sprint-G2.5.333.md)
+- [G2.5.334 - Renderer Platform Adapter Capability Integration Boundary Review](Sprint-G2.5.334.md)
+- [G2.5.335 - Renderer Platform Adapter Registry Integration Boundary Review](Sprint-G2.5.335.md)
+- [G2.5.336 - Renderer Platform Adapter Lookup Integration Boundary Review](Sprint-G2.5.336.md)
+- [G2.5.337 - Renderer Platform Adapter Selection Integration Boundary Review](Sprint-G2.5.337.md)
+- [G2.5.338 - Renderer Platform Adapter Conflict Integration Boundary Review](Sprint-G2.5.338.md)
+- [G2.5.339 - Renderer Platform Adapter Mount Integration Boundary Review](Sprint-G2.5.339.md)
+- [G2.5.340 - Renderer Platform Adapter Diagnostic Integration Boundary Review](Sprint-G2.5.340.md)
+- [G2.5.341 - Renderer Platform Adapter Home Assistant Export Boundary Review](Sprint-G2.5.341.md)
+- [G2.5.342 - Renderer Platform Adapter Card Boundary Review](Sprint-G2.5.342.md)
+- [G2.5.343 - Renderer Platform Adapter Dashboard Boundary Review](Sprint-G2.5.343.md)
+- [G2.5.344 - Renderer Platform Adapter Theme Boundary Review](Sprint-G2.5.344.md)
+- [G2.5.345 - Renderer Platform Adapter Activation Boundary Review](Sprint-G2.5.345.md)
+- [G2.5.346 - Renderer Platform Adapter Integration Documentation Review](Sprint-G2.5.346.md)
+- [G2.5.347 - Renderer Platform Adapter Home Assistant Documentation Review](Sprint-G2.5.347.md)
+- [G2.5.348 - Renderer Platform Adapter Integration Boundary Closure Review](Sprint-G2.5.348.md)
+- [G2.5.349 - Renderer Platform Adapter Integration Regression Review](Sprint-G2.5.349.md)
+- [G2.5.350 - Renderer Platform Adapter Return-To-Home-Assistant Review](Sprint-G2.5.350.md)
 
 ---
 

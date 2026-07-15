@@ -343,23 +343,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.328 | Renderer Platform Adapter Diagnostic Boundary Closure Review | Completed | - |
 | G2.5.329 | Renderer Platform Adapter Diagnostic Regression Review | Completed | - |
 | G2.5.330 | Renderer Platform Adapter Diagnostic Return-To-Integration Review | Completed | - |
-| G2.5.331 | Renderer Platform Adapter Integration Review | Planned | - |
+| G2.5.331 | Renderer Platform Adapter Integration Review | Completed | - |
+| G2.5.332 | Renderer Platform Adapter Integration Package Root Review | Completed | - |
+| G2.5.333 | Renderer Platform Adapter Home Assistant Metadata Review | Completed | - |
+| G2.5.334 | Renderer Platform Adapter Capability Integration Boundary Review | Completed | - |
+| G2.5.335 | Renderer Platform Adapter Registry Integration Boundary Review | Completed | - |
+| G2.5.336 | Renderer Platform Adapter Lookup Integration Boundary Review | Completed | - |
+| G2.5.337 | Renderer Platform Adapter Selection Integration Boundary Review | Completed | - |
+| G2.5.338 | Renderer Platform Adapter Conflict Integration Boundary Review | Completed | - |
+| G2.5.339 | Renderer Platform Adapter Mount Integration Boundary Review | Completed | - |
+| G2.5.340 | Renderer Platform Adapter Diagnostic Integration Boundary Review | Completed | - |
+| G2.5.341 | Renderer Platform Adapter Home Assistant Export Boundary Review | Completed | - |
+| G2.5.342 | Renderer Platform Adapter Card Boundary Review | Completed | - |
+| G2.5.343 | Renderer Platform Adapter Dashboard Boundary Review | Completed | - |
+| G2.5.344 | Renderer Platform Adapter Theme Boundary Review | Completed | - |
+| G2.5.345 | Renderer Platform Adapter Activation Boundary Review | Completed | - |
+| G2.5.346 | Renderer Platform Adapter Integration Documentation Review | Completed | - |
+| G2.5.347 | Renderer Platform Adapter Home Assistant Documentation Review | Completed | - |
+| G2.5.348 | Renderer Platform Adapter Integration Boundary Closure Review | Completed | - |
+| G2.5.349 | Renderer Platform Adapter Integration Regression Review | Completed | - |
+| G2.5.350 | Renderer Platform Adapter Return-To-Home-Assistant Review | Completed | - |
+| G2.5.351 | Home Assistant Integration Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.330 - Renderer Platform Adapter Diagnostic Return-To-Integration Review
+## G2.5.350 - Renderer Platform Adapter Return-To-Home-Assistant Review
 
 Goal:
 
-Review and protect platform adapter diagnostic boundaries before returning to integration work.
+Review and protect platform adapter integration boundaries before returning to Home Assistant work.
 
 Deliverables:
 
-* Platform adapter diagnostic coverage
-* Success, failure and unresolved report coverage
-* Integration readiness documentation
+* Platform adapter integration coverage
+* Home Assistant metadata boundary coverage
+* Home Assistant readiness documentation
 * Sprint documentation
 
 Status:
@@ -370,13 +390,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.331 - Renderer Platform Adapter Integration Review
+## G2.5.351 - Home Assistant Integration Review
 
 Suggested focus:
 
-* Review Renderer platform adapter integration boundaries after diagnostics closure
-* Confirm concrete platform behavior remains outside Renderer core
-* Protect integration readiness before Home Assistant-specific implementation work
+* Review Home Assistant integration boundaries after Renderer platform adapter closure
+* Confirm Home Assistant package remains closed until required layers are stable
+* Protect activation readiness before concrete Home Assistant implementation work
 
 ---
 
@@ -717,6 +737,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.328.md`
 * `docs/sprints/Sprint-G2.5.329.md`
 * `docs/sprints/Sprint-G2.5.330.md`
+* `docs/sprints/Sprint-G2.5.331.md`
+* `docs/sprints/Sprint-G2.5.332.md`
+* `docs/sprints/Sprint-G2.5.333.md`
+* `docs/sprints/Sprint-G2.5.334.md`
+* `docs/sprints/Sprint-G2.5.335.md`
+* `docs/sprints/Sprint-G2.5.336.md`
+* `docs/sprints/Sprint-G2.5.337.md`
+* `docs/sprints/Sprint-G2.5.338.md`
+* `docs/sprints/Sprint-G2.5.339.md`
+* `docs/sprints/Sprint-G2.5.340.md`
+* `docs/sprints/Sprint-G2.5.341.md`
+* `docs/sprints/Sprint-G2.5.342.md`
+* `docs/sprints/Sprint-G2.5.343.md`
+* `docs/sprints/Sprint-G2.5.344.md`
+* `docs/sprints/Sprint-G2.5.345.md`
+* `docs/sprints/Sprint-G2.5.346.md`
+* `docs/sprints/Sprint-G2.5.347.md`
+* `docs/sprints/Sprint-G2.5.348.md`
+* `docs/sprints/Sprint-G2.5.349.md`
+* `docs/sprints/Sprint-G2.5.350.md`
 
 ---
 

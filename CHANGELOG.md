@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer platform adapter integration review now protects Home Assistant-style
+  metadata as Renderer-only data across adapters, registry, lookup, selection,
+  conflict resolution, mounting and diagnostics.
 * Renderer platform adapter diagnostic review now protects mount failure codes,
   Error and string failure reports, unresolved success reports, metadata
   boundaries and report independence.

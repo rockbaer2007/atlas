@@ -258,7 +258,12 @@ independent report objects on each inspection, keeping diagnostics ready for
 concrete integrations.
 Renderer platform adapter contracts remain metadata-driven before concrete
 integrations; platform names and capability lists do not trigger special DOM or
-Home Assistant behavior inside Renderer.
+Home Assistant behavior inside Renderer. Home Assistant-style platform metadata
+can move through platform adapter creation, registry storage, lookup, selection,
+conflict resolution, guarded mounting and diagnostics as ordinary Renderer data.
+Renderer does not export Home Assistant activation helpers, does not create
+cards, dashboards or themes, and does not add concrete platform fields to mount
+results or diagnostic reports.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

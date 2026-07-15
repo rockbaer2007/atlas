@@ -1100,6 +1100,63 @@ describe("renderer public API", () => {
     expect(platformAdapter).not.toHaveProperty("mounted");
   });
 
+  it("keeps Renderer package root free of concrete Home Assistant integration helpers", () => {
+    expect(Object.hasOwn(Renderer, "createHomeAssistantIntegrationBoundary")).toBe(false);
+    expect(Object.hasOwn(Renderer, "inspectHomeAssistantActivationGate")).toBe(false);
+    expect(Object.hasOwn(Renderer, "createHomeAssistantCard")).toBe(false);
+  });
+
+  it("keeps Home Assistant platform adapters as metadata-only Renderer contracts", () => {
+    const adapter = createRendererAdapter({
+      name: "home-assistant-metadata-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter,
+      capabilities: ["card", "dashboard", "theme"],
+    });
+
+    expect(platformAdapter).toEqual({
+      platform: "home-assistant",
+      adapter,
+      capabilities: ["card", "dashboard", "theme"],
+    });
+    expect(platformAdapter).not.toHaveProperty("card");
+    expect(platformAdapter).not.toHaveProperty("dashboard");
+    expect(platformAdapter).not.toHaveProperty("theme");
+    expect(platformAdapter).not.toHaveProperty("active");
+  });
+
+  it("keeps Renderer platform adapter capabilities from enabling concrete integrations", () => {
+    const adapter = createRendererAdapter({
+      name: "capability-boundary-platform-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const platformAdapter = Renderer.createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter,
+      capabilities: ["mount", "lovelace-card", "theme"],
+    });
+
+    expect(platformAdapter.capabilities).toEqual(["mount", "lovelace-card", "theme"]);
+    expect(Object.keys(platformAdapter).sort()).toEqual([
+      "adapter",
+      "capabilities",
+      "platform",
+    ]);
+  });
+
   it("keeps Renderer platform adapter entries linked to adapter references", () => {
     const adapter = createRendererAdapter({
       name: "reference-platform-adapter",
@@ -4216,6 +4273,169 @@ describe("renderer public API", () => {
       output,
       target,
     });
+  });
+
+  it("keeps Home Assistant platform registry entries metadata-only", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "home-assistant-registry-boundary-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["card"],
+    });
+
+    const registry = Renderer.createRendererPlatformAdapterRegistry([platformAdapter]);
+
+    expect(registry.platformAdapters[0]).toBe(platformAdapter);
+    expect(registry).not.toHaveProperty("active");
+    expect(registry).not.toHaveProperty("homeAssistant");
+    expect(registry).not.toHaveProperty("cardRegistry");
+  });
+
+  it("keeps Home Assistant platform lookup results metadata-only", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "home-assistant-lookup-boundary-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["card"],
+    });
+    const registry = createRendererPlatformAdapterRegistry([platformAdapter]);
+
+    const result = findRendererPlatformAdapter(
+      registry,
+      createRendererPlatformAdapterLookupRequest({
+        platform: "home-assistant",
+      }),
+    );
+
+    expect(result.platformAdapter).toBe(platformAdapter);
+    expect(result).not.toHaveProperty("card");
+    expect(result).not.toHaveProperty("dashboard");
+    expect(result).not.toHaveProperty("activated");
+  });
+
+  it("keeps Home Assistant platform selection results metadata-only", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "home-assistant-selection-boundary-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["card"],
+    });
+
+    const result = selectFirstRendererPlatformAdapterCandidate(
+      createRendererPlatformAdapterSelectionRequest({
+        platform: "home-assistant",
+        candidates: [platformAdapter],
+      }),
+    );
+
+    expect(result.platformAdapter).toBe(platformAdapter);
+    expect(result).not.toHaveProperty("mounted");
+    expect(result).not.toHaveProperty("card");
+    expect(result).not.toHaveProperty("theme");
+  });
+
+  it("keeps Home Assistant platform conflict resolutions metadata-only", () => {
+    const first = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "first-home-assistant-conflict-boundary-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["card"],
+    });
+    const second = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "second-home-assistant-conflict-boundary-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["dashboard"],
+    });
+
+    const resolution = resolveRendererPlatformAdapterConflictWithFirstCandidate(
+      createRendererPlatformAdapterConflict({
+        platform: "home-assistant",
+        platformAdapters: [first, second],
+      }),
+    );
+
+    expect(resolution.platformAdapter).toBe(first);
+    expect(resolution).not.toHaveProperty("homeAssistant");
+    expect(resolution).not.toHaveProperty("activated");
+    expect(resolution).not.toHaveProperty("card");
+  });
+
+  it("keeps Home Assistant platform mount results free of platform metadata", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "home-assistant-result-boundary-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "home-assistant-result-boundary-target",
+      identifier: "lovelace-preview",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "home-assistant-result-boundary-adapter",
+        mount: mountRequest => createRendererMountResult({
+          mounted: true,
+          output: mountRequest.output,
+          target: mountRequest.target,
+        }),
+      }),
+      capabilities: ["card"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "home-assistant",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(result).toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+    expect(result).not.toHaveProperty("platform");
+    expect(result).not.toHaveProperty("card");
+    expect(result).not.toHaveProperty("theme");
   });
 
   it("creates diagnostics for failed Renderer mount results", () => {
