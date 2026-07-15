@@ -226,7 +226,27 @@ quality validation and the delivered results.
 | G2.5.208 | Renderer Adapter Lookup Documentation Review | Completed | - |
 | G2.5.209 | Renderer Adapter Boundary Closure Review | Completed | - |
 | G2.5.210 | Renderer Adapter Return-To-Conflicts Review | Completed | - |
-| G2.5.211 | Renderer Adapter Conflict Review | Planned | - |
+| G2.5.211 | Renderer Adapter Conflict Review | Completed | - |
+| G2.5.212 | Renderer Adapter Conflict Reference Review | Completed | - |
+| G2.5.213 | Renderer Adapter Conflict Empty Name Review | Completed | - |
+| G2.5.214 | Renderer Adapter Conflict Detection Review | Completed | - |
+| G2.5.215 | Renderer Adapter Multiple Conflict Review | Completed | - |
+| G2.5.216 | Renderer Adapter Conflict No-Conflict Review | Completed | - |
+| G2.5.217 | Renderer Adapter Conflict Resolution Review | Completed | - |
+| G2.5.218 | Renderer Adapter Conflict Resolution Shape Review | Completed | - |
+| G2.5.219 | Renderer Adapter Conflict First Candidate Review | Completed | - |
+| G2.5.220 | Renderer Adapter Conflict Selection Boundary Review | Completed | - |
+| G2.5.221 | Renderer Adapter Registry Conflict Resolution Review | Completed | - |
+| G2.5.222 | Renderer Adapter Registry Conflict Ordering Review | Completed | - |
+| G2.5.223 | Renderer Adapter Resolved Mount Review | Completed | - |
+| G2.5.224 | Renderer Adapter Unresolved Mount Review | Completed | - |
+| G2.5.225 | Renderer Adapter Unresolved Reference Review | Completed | - |
+| G2.5.226 | Renderer Adapter Rejected Mount Reference Review | Completed | - |
+| G2.5.227 | Renderer Adapter Conflict Documentation Review | Completed | - |
+| G2.5.228 | Renderer Adapter Resolution Documentation Review | Completed | - |
+| G2.5.229 | Renderer Adapter Conflict Boundary Closure Review | Completed | - |
+| G2.5.230 | Renderer Adapter Conflict Return-To-Selection Review | Completed | - |
+| G2.5.231 | Renderer Adapter Selection Review | Planned | - |
 
 ---
 
@@ -2944,15 +2964,255 @@ Highlights
 
 ---
 
+## G2.5.211 - Renderer Adapter Conflict Review
+
+Reviewed Renderer adapter conflict contracts after adapter boundary closure.
+
+Highlights
+
+- Confirmed conflict contracts preserve duplicate adapter groups
+- Protected conflict detection and resolution boundaries
+- Kept conflict policy separate from adapter creation and lookup
+
+---
+
+## G2.5.212 - Renderer Adapter Conflict Reference Review
+
+Reviewed conflict adapter reference behavior.
+
+Highlights
+
+- Confirmed conflict entries remain adapter references
+- Protected conflict copy behavior from source-array mutation
+- Kept conflict creation shallow for adapter objects
+
+---
+
+## G2.5.213 - Renderer Adapter Conflict Empty Name Review
+
+Reviewed empty-name conflict behavior.
+
+Highlights
+
+- Confirmed explicit empty conflict names are preserved
+- Kept conflict name validation outside contract creation
+- Protected conflict name fields as plain string data
+
+---
+
+## G2.5.214 - Renderer Adapter Conflict Detection Review
+
+Reviewed duplicate adapter conflict detection.
+
+Highlights
+
+- Confirmed duplicate groups preserve adapter references
+- Protected duplicate detection without selection or resolution
+- Kept unique adapter names out of conflict reports
+
+---
+
+## G2.5.215 - Renderer Adapter Multiple Conflict Review
+
+Reviewed multiple conflict group ordering.
+
+Highlights
+
+- Confirmed multiple conflict groups follow first-duplicate order
+- Protected group names across mixed registry entries
+- Kept registry order visible through conflict detection
+
+---
+
+## G2.5.216 - Renderer Adapter Conflict No-Conflict Review
+
+Reviewed no-conflict registry states.
+
+Highlights
+
+- Confirmed unique registries produce no conflicts
+- Confirmed empty registries produce no conflicts
+- Kept conflict detection quiet for valid no-conflict inputs
+
+---
+
+## G2.5.217 - Renderer Adapter Conflict Resolution Review
+
+Reviewed adapter conflict resolution contracts.
+
+Highlights
+
+- Confirmed explicit resolved adapters remain references
+- Protected resolution conflict copy behavior
+- Kept unresolved resolutions separate from adapter selections
+
+---
+
+## G2.5.218 - Renderer Adapter Conflict Resolution Shape Review
+
+Reviewed adapter conflict resolution result shape.
+
+Highlights
+
+- Confirmed unresolved resolutions omit adapter fields
+- Protected resolved adapter references
+- Kept resolution shape stable before guarded mount execution
+
+---
+
+## G2.5.219 - Renderer Adapter Conflict First Candidate Review
+
+Reviewed first-candidate conflict resolution.
+
+Highlights
+
+- Confirmed first conflict candidate is selected by reference
+- Protected empty conflicts as unresolved
+- Kept first-candidate policy explicit and narrow
+
+---
+
+## G2.5.220 - Renderer Adapter Conflict Selection Boundary Review
+
+Reviewed conflict selection boundary behavior.
+
+Highlights
+
+- Confirmed resolving conflicts does not invoke selected adapters
+- Protected selection-only behavior before mount execution
+- Kept adapter mounting isolated to guarded mount helpers
+
+---
+
+## G2.5.221 - Renderer Adapter Registry Conflict Resolution Review
+
+Reviewed registry conflict resolution behavior.
+
+Highlights
+
+- Confirmed registry conflicts resolve through first-candidate policy
+- Protected unique registries as no-resolution states
+- Kept registry lookup behavior unchanged
+
+---
+
+## G2.5.222 - Renderer Adapter Registry Conflict Ordering Review
+
+Reviewed registry conflict resolution ordering.
+
+Highlights
+
+- Confirmed conflict resolutions preserve duplicate group order
+- Protected memory and surface conflict ordering together
+- Kept ordering derived from registry insertion order
+
+---
+
+## G2.5.223 - Renderer Adapter Resolved Mount Review
+
+Reviewed resolved adapter mount execution.
+
+Highlights
+
+- Confirmed resolved adapters mount through guarded helpers
+- Protected asynchronous resolved mount behavior
+- Kept resolved mount output and target references intact
+
+---
+
+## G2.5.224 - Renderer Adapter Unresolved Mount Review
+
+Reviewed unresolved adapter mount behavior.
+
+Highlights
+
+- Confirmed unresolved resolutions return unmounted results
+- Confirmed unresolved resolutions do not invoke adapters
+- Protected unresolved behavior even when adapter fields are present
+
+---
+
+## G2.5.225 - Renderer Adapter Unresolved Reference Review
+
+Reviewed unresolved mount reference preservation.
+
+Highlights
+
+- Confirmed unresolved mount results preserve output references
+- Confirmed unresolved mount results preserve target references
+- Kept unresolved results shallow and side-effect free
+
+---
+
+## G2.5.226 - Renderer Adapter Rejected Mount Reference Review
+
+Reviewed rejected resolved mount reference preservation.
+
+Highlights
+
+- Confirmed rejected resolved mounts preserve output references
+- Confirmed rejected resolved mounts preserve target references
+- Protected error message reporting without replacing request objects
+
+---
+
+## G2.5.227 - Renderer Adapter Conflict Documentation Review
+
+Reviewed adapter conflict documentation.
+
+Highlights
+
+- Documented duplicate-name grouping and reference behavior
+- Documented no-conflict states
+- Kept README aligned with public API tests
+
+---
+
+## G2.5.228 - Renderer Adapter Resolution Documentation Review
+
+Reviewed adapter conflict resolution documentation.
+
+Highlights
+
+- Documented first-candidate resolution behavior
+- Documented unresolved resolution shape
+- Documented guarded mount failure boundaries
+
+---
+
+## G2.5.229 - Renderer Adapter Conflict Boundary Closure Review
+
+Reviewed adapter conflict boundary closure.
+
+Highlights
+
+- Confirmed conflict, resolution and guarded mount coverage is complete
+- Kept changes within the existing public API
+- Prepared selection review with conflict behavior protected
+
+---
+
+## G2.5.230 - Renderer Adapter Conflict Return-To-Selection Review
+
+Reviewed adapter conflict readiness before returning to selection work.
+
+Highlights
+
+- Confirmed duplicate and resolution behavior is protected
+- Prepared next sprint for adapter selection review
+- Kept selection policy outside conflict contract creation
+
+---
+
 # Planned Sprints
 
-## G2.5.211 - Renderer Adapter Conflict Review
+## G2.5.231 - Renderer Adapter Selection Review
 
 Planned deliverables
 
-- Review Renderer adapter conflict contracts after adapter boundary closure
-- Confirm duplicate adapter groups preserve references and ordering
-- Protect conflict resolution boundaries before registry integration work
+- Review Renderer adapter selection contracts after conflict boundary closure
+- Confirm candidate request copy and first-candidate result behavior
+- Protect selection boundaries before platform adapter review
 
 ---
 
@@ -3023,6 +3283,26 @@ Planned deliverables
 - [G2.5.208 - Renderer Adapter Lookup Documentation Review](Sprint-G2.5.208.md)
 - [G2.5.209 - Renderer Adapter Boundary Closure Review](Sprint-G2.5.209.md)
 - [G2.5.210 - Renderer Adapter Return-To-Conflicts Review](Sprint-G2.5.210.md)
+- [G2.5.211 - Renderer Adapter Conflict Review](Sprint-G2.5.211.md)
+- [G2.5.212 - Renderer Adapter Conflict Reference Review](Sprint-G2.5.212.md)
+- [G2.5.213 - Renderer Adapter Conflict Empty Name Review](Sprint-G2.5.213.md)
+- [G2.5.214 - Renderer Adapter Conflict Detection Review](Sprint-G2.5.214.md)
+- [G2.5.215 - Renderer Adapter Multiple Conflict Review](Sprint-G2.5.215.md)
+- [G2.5.216 - Renderer Adapter Conflict No-Conflict Review](Sprint-G2.5.216.md)
+- [G2.5.217 - Renderer Adapter Conflict Resolution Review](Sprint-G2.5.217.md)
+- [G2.5.218 - Renderer Adapter Conflict Resolution Shape Review](Sprint-G2.5.218.md)
+- [G2.5.219 - Renderer Adapter Conflict First Candidate Review](Sprint-G2.5.219.md)
+- [G2.5.220 - Renderer Adapter Conflict Selection Boundary Review](Sprint-G2.5.220.md)
+- [G2.5.221 - Renderer Adapter Registry Conflict Resolution Review](Sprint-G2.5.221.md)
+- [G2.5.222 - Renderer Adapter Registry Conflict Ordering Review](Sprint-G2.5.222.md)
+- [G2.5.223 - Renderer Adapter Resolved Mount Review](Sprint-G2.5.223.md)
+- [G2.5.224 - Renderer Adapter Unresolved Mount Review](Sprint-G2.5.224.md)
+- [G2.5.225 - Renderer Adapter Unresolved Reference Review](Sprint-G2.5.225.md)
+- [G2.5.226 - Renderer Adapter Rejected Mount Reference Review](Sprint-G2.5.226.md)
+- [G2.5.227 - Renderer Adapter Conflict Documentation Review](Sprint-G2.5.227.md)
+- [G2.5.228 - Renderer Adapter Resolution Documentation Review](Sprint-G2.5.228.md)
+- [G2.5.229 - Renderer Adapter Conflict Boundary Closure Review](Sprint-G2.5.229.md)
+- [G2.5.230 - Renderer Adapter Conflict Return-To-Selection Review](Sprint-G2.5.230.md)
 
 ---
 

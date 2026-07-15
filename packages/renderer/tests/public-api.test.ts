@@ -2418,6 +2418,34 @@ describe("renderer public API", () => {
     });
   });
 
+  it("keeps Renderer adapter conflict entries as adapter references", () => {
+    const adapter = createRendererAdapter({
+      name: "reference-conflict-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const conflict = Renderer.createRendererAdapterConflict({
+      name: "reference-conflict-adapter",
+      adapters: [adapter],
+    });
+
+    expect(conflict.adapters[0]).toBe(adapter);
+  });
+
+  it("preserves explicit empty Renderer adapter conflict names", () => {
+    const conflict = createRendererAdapterConflict({
+      name: "",
+      adapters: [],
+    });
+
+    expect(conflict.name).toBe("");
+    expect(Object.hasOwn(conflict, "name")).toBe(true);
+  });
+
   it("finds Renderer adapter conflicts by duplicate names", () => {
     const first = createRendererAdapter({
       name: "duplicate-adapter",
@@ -2451,6 +2479,56 @@ describe("renderer public API", () => {
       name: "duplicate-adapter",
       adapters: [first, second],
     }]);
+    expect(conflicts[0]?.adapters[0]).toBe(first);
+    expect(conflicts[0]?.adapters[1]).toBe(second);
+  });
+
+  it("finds multiple Renderer adapter conflicts in first-duplicate order", () => {
+    const firstMemory = createRendererAdapter({
+      name: "memory-conflict",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const firstSurface = createRendererAdapter({
+      name: "surface-conflict",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const secondMemory = createRendererAdapter({
+      name: "memory-conflict",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const secondSurface = createRendererAdapter({
+      name: "surface-conflict",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const registry = createRendererAdapterRegistry([
+      firstMemory,
+      firstSurface,
+      secondMemory,
+      secondSurface,
+    ]);
+
+    const conflicts = findRendererAdapterConflicts(registry);
+
+    expect(conflicts.map(conflict => conflict.name)).toEqual([
+      "memory-conflict",
+      "surface-conflict",
+    ]);
   });
 
   it("reports no Renderer adapter conflicts for unique names", () => {
@@ -2548,6 +2626,23 @@ describe("renderer public API", () => {
       resolved: true,
       adapter: second,
     });
+    expect(resolution.adapter).toBe(second);
+    expect(resolution.conflict.adapters[0]).toBe(first);
+    expect(resolution.conflict.adapters[1]).toBe(second);
+  });
+
+  it("keeps unresolved Renderer adapter conflict resolutions free of adapter fields", () => {
+    const conflict = createRendererAdapterConflict({
+      name: "unresolved-shape",
+      adapters: [],
+    });
+
+    const resolution = createRendererAdapterConflictResolution({
+      conflict,
+      resolved: false,
+    });
+
+    expect(Object.hasOwn(resolution, "adapter")).toBe(false);
   });
 
   it("keeps Renderer adapter conflict resolutions independent from source arrays", () => {
@@ -2612,6 +2707,7 @@ describe("renderer public API", () => {
       adapter: first,
     });
     expect(resolution.conflict).not.toBe(conflict);
+    expect(resolution.adapter).toBe(first);
   });
 
   it("keeps Renderer adapter conflicts unresolved when first-candidate selection is empty", () => {
@@ -2626,6 +2722,7 @@ describe("renderer public API", () => {
       conflict,
       resolved: false,
     });
+    expect(Object.hasOwn(resolution, "adapter")).toBe(false);
   });
 
   it("keeps Renderer adapter conflict integration independent from source arrays", () => {
@@ -2660,6 +2757,31 @@ describe("renderer public API", () => {
       adapter: first,
     });
     expect(resolution.conflict.adapters).toEqual([first]);
+  });
+
+  it("resolves Renderer adapter conflicts without invoking selected adapters", () => {
+    let mounted = false;
+    const adapter = createRendererAdapter({
+      name: "selection-only-adapter",
+      mount: request => {
+        mounted = true;
+
+        return createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        });
+      },
+    });
+    const conflict = createRendererAdapterConflict({
+      name: "selection-only-adapter",
+      adapters: [adapter],
+    });
+
+    const resolution = resolveRendererAdapterConflictWithFirstCandidate(conflict);
+
+    expect(resolution.adapter).toBe(adapter);
+    expect(mounted).toBe(false);
   });
 
   it("resolves Renderer adapter registry conflicts with first-candidate selection", () => {
@@ -2859,6 +2981,76 @@ describe("renderer public API", () => {
     });
   });
 
+  it("does not mount Renderer adapter resolutions marked unresolved even with adapters", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "unresolved-with-adapter-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "unresolved-with-adapter-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    let mounted = false;
+    const adapter = createRendererAdapter({
+      name: "unresolved-with-adapter",
+      mount: () => {
+        mounted = true;
+
+        return createRendererMountResult({
+          mounted: true,
+          output,
+          target,
+        });
+      },
+    });
+    const resolution = createRendererAdapterConflictResolution({
+      conflict: createRendererAdapterConflict({
+        name: "unresolved-with-adapter",
+        adapters: [adapter],
+      }),
+      resolved: false,
+      adapter,
+    });
+
+    await expect(mountResolvedRendererAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
+    });
+    expect(mounted).toBe(false);
+  });
+
+  it("preserves Renderer mount request references for unresolved adapter resolutions", async () => {
+    const output = createRendererOutput({
+      kind: "document",
+      name: "unresolved-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "unresolved-reference-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const resolution = createRendererAdapterConflictResolution({
+      conflict: createRendererAdapterConflict({
+        name: "unresolved-reference",
+        adapters: [],
+      }),
+      resolved: false,
+    });
+
+    const result = await mountResolvedRendererAdapter(resolution, request);
+
+    expect(result.output).toBe(output);
+    expect(result.target).toBe(target);
+  });
+
   it("awaits asynchronous resolved Renderer adapter mounts", async () => {
     const output = createRendererOutput({
       kind: "fragment",
@@ -2938,6 +3130,41 @@ describe("renderer public API", () => {
       target,
       error: "adapter mount failed",
     });
+  });
+
+  it("preserves Renderer mount request references for rejected adapter resolutions", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "failed-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "failed-reference-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const adapter = createRendererAdapter({
+      name: "failed-reference-adapter",
+      mount() {
+        throw new Error("failed reference mount");
+      },
+    });
+    const resolution = createRendererAdapterConflictResolution({
+      conflict: createRendererAdapterConflict({
+        name: "failed-reference-adapter",
+        adapters: [adapter],
+      }),
+      resolved: true,
+      adapter,
+    });
+
+    const result = await mountResolvedRendererAdapter(resolution, request);
+
+    expect(result.output).toBe(output);
+    expect(result.target).toBe(target);
+    expect(result.error).toBe("failed reference mount");
   });
 
   it("reports non-Error resolved Renderer adapter mount rejections as strings", async () => {

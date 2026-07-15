@@ -132,16 +132,23 @@ adapters while preserving matched adapter references. Renderer adapter registry
 search currently finds the first adapter with a matching name and reports misses
 without conflict resolution or adapter selection policies. Duplicate adapter
 names currently resolve to the first matching adapter in registry order.
-Renderer adapter
-conflicts currently describe duplicate-name adapter groups without enforcing a
-resolution policy. Empty conflict adapter groups are supported as a valid
-contract state before Renderer defines conflict detection behavior. Renderer
-adapter conflict detection now reports duplicate-name adapter groups from a
-registry without selecting, reordering or resolving those adapters. Empty
+Renderer adapter conflicts currently describe duplicate-name adapter groups
+without enforcing a resolution policy. Conflict creation preserves adapter
+references, copies conflict adapter lists and preserves explicit empty conflict
+names. Empty conflict adapter groups are supported as a valid contract state.
+Renderer adapter conflict detection reports duplicate-name adapter groups from a
+registry without selecting, reordering or resolving those adapters. Multiple
+conflict groups follow first-duplicate registry order, while unique and empty
 registries do not produce conflict reports. Renderer adapter conflict
 resolution contracts can describe unresolved conflicts or explicitly selected
 adapters, and resolution creation protects embedded conflict adapter lists from
-later source-array mutations. Renderer adapter selection contracts describe
+later source-array mutations. Unresolved resolutions omit adapter fields.
+First-candidate conflict resolution selects adapter references without invoking
+mount handlers. Guarded mount execution invokes only resolved adapter choices;
+unresolved resolutions return unmounted results, preserve request output and
+target references, and do not invoke adapters even when an adapter field is
+present. Rejected resolved adapter mounts preserve request output and target
+references while reporting optional error messages. Renderer adapter selection contracts describe
 candidate adapter selection requests and selected or unselected results without
 automatic conflict policies. Empty selection candidate lists are supported as a
 valid request state before policy helpers exist. Renderer now includes an

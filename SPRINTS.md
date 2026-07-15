@@ -223,23 +223,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.208 | Renderer Adapter Lookup Documentation Review | Completed | - |
 | G2.5.209 | Renderer Adapter Boundary Closure Review | Completed | - |
 | G2.5.210 | Renderer Adapter Return-To-Conflicts Review | Completed | - |
-| G2.5.211 | Renderer Adapter Conflict Review | Planned | - |
+| G2.5.211 | Renderer Adapter Conflict Review | Completed | - |
+| G2.5.212 | Renderer Adapter Conflict Reference Review | Completed | - |
+| G2.5.213 | Renderer Adapter Conflict Empty Name Review | Completed | - |
+| G2.5.214 | Renderer Adapter Conflict Detection Review | Completed | - |
+| G2.5.215 | Renderer Adapter Multiple Conflict Review | Completed | - |
+| G2.5.216 | Renderer Adapter Conflict No-Conflict Review | Completed | - |
+| G2.5.217 | Renderer Adapter Conflict Resolution Review | Completed | - |
+| G2.5.218 | Renderer Adapter Conflict Resolution Shape Review | Completed | - |
+| G2.5.219 | Renderer Adapter Conflict First Candidate Review | Completed | - |
+| G2.5.220 | Renderer Adapter Conflict Selection Boundary Review | Completed | - |
+| G2.5.221 | Renderer Adapter Registry Conflict Resolution Review | Completed | - |
+| G2.5.222 | Renderer Adapter Registry Conflict Ordering Review | Completed | - |
+| G2.5.223 | Renderer Adapter Resolved Mount Review | Completed | - |
+| G2.5.224 | Renderer Adapter Unresolved Mount Review | Completed | - |
+| G2.5.225 | Renderer Adapter Unresolved Reference Review | Completed | - |
+| G2.5.226 | Renderer Adapter Rejected Mount Reference Review | Completed | - |
+| G2.5.227 | Renderer Adapter Conflict Documentation Review | Completed | - |
+| G2.5.228 | Renderer Adapter Resolution Documentation Review | Completed | - |
+| G2.5.229 | Renderer Adapter Conflict Boundary Closure Review | Completed | - |
+| G2.5.230 | Renderer Adapter Conflict Return-To-Selection Review | Completed | - |
+| G2.5.231 | Renderer Adapter Selection Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.210 - Renderer Adapter Return-To-Conflicts Review
+## G2.5.230 - Renderer Adapter Conflict Return-To-Selection Review
 
 Goal:
 
-Review and protect adapter, registry and lookup boundaries before returning to conflict work.
+Review and protect adapter conflict boundaries before returning to selection work.
 
 Deliverables:
 
-* Adapter boundary coverage
-* Registry and lookup boundary coverage
-* Conflict readiness documentation
+* Adapter conflict coverage
+* Resolution and guarded mount coverage
+* Selection readiness documentation
 * Sprint documentation
 
 Status:
@@ -250,13 +270,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.211 - Renderer Adapter Conflict Review
+## G2.5.231 - Renderer Adapter Selection Review
 
 Suggested focus:
 
-* Review Renderer adapter conflict contracts after adapter boundary closure
-* Confirm duplicate adapter groups preserve references and ordering
-* Protect conflict resolution boundaries before registry integration work
+* Review Renderer adapter selection contracts after conflict boundary closure
+* Confirm candidate request copy and first-candidate result behavior
+* Protect selection boundaries before platform adapter review
 
 ---
 
@@ -477,6 +497,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.208.md`
 * `docs/sprints/Sprint-G2.5.209.md`
 * `docs/sprints/Sprint-G2.5.210.md`
+* `docs/sprints/Sprint-G2.5.211.md`
+* `docs/sprints/Sprint-G2.5.212.md`
+* `docs/sprints/Sprint-G2.5.213.md`
+* `docs/sprints/Sprint-G2.5.214.md`
+* `docs/sprints/Sprint-G2.5.215.md`
+* `docs/sprints/Sprint-G2.5.216.md`
+* `docs/sprints/Sprint-G2.5.217.md`
+* `docs/sprints/Sprint-G2.5.218.md`
+* `docs/sprints/Sprint-G2.5.219.md`
+* `docs/sprints/Sprint-G2.5.220.md`
+* `docs/sprints/Sprint-G2.5.221.md`
+* `docs/sprints/Sprint-G2.5.222.md`
+* `docs/sprints/Sprint-G2.5.223.md`
+* `docs/sprints/Sprint-G2.5.224.md`
+* `docs/sprints/Sprint-G2.5.225.md`
+* `docs/sprints/Sprint-G2.5.226.md`
+* `docs/sprints/Sprint-G2.5.227.md`
+* `docs/sprints/Sprint-G2.5.228.md`
+* `docs/sprints/Sprint-G2.5.229.md`
+* `docs/sprints/Sprint-G2.5.230.md`
 
 ---
 
