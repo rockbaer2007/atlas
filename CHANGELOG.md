@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Theme and Devtools integration reviews now protect package-root closure,
+  required-layer ordering, activation gate copies, dependency boundary ordering
+  and pre-activation dependency independence.
 * Home Assistant integration review now protects package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

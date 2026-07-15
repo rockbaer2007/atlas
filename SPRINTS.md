@@ -383,23 +383,53 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.368 | Home Assistant Boundary Closure Review | Completed | - |
 | G2.5.369 | Home Assistant Integration Regression Review | Completed | - |
 | G2.5.370 | Home Assistant Return-To-Theme Review | Completed | - |
-| G2.5.371 | Theme Integration Review | Planned | - |
+| G2.5.371 | Theme Integration Review | Completed | - |
+| G2.5.372 | Theme Package Root Closure Review | Completed | - |
+| G2.5.373 | Theme Boundary Shape Review | Completed | - |
+| G2.5.374 | Theme Required Layer Order Review | Completed | - |
+| G2.5.375 | Theme Boundary Copy Review | Completed | - |
+| G2.5.376 | Theme Renderer Boundary Review | Completed | - |
+| G2.5.377 | Theme Public API Closure Review | Completed | - |
+| G2.5.378 | Theme Public API Reason Review | Completed | - |
+| G2.5.379 | Theme Activation Gate Review | Completed | - |
+| G2.5.380 | Theme Activation Gate Copy Review | Completed | - |
+| G2.5.381 | Theme Activation Gate Reason Review | Completed | - |
+| G2.5.382 | Theme Dependency Boundary Review | Completed | - |
+| G2.5.383 | Theme Allowed Dependency Review | Completed | - |
+| G2.5.384 | Theme Forbidden Dependency Ordering Review | Completed | - |
+| G2.5.385 | Theme Dependency Report Copy Review | Completed | - |
+| G2.5.386 | Theme Integration Documentation Review | Completed | - |
+| G2.5.387 | Theme Activation Documentation Review | Completed | - |
+| G2.5.388 | Theme Boundary Closure Review | Completed | - |
+| G2.5.389 | Theme Integration Regression Review | Completed | - |
+| G2.5.390 | Theme Return-To-Devtools Review | Completed | - |
+| G2.5.391 | Devtools Integration Review | Completed | - |
+| G2.5.392 | Devtools Package Root Closure Review | Completed | - |
+| G2.5.393 | Devtools Boundary Shape Review | Completed | - |
+| G2.5.394 | Devtools Required Layer Order Review | Completed | - |
+| G2.5.395 | Devtools Diagnostics Boundary Review | Completed | - |
+| G2.5.396 | Devtools Public API Closure Review | Completed | - |
+| G2.5.397 | Devtools Activation Gate Review | Completed | - |
+| G2.5.398 | Devtools Dependency Boundary Review | Completed | - |
+| G2.5.399 | Devtools Boundary Closure Review | Completed | - |
+| G2.5.400 | Devtools Return-To-Framework Review | Completed | - |
+| G2.5.401 | Framework Readiness Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.370 - Home Assistant Return-To-Theme Review
+## G2.5.400 - Devtools Return-To-Framework Review
 
 Goal:
 
-Review and protect Home Assistant integration boundaries before returning to Theme work.
+Review and protect Theme and Devtools activation boundaries before returning to framework readiness work.
 
 Deliverables:
 
-* Home Assistant boundary coverage
-* Activation and dependency boundary coverage
-* Theme readiness documentation
+* Theme boundary coverage
+* Devtools boundary coverage
+* Framework readiness documentation
 * Sprint documentation
 
 Status:
@@ -410,13 +440,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.371 - Theme Integration Review
+## G2.5.401 - Framework Readiness Review
 
 Suggested focus:
 
-* Review Theme integration boundaries after Home Assistant closure
-* Confirm Theme package remains closed until required layers are stable
-* Protect activation readiness before concrete Theme implementation work
+* Review all planned integration package readiness after Theme and Devtools closure
+* Confirm public API boundaries remain intentionally closed where needed
+* Prepare the next implementation direction for concrete framework capabilities
 
 ---
 
@@ -797,6 +827,36 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.368.md`
 * `docs/sprints/Sprint-G2.5.369.md`
 * `docs/sprints/Sprint-G2.5.370.md`
+* `docs/sprints/Sprint-G2.5.371.md`
+* `docs/sprints/Sprint-G2.5.372.md`
+* `docs/sprints/Sprint-G2.5.373.md`
+* `docs/sprints/Sprint-G2.5.374.md`
+* `docs/sprints/Sprint-G2.5.375.md`
+* `docs/sprints/Sprint-G2.5.376.md`
+* `docs/sprints/Sprint-G2.5.377.md`
+* `docs/sprints/Sprint-G2.5.378.md`
+* `docs/sprints/Sprint-G2.5.379.md`
+* `docs/sprints/Sprint-G2.5.380.md`
+* `docs/sprints/Sprint-G2.5.381.md`
+* `docs/sprints/Sprint-G2.5.382.md`
+* `docs/sprints/Sprint-G2.5.383.md`
+* `docs/sprints/Sprint-G2.5.384.md`
+* `docs/sprints/Sprint-G2.5.385.md`
+* `docs/sprints/Sprint-G2.5.386.md`
+* `docs/sprints/Sprint-G2.5.387.md`
+* `docs/sprints/Sprint-G2.5.388.md`
+* `docs/sprints/Sprint-G2.5.389.md`
+* `docs/sprints/Sprint-G2.5.390.md`
+* `docs/sprints/Sprint-G2.5.391.md`
+* `docs/sprints/Sprint-G2.5.392.md`
+* `docs/sprints/Sprint-G2.5.393.md`
+* `docs/sprints/Sprint-G2.5.394.md`
+* `docs/sprints/Sprint-G2.5.395.md`
+* `docs/sprints/Sprint-G2.5.396.md`
+* `docs/sprints/Sprint-G2.5.397.md`
+* `docs/sprints/Sprint-G2.5.398.md`
+* `docs/sprints/Sprint-G2.5.399.md`
+* `docs/sprints/Sprint-G2.5.400.md`
 
 ---
 

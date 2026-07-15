@@ -18,6 +18,13 @@ theme model. These checks define the required Core and Renderer layers, keep
 theme data token-only before activation, and verify that the package root
 remains closed.
 
+The activation boundary remains planned and token-only. Required layers are kept
+in Core and Renderer order, activation gate reports copy missing layer lists away
+from source boundary objects, and dependency boundary reports preserve forbidden
+dependency order while staying independent from caller-owned arrays. The package
+root intentionally exports no concrete token creation, style injection or Home
+Assistant theme binding helpers before activation.
+
 Concrete style injection, Renderer coupling, Home Assistant theme bridging and
 third-party styling dependencies remain outside this package until the
 activation gate is opened in a later sprint.

@@ -386,7 +386,37 @@ quality validation and the delivered results.
 | G2.5.368 | Home Assistant Boundary Closure Review | Completed | - |
 | G2.5.369 | Home Assistant Integration Regression Review | Completed | - |
 | G2.5.370 | Home Assistant Return-To-Theme Review | Completed | - |
-| G2.5.371 | Theme Integration Review | Planned | - |
+| G2.5.371 | Theme Integration Review | Completed | - |
+| G2.5.372 | Theme Package Root Closure Review | Completed | - |
+| G2.5.373 | Theme Boundary Shape Review | Completed | - |
+| G2.5.374 | Theme Required Layer Order Review | Completed | - |
+| G2.5.375 | Theme Boundary Copy Review | Completed | - |
+| G2.5.376 | Theme Renderer Boundary Review | Completed | - |
+| G2.5.377 | Theme Public API Closure Review | Completed | - |
+| G2.5.378 | Theme Public API Reason Review | Completed | - |
+| G2.5.379 | Theme Activation Gate Review | Completed | - |
+| G2.5.380 | Theme Activation Gate Copy Review | Completed | - |
+| G2.5.381 | Theme Activation Gate Reason Review | Completed | - |
+| G2.5.382 | Theme Dependency Boundary Review | Completed | - |
+| G2.5.383 | Theme Allowed Dependency Review | Completed | - |
+| G2.5.384 | Theme Forbidden Dependency Ordering Review | Completed | - |
+| G2.5.385 | Theme Dependency Report Copy Review | Completed | - |
+| G2.5.386 | Theme Integration Documentation Review | Completed | - |
+| G2.5.387 | Theme Activation Documentation Review | Completed | - |
+| G2.5.388 | Theme Boundary Closure Review | Completed | - |
+| G2.5.389 | Theme Integration Regression Review | Completed | - |
+| G2.5.390 | Theme Return-To-Devtools Review | Completed | - |
+| G2.5.391 | Devtools Integration Review | Completed | - |
+| G2.5.392 | Devtools Package Root Closure Review | Completed | - |
+| G2.5.393 | Devtools Boundary Shape Review | Completed | - |
+| G2.5.394 | Devtools Required Layer Order Review | Completed | - |
+| G2.5.395 | Devtools Diagnostics Boundary Review | Completed | - |
+| G2.5.396 | Devtools Public API Closure Review | Completed | - |
+| G2.5.397 | Devtools Activation Gate Review | Completed | - |
+| G2.5.398 | Devtools Dependency Boundary Review | Completed | - |
+| G2.5.399 | Devtools Boundary Closure Review | Completed | - |
+| G2.5.400 | Devtools Return-To-Framework Review | Completed | - |
+| G2.5.401 | Framework Readiness Review | Planned | - |
 
 ---
 
@@ -5024,15 +5054,375 @@ Highlights
 
 ---
 
+## G2.5.371 - Theme Integration Review
+
+Reviewed Theme integration boundaries after Home Assistant closure.
+
+Highlights
+
+- Confirmed Theme remains planned and pre-activation
+- Confirmed the package root remains closed
+- Protected readiness before concrete Theme implementation work
+
+---
+
+## G2.5.372 - Theme Package Root Closure Review
+
+Reviewed Theme package-root closure.
+
+Highlights
+
+- Confirmed concrete theme helpers are absent from the package root
+- Kept token creation, style injection and Home Assistant theme binding unexported
+- Preserved public API closure before activation
+
+---
+
+## G2.5.373 - Theme Boundary Shape Review
+
+Reviewed Theme activation boundary shape.
+
+Highlights
+
+- Confirmed boundary shape remains planned token metadata
+- Kept tokens, stylesheets and themes outside the boundary object
+- Preserved package and domain identity
+
+---
+
+## G2.5.374 - Theme Required Layer Order Review
+
+Reviewed Theme required layer ordering.
+
+Highlights
+
+- Confirmed Core and Renderer remain the required layer order
+- Preserved activation readiness ordering
+- Kept layer requirements explicit
+
+---
+
+## G2.5.375 - Theme Boundary Copy Review
+
+Reviewed Theme boundary copy behavior.
+
+Highlights
+
+- Confirmed independently created boundaries do not share layer arrays
+- Preserved required layer values across boundary instances
+- Kept boundary creation deterministic
+
+---
+
+## G2.5.376 - Theme Renderer Boundary Review
+
+Reviewed Theme renderer boundary metadata.
+
+Highlights
+
+- Confirmed Theme remains token-only for Renderer
+- Confirmed style injection stays disabled
+- Kept stylesheet injection and Home Assistant theme binding outside Renderer boundary metadata
+
+---
+
+## G2.5.377 - Theme Public API Closure Review
+
+Reviewed Theme public API closure.
+
+Highlights
+
+- Confirmed public API state remains closed
+- Confirmed the package root exports no concrete API
+- Preserved closure before activation
+
+---
+
+## G2.5.378 - Theme Public API Reason Review
+
+Reviewed Theme public API closure reason.
+
+Highlights
+
+- Confirmed closure reason remains stable
+- Preserved Core and Renderer extension point wording
+- Kept activation rationale visible
+
+---
+
+## G2.5.379 - Theme Activation Gate Review
+
+Reviewed Theme activation gate behavior.
+
+Highlights
+
+- Confirmed activation remains inactive
+- Confirmed missing layers remain visible
+- Confirmed public API closure is reflected in gate reports
+
+---
+
+## G2.5.380 - Theme Activation Gate Copy Review
+
+Reviewed Theme activation gate copy behavior.
+
+Highlights
+
+- Confirmed gate reports copy missing layer arrays
+- Confirmed later source mutations do not alter gate reports
+- Preserved activation diagnostics stability
+
+---
+
+## G2.5.381 - Theme Activation Gate Reason Review
+
+Reviewed Theme activation gate reason behavior.
+
+Highlights
+
+- Confirmed gate reports reuse the public API closure reason
+- Preserved activation rationale in inactive gate reports
+- Kept gate reports aligned with boundary metadata
+
+---
+
+## G2.5.382 - Theme Dependency Boundary Review
+
+Reviewed Theme dependency boundaries.
+
+Highlights
+
+- Confirmed Renderer, Runtime, Home Assistant and Lit dependencies remain forbidden before activation
+- Preserved dependency boundary reports
+- Kept concrete dependencies outside the package
+
+---
+
+## G2.5.383 - Theme Allowed Dependency Review
+
+Reviewed allowed pre-activation dependencies.
+
+Highlights
+
+- Confirmed Foundation and Core dependencies remain allowed before activation
+- Kept forbidden dependency checks focused on concrete activation layers
+- Preserved dependency direction readiness
+
+---
+
+## G2.5.384 - Theme Forbidden Dependency Ordering Review
+
+Reviewed forbidden dependency ordering.
+
+Highlights
+
+- Confirmed forbidden dependency reports preserve source order
+- Confirmed duplicate forbidden dependencies remain visible
+- Kept reports useful for package hygiene
+
+---
+
+## G2.5.385 - Theme Dependency Report Copy Review
+
+Reviewed dependency report copy behavior.
+
+Highlights
+
+- Confirmed dependency boundary reports do not reuse caller arrays
+- Confirmed later dependency mutations do not alter reports
+- Preserved report independence
+
+---
+
+## G2.5.386 - Theme Integration Documentation Review
+
+Reviewed Theme integration documentation.
+
+Highlights
+
+- Documented required layer ordering and pre-activation status
+- Documented package-root closure before activation
+- Kept concrete theme work deferred
+
+---
+
+## G2.5.387 - Theme Activation Documentation Review
+
+Reviewed Theme activation documentation.
+
+Highlights
+
+- Documented activation gate copy behavior
+- Documented dependency boundary ordering
+- Preserved activation rationale
+
+---
+
+## G2.5.388 - Theme Boundary Closure Review
+
+Reviewed Theme boundary closure.
+
+Highlights
+
+- Confirmed integration, activation and dependency boundaries are protected
+- Kept changes within internal readiness checks
+- Prepared return to Devtools review
+
+---
+
+## G2.5.389 - Theme Integration Regression Review
+
+Reviewed Theme integration regression coverage.
+
+Highlights
+
+- Confirmed Theme boundary tests cover closure, activation and dependencies
+- Preserved package-root closure
+- Kept concrete Theme behavior outside the package
+
+---
+
+## G2.5.390 - Theme Return-To-Devtools Review
+
+Reviewed readiness to return from Theme work to Devtools work.
+
+Highlights
+
+- Confirmed Theme integration boundaries are covered
+- Confirmed activation remains closed before stable layers
+- Prepared next sprint for Devtools integration review
+
+---
+
+## G2.5.391 - Devtools Integration Review
+
+Reviewed Devtools integration boundaries after Theme closure.
+
+Highlights
+
+- Confirmed Devtools remains planned and pre-activation
+- Confirmed inspection-only diagnostics boundary
+- Protected readiness before concrete tooling work
+
+---
+
+## G2.5.392 - Devtools Package Root Closure Review
+
+Reviewed Devtools package-root closure.
+
+Highlights
+
+- Confirmed concrete tooling helpers are absent from the package root
+- Kept diagnostics panels, workspace mutation and dev-server helpers unexported
+- Preserved public API closure before activation
+
+---
+
+## G2.5.393 - Devtools Boundary Shape Review
+
+Reviewed Devtools activation boundary shape.
+
+Highlights
+
+- Confirmed boundary shape remains planned diagnostics metadata
+- Kept workspace mutation, dev server and inspector fields outside the boundary object
+- Preserved package and domain identity
+
+---
+
+## G2.5.394 - Devtools Required Layer Order Review
+
+Reviewed Devtools required layer ordering.
+
+Highlights
+
+- Confirmed Foundation, Kernel, Runtime and Core remain the required layer order
+- Preserved activation readiness ordering
+- Kept layer requirements explicit
+
+---
+
+## G2.5.395 - Devtools Diagnostics Boundary Review
+
+Reviewed Devtools diagnostics boundary metadata.
+
+Highlights
+
+- Confirmed Devtools remains inspection-only
+- Confirmed mutation stays disabled
+- Kept workspace mutation and dev-server behavior outside diagnostics boundary metadata
+
+---
+
+## G2.5.396 - Devtools Public API Closure Review
+
+Reviewed Devtools public API closure.
+
+Highlights
+
+- Confirmed public API state remains closed
+- Confirmed the package root exports no concrete API
+- Preserved closure before activation
+
+---
+
+## G2.5.397 - Devtools Activation Gate Review
+
+Reviewed Devtools activation gate behavior.
+
+Highlights
+
+- Confirmed activation remains inactive
+- Confirmed gate reports copy missing layers
+- Confirmed gate reports reuse the public API closure reason
+
+---
+
+## G2.5.398 - Devtools Dependency Boundary Review
+
+Reviewed Devtools dependency boundaries.
+
+Highlights
+
+- Confirmed Renderer, Theme, Home Assistant and Vite dependencies remain forbidden before activation
+- Confirmed framework foundation dependencies remain allowed
+- Preserved forbidden dependency order and duplicates
+
+---
+
+## G2.5.399 - Devtools Boundary Closure Review
+
+Reviewed Devtools boundary closure.
+
+Highlights
+
+- Confirmed activation and dependency boundaries are protected
+- Kept changes within internal readiness checks
+- Prepared return to framework readiness review
+
+---
+
+## G2.5.400 - Devtools Return-To-Framework Review
+
+Reviewed readiness to return from Devtools work to framework readiness.
+
+Highlights
+
+- Confirmed Theme and Devtools boundaries are covered
+- Confirmed integration package public APIs remain closed
+- Prepared next sprint for framework readiness review
+
+---
+
 # Planned Sprints
 
-## G2.5.371 - Theme Integration Review
+## G2.5.401 - Framework Readiness Review
 
 Planned deliverables
 
-- Review Theme integration boundaries after Home Assistant closure
-- Confirm Theme package remains closed until required layers are stable
-- Protect activation readiness before concrete Theme implementation work
+- Review all planned integration package readiness after Theme and Devtools closure
+- Confirm public API boundaries remain intentionally closed where needed
+- Prepare the next implementation direction for concrete framework capabilities
 
 ---
 
@@ -5263,6 +5653,36 @@ Planned deliverables
 - [G2.5.368 - Home Assistant Boundary Closure Review](Sprint-G2.5.368.md)
 - [G2.5.369 - Home Assistant Integration Regression Review](Sprint-G2.5.369.md)
 - [G2.5.370 - Home Assistant Return-To-Theme Review](Sprint-G2.5.370.md)
+- [G2.5.371 - Theme Integration Review](Sprint-G2.5.371.md)
+- [G2.5.372 - Theme Package Root Closure Review](Sprint-G2.5.372.md)
+- [G2.5.373 - Theme Boundary Shape Review](Sprint-G2.5.373.md)
+- [G2.5.374 - Theme Required Layer Order Review](Sprint-G2.5.374.md)
+- [G2.5.375 - Theme Boundary Copy Review](Sprint-G2.5.375.md)
+- [G2.5.376 - Theme Renderer Boundary Review](Sprint-G2.5.376.md)
+- [G2.5.377 - Theme Public API Closure Review](Sprint-G2.5.377.md)
+- [G2.5.378 - Theme Public API Reason Review](Sprint-G2.5.378.md)
+- [G2.5.379 - Theme Activation Gate Review](Sprint-G2.5.379.md)
+- [G2.5.380 - Theme Activation Gate Copy Review](Sprint-G2.5.380.md)
+- [G2.5.381 - Theme Activation Gate Reason Review](Sprint-G2.5.381.md)
+- [G2.5.382 - Theme Dependency Boundary Review](Sprint-G2.5.382.md)
+- [G2.5.383 - Theme Allowed Dependency Review](Sprint-G2.5.383.md)
+- [G2.5.384 - Theme Forbidden Dependency Ordering Review](Sprint-G2.5.384.md)
+- [G2.5.385 - Theme Dependency Report Copy Review](Sprint-G2.5.385.md)
+- [G2.5.386 - Theme Integration Documentation Review](Sprint-G2.5.386.md)
+- [G2.5.387 - Theme Activation Documentation Review](Sprint-G2.5.387.md)
+- [G2.5.388 - Theme Boundary Closure Review](Sprint-G2.5.388.md)
+- [G2.5.389 - Theme Integration Regression Review](Sprint-G2.5.389.md)
+- [G2.5.390 - Theme Return-To-Devtools Review](Sprint-G2.5.390.md)
+- [G2.5.391 - Devtools Integration Review](Sprint-G2.5.391.md)
+- [G2.5.392 - Devtools Package Root Closure Review](Sprint-G2.5.392.md)
+- [G2.5.393 - Devtools Boundary Shape Review](Sprint-G2.5.393.md)
+- [G2.5.394 - Devtools Required Layer Order Review](Sprint-G2.5.394.md)
+- [G2.5.395 - Devtools Diagnostics Boundary Review](Sprint-G2.5.395.md)
+- [G2.5.396 - Devtools Public API Closure Review](Sprint-G2.5.396.md)
+- [G2.5.397 - Devtools Activation Gate Review](Sprint-G2.5.397.md)
+- [G2.5.398 - Devtools Dependency Boundary Review](Sprint-G2.5.398.md)
+- [G2.5.399 - Devtools Boundary Closure Review](Sprint-G2.5.399.md)
+- [G2.5.400 - Devtools Return-To-Framework Review](Sprint-G2.5.400.md)
 
 ---
 
