@@ -99,15 +99,20 @@ pipelines complete successfully, and asynchronous stages are awaited before the
 next stage runs. Pipeline execution passes the same Renderer host context to
 every stage, preserves stage result objects in completion order and rejects on
 stage failures without running later stages. Renderer output currently captures
-output kind, name and
-optional string content only. Output content is optional, and the current output
-kinds are `fragment` and `document`. Renderer targets currently capture target
-kind, name and optional identifier only. Target identifiers are optional, and
-the current target kinds are `memory` and `surface`. Renderer mount contracts
-currently describe output-to-target requests and mount results without platform
-adapters, DOM references, Home Assistant surfaces or side effects. Mount
-results currently report only whether the output is mounted, together with the
-output and target contract shapes. Renderer adapters currently describe a named
+output kind, name and optional string content only. Output content is optional,
+explicit empty content is preserved, and the current output kinds are
+`fragment` and `document`. Outputs remain independent from targets, mounts,
+adapters, platforms and render functions. Renderer targets currently capture
+target kind, name and optional identifier only. Target identifiers are optional,
+explicit empty identifiers are preserved, and the current target kinds are
+`memory` and `surface`. Targets remain independent from outputs, adapters,
+platforms and concrete surface elements. Renderer mount contracts currently
+describe output-to-target requests and mount results without platform adapters,
+DOM references, Home Assistant surfaces or side effects. Mount requests and
+results keep references to existing output and target objects. Mount results
+currently report only whether the output is mounted, together with the output
+and target contract shapes, and optional explicit failure messages. Successful
+mount results do not include failure messages. Renderer adapters currently describe a named
 mount contract that can return a mount result synchronously or asynchronously.
 Adapter names are preserved for future registration, and adapter mount handlers
 receive Renderer mount request contracts directly. No adapter registry or

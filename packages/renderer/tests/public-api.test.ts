@@ -462,6 +462,48 @@ describe("renderer public API", () => {
     expect([fragment.kind, document.kind]).toEqual(["fragment", "document"]);
   });
 
+  it("keeps Renderer output independent from targets, mounts and adapters", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "independent-output",
+      content: "ready",
+    });
+
+    expect(Object.keys(output).sort()).toEqual(["content", "kind", "name"]);
+    expect(output).not.toHaveProperty("target");
+    expect(output).not.toHaveProperty("mounted");
+    expect(output).not.toHaveProperty("adapter");
+    expect(output).not.toHaveProperty("platform");
+  });
+
+  it("preserves empty Renderer output content as explicit content", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "empty-content-output",
+      content: "",
+    });
+
+    expect(output).toEqual({
+      kind: "fragment",
+      name: "empty-content-output",
+      content: "",
+    });
+    expect(Object.hasOwn(output, "content")).toBe(true);
+  });
+
+  it("keeps Renderer document output as descriptive data only", () => {
+    const output = Renderer.createRendererOutput({
+      kind: "document",
+      name: "document-output-boundary",
+      content: "<section>ready</section>",
+    });
+
+    expect(output.kind).toBe("document");
+    expect(output.content).toBe("<section>ready</section>");
+    expect(output).not.toHaveProperty("render");
+    expect(output).not.toHaveProperty("mount");
+  });
+
   it("creates Renderer targets without mounting behavior", () => {
     const target = createRendererTarget({
       kind: "memory",
@@ -514,6 +556,48 @@ describe("renderer public API", () => {
     expect([memory.kind, surface.kind]).toEqual(["memory", "surface"]);
   });
 
+  it("keeps Renderer targets independent from outputs and adapters", () => {
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "independent-target",
+      identifier: "target-root",
+    });
+
+    expect(Object.keys(target).sort()).toEqual(["identifier", "kind", "name"]);
+    expect(target).not.toHaveProperty("output");
+    expect(target).not.toHaveProperty("adapter");
+    expect(target).not.toHaveProperty("platform");
+    expect(target).not.toHaveProperty("mounted");
+  });
+
+  it("preserves empty Renderer target identifiers as explicit identifiers", () => {
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "empty-identifier-target",
+      identifier: "",
+    });
+
+    expect(target).toEqual({
+      kind: "memory",
+      name: "empty-identifier-target",
+      identifier: "",
+    });
+    expect(Object.hasOwn(target, "identifier")).toBe(true);
+  });
+
+  it("keeps Renderer surface targets as descriptive data only", () => {
+    const target = Renderer.createRendererTarget({
+      kind: "surface",
+      name: "surface-target-boundary",
+      identifier: "surface-root",
+    });
+
+    expect(target.kind).toBe("surface");
+    expect(target.identifier).toBe("surface-root");
+    expect(target).not.toHaveProperty("element");
+    expect(target).not.toHaveProperty("mount");
+  });
+
   it("creates Renderer mount requests without mounting output", () => {
     const output = createRendererOutput({
       kind: "fragment",
@@ -553,6 +637,47 @@ describe("renderer public API", () => {
 
     expect(created).toEqual(request);
     expect(created).not.toBe(request);
+  });
+
+  it("keeps Renderer mount requests linked to existing output and target references", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "request-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "request-reference-target",
+    });
+
+    const request = Renderer.createRendererMountRequest({
+      output,
+      target,
+    });
+
+    expect(request.output).toBe(output);
+    expect(request.target).toBe(target);
+  });
+
+  it("keeps Renderer mount requests independent from mount results", () => {
+    const output = createRendererOutput({
+      kind: "document",
+      name: "request-result-boundary-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "request-result-boundary-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+
+    expect(request).toEqual({
+      output,
+      target,
+    });
+    expect(request).not.toHaveProperty("mounted");
+    expect(request).not.toHaveProperty("error");
   });
 
   it("creates Renderer mount results without platform adapters", () => {
@@ -595,6 +720,72 @@ describe("renderer public API", () => {
 
     expect(created).toEqual(result);
     expect(created).not.toBe(result);
+  });
+
+  it("keeps Renderer mount results linked to existing output and target references", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "result-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "result-reference-target",
+    });
+
+    const result = Renderer.createRendererMountResult({
+      mounted: true,
+      output,
+      target,
+    });
+
+    expect(result.output).toBe(output);
+    expect(result.target).toBe(target);
+  });
+
+  it("preserves Renderer mount result errors as explicit failure messages", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "error-result-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "error-result-target",
+    });
+
+    const result = createRendererMountResult({
+      mounted: false,
+      output,
+      target,
+      error: "mount boundary failed",
+    });
+
+    expect(result).toEqual({
+      mounted: false,
+      output,
+      target,
+      error: "mount boundary failed",
+    });
+    expect(Object.hasOwn(result, "error")).toBe(true);
+  });
+
+  it("keeps successful Renderer mount results free of failure messages", () => {
+    const output = createRendererOutput({
+      kind: "document",
+      name: "success-result-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "success-result-target",
+    });
+
+    const result = createRendererMountResult({
+      mounted: true,
+      output,
+      target,
+    });
+
+    expect(result.mounted).toBe(true);
+    expect(result).not.toHaveProperty("error");
   });
 
   it("supports current Renderer mount result states", () => {

@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer output, target and mount contract review now protects descriptive
+  data boundaries, reference preservation and failure-message behavior.
 * Renderer pipeline review now protects host context pass-through, stage result
   ordering, mixed completion and rejection boundaries before output work.
 * Core public API review now protects the compact Core package-root value

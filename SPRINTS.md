@@ -183,22 +183,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.168 | Renderer Pipeline Result Ordering Review | Completed | - |
 | G2.5.169 | Renderer Pipeline Completion Boundary Review | Completed | - |
 | G2.5.170 | Renderer Pipeline Failure Boundary Review | Completed | - |
-| G2.5.171 | Renderer Output Review | Planned | - |
+| G2.5.171 | Renderer Output Review | Completed | - |
+| G2.5.172 | Renderer Output Independence Review | Completed | - |
+| G2.5.173 | Renderer Output Content Boundary Review | Completed | - |
+| G2.5.174 | Renderer Document Output Review | Completed | - |
+| G2.5.175 | Renderer Output Return-To-Target Review | Completed | - |
+| G2.5.176 | Renderer Target Review | Completed | - |
+| G2.5.177 | Renderer Target Independence Review | Completed | - |
+| G2.5.178 | Renderer Target Identifier Boundary Review | Completed | - |
+| G2.5.179 | Renderer Surface Target Review | Completed | - |
+| G2.5.180 | Renderer Target Return-To-Mount Review | Completed | - |
+| G2.5.181 | Renderer Mount Request Review | Completed | - |
+| G2.5.182 | Renderer Mount Request Reference Review | Completed | - |
+| G2.5.183 | Renderer Mount Request Result Boundary Review | Completed | - |
+| G2.5.184 | Renderer Mount Result Review | Completed | - |
+| G2.5.185 | Renderer Mount Result Reference Review | Completed | - |
+| G2.5.186 | Renderer Mount Error Boundary Review | Completed | - |
+| G2.5.187 | Renderer Mount Success Boundary Review | Completed | - |
+| G2.5.188 | Renderer Output Target Documentation Review | Completed | - |
+| G2.5.189 | Renderer Mount Documentation Review | Completed | - |
+| G2.5.190 | Renderer Output Target Return-To-Adapters Review | Completed | - |
+| G2.5.191 | Renderer Adapter Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.170 - Renderer Pipeline Failure Boundary Review
+## G2.5.190 - Renderer Output Target Return-To-Adapters Review
 
 Goal:
 
-Review and protect Renderer pipeline failure boundaries before returning to output work.
+Review and protect output, target and mount boundaries before returning to adapter work.
 
 Deliverables:
 
-* Renderer pipeline rejection coverage
-* Failure boundary documentation
+* Output and target boundary coverage
+* Mount request and result boundary coverage
+* Adapter readiness documentation
 * Sprint documentation
 
 Status:
@@ -209,13 +230,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.171 - Renderer Output Review
+## G2.5.191 - Renderer Adapter Review
 
 Suggested focus:
 
-* Review Renderer output contracts after pipeline boundary closure
-* Confirm output remains independent from targets, adapters and platforms
-* Protect output kind, name and optional content behavior
+* Review Renderer adapter contracts after output and mount boundary closure
+* Confirm adapters preserve mount request references
+* Protect synchronous and asynchronous adapter mount behavior
 
 ---
 
@@ -396,6 +417,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.168.md`
 * `docs/sprints/Sprint-G2.5.169.md`
 * `docs/sprints/Sprint-G2.5.170.md`
+* `docs/sprints/Sprint-G2.5.171.md`
+* `docs/sprints/Sprint-G2.5.172.md`
+* `docs/sprints/Sprint-G2.5.173.md`
+* `docs/sprints/Sprint-G2.5.174.md`
+* `docs/sprints/Sprint-G2.5.175.md`
+* `docs/sprints/Sprint-G2.5.176.md`
+* `docs/sprints/Sprint-G2.5.177.md`
+* `docs/sprints/Sprint-G2.5.178.md`
+* `docs/sprints/Sprint-G2.5.179.md`
+* `docs/sprints/Sprint-G2.5.180.md`
+* `docs/sprints/Sprint-G2.5.181.md`
+* `docs/sprints/Sprint-G2.5.182.md`
+* `docs/sprints/Sprint-G2.5.183.md`
+* `docs/sprints/Sprint-G2.5.184.md`
+* `docs/sprints/Sprint-G2.5.185.md`
+* `docs/sprints/Sprint-G2.5.186.md`
+* `docs/sprints/Sprint-G2.5.187.md`
+* `docs/sprints/Sprint-G2.5.188.md`
+* `docs/sprints/Sprint-G2.5.189.md`
+* `docs/sprints/Sprint-G2.5.190.md`
 
 ---
 
