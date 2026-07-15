@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer adapter review now protects adapter shape, mount handler references,
+  registry ordering and lookup result reference behavior.
 * Renderer output, target and mount contract review now protects descriptive
   data boundaries, reference preservation and failure-message behavior.
 * Renderer pipeline review now protects host context pass-through, stage result

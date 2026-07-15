@@ -112,21 +112,27 @@ DOM references, Home Assistant surfaces or side effects. Mount requests and
 results keep references to existing output and target objects. Mount results
 currently report only whether the output is mounted, together with the output
 and target contract shapes, and optional explicit failure messages. Successful
-mount results do not include failure messages. Renderer adapters currently describe a named
-mount contract that can return a mount result synchronously or asynchronously.
-Adapter names are preserved for future registration, and adapter mount handlers
-receive Renderer mount request contracts directly. No adapter registry or
-concrete platform implementation is defined yet. Renderer adapter registries
-currently capture an ordered adapter list without lookup, conflict resolution or
+mount results do not include failure messages. Renderer adapters currently
+describe a named mount contract that can return a mount result synchronously or
+asynchronously. Adapter creation preserves mount handler references and remains
+limited to name and mount contracts without platform, capability or registry
+metadata. Adapter names are preserved for future registration, including
+explicit empty names, and adapter mount handlers receive Renderer mount request
+contracts directly while preserving output and target references in returned
+mount results. Adapter mount results remain independent from adapter metadata.
+Renderer adapter registries currently capture an ordered adapter list without
 platform execution behavior. Empty adapter registries are supported as a valid
-contract state before adapter discovery is introduced. Renderer adapter lookup
-contracts currently describe lookup requests and results without executing
-registry search, adapter selection or conflict resolution behavior. Lookup
-requests and results are stable contract shapes, and lookup results may describe
-matched or missing adapters. Renderer adapter registry search currently finds
-the first adapter with a matching name and reports misses without conflict
-resolution or adapter selection policies. Duplicate adapter names currently
-resolve to the first matching adapter in registry order. Renderer adapter
+contract state before concrete adapter discovery is introduced. Registry
+creation preserves adapter references and insertion order while protecting the
+registry from later source-array mutations. Renderer adapter lookup contracts
+currently describe lookup requests and results without executing adapter
+selection or conflict resolution behavior. Lookup requests and results are
+stable contract shapes, and lookup results may describe matched or missing
+adapters while preserving matched adapter references. Renderer adapter registry
+search currently finds the first adapter with a matching name and reports misses
+without conflict resolution or adapter selection policies. Duplicate adapter
+names currently resolve to the first matching adapter in registry order.
+Renderer adapter
 conflicts currently describe duplicate-name adapter groups without enforcing a
 resolution policy. Empty conflict adapter groups are supported as a valid
 contract state before Renderer defines conflict detection behavior. Renderer

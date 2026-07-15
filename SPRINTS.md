@@ -203,23 +203,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.188 | Renderer Output Target Documentation Review | Completed | - |
 | G2.5.189 | Renderer Mount Documentation Review | Completed | - |
 | G2.5.190 | Renderer Output Target Return-To-Adapters Review | Completed | - |
-| G2.5.191 | Renderer Adapter Review | Planned | - |
+| G2.5.191 | Renderer Adapter Review | Completed | - |
+| G2.5.192 | Renderer Adapter Shape Review | Completed | - |
+| G2.5.193 | Renderer Adapter Mount Handler Review | Completed | - |
+| G2.5.194 | Renderer Adapter Name Boundary Review | Completed | - |
+| G2.5.195 | Renderer Adapter Mount Reference Review | Completed | - |
+| G2.5.196 | Renderer Adapter Result Metadata Review | Completed | - |
+| G2.5.197 | Renderer Adapter Registry Review | Completed | - |
+| G2.5.198 | Renderer Adapter Registry Reference Review | Completed | - |
+| G2.5.199 | Renderer Adapter Registry Ordering Review | Completed | - |
+| G2.5.200 | Renderer Adapter Lookup Review | Completed | - |
+| G2.5.201 | Renderer Adapter Lookup Empty Name Review | Completed | - |
+| G2.5.202 | Renderer Adapter Lookup Result Reference Review | Completed | - |
+| G2.5.203 | Renderer Adapter Registry Search Review | Completed | - |
+| G2.5.204 | Renderer Adapter Registry Miss Review | Completed | - |
+| G2.5.205 | Renderer Adapter Duplicate Match Review | Completed | - |
+| G2.5.206 | Renderer Adapter Documentation Review | Completed | - |
+| G2.5.207 | Renderer Adapter Registry Documentation Review | Completed | - |
+| G2.5.208 | Renderer Adapter Lookup Documentation Review | Completed | - |
+| G2.5.209 | Renderer Adapter Boundary Closure Review | Completed | - |
+| G2.5.210 | Renderer Adapter Return-To-Conflicts Review | Completed | - |
+| G2.5.211 | Renderer Adapter Conflict Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.190 - Renderer Output Target Return-To-Adapters Review
+## G2.5.210 - Renderer Adapter Return-To-Conflicts Review
 
 Goal:
 
-Review and protect output, target and mount boundaries before returning to adapter work.
+Review and protect adapter, registry and lookup boundaries before returning to conflict work.
 
 Deliverables:
 
-* Output and target boundary coverage
-* Mount request and result boundary coverage
-* Adapter readiness documentation
+* Adapter boundary coverage
+* Registry and lookup boundary coverage
+* Conflict readiness documentation
 * Sprint documentation
 
 Status:
@@ -230,13 +250,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.191 - Renderer Adapter Review
+## G2.5.211 - Renderer Adapter Conflict Review
 
 Suggested focus:
 
-* Review Renderer adapter contracts after output and mount boundary closure
-* Confirm adapters preserve mount request references
-* Protect synchronous and asynchronous adapter mount behavior
+* Review Renderer adapter conflict contracts after adapter boundary closure
+* Confirm duplicate adapter groups preserve references and ordering
+* Protect conflict resolution boundaries before registry integration work
 
 ---
 
@@ -437,6 +457,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.188.md`
 * `docs/sprints/Sprint-G2.5.189.md`
 * `docs/sprints/Sprint-G2.5.190.md`
+* `docs/sprints/Sprint-G2.5.191.md`
+* `docs/sprints/Sprint-G2.5.192.md`
+* `docs/sprints/Sprint-G2.5.193.md`
+* `docs/sprints/Sprint-G2.5.194.md`
+* `docs/sprints/Sprint-G2.5.195.md`
+* `docs/sprints/Sprint-G2.5.196.md`
+* `docs/sprints/Sprint-G2.5.197.md`
+* `docs/sprints/Sprint-G2.5.198.md`
+* `docs/sprints/Sprint-G2.5.199.md`
+* `docs/sprints/Sprint-G2.5.200.md`
+* `docs/sprints/Sprint-G2.5.201.md`
+* `docs/sprints/Sprint-G2.5.202.md`
+* `docs/sprints/Sprint-G2.5.203.md`
+* `docs/sprints/Sprint-G2.5.204.md`
+* `docs/sprints/Sprint-G2.5.205.md`
+* `docs/sprints/Sprint-G2.5.206.md`
+* `docs/sprints/Sprint-G2.5.207.md`
+* `docs/sprints/Sprint-G2.5.208.md`
+* `docs/sprints/Sprint-G2.5.209.md`
+* `docs/sprints/Sprint-G2.5.210.md`
 
 ---
 

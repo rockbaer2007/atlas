@@ -859,6 +859,37 @@ describe("renderer public API", () => {
     expect(created).not.toBe(adapter);
   });
 
+  it("keeps Renderer adapter creation limited to name and mount contracts", () => {
+    const adapter = createRendererAdapter({
+      name: "shape-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    expect(Object.keys(adapter).sort()).toEqual(["mount", "name"]);
+    expect(adapter).not.toHaveProperty("platform");
+    expect(adapter).not.toHaveProperty("capabilities");
+    expect(adapter).not.toHaveProperty("registry");
+  });
+
+  it("keeps Renderer adapter mount handlers attached by reference", () => {
+    const mount: RendererAdapter["mount"] = request => createRendererMountResult({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
+
+    const adapter = Renderer.createRendererAdapter({
+      name: "mount-reference-adapter",
+      mount,
+    });
+
+    expect(adapter.mount).toBe(mount);
+  });
+
   it("supports asynchronous Renderer adapter mount contracts", async () => {
     const request = createRendererMountRequest({
       output: createRendererOutput({
@@ -916,6 +947,20 @@ describe("renderer public API", () => {
     ]);
   });
 
+  it("preserves explicit empty Renderer adapter names", () => {
+    const adapter = createRendererAdapter({
+      name: "",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    expect(adapter.name).toBe("");
+    expect(Object.hasOwn(adapter, "name")).toBe(true);
+  });
+
   it("passes Renderer mount requests to adapter mount handlers", () => {
     const request = createRendererMountRequest({
       output: createRendererOutput({
@@ -949,6 +994,61 @@ describe("renderer public API", () => {
       output: request.output,
       target: request.target,
     });
+  });
+
+  it("preserves Renderer mount request references through adapter mount handlers", () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "adapter-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "adapter-reference-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const adapter = createRendererAdapter({
+      name: "adapter-reference",
+      mount: mountRequest => createRendererMountResult({
+        mounted: true,
+        output: mountRequest.output,
+        target: mountRequest.target,
+      }),
+    });
+
+    const result = adapter.mount(request);
+
+    expect(result.output).toBe(output);
+    expect(result.target).toBe(target);
+  });
+
+  it("keeps Renderer adapter mount results independent from adapter metadata", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "metadata-result-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "metadata-result-target",
+      }),
+    });
+    const adapter = createRendererAdapter({
+      name: "metadata-adapter",
+      mount: mountRequest => createRendererMountResult({
+        mounted: true,
+        output: mountRequest.output,
+        target: mountRequest.target,
+      }),
+    });
+
+    const result = adapter.mount(request);
+
+    expect(result).not.toHaveProperty("adapter");
+    expect(result).not.toHaveProperty("adapterName");
+    expect(result).not.toHaveProperty("platform");
   });
 
   it("creates Renderer platform adapters without concrete platform behavior", () => {
@@ -2016,6 +2116,56 @@ describe("renderer public API", () => {
     });
   });
 
+  it("keeps Renderer adapter registry entries as adapter references", () => {
+    const adapter = createRendererAdapter({
+      name: "reference-registry-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const registry = Renderer.createRendererAdapterRegistry([adapter]);
+
+    expect(registry.adapters[0]).toBe(adapter);
+  });
+
+  it("preserves Renderer adapter registry insertion order", () => {
+    const first = createRendererAdapter({
+      name: "first-registry-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const second = createRendererAdapter({
+      name: "second-registry-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+    const third = createRendererAdapter({
+      name: "third-registry-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const registry = createRendererAdapterRegistry([first, second, third]);
+
+    expect(registry.adapters.map(adapter => adapter.name)).toEqual([
+      "first-registry-adapter",
+      "second-registry-adapter",
+      "third-registry-adapter",
+    ]);
+  });
+
   it("creates Renderer adapter lookup requests without performing lookup", () => {
     const request = createRendererAdapterLookupRequest({
       name: "memory-preview",
@@ -2068,6 +2218,18 @@ describe("renderer public API", () => {
     expect(created).not.toBe(request);
   });
 
+  it("preserves explicit empty Renderer adapter lookup names", () => {
+    const request = createRendererAdapterLookupRequest({
+      name: "",
+    });
+    const result = createRendererAdapterLookupResult({
+      name: "",
+    });
+
+    expect(request.name).toBe("");
+    expect(result.name).toBe("");
+  });
+
   it("creates Renderer adapter lookup results as immutable copies of the source shape", () => {
     const adapter = createRendererAdapter({
       name: "memory-preview",
@@ -2086,6 +2248,24 @@ describe("renderer public API", () => {
 
     expect(created).toEqual(result);
     expect(created).not.toBe(result);
+  });
+
+  it("keeps Renderer adapter lookup result adapter references", () => {
+    const adapter = createRendererAdapter({
+      name: "lookup-reference-adapter",
+      mount: request => createRendererMountResult({
+        mounted: false,
+        output: request.output,
+        target: request.target,
+      }),
+    });
+
+    const result = Renderer.createRendererAdapterLookupResult({
+      name: adapter.name,
+      adapter,
+    });
+
+    expect(result.adapter).toBe(adapter);
   });
 
   it("finds Renderer adapters by name from registries", () => {
@@ -2118,6 +2298,7 @@ describe("renderer public API", () => {
       name: "surface-dashboard",
       adapter: surface,
     });
+    expect(result.adapter).toBe(surface);
   });
 
   it("reports missing Renderer adapters from registries", () => {
@@ -2133,6 +2314,7 @@ describe("renderer public API", () => {
     expect(result).toEqual({
       name: "missing-adapter",
     });
+    expect(Object.hasOwn(result, "adapter")).toBe(false);
   });
 
   it("returns the first matching Renderer adapter from registries", () => {
