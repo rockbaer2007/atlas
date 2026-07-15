@@ -413,23 +413,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.398 | Devtools Dependency Boundary Review | Completed | - |
 | G2.5.399 | Devtools Boundary Closure Review | Completed | - |
 | G2.5.400 | Devtools Return-To-Framework Review | Completed | - |
-| G2.5.401 | Framework Readiness Review | Planned | - |
+| G2.5.401 | Framework Readiness Review | Completed | - |
+| G2.5.402 | Workspace Package Review | Completed | - |
+| G2.5.403 | Active Package Inventory Review | Completed | - |
+| G2.5.404 | Manifest Alignment Review | Completed | - |
+| G2.5.405 | Package Layer Alignment Review | Completed | - |
+| G2.5.406 | Dependency Rule Alignment Review | Completed | - |
+| G2.5.407 | Quality Gate Alignment Review | Completed | - |
+| G2.5.408 | Integration Closure Inventory Review | Completed | - |
+| G2.5.409 | Readiness Report Review | Completed | - |
+| G2.5.410 | Readiness Assertion Review | Completed | - |
+| G2.5.411 | Workspace Public API Review | Completed | - |
+| G2.5.412 | Workspace README Review | Completed | - |
+| G2.5.413 | Root README Focus Review | Completed | - |
+| G2.5.414 | Changelog Readiness Review | Completed | - |
+| G2.5.415 | Workspace Test Coverage Review | Completed | - |
+| G2.5.416 | Framework Config Consistency Review | Completed | - |
+| G2.5.417 | Planned Integration Closure Review | Completed | - |
+| G2.5.418 | Framework Readiness Regression Review | Completed | - |
+| G2.5.419 | Framework Readiness Documentation Review | Completed | - |
+| G2.5.420 | Framework Readiness Return-To-Capabilities Review | Completed | - |
+| G2.5.421 | Framework Capability Direction Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.400 - Devtools Return-To-Framework Review
+## G2.5.420 - Framework Readiness Return-To-Capabilities Review
 
 Goal:
 
-Review and protect Theme and Devtools activation boundaries before returning to framework readiness work.
+Establish a verified framework readiness layer before returning to concrete capability work.
 
 Deliverables:
 
-* Theme boundary coverage
-* Devtools boundary coverage
-* Framework readiness documentation
+* Workspace readiness package
+* Manifest and dependency-rule alignment
+* Quality gate and integration-closure coverage
 * Sprint documentation
 
 Status:
@@ -440,13 +460,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.401 - Framework Readiness Review
+## G2.5.421 - Framework Capability Direction Review
 
 Suggested focus:
 
-* Review all planned integration package readiness after Theme and Devtools closure
-* Confirm public API boundaries remain intentionally closed where needed
-* Prepare the next implementation direction for concrete framework capabilities
+* Choose the next concrete framework capability after readiness closure
+* Keep planned integration package APIs closed until activation criteria are met
+* Preserve workspace readiness checks while implementation resumes
 
 ---
 
@@ -857,6 +877,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.398.md`
 * `docs/sprints/Sprint-G2.5.399.md`
 * `docs/sprints/Sprint-G2.5.400.md`
+* `docs/sprints/Sprint-G2.5.401.md`
+* `docs/sprints/Sprint-G2.5.402.md`
+* `docs/sprints/Sprint-G2.5.403.md`
+* `docs/sprints/Sprint-G2.5.404.md`
+* `docs/sprints/Sprint-G2.5.405.md`
+* `docs/sprints/Sprint-G2.5.406.md`
+* `docs/sprints/Sprint-G2.5.407.md`
+* `docs/sprints/Sprint-G2.5.408.md`
+* `docs/sprints/Sprint-G2.5.409.md`
+* `docs/sprints/Sprint-G2.5.410.md`
+* `docs/sprints/Sprint-G2.5.411.md`
+* `docs/sprints/Sprint-G2.5.412.md`
+* `docs/sprints/Sprint-G2.5.413.md`
+* `docs/sprints/Sprint-G2.5.414.md`
+* `docs/sprints/Sprint-G2.5.415.md`
+* `docs/sprints/Sprint-G2.5.416.md`
+* `docs/sprints/Sprint-G2.5.417.md`
+* `docs/sprints/Sprint-G2.5.418.md`
+* `docs/sprints/Sprint-G2.5.419.md`
+* `docs/sprints/Sprint-G2.5.420.md`
 
 ---
 

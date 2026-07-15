@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Framework readiness now has a dedicated `@atlas/workspace` package that
+  verifies active package inventory, root manifests, dependency rules, quality
+  gates and planned integration closures.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

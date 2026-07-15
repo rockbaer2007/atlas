@@ -1,70 +1,49 @@
 {
   "rules": [
     {
+      "package": "workspace",
+      "allowed": []
+    },
+    {
       "package": "foundation",
       "allowed": []
     },
     {
-      "package": "core",
+      "package": "kernel",
       "allowed": [
-        "foundation"
-      ]
-    },
-    {
-      "package": "plugins",
-      "allowed": [
-        "core",
-        "foundation"
-      ]
-    },
-    {
-      "package": "providers",
-      "allowed": [
-        "core",
-        "foundation"
-      ]
-    },
-    {
-      "package": "layouts",
-      "allowed": [
-        "core",
-        "foundation"
-      ]
-    },
-    {
-      "package": "rendering",
-      "allowed": [
-        "layouts",
         "foundation"
       ]
     },
     {
       "package": "runtime",
       "allowed": [
-        "rendering",
-        "providers",
+        "kernel",
         "foundation"
+      ]
+    },
+    {
+      "package": "core",
+      "allowed": [
+        "runtime"
+      ]
+    },
+    {
+      "package": "renderer",
+      "allowed": [
+        "core"
       ]
     },
     {
       "package": "theme",
-      "allowed": [
-        "rendering",
-        "foundation"
-      ]
+      "allowed": []
     },
     {
       "package": "homeassistant",
-      "allowed": [
-        "runtime",
-        "theme"
-      ]
+      "allowed": []
     },
     {
       "package": "devtools",
-      "allowed": [
-        "foundation"
-      ]
+      "allowed": []
     }
   ]
 }

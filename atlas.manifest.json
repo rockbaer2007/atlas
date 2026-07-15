@@ -10,16 +10,14 @@
     "typescript": "5.x"
   },
   "packages": [
+    "workspace",
     "foundation",
-    "core",
-    "plugins",
-    "providers",
-    "layouts",
-    "rendering",
+    "kernel",
     "runtime",
+    "core",
+    "renderer",
     "theme",
     "homeassistant",
-    "devtools",
-    "testing"
+    "devtools"
   ]
 }

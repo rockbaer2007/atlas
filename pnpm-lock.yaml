@@ -53,6 +53,8 @@ importers:
 
   packages/theme: {}
 
+  packages/workspace: {}
+
 packages:
 
   '@esbuild/aix-ppc64@0.28.1':

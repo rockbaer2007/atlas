@@ -5,7 +5,12 @@ explicit contracts and long-term maintainability.
 
 Current focus:
 
-**Foundation Architecture**
+**Framework Readiness**
+
+The active workspace now includes a metadata-only `@atlas/workspace` package
+that keeps root manifests, package layers, dependency rules, quality gates and
+planned integration closures aligned before concrete framework capabilities are
+opened.
 
 ---
 

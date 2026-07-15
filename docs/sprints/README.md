@@ -416,7 +416,27 @@ quality validation and the delivered results.
 | G2.5.398 | Devtools Dependency Boundary Review | Completed | - |
 | G2.5.399 | Devtools Boundary Closure Review | Completed | - |
 | G2.5.400 | Devtools Return-To-Framework Review | Completed | - |
-| G2.5.401 | Framework Readiness Review | Planned | - |
+| G2.5.401 | Framework Readiness Review | Completed | - |
+| G2.5.402 | Workspace Package Review | Completed | - |
+| G2.5.403 | Active Package Inventory Review | Completed | - |
+| G2.5.404 | Manifest Alignment Review | Completed | - |
+| G2.5.405 | Package Layer Alignment Review | Completed | - |
+| G2.5.406 | Dependency Rule Alignment Review | Completed | - |
+| G2.5.407 | Quality Gate Alignment Review | Completed | - |
+| G2.5.408 | Integration Closure Inventory Review | Completed | - |
+| G2.5.409 | Readiness Report Review | Completed | - |
+| G2.5.410 | Readiness Assertion Review | Completed | - |
+| G2.5.411 | Workspace Public API Review | Completed | - |
+| G2.5.412 | Workspace README Review | Completed | - |
+| G2.5.413 | Root README Focus Review | Completed | - |
+| G2.5.414 | Changelog Readiness Review | Completed | - |
+| G2.5.415 | Workspace Test Coverage Review | Completed | - |
+| G2.5.416 | Framework Config Consistency Review | Completed | - |
+| G2.5.417 | Planned Integration Closure Review | Completed | - |
+| G2.5.418 | Framework Readiness Regression Review | Completed | - |
+| G2.5.419 | Framework Readiness Documentation Review | Completed | - |
+| G2.5.420 | Framework Readiness Return-To-Capabilities Review | Completed | - |
+| G2.5.421 | Framework Capability Direction Review | Planned | - |
 
 ---
 
@@ -5414,15 +5434,255 @@ Highlights
 
 ---
 
+## G2.5.401 - Framework Readiness Review
+
+Created the framework readiness layer.
+
+Highlights
+
+- Added `@atlas/workspace`
+- Defined active package readiness metadata
+- Added readiness validation tests
+
+---
+
+## G2.5.402 - Workspace Package Review
+
+Made workspace readiness a first-class package.
+
+Highlights
+
+- Added package manifest, TypeScript config and README
+- Matched existing check, build and test scripts
+- Kept the package metadata-only
+
+---
+
+## G2.5.403 - Active Package Inventory Review
+
+Reviewed active package inventory.
+
+Highlights
+
+- Defined Workspace through Devtools as active packages
+- Verified package directories match the inventory
+- Verified package names match package manifests
+
+---
+
+## G2.5.404 - Manifest Alignment Review
+
+Aligned the root manifest.
+
+Highlights
+
+- Updated `atlas.manifest.json`
+- Removed stale planned package entries from the active list
+- Covered framework identity and package order
+
+---
+
+## G2.5.405 - Package Layer Alignment Review
+
+Aligned package layer metadata.
+
+Highlights
+
+- Updated `atlas.packages.json`
+- Preserved dependency-shaped layer order
+- Added layer comparison coverage
+
+---
+
+## G2.5.406 - Dependency Rule Alignment Review
+
+Aligned root dependency rules.
+
+Highlights
+
+- Updated `atlas.dependencies.json`
+- Compared actual `@atlas/*` dependencies against rules
+- Kept planned integration package dependencies closed
+
+---
+
+## G2.5.407 - Quality Gate Alignment Review
+
+Reviewed readiness quality gates.
+
+Highlights
+
+- Added quality gate readiness constants
+- Verified root quality configuration
+- Included gates in readiness reports
+
+---
+
+## G2.5.408 - Integration Closure Inventory Review
+
+Reviewed planned integration closures.
+
+Highlights
+
+- Tracked Theme, Home Assistant and Devtools as planned closures
+- Kept their public API state closed
+- Preserved activation reasons in readiness metadata
+
+---
+
+## G2.5.409 - Readiness Report Review
+
+Added readiness report inspection.
+
+Highlights
+
+- Added active package report output
+- Added closed integration report output
+- Added required quality gate report output
+
+---
+
+## G2.5.410 - Readiness Assertion Review
+
+Added strict readiness assertion.
+
+Highlights
+
+- Added failure behavior for incomplete readiness
+- Covered opened integration closure failures
+- Kept assertions metadata-only
+
+---
+
+## G2.5.411 - Workspace Public API Review
+
+Reviewed workspace package exports.
+
+Highlights
+
+- Exported readiness constants and helpers
+- Kept runtime activation out of the package
+- Kept integration APIs closed
+
+---
+
+## G2.5.412 - Workspace README Review
+
+Documented the workspace readiness package.
+
+Highlights
+
+- Added package purpose
+- Listed readiness exports
+- Documented metadata-only scope
+
+---
+
+## G2.5.413 - Root README Focus Review
+
+Updated root project focus.
+
+Highlights
+
+- Moved focus to framework readiness
+- Described `@atlas/workspace`
+- Preserved quality gate instructions
+
+---
+
+## G2.5.414 - Changelog Readiness Review
+
+Recorded readiness work in the changelog.
+
+Highlights
+
+- Added Unreleased entry
+- Summarized readiness package coverage
+- Noted manifest and dependency alignment
+
+---
+
+## G2.5.415 - Workspace Test Coverage Review
+
+Reviewed workspace readiness tests.
+
+Highlights
+
+- Added eight focused readiness tests
+- Covered root JSON alignment
+- Covered dependency and quality gate consistency
+
+---
+
+## G2.5.416 - Framework Config Consistency Review
+
+Reviewed root framework config consistency.
+
+Highlights
+
+- Aligned manifest packages
+- Aligned package layers
+- Aligned dependency rules
+
+---
+
+## G2.5.417 - Planned Integration Closure Review
+
+Reviewed planned integration closure behavior.
+
+Highlights
+
+- Kept Theme closed
+- Kept Home Assistant closed
+- Kept Devtools closed
+
+---
+
+## G2.5.418 - Framework Readiness Regression Review
+
+Prepared readiness changes for regression gates.
+
+Highlights
+
+- Ran focused workspace checks
+- Prepared full workspace checks
+- Kept package tests part of recursive workspace validation
+
+---
+
+## G2.5.419 - Framework Readiness Documentation Review
+
+Updated sprint documentation.
+
+Highlights
+
+- Added sprint records
+- Updated sprint indexes
+- Recorded next capability direction
+
+---
+
+## G2.5.420 - Framework Readiness Return-To-Capabilities Review
+
+Closed readiness work and prepared the next direction.
+
+Highlights
+
+- Completed readiness package work
+- Completed root config alignment
+- Planned framework capability direction review
+
+---
+
 # Planned Sprints
 
-## G2.5.401 - Framework Readiness Review
+## G2.5.421 - Framework Capability Direction Review
 
 Planned deliverables
 
-- Review all planned integration package readiness after Theme and Devtools closure
-- Confirm public API boundaries remain intentionally closed where needed
-- Prepare the next implementation direction for concrete framework capabilities
+- Choose the next concrete framework capability after readiness closure
+- Keep planned integration package APIs closed until activation criteria are met
+- Preserve workspace readiness checks while implementation resumes
 
 ---
 
@@ -5683,6 +5943,26 @@ Planned deliverables
 - [G2.5.398 - Devtools Dependency Boundary Review](Sprint-G2.5.398.md)
 - [G2.5.399 - Devtools Boundary Closure Review](Sprint-G2.5.399.md)
 - [G2.5.400 - Devtools Return-To-Framework Review](Sprint-G2.5.400.md)
+- [G2.5.401 - Framework Readiness Review](Sprint-G2.5.401.md)
+- [G2.5.402 - Workspace Package Review](Sprint-G2.5.402.md)
+- [G2.5.403 - Active Package Inventory Review](Sprint-G2.5.403.md)
+- [G2.5.404 - Manifest Alignment Review](Sprint-G2.5.404.md)
+- [G2.5.405 - Package Layer Alignment Review](Sprint-G2.5.405.md)
+- [G2.5.406 - Dependency Rule Alignment Review](Sprint-G2.5.406.md)
+- [G2.5.407 - Quality Gate Alignment Review](Sprint-G2.5.407.md)
+- [G2.5.408 - Integration Closure Inventory Review](Sprint-G2.5.408.md)
+- [G2.5.409 - Readiness Report Review](Sprint-G2.5.409.md)
+- [G2.5.410 - Readiness Assertion Review](Sprint-G2.5.410.md)
+- [G2.5.411 - Workspace Public API Review](Sprint-G2.5.411.md)
+- [G2.5.412 - Workspace README Review](Sprint-G2.5.412.md)
+- [G2.5.413 - Root README Focus Review](Sprint-G2.5.413.md)
+- [G2.5.414 - Changelog Readiness Review](Sprint-G2.5.414.md)
+- [G2.5.415 - Workspace Test Coverage Review](Sprint-G2.5.415.md)
+- [G2.5.416 - Framework Config Consistency Review](Sprint-G2.5.416.md)
+- [G2.5.417 - Planned Integration Closure Review](Sprint-G2.5.417.md)
+- [G2.5.418 - Framework Readiness Regression Review](Sprint-G2.5.418.md)
+- [G2.5.419 - Framework Readiness Documentation Review](Sprint-G2.5.419.md)
+- [G2.5.420 - Framework Readiness Return-To-Capabilities Review](Sprint-G2.5.420.md)
 
 ---
 
