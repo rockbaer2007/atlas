@@ -185,18 +185,22 @@ remains limited to platform, adapter and capabilities fields, preserves the
 underlying adapter reference, preserves explicit empty platform names and copies
 capability lists at creation time. Empty capability lists remain a valid
 contract state before concrete platform integrations exist. Renderer platform
-adapter registries now capture ordered platform adapter lists without lookup,
-selection, conflict handling or concrete integration execution. Empty platform
-adapter registries are supported through the package root before platform
-adapter lookup behavior is introduced. Renderer platform adapter lookup
-contracts now describe platform lookup requests and matched or missing platform
-adapter results without executing registry search. Platform adapter lookup
-requests and results are protected through package-root copy behavior before
-registry search is introduced. Renderer platform adapter registry search now
-finds the first platform adapter with a matching platform and reports misses
-without selection, conflict handling or concrete platform execution. Platform
-adapter search is protected through the package root and remains first-match
-behavior before conflict handling exists. Renderer platform adapter conflicts
+adapter registries now capture ordered platform adapter lists without selection,
+conflict handling or concrete integration execution. Empty platform adapter
+registries are supported through the package root. Registry creation preserves
+platform adapter references and insertion order while protecting registry lists
+from later source-array mutation. Renderer platform adapter lookup contracts
+now describe platform lookup requests and matched or missing platform adapter
+results without executing selection or conflict resolution behavior. Platform
+adapter lookup requests and results are protected through package-root copy
+behavior, preserve explicit empty platform names and preserve matched platform
+adapter references. Renderer platform adapter registry search now finds the
+first platform adapter with a matching platform and reports misses without
+selection, conflict handling or concrete platform execution. Missing lookup
+results omit platformAdapter fields, and duplicate platform matches resolve to
+the first registry entry. Platform adapter search is protected through the
+package root and remains first-match behavior before conflict handling exists.
+Renderer platform adapter conflicts
 now describe duplicate-platform adapter groups without detecting or resolving
 those conflicts automatically. Empty platform adapter conflict groups are
 supported through the package root and remain copy-protected before conflict

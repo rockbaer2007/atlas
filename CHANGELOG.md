@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer platform adapter registry and lookup review now protects platform
+  adapter references, registry ordering, lookup misses and first-match behavior.
 * Renderer adapter selection and platform adapter review now protects selection
   candidate references, no-mount selection and platform adapter metadata boundaries.
 * Renderer adapter conflict review now protects conflict references, duplicate
