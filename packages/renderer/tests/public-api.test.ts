@@ -3921,6 +3921,94 @@ describe("renderer public API", () => {
     });
   });
 
+  it("uses Renderer mount diagnostic codes for failed platform adapter mounts", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "coded-platform-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "coded-platform-diagnostic-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "coded-platform-diagnostic-adapter",
+        mount() {
+          throw new Error("coded platform adapter diagnostic failure");
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    const report = Renderer.inspectRendererMountResult(result);
+
+    expect(report.result.issues[0]?.code).toBe(Renderer.RendererMountDiagnosticCodes.MountFailed);
+  });
+
+  it("creates diagnostics for string failed Renderer platform adapter mount results", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "string-platform-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "string-platform-diagnostic-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "string-platform-diagnostic-adapter",
+        async mount() {
+          await Promise.resolve();
+
+          throw "string platform diagnostic failure";
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(inspectRendererMountResult(result)).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: "renderer.mount.failed",
+          message: "string platform diagnostic failure",
+          severity: "error",
+        }],
+      },
+    });
+  });
+
   it("creates diagnostics for successful Renderer platform adapter mount results", async () => {
     const output = createRendererOutput({
       kind: "fragment",
@@ -3966,6 +4054,125 @@ describe("renderer public API", () => {
         issues: [],
       },
     });
+  });
+
+  it("creates successful diagnostics for unresolved Renderer platform adapter mount results", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "unresolved-platform-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "unresolved-platform-diagnostic-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [],
+      }),
+      resolved: false,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(inspectRendererMountResult(result)).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
+    });
+  });
+
+  it("keeps Renderer platform adapter diagnostics free of platform metadata", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "metadata-platform-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "metadata-platform-diagnostic-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "home-assistant",
+      adapter: createRendererAdapter({
+        name: "metadata-platform-diagnostic-adapter",
+        mount() {
+          throw new Error("metadata platform diagnostic failure");
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "home-assistant",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    const report = inspectRendererMountResult(result);
+
+    expect(report.context).toEqual({
+      component: "renderer.mount",
+    });
+    expect(report).not.toHaveProperty("platform");
+    expect(report).not.toHaveProperty("platformAdapter");
+    expect(report.result.issues[0]).not.toHaveProperty("platform");
+    expect(report.result.issues[0]).not.toHaveProperty("adapter");
+  });
+
+  it("creates independent Renderer platform adapter diagnostic reports", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "independent-platform-diagnostic-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "independent-platform-diagnostic-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "independent-platform-diagnostic-adapter",
+        mount() {
+          throw new Error("independent platform diagnostic failure");
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    const first = inspectRendererMountResult(result);
+    const second = inspectRendererMountResult(result);
+
+    expect(first).toEqual(second);
+    expect(first).not.toBe(second);
+    expect(first.result).not.toBe(second.result);
+    expect(first.result.issues).not.toBe(second.result.issues);
   });
 
   it("keeps Renderer platform adapter mounting independent from concrete platform metadata", async () => {

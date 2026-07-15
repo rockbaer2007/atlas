@@ -247,9 +247,15 @@ Rejected resolved platform adapter mounts return unmounted results with optional
 error messages while preserving request output and target references. Non-Error
 platform adapter mount rejections are stringified for stable failure reporting.
 Platform adapter mount failures can now be inspected as Foundation-compatible
-diagnostic reports without introducing concrete platform diagnostics.
-Successful platform adapter mount results now produce empty successful
-diagnostic reports, keeping diagnostics ready for concrete integrations.
+diagnostic reports without introducing concrete platform diagnostics. Failed
+platform adapter mounts reuse the exported Renderer mount failure code, preserve
+Error and string failure messages and report error severity. Successful platform
+adapter mount results now produce empty successful diagnostic reports, and
+unresolved guarded mount results without error messages remain successful
+diagnostic reports. Platform adapter diagnostic reports stay at the
+`renderer.mount` context, omit concrete platform metadata and are created as
+independent report objects on each inspection, keeping diagnostics ready for
+concrete integrations.
 Renderer platform adapter contracts remain metadata-driven before concrete
 integrations; platform names and capability lists do not trigger special DOM or
 Home Assistant behavior inside Renderer.

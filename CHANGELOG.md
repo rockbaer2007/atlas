@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer platform adapter diagnostic review now protects mount failure codes,
+  Error and string failure reports, unresolved success reports, metadata
+  boundaries and report independence.
 * Renderer platform adapter selection review now protects request references,
   empty platform states, selected and missing result shape, and no-mount
   first-candidate behavior.

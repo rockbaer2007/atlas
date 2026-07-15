@@ -326,7 +326,27 @@ quality validation and the delivered results.
 | G2.5.308 | Renderer Platform Adapter Selection Return-To-Mounting Review | Completed | - |
 | G2.5.309 | Renderer Platform Adapter Selection Regression Review | Completed | - |
 | G2.5.310 | Renderer Platform Adapter Selection Return-To-Diagnostics Review | Completed | - |
-| G2.5.311 | Renderer Platform Adapter Diagnostics Review | Planned | - |
+| G2.5.311 | Renderer Platform Adapter Diagnostics Review | Completed | - |
+| G2.5.312 | Renderer Platform Adapter Diagnostic Code Review | Completed | - |
+| G2.5.313 | Renderer Platform Adapter Diagnostic Failure Review | Completed | - |
+| G2.5.314 | Renderer Platform Adapter Diagnostic String Failure Review | Completed | - |
+| G2.5.315 | Renderer Platform Adapter Diagnostic Success Review | Completed | - |
+| G2.5.316 | Renderer Platform Adapter Diagnostic Unresolved Review | Completed | - |
+| G2.5.317 | Renderer Platform Adapter Diagnostic Metadata Boundary Review | Completed | - |
+| G2.5.318 | Renderer Platform Adapter Diagnostic Report Independence Review | Completed | - |
+| G2.5.319 | Renderer Platform Adapter Diagnostic Package Root Review | Completed | - |
+| G2.5.320 | Renderer Platform Adapter Diagnostic Context Review | Completed | - |
+| G2.5.321 | Renderer Platform Adapter Diagnostic Severity Review | Completed | - |
+| G2.5.322 | Renderer Platform Adapter Diagnostic Issue Shape Review | Completed | - |
+| G2.5.323 | Renderer Platform Adapter Diagnostic No-Issue Shape Review | Completed | - |
+| G2.5.324 | Renderer Platform Adapter Diagnostic Mount Result Boundary Review | Completed | - |
+| G2.5.325 | Renderer Platform Adapter Diagnostic Documentation Review | Completed | - |
+| G2.5.326 | Renderer Platform Adapter Diagnostic Success Documentation Review | Completed | - |
+| G2.5.327 | Renderer Platform Adapter Diagnostic Failure Documentation Review | Completed | - |
+| G2.5.328 | Renderer Platform Adapter Diagnostic Boundary Closure Review | Completed | - |
+| G2.5.329 | Renderer Platform Adapter Diagnostic Regression Review | Completed | - |
+| G2.5.330 | Renderer Platform Adapter Diagnostic Return-To-Integration Review | Completed | - |
+| G2.5.331 | Renderer Platform Adapter Integration Review | Planned | - |
 
 ---
 
@@ -4244,15 +4264,255 @@ Highlights
 
 ---
 
+## G2.5.311 - Renderer Platform Adapter Diagnostics Review
+
+Reviewed platform adapter diagnostics after selection boundary closure.
+
+Highlights
+
+- Confirmed platform adapter mount failures produce diagnostic reports
+- Confirmed successful platform adapter mounts produce empty successful reports
+- Kept diagnostics shared through Renderer mount inspection
+
+---
+
+## G2.5.312 - Renderer Platform Adapter Diagnostic Code Review
+
+Reviewed platform adapter diagnostic code usage.
+
+Highlights
+
+- Confirmed failed platform adapter mount diagnostics use the exported mount failure code
+- Preserved package-root diagnostic code access
+- Kept diagnostic code strings stable
+
+---
+
+## G2.5.313 - Renderer Platform Adapter Diagnostic Failure Review
+
+Reviewed failed platform adapter diagnostic reports.
+
+Highlights
+
+- Confirmed Error-based platform adapter failures become error issues
+- Preserved failure messages in diagnostic reports
+- Kept report context at the Renderer mount boundary
+
+---
+
+## G2.5.314 - Renderer Platform Adapter Diagnostic String Failure Review
+
+Reviewed string platform adapter failure diagnostics.
+
+Highlights
+
+- Confirmed non-Error platform adapter failures are stringified before diagnostics
+- Preserved stable diagnostic message text
+- Kept issue severity as error
+
+---
+
+## G2.5.315 - Renderer Platform Adapter Diagnostic Success Review
+
+Reviewed successful platform adapter diagnostic reports.
+
+Highlights
+
+- Confirmed successful platform adapter mounts produce ok reports
+- Confirmed successful reports contain no issues
+- Preserved shared mount diagnostic behavior
+
+---
+
+## G2.5.316 - Renderer Platform Adapter Diagnostic Unresolved Review
+
+Reviewed unresolved platform adapter diagnostic reports.
+
+Highlights
+
+- Confirmed unresolved platform adapter mounts without errors remain diagnostic successes
+- Preserved empty issue lists for guarded unresolved results
+- Kept unresolved diagnostics separate from failure diagnostics
+
+---
+
+## G2.5.317 - Renderer Platform Adapter Diagnostic Metadata Boundary Review
+
+Reviewed platform metadata boundaries in diagnostics.
+
+Highlights
+
+- Confirmed diagnostics do not expose platform adapter metadata
+- Confirmed diagnostic issues do not include concrete platform fields
+- Kept diagnostics at the generic Renderer mount boundary
+
+---
+
+## G2.5.318 - Renderer Platform Adapter Diagnostic Report Independence Review
+
+Reviewed diagnostic report independence.
+
+Highlights
+
+- Confirmed repeated inspections produce independent reports
+- Confirmed issue arrays are not reused across inspections
+- Preserved deterministic diagnostic output
+
+---
+
+## G2.5.319 - Renderer Platform Adapter Diagnostic Package Root Review
+
+Reviewed package-root diagnostic exports for platform adapter results.
+
+Highlights
+
+- Confirmed `inspectRendererMountResult` remains available through the package root
+- Confirmed `RendererMountDiagnosticCodes` remains available through the package root
+- Preserved diagnostics without new platform-specific API
+
+---
+
+## G2.5.320 - Renderer Platform Adapter Diagnostic Context Review
+
+Reviewed platform adapter diagnostic context.
+
+Highlights
+
+- Confirmed platform adapter diagnostics use `renderer.mount` context
+- Avoided concrete platform context reclassification
+- Preserved shared mount diagnostic ownership
+
+---
+
+## G2.5.321 - Renderer Platform Adapter Diagnostic Severity Review
+
+Reviewed platform adapter diagnostic issue severity.
+
+Highlights
+
+- Confirmed failed platform adapter mounts report error severity
+- Preserved stable issue severity for Error and string failures
+- Kept successful reports issue-free
+
+---
+
+## G2.5.322 - Renderer Platform Adapter Diagnostic Issue Shape Review
+
+Reviewed platform adapter diagnostic issue shape.
+
+Highlights
+
+- Confirmed failed issues include code, message and severity
+- Confirmed diagnostic issues omit platform adapter metadata
+- Preserved Foundation-compatible report shape
+
+---
+
+## G2.5.323 - Renderer Platform Adapter Diagnostic No-Issue Shape Review
+
+Reviewed no-issue platform adapter diagnostic reports.
+
+Highlights
+
+- Confirmed successful reports use empty issue arrays
+- Confirmed unresolved reports use empty issue arrays when no error exists
+- Preserved ok state based on issue presence
+
+---
+
+## G2.5.324 - Renderer Platform Adapter Diagnostic Mount Result Boundary Review
+
+Reviewed diagnostics as mount-result inspection.
+
+Highlights
+
+- Confirmed diagnostics inspect mount results rather than platform adapters
+- Kept platform adapter capabilities outside diagnostic reports
+- Preserved generic Renderer mount diagnostics
+
+---
+
+## G2.5.325 - Renderer Platform Adapter Diagnostic Documentation Review
+
+Reviewed platform adapter diagnostic documentation.
+
+Highlights
+
+- Documented diagnostic code, failure and success behavior
+- Documented metadata-free diagnostic reports
+- Kept concrete platform diagnostics outside Renderer
+
+---
+
+## G2.5.326 - Renderer Platform Adapter Diagnostic Success Documentation Review
+
+Reviewed successful diagnostic documentation.
+
+Highlights
+
+- Documented successful platform adapter mount reports
+- Documented unresolved no-error reports
+- Preserved integration readiness wording
+
+---
+
+## G2.5.327 - Renderer Platform Adapter Diagnostic Failure Documentation Review
+
+Reviewed failure diagnostic documentation.
+
+Highlights
+
+- Documented Error and string failure diagnostics
+- Documented error severity and message preservation
+- Kept failure diagnostics shared with generic mount diagnostics
+
+---
+
+## G2.5.328 - Renderer Platform Adapter Diagnostic Boundary Closure Review
+
+Reviewed platform adapter diagnostic boundary closure.
+
+Highlights
+
+- Confirmed diagnostics are protected for this pass
+- Kept changes within existing public API
+- Prepared return to integration review
+
+---
+
+## G2.5.329 - Renderer Platform Adapter Diagnostic Regression Review
+
+Reviewed platform adapter diagnostic regression coverage.
+
+Highlights
+
+- Confirmed renderer public API tests cover platform adapter diagnostics
+- Preserved package-root diagnostic behavior
+- Kept report shape stable
+
+---
+
+## G2.5.330 - Renderer Platform Adapter Diagnostic Return-To-Integration Review
+
+Reviewed readiness to return from diagnostics work to integration work.
+
+Highlights
+
+- Confirmed platform adapter diagnostic boundaries are covered
+- Confirmed diagnostics remain concrete-platform neutral
+- Prepared next sprint for platform adapter integration review
+
+---
+
 # Planned Sprints
 
-## G2.5.311 - Renderer Platform Adapter Diagnostics Review
+## G2.5.331 - Renderer Platform Adapter Integration Review
 
 Planned deliverables
 
-- Review Renderer platform adapter diagnostics after selection boundary closure
-- Confirm platform mount diagnostic reports preserve success and failure semantics
-- Protect diagnostics boundaries before returning to concrete integrations
+- Review Renderer platform adapter integration boundaries after diagnostics closure
+- Confirm concrete platform behavior remains outside Renderer core
+- Protect integration readiness before Home Assistant-specific implementation work
 
 ---
 
@@ -4423,6 +4683,26 @@ Planned deliverables
 - [G2.5.308 - Renderer Platform Adapter Selection Return-To-Mounting Review](Sprint-G2.5.308.md)
 - [G2.5.309 - Renderer Platform Adapter Selection Regression Review](Sprint-G2.5.309.md)
 - [G2.5.310 - Renderer Platform Adapter Selection Return-To-Diagnostics Review](Sprint-G2.5.310.md)
+- [G2.5.311 - Renderer Platform Adapter Diagnostics Review](Sprint-G2.5.311.md)
+- [G2.5.312 - Renderer Platform Adapter Diagnostic Code Review](Sprint-G2.5.312.md)
+- [G2.5.313 - Renderer Platform Adapter Diagnostic Failure Review](Sprint-G2.5.313.md)
+- [G2.5.314 - Renderer Platform Adapter Diagnostic String Failure Review](Sprint-G2.5.314.md)
+- [G2.5.315 - Renderer Platform Adapter Diagnostic Success Review](Sprint-G2.5.315.md)
+- [G2.5.316 - Renderer Platform Adapter Diagnostic Unresolved Review](Sprint-G2.5.316.md)
+- [G2.5.317 - Renderer Platform Adapter Diagnostic Metadata Boundary Review](Sprint-G2.5.317.md)
+- [G2.5.318 - Renderer Platform Adapter Diagnostic Report Independence Review](Sprint-G2.5.318.md)
+- [G2.5.319 - Renderer Platform Adapter Diagnostic Package Root Review](Sprint-G2.5.319.md)
+- [G2.5.320 - Renderer Platform Adapter Diagnostic Context Review](Sprint-G2.5.320.md)
+- [G2.5.321 - Renderer Platform Adapter Diagnostic Severity Review](Sprint-G2.5.321.md)
+- [G2.5.322 - Renderer Platform Adapter Diagnostic Issue Shape Review](Sprint-G2.5.322.md)
+- [G2.5.323 - Renderer Platform Adapter Diagnostic No-Issue Shape Review](Sprint-G2.5.323.md)
+- [G2.5.324 - Renderer Platform Adapter Diagnostic Mount Result Boundary Review](Sprint-G2.5.324.md)
+- [G2.5.325 - Renderer Platform Adapter Diagnostic Documentation Review](Sprint-G2.5.325.md)
+- [G2.5.326 - Renderer Platform Adapter Diagnostic Success Documentation Review](Sprint-G2.5.326.md)
+- [G2.5.327 - Renderer Platform Adapter Diagnostic Failure Documentation Review](Sprint-G2.5.327.md)
+- [G2.5.328 - Renderer Platform Adapter Diagnostic Boundary Closure Review](Sprint-G2.5.328.md)
+- [G2.5.329 - Renderer Platform Adapter Diagnostic Regression Review](Sprint-G2.5.329.md)
+- [G2.5.330 - Renderer Platform Adapter Diagnostic Return-To-Integration Review](Sprint-G2.5.330.md)
 
 ---
 

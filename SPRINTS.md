@@ -323,23 +323,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.308 | Renderer Platform Adapter Selection Return-To-Mounting Review | Completed | - |
 | G2.5.309 | Renderer Platform Adapter Selection Regression Review | Completed | - |
 | G2.5.310 | Renderer Platform Adapter Selection Return-To-Diagnostics Review | Completed | - |
-| G2.5.311 | Renderer Platform Adapter Diagnostics Review | Planned | - |
+| G2.5.311 | Renderer Platform Adapter Diagnostics Review | Completed | - |
+| G2.5.312 | Renderer Platform Adapter Diagnostic Code Review | Completed | - |
+| G2.5.313 | Renderer Platform Adapter Diagnostic Failure Review | Completed | - |
+| G2.5.314 | Renderer Platform Adapter Diagnostic String Failure Review | Completed | - |
+| G2.5.315 | Renderer Platform Adapter Diagnostic Success Review | Completed | - |
+| G2.5.316 | Renderer Platform Adapter Diagnostic Unresolved Review | Completed | - |
+| G2.5.317 | Renderer Platform Adapter Diagnostic Metadata Boundary Review | Completed | - |
+| G2.5.318 | Renderer Platform Adapter Diagnostic Report Independence Review | Completed | - |
+| G2.5.319 | Renderer Platform Adapter Diagnostic Package Root Review | Completed | - |
+| G2.5.320 | Renderer Platform Adapter Diagnostic Context Review | Completed | - |
+| G2.5.321 | Renderer Platform Adapter Diagnostic Severity Review | Completed | - |
+| G2.5.322 | Renderer Platform Adapter Diagnostic Issue Shape Review | Completed | - |
+| G2.5.323 | Renderer Platform Adapter Diagnostic No-Issue Shape Review | Completed | - |
+| G2.5.324 | Renderer Platform Adapter Diagnostic Mount Result Boundary Review | Completed | - |
+| G2.5.325 | Renderer Platform Adapter Diagnostic Documentation Review | Completed | - |
+| G2.5.326 | Renderer Platform Adapter Diagnostic Success Documentation Review | Completed | - |
+| G2.5.327 | Renderer Platform Adapter Diagnostic Failure Documentation Review | Completed | - |
+| G2.5.328 | Renderer Platform Adapter Diagnostic Boundary Closure Review | Completed | - |
+| G2.5.329 | Renderer Platform Adapter Diagnostic Regression Review | Completed | - |
+| G2.5.330 | Renderer Platform Adapter Diagnostic Return-To-Integration Review | Completed | - |
+| G2.5.331 | Renderer Platform Adapter Integration Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.310 - Renderer Platform Adapter Selection Return-To-Diagnostics Review
+## G2.5.330 - Renderer Platform Adapter Diagnostic Return-To-Integration Review
 
 Goal:
 
-Review and protect platform adapter selection boundaries before returning to diagnostics work.
+Review and protect platform adapter diagnostic boundaries before returning to integration work.
 
 Deliverables:
 
-* Platform adapter selection coverage
-* First-candidate and no-mount coverage
-* Diagnostics readiness documentation
+* Platform adapter diagnostic coverage
+* Success, failure and unresolved report coverage
+* Integration readiness documentation
 * Sprint documentation
 
 Status:
@@ -350,13 +370,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.311 - Renderer Platform Adapter Diagnostics Review
+## G2.5.331 - Renderer Platform Adapter Integration Review
 
 Suggested focus:
 
-* Review Renderer platform adapter diagnostics after selection boundary closure
-* Confirm platform mount diagnostic reports preserve success and failure semantics
-* Protect diagnostics boundaries before returning to concrete integrations
+* Review Renderer platform adapter integration boundaries after diagnostics closure
+* Confirm concrete platform behavior remains outside Renderer core
+* Protect integration readiness before Home Assistant-specific implementation work
 
 ---
 
@@ -677,6 +697,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.308.md`
 * `docs/sprints/Sprint-G2.5.309.md`
 * `docs/sprints/Sprint-G2.5.310.md`
+* `docs/sprints/Sprint-G2.5.311.md`
+* `docs/sprints/Sprint-G2.5.312.md`
+* `docs/sprints/Sprint-G2.5.313.md`
+* `docs/sprints/Sprint-G2.5.314.md`
+* `docs/sprints/Sprint-G2.5.315.md`
+* `docs/sprints/Sprint-G2.5.316.md`
+* `docs/sprints/Sprint-G2.5.317.md`
+* `docs/sprints/Sprint-G2.5.318.md`
+* `docs/sprints/Sprint-G2.5.319.md`
+* `docs/sprints/Sprint-G2.5.320.md`
+* `docs/sprints/Sprint-G2.5.321.md`
+* `docs/sprints/Sprint-G2.5.322.md`
+* `docs/sprints/Sprint-G2.5.323.md`
+* `docs/sprints/Sprint-G2.5.324.md`
+* `docs/sprints/Sprint-G2.5.325.md`
+* `docs/sprints/Sprint-G2.5.326.md`
+* `docs/sprints/Sprint-G2.5.327.md`
+* `docs/sprints/Sprint-G2.5.328.md`
+* `docs/sprints/Sprint-G2.5.329.md`
+* `docs/sprints/Sprint-G2.5.330.md`
 
 ---
 
