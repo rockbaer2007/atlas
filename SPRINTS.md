@@ -243,23 +243,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.228 | Renderer Adapter Resolution Documentation Review | Completed | - |
 | G2.5.229 | Renderer Adapter Conflict Boundary Closure Review | Completed | - |
 | G2.5.230 | Renderer Adapter Conflict Return-To-Selection Review | Completed | - |
-| G2.5.231 | Renderer Adapter Selection Review | Planned | - |
+| G2.5.231 | Renderer Adapter Selection Review | Completed | - |
+| G2.5.232 | Renderer Adapter Selection Candidate Reference Review | Completed | - |
+| G2.5.233 | Renderer Adapter Selection Empty Name Review | Completed | - |
+| G2.5.234 | Renderer Adapter Selection Result Reference Review | Completed | - |
+| G2.5.235 | Renderer Adapter Selection Missing Result Review | Completed | - |
+| G2.5.236 | Renderer Adapter Selection First Candidate Review | Completed | - |
+| G2.5.237 | Renderer Adapter Selection No-Mount Review | Completed | - |
+| G2.5.238 | Renderer Adapter Selection Boundary Closure Review | Completed | - |
+| G2.5.239 | Renderer Adapter Selection Documentation Review | Completed | - |
+| G2.5.240 | Renderer Adapter Selection Return-To-Platform Review | Completed | - |
+| G2.5.241 | Renderer Platform Adapter Review | Completed | - |
+| G2.5.242 | Renderer Platform Adapter Shape Review | Completed | - |
+| G2.5.243 | Renderer Platform Adapter Reference Review | Completed | - |
+| G2.5.244 | Renderer Platform Adapter Capability Copy Review | Completed | - |
+| G2.5.245 | Renderer Platform Adapter Empty Capability Review | Completed | - |
+| G2.5.246 | Renderer Platform Adapter Empty Platform Review | Completed | - |
+| G2.5.247 | Renderer Platform Adapter Metadata Boundary Review | Completed | - |
+| G2.5.248 | Renderer Platform Adapter Documentation Review | Completed | - |
+| G2.5.249 | Renderer Platform Adapter Boundary Closure Review | Completed | - |
+| G2.5.250 | Renderer Platform Adapter Return-To-Registry Review | Completed | - |
+| G2.5.251 | Renderer Platform Adapter Registry Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.230 - Renderer Adapter Conflict Return-To-Selection Review
+## G2.5.250 - Renderer Platform Adapter Return-To-Registry Review
 
 Goal:
 
-Review and protect adapter conflict boundaries before returning to selection work.
+Review and protect adapter selection and platform adapter boundaries before returning to platform registry work.
 
 Deliverables:
 
-* Adapter conflict coverage
-* Resolution and guarded mount coverage
-* Selection readiness documentation
+* Adapter selection boundary coverage
+* Platform adapter boundary coverage
+* Platform registry readiness documentation
 * Sprint documentation
 
 Status:
@@ -270,13 +290,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.231 - Renderer Adapter Selection Review
+## G2.5.251 - Renderer Platform Adapter Registry Review
 
 Suggested focus:
 
-* Review Renderer adapter selection contracts after conflict boundary closure
-* Confirm candidate request copy and first-candidate result behavior
-* Protect selection boundaries before platform adapter review
+* Review Renderer platform adapter registry contracts after platform adapter boundary closure
+* Confirm platform adapter registry reference and ordering behavior
+* Protect platform lookup readiness before conflict work
 
 ---
 
@@ -517,6 +537,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.228.md`
 * `docs/sprints/Sprint-G2.5.229.md`
 * `docs/sprints/Sprint-G2.5.230.md`
+* `docs/sprints/Sprint-G2.5.231.md`
+* `docs/sprints/Sprint-G2.5.232.md`
+* `docs/sprints/Sprint-G2.5.233.md`
+* `docs/sprints/Sprint-G2.5.234.md`
+* `docs/sprints/Sprint-G2.5.235.md`
+* `docs/sprints/Sprint-G2.5.236.md`
+* `docs/sprints/Sprint-G2.5.237.md`
+* `docs/sprints/Sprint-G2.5.238.md`
+* `docs/sprints/Sprint-G2.5.239.md`
+* `docs/sprints/Sprint-G2.5.240.md`
+* `docs/sprints/Sprint-G2.5.241.md`
+* `docs/sprints/Sprint-G2.5.242.md`
+* `docs/sprints/Sprint-G2.5.243.md`
+* `docs/sprints/Sprint-G2.5.244.md`
+* `docs/sprints/Sprint-G2.5.245.md`
+* `docs/sprints/Sprint-G2.5.246.md`
+* `docs/sprints/Sprint-G2.5.247.md`
+* `docs/sprints/Sprint-G2.5.248.md`
+* `docs/sprints/Sprint-G2.5.249.md`
+* `docs/sprints/Sprint-G2.5.250.md`
 
 ---
 

@@ -246,7 +246,27 @@ quality validation and the delivered results.
 | G2.5.228 | Renderer Adapter Resolution Documentation Review | Completed | - |
 | G2.5.229 | Renderer Adapter Conflict Boundary Closure Review | Completed | - |
 | G2.5.230 | Renderer Adapter Conflict Return-To-Selection Review | Completed | - |
-| G2.5.231 | Renderer Adapter Selection Review | Planned | - |
+| G2.5.231 | Renderer Adapter Selection Review | Completed | - |
+| G2.5.232 | Renderer Adapter Selection Candidate Reference Review | Completed | - |
+| G2.5.233 | Renderer Adapter Selection Empty Name Review | Completed | - |
+| G2.5.234 | Renderer Adapter Selection Result Reference Review | Completed | - |
+| G2.5.235 | Renderer Adapter Selection Missing Result Review | Completed | - |
+| G2.5.236 | Renderer Adapter Selection First Candidate Review | Completed | - |
+| G2.5.237 | Renderer Adapter Selection No-Mount Review | Completed | - |
+| G2.5.238 | Renderer Adapter Selection Boundary Closure Review | Completed | - |
+| G2.5.239 | Renderer Adapter Selection Documentation Review | Completed | - |
+| G2.5.240 | Renderer Adapter Selection Return-To-Platform Review | Completed | - |
+| G2.5.241 | Renderer Platform Adapter Review | Completed | - |
+| G2.5.242 | Renderer Platform Adapter Shape Review | Completed | - |
+| G2.5.243 | Renderer Platform Adapter Reference Review | Completed | - |
+| G2.5.244 | Renderer Platform Adapter Capability Copy Review | Completed | - |
+| G2.5.245 | Renderer Platform Adapter Empty Capability Review | Completed | - |
+| G2.5.246 | Renderer Platform Adapter Empty Platform Review | Completed | - |
+| G2.5.247 | Renderer Platform Adapter Metadata Boundary Review | Completed | - |
+| G2.5.248 | Renderer Platform Adapter Documentation Review | Completed | - |
+| G2.5.249 | Renderer Platform Adapter Boundary Closure Review | Completed | - |
+| G2.5.250 | Renderer Platform Adapter Return-To-Registry Review | Completed | - |
+| G2.5.251 | Renderer Platform Adapter Registry Review | Planned | - |
 
 ---
 
@@ -3204,15 +3224,255 @@ Highlights
 
 ---
 
+## G2.5.231 - Renderer Adapter Selection Review
+
+Reviewed Renderer adapter selection contracts after conflict boundary closure.
+
+Highlights
+
+- Confirmed selection requests and results remain simple data contracts
+- Protected first-candidate behavior after conflict review
+- Kept selection separate from adapter mounting
+
+---
+
+## G2.5.232 - Renderer Adapter Selection Candidate Reference Review
+
+Reviewed adapter selection candidate reference behavior.
+
+Highlights
+
+- Confirmed selection candidates remain adapter references
+- Protected selection request copy behavior
+- Kept candidate objects shallow and unwrapped
+
+---
+
+## G2.5.233 - Renderer Adapter Selection Empty Name Review
+
+Reviewed empty selection name behavior.
+
+Highlights
+
+- Confirmed explicit empty selection names are preserved
+- Kept selection validation outside contract creation
+- Protected selection name fields as plain string data
+
+---
+
+## G2.5.234 - Renderer Adapter Selection Result Reference Review
+
+Reviewed selected adapter reference behavior.
+
+Highlights
+
+- Confirmed selected results preserve adapter references
+- Protected selected result shape through package-root tests
+- Kept selected results independent from mount execution
+
+---
+
+## G2.5.235 - Renderer Adapter Selection Missing Result Review
+
+Reviewed missing selection result behavior.
+
+Highlights
+
+- Confirmed missing results omit adapter fields
+- Protected unselected result shape
+- Kept missing selection behavior stable
+
+---
+
+## G2.5.236 - Renderer Adapter Selection First Candidate Review
+
+Reviewed first-candidate selection behavior.
+
+Highlights
+
+- Confirmed first candidate is selected by reference
+- Protected candidate order as selection policy
+- Kept empty candidate lists as unselected results
+
+---
+
+## G2.5.237 - Renderer Adapter Selection No-Mount Review
+
+Reviewed selection without mount execution.
+
+Highlights
+
+- Confirmed selection does not invoke mount handlers
+- Protected selection as a pure policy helper
+- Kept mount execution in guarded mount helpers
+
+---
+
+## G2.5.238 - Renderer Adapter Selection Boundary Closure Review
+
+Reviewed adapter selection boundary closure.
+
+Highlights
+
+- Confirmed selection request, result and policy coverage
+- Kept changes within existing public API
+- Prepared return to platform adapter boundary work
+
+---
+
+## G2.5.239 - Renderer Adapter Selection Documentation Review
+
+Reviewed adapter selection documentation.
+
+Highlights
+
+- Documented candidate references and empty-name behavior
+- Documented unselected result shape
+- Documented no-mount first-candidate selection
+
+---
+
+## G2.5.240 - Renderer Adapter Selection Return-To-Platform Review
+
+Reviewed adapter selection readiness before platform adapter work.
+
+Highlights
+
+- Confirmed selection behavior is protected for this pass
+- Prepared platform adapter review
+- Kept platform metadata outside adapter selection
+
+---
+
+## G2.5.241 - Renderer Platform Adapter Review
+
+Reviewed Renderer platform adapter contracts.
+
+Highlights
+
+- Confirmed platform adapters remain metadata plus adapter references
+- Protected platform adapter creation through package-root tests
+- Kept concrete integration behavior outside Renderer
+
+---
+
+## G2.5.242 - Renderer Platform Adapter Shape Review
+
+Reviewed platform adapter shape boundaries.
+
+Highlights
+
+- Confirmed platform adapters expose platform, adapter and capabilities only
+- Protected platform adapters from target, output and mounted state
+- Kept platform metadata descriptive
+
+---
+
+## G2.5.243 - Renderer Platform Adapter Reference Review
+
+Reviewed platform adapter reference behavior.
+
+Highlights
+
+- Confirmed platform adapters preserve underlying adapter references
+- Protected adapter behavior from wrapping at platform boundary
+- Kept platform adapters shallow for adapter objects
+
+---
+
+## G2.5.244 - Renderer Platform Adapter Capability Copy Review
+
+Reviewed platform adapter capability list copy behavior.
+
+Highlights
+
+- Confirmed capability lists are copied at creation time
+- Protected platform adapters from source-array mutation
+- Kept capabilities as plain string metadata
+
+---
+
+## G2.5.245 - Renderer Platform Adapter Empty Capability Review
+
+Reviewed empty platform adapter capability behavior.
+
+Highlights
+
+- Confirmed empty capability lists remain valid
+- Protected platform adapters before concrete capability policies exist
+- Kept capability policy outside platform adapter creation
+
+---
+
+## G2.5.246 - Renderer Platform Adapter Empty Platform Review
+
+Reviewed empty platform name behavior.
+
+Highlights
+
+- Confirmed explicit empty platform names are preserved
+- Kept platform validation outside contract creation
+- Protected platform names as plain string data
+
+---
+
+## G2.5.247 - Renderer Platform Adapter Metadata Boundary Review
+
+Reviewed platform adapter metadata boundaries.
+
+Highlights
+
+- Confirmed platform adapter metadata remains descriptive
+- Protected platform adapters from output, target and mount result fields
+- Kept concrete DOM and Home Assistant behavior outside Renderer
+
+---
+
+## G2.5.248 - Renderer Platform Adapter Documentation Review
+
+Reviewed platform adapter documentation.
+
+Highlights
+
+- Documented platform adapter shape and adapter reference behavior
+- Documented capability copy and empty capability behavior
+- Kept README aligned with public API tests
+
+---
+
+## G2.5.249 - Renderer Platform Adapter Boundary Closure Review
+
+Reviewed platform adapter boundary closure.
+
+Highlights
+
+- Confirmed platform adapter metadata coverage is complete for this pass
+- Kept changes within existing public API
+- Prepared platform registry review
+
+---
+
+## G2.5.250 - Renderer Platform Adapter Return-To-Registry Review
+
+Reviewed platform adapter readiness before registry work.
+
+Highlights
+
+- Confirmed platform adapter boundary behavior is protected
+- Prepared next sprint for platform adapter registry review
+- Kept lookup and conflict behavior outside platform adapter creation
+
+---
+
 # Planned Sprints
 
-## G2.5.231 - Renderer Adapter Selection Review
+## G2.5.251 - Renderer Platform Adapter Registry Review
 
 Planned deliverables
 
-- Review Renderer adapter selection contracts after conflict boundary closure
-- Confirm candidate request copy and first-candidate result behavior
-- Protect selection boundaries before platform adapter review
+- Review Renderer platform adapter registry contracts after platform adapter boundary closure
+- Confirm platform adapter registry reference and ordering behavior
+- Protect platform lookup readiness before conflict work
 
 ---
 
@@ -3303,6 +3563,26 @@ Planned deliverables
 - [G2.5.228 - Renderer Adapter Resolution Documentation Review](Sprint-G2.5.228.md)
 - [G2.5.229 - Renderer Adapter Conflict Boundary Closure Review](Sprint-G2.5.229.md)
 - [G2.5.230 - Renderer Adapter Conflict Return-To-Selection Review](Sprint-G2.5.230.md)
+- [G2.5.231 - Renderer Adapter Selection Review](Sprint-G2.5.231.md)
+- [G2.5.232 - Renderer Adapter Selection Candidate Reference Review](Sprint-G2.5.232.md)
+- [G2.5.233 - Renderer Adapter Selection Empty Name Review](Sprint-G2.5.233.md)
+- [G2.5.234 - Renderer Adapter Selection Result Reference Review](Sprint-G2.5.234.md)
+- [G2.5.235 - Renderer Adapter Selection Missing Result Review](Sprint-G2.5.235.md)
+- [G2.5.236 - Renderer Adapter Selection First Candidate Review](Sprint-G2.5.236.md)
+- [G2.5.237 - Renderer Adapter Selection No-Mount Review](Sprint-G2.5.237.md)
+- [G2.5.238 - Renderer Adapter Selection Boundary Closure Review](Sprint-G2.5.238.md)
+- [G2.5.239 - Renderer Adapter Selection Documentation Review](Sprint-G2.5.239.md)
+- [G2.5.240 - Renderer Adapter Selection Return-To-Platform Review](Sprint-G2.5.240.md)
+- [G2.5.241 - Renderer Platform Adapter Review](Sprint-G2.5.241.md)
+- [G2.5.242 - Renderer Platform Adapter Shape Review](Sprint-G2.5.242.md)
+- [G2.5.243 - Renderer Platform Adapter Reference Review](Sprint-G2.5.243.md)
+- [G2.5.244 - Renderer Platform Adapter Capability Copy Review](Sprint-G2.5.244.md)
+- [G2.5.245 - Renderer Platform Adapter Empty Capability Review](Sprint-G2.5.245.md)
+- [G2.5.246 - Renderer Platform Adapter Empty Platform Review](Sprint-G2.5.246.md)
+- [G2.5.247 - Renderer Platform Adapter Metadata Boundary Review](Sprint-G2.5.247.md)
+- [G2.5.248 - Renderer Platform Adapter Documentation Review](Sprint-G2.5.248.md)
+- [G2.5.249 - Renderer Platform Adapter Boundary Closure Review](Sprint-G2.5.249.md)
+- [G2.5.250 - Renderer Platform Adapter Return-To-Registry Review](Sprint-G2.5.250.md)
 
 ---
 

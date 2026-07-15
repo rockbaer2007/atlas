@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer adapter selection and platform adapter review now protects selection
+  candidate references, no-mount selection and platform adapter metadata boundaries.
 * Renderer adapter conflict review now protects conflict references, duplicate
   grouping, resolution shape and guarded mount failure boundaries.
 * Renderer adapter review now protects adapter shape, mount handler references,

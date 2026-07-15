@@ -148,14 +148,19 @@ mount handlers. Guarded mount execution invokes only resolved adapter choices;
 unresolved resolutions return unmounted results, preserve request output and
 target references, and do not invoke adapters even when an adapter field is
 present. Rejected resolved adapter mounts preserve request output and target
-references while reporting optional error messages. Renderer adapter selection contracts describe
-candidate adapter selection requests and selected or unselected results without
-automatic conflict policies. Empty selection candidate lists are supported as a
-valid request state before policy helpers exist. Renderer now includes an
-explicit first-candidate selection helper that selects the first available
-candidate or reports an unselected result without resolving conflicts
-automatically. First-candidate selection preserves candidate request order and
-remains disconnected from conflict integration. Renderer adapter conflicts can
+references while reporting optional error messages. Renderer adapter selection
+contracts describe candidate adapter selection requests and selected or
+unselected results without automatic conflict policies. Empty selection
+candidate lists are supported as a valid request state before policy helpers
+exist. Selection requests preserve candidate adapter references while protecting
+candidate lists from source-array mutation. Selection names, including explicit
+empty names, remain plain string data. Selection results preserve selected
+adapter references and omit adapter fields when unselected. Renderer now
+includes an explicit first-candidate selection helper that selects the first
+available candidate by reference or reports an unselected result without
+resolving conflicts automatically. First-candidate selection preserves
+candidate request order, does not invoke mount handlers and remains
+disconnected from conflict integration. Renderer adapter conflicts can
 now be resolved through first-candidate selection, while registry lookup,
 platform mounting, Home Assistant cards, device targets and theme resolution
 remain outside this integration boundary. Conflict integration preserves
@@ -175,8 +180,10 @@ Renderer mount results now produce empty successful diagnostic reports, keeping
 the diagnostics contract ready for future platform adapters. Renderer platform
 adapter contracts now describe platform metadata, the underlying Renderer
 adapter and declared capabilities without introducing concrete DOM, Home
-Assistant card or device integration behavior. Platform adapter capability
-lists are copied at creation time, and empty capability lists remain a valid
+Assistant card or device integration behavior. Platform adapter creation
+remains limited to platform, adapter and capabilities fields, preserves the
+underlying adapter reference, preserves explicit empty platform names and copies
+capability lists at creation time. Empty capability lists remain a valid
 contract state before concrete platform integrations exist. Renderer platform
 adapter registries now capture ordered platform adapter lists without lookup,
 selection, conflict handling or concrete integration execution. Empty platform
