@@ -436,7 +436,27 @@ quality validation and the delivered results.
 | G2.5.418 | Framework Readiness Regression Review | Completed | - |
 | G2.5.419 | Framework Readiness Documentation Review | Completed | - |
 | G2.5.420 | Framework Readiness Return-To-Capabilities Review | Completed | - |
-| G2.5.421 | Framework Capability Direction Review | Planned | - |
+| G2.5.421 | Framework Capability Direction Review | Completed | - |
+| G2.5.422 | Renderer Mounting Direction Review | Completed | - |
+| G2.5.423 | Capability Owner Package Review | Completed | - |
+| G2.5.424 | Capability Integration Closure Review | Completed | - |
+| G2.5.425 | Capability Quality Gate Review | Completed | - |
+| G2.5.426 | Capability Risk Boundary Review | Completed | - |
+| G2.5.427 | Capability Direction Copy Review | Completed | - |
+| G2.5.428 | Capability Direction Report Review | Completed | - |
+| G2.5.429 | Capability Direction Assertion Review | Completed | - |
+| G2.5.430 | Capability Direction Mutation Review | Completed | - |
+| G2.5.431 | Workspace Capability API Review | Completed | - |
+| G2.5.432 | Workspace Capability Documentation Review | Completed | - |
+| G2.5.433 | Root Capability Focus Review | Completed | - |
+| G2.5.434 | Roadmap Capability Focus Review | Completed | - |
+| G2.5.435 | Changelog Capability Direction Review | Completed | - |
+| G2.5.436 | Capability Direction Regression Review | Completed | - |
+| G2.5.437 | Capability Direction Sprint Documentation Review | Completed | - |
+| G2.5.438 | Renderer Mounting Preparation Review | Completed | - |
+| G2.5.439 | Integration Closure Protection Review | Completed | - |
+| G2.5.440 | Return-To-Renderer-Mounting Review | Completed | - |
+| G2.5.441 | Renderer Output Mount Request Review | Planned | - |
 
 ---
 
@@ -5674,15 +5694,255 @@ Highlights
 
 ---
 
+## G2.5.421 - Framework Capability Direction Review
+
+Selected the next concrete capability direction.
+
+Highlights
+
+- Added framework capability direction metadata
+- Selected Renderer output-to-target mounting
+- Kept planned integration APIs closed
+
+---
+
+## G2.5.422 - Renderer Mounting Direction Review
+
+Reviewed Renderer mounting as the next capability path.
+
+Highlights
+
+- Chose Renderer output-to-target mounting
+- Kept the work in Core and Renderer ownership
+- Avoided DOM, Theme and Home Assistant binding
+
+---
+
+## G2.5.423 - Capability Owner Package Review
+
+Reviewed owner package boundaries.
+
+Highlights
+
+- Assigned Core and Renderer as owners
+- Kept Workspace as metadata owner only
+- Prevented Devtools ownership drift
+
+---
+
+## G2.5.424 - Capability Integration Closure Review
+
+Reviewed integration closure protection.
+
+Highlights
+
+- Protected Theme closure
+- Protected Home Assistant closure
+- Protected Devtools closure
+
+---
+
+## G2.5.425 - Capability Quality Gate Review
+
+Reviewed required quality gates for the capability direction.
+
+Highlights
+
+- Reused readiness quality gates
+- Reported gates in capability direction output
+- Kept check, build and tests mandatory
+
+---
+
+## G2.5.426 - Capability Risk Boundary Review
+
+Reviewed capability direction risks.
+
+Highlights
+
+- Captured integration API drift risk
+- Captured Renderer side-effect risk
+- Captured premature theme binding risk
+
+---
+
+## G2.5.427 - Capability Direction Copy Review
+
+Reviewed capability direction copy behavior.
+
+Highlights
+
+- Copied owner packages
+- Copied protected integration closures
+- Copied quality gate lists
+
+---
+
+## G2.5.428 - Capability Direction Report Review
+
+Reviewed capability report output.
+
+Highlights
+
+- Reported selected status
+- Reported owner packages
+- Reported protected integrations and risks
+
+---
+
+## G2.5.429 - Capability Direction Assertion Review
+
+Reviewed strict assertion behavior.
+
+Highlights
+
+- Added assertion helper
+- Rejected unselected directions
+- Rejected opened planned integrations
+
+---
+
+## G2.5.430 - Capability Direction Mutation Review
+
+Reviewed report independence from later mutations.
+
+Highlights
+
+- Copied report arrays
+- Preserved report output after source mutations
+- Kept metadata reports stable
+
+---
+
+## G2.5.431 - Workspace Capability API Review
+
+Reviewed Workspace package capability exports.
+
+Highlights
+
+- Exported capability direction constants
+- Exported creator, inspector and assertion helpers
+- Kept API metadata-only
+
+---
+
+## G2.5.432 - Workspace Capability Documentation Review
+
+Updated Workspace package documentation.
+
+Highlights
+
+- Documented capability direction exports
+- Documented Renderer mounting direction
+- Documented closed integration boundary
+
+---
+
+## G2.5.433 - Root Capability Focus Review
+
+Updated root project focus.
+
+Highlights
+
+- Documented selected Renderer capability
+- Preserved framework readiness context
+- Kept integration activation deferred
+
+---
+
+## G2.5.434 - Roadmap Capability Focus Review
+
+Updated roadmap focus.
+
+Highlights
+
+- Moved focus to Renderer output mounting direction
+- Preserved long-term rendering milestone
+- Kept future integration milestones planned
+
+---
+
+## G2.5.435 - Changelog Capability Direction Review
+
+Recorded capability direction changes.
+
+Highlights
+
+- Added changelog entry
+- Captured Renderer mounting selection
+- Captured closed integration protection
+
+---
+
+## G2.5.436 - Capability Direction Regression Review
+
+Ran capability direction checks.
+
+Highlights
+
+- Passed focused Workspace checks
+- Passed focused Workspace tests
+- Prepared full workspace validation
+
+---
+
+## G2.5.437 - Capability Direction Sprint Documentation Review
+
+Updated sprint documentation.
+
+Highlights
+
+- Added sprint records
+- Updated sprint overview
+- Planned the next Renderer output mount request review
+
+---
+
+## G2.5.438 - Renderer Mounting Preparation Review
+
+Prepared return to Renderer mounting work.
+
+Highlights
+
+- Confirmed mounting remains the next concrete capability
+- Kept output-to-target scope narrow
+- Kept side effects out of the direction model
+
+---
+
+## G2.5.439 - Integration Closure Protection Review
+
+Reviewed closure protection after direction selection.
+
+Highlights
+
+- Confirmed Theme remains closed
+- Confirmed Home Assistant remains closed
+- Confirmed Devtools remains closed
+
+---
+
+## G2.5.440 - Return-To-Renderer-Mounting Review
+
+Closed capability direction work.
+
+Highlights
+
+- Completed direction model and tests
+- Completed documentation updates
+- Prepared G2.5.441 for Renderer output mount request work
+
+---
+
 # Planned Sprints
 
-## G2.5.421 - Framework Capability Direction Review
+## G2.5.441 - Renderer Output Mount Request Review
 
 Planned deliverables
 
-- Choose the next concrete framework capability after readiness closure
-- Keep planned integration package APIs closed until activation criteria are met
-- Preserve workspace readiness checks while implementation resumes
+- Define the next Renderer output mount request capability increment
+- Keep mounting contracts descriptive before DOM or Home Assistant binding
+- Preserve Theme, Home Assistant and Devtools API closure
 
 ---
 
@@ -5963,6 +6223,26 @@ Planned deliverables
 - [G2.5.418 - Framework Readiness Regression Review](Sprint-G2.5.418.md)
 - [G2.5.419 - Framework Readiness Documentation Review](Sprint-G2.5.419.md)
 - [G2.5.420 - Framework Readiness Return-To-Capabilities Review](Sprint-G2.5.420.md)
+- [G2.5.421 - Framework Capability Direction Review](Sprint-G2.5.421.md)
+- [G2.5.422 - Renderer Mounting Direction Review](Sprint-G2.5.422.md)
+- [G2.5.423 - Capability Owner Package Review](Sprint-G2.5.423.md)
+- [G2.5.424 - Capability Integration Closure Review](Sprint-G2.5.424.md)
+- [G2.5.425 - Capability Quality Gate Review](Sprint-G2.5.425.md)
+- [G2.5.426 - Capability Risk Boundary Review](Sprint-G2.5.426.md)
+- [G2.5.427 - Capability Direction Copy Review](Sprint-G2.5.427.md)
+- [G2.5.428 - Capability Direction Report Review](Sprint-G2.5.428.md)
+- [G2.5.429 - Capability Direction Assertion Review](Sprint-G2.5.429.md)
+- [G2.5.430 - Capability Direction Mutation Review](Sprint-G2.5.430.md)
+- [G2.5.431 - Workspace Capability API Review](Sprint-G2.5.431.md)
+- [G2.5.432 - Workspace Capability Documentation Review](Sprint-G2.5.432.md)
+- [G2.5.433 - Root Capability Focus Review](Sprint-G2.5.433.md)
+- [G2.5.434 - Roadmap Capability Focus Review](Sprint-G2.5.434.md)
+- [G2.5.435 - Changelog Capability Direction Review](Sprint-G2.5.435.md)
+- [G2.5.436 - Capability Direction Regression Review](Sprint-G2.5.436.md)
+- [G2.5.437 - Capability Direction Sprint Documentation Review](Sprint-G2.5.437.md)
+- [G2.5.438 - Renderer Mounting Preparation Review](Sprint-G2.5.438.md)
+- [G2.5.439 - Integration Closure Protection Review](Sprint-G2.5.439.md)
+- [G2.5.440 - Return-To-Renderer-Mounting Review](Sprint-G2.5.440.md)
 
 ---
 

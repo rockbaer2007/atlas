@@ -12,6 +12,10 @@ that keeps root manifests, package layers, dependency rules, quality gates and
 planned integration closures aligned before concrete framework capabilities are
 opened.
 
+The selected next capability is Renderer output-to-target mounting. It is owned
+by Core and Renderer and keeps Theme, Home Assistant and Devtools integrations
+closed until their activation criteria are met.
+
 ---
 
 # Documentation

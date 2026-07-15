@@ -22,7 +22,7 @@ Current Release:
 
 Current Focus:
 
-**Kernel and Runtime Integration**
+**Renderer Output Mounting Direction**
 
 ---
 

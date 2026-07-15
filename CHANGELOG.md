@@ -11,6 +11,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Framework readiness now has a dedicated `@atlas/workspace` package that
   verifies active package inventory, root manifests, dependency rules, quality
   gates and planned integration closures.
+* Framework capability direction now selects Renderer output-to-target mounting
+  as the next concrete capability while keeping Theme, Home Assistant and
+  Devtools public APIs closed.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

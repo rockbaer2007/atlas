@@ -433,23 +433,43 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.418 | Framework Readiness Regression Review | Completed | - |
 | G2.5.419 | Framework Readiness Documentation Review | Completed | - |
 | G2.5.420 | Framework Readiness Return-To-Capabilities Review | Completed | - |
-| G2.5.421 | Framework Capability Direction Review | Planned | - |
+| G2.5.421 | Framework Capability Direction Review | Completed | - |
+| G2.5.422 | Renderer Mounting Direction Review | Completed | - |
+| G2.5.423 | Capability Owner Package Review | Completed | - |
+| G2.5.424 | Capability Integration Closure Review | Completed | - |
+| G2.5.425 | Capability Quality Gate Review | Completed | - |
+| G2.5.426 | Capability Risk Boundary Review | Completed | - |
+| G2.5.427 | Capability Direction Copy Review | Completed | - |
+| G2.5.428 | Capability Direction Report Review | Completed | - |
+| G2.5.429 | Capability Direction Assertion Review | Completed | - |
+| G2.5.430 | Capability Direction Mutation Review | Completed | - |
+| G2.5.431 | Workspace Capability API Review | Completed | - |
+| G2.5.432 | Workspace Capability Documentation Review | Completed | - |
+| G2.5.433 | Root Capability Focus Review | Completed | - |
+| G2.5.434 | Roadmap Capability Focus Review | Completed | - |
+| G2.5.435 | Changelog Capability Direction Review | Completed | - |
+| G2.5.436 | Capability Direction Regression Review | Completed | - |
+| G2.5.437 | Capability Direction Sprint Documentation Review | Completed | - |
+| G2.5.438 | Renderer Mounting Preparation Review | Completed | - |
+| G2.5.439 | Integration Closure Protection Review | Completed | - |
+| G2.5.440 | Return-To-Renderer-Mounting Review | Completed | - |
+| G2.5.441 | Renderer Output Mount Request Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.420 - Framework Readiness Return-To-Capabilities Review
+## G2.5.440 - Return-To-Renderer-Mounting Review
 
 Goal:
 
-Establish a verified framework readiness layer before returning to concrete capability work.
+Select and protect the next concrete framework capability direction.
 
 Deliverables:
 
-* Workspace readiness package
-* Manifest and dependency-rule alignment
-* Quality gate and integration-closure coverage
+* Renderer mounting capability direction
+* Capability owner and risk metadata
+* Protected integration closures
 * Sprint documentation
 
 Status:
@@ -460,13 +480,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.421 - Framework Capability Direction Review
+## G2.5.441 - Renderer Output Mount Request Review
 
 Suggested focus:
 
-* Choose the next concrete framework capability after readiness closure
-* Keep planned integration package APIs closed until activation criteria are met
-* Preserve workspace readiness checks while implementation resumes
+* Define the next Renderer output mount request capability increment
+* Keep mounting contracts descriptive before DOM or Home Assistant binding
+* Preserve Theme, Home Assistant and Devtools API closure
 
 ---
 
@@ -897,6 +917,26 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.418.md`
 * `docs/sprints/Sprint-G2.5.419.md`
 * `docs/sprints/Sprint-G2.5.420.md`
+* `docs/sprints/Sprint-G2.5.421.md`
+* `docs/sprints/Sprint-G2.5.422.md`
+* `docs/sprints/Sprint-G2.5.423.md`
+* `docs/sprints/Sprint-G2.5.424.md`
+* `docs/sprints/Sprint-G2.5.425.md`
+* `docs/sprints/Sprint-G2.5.426.md`
+* `docs/sprints/Sprint-G2.5.427.md`
+* `docs/sprints/Sprint-G2.5.428.md`
+* `docs/sprints/Sprint-G2.5.429.md`
+* `docs/sprints/Sprint-G2.5.430.md`
+* `docs/sprints/Sprint-G2.5.431.md`
+* `docs/sprints/Sprint-G2.5.432.md`
+* `docs/sprints/Sprint-G2.5.433.md`
+* `docs/sprints/Sprint-G2.5.434.md`
+* `docs/sprints/Sprint-G2.5.435.md`
+* `docs/sprints/Sprint-G2.5.436.md`
+* `docs/sprints/Sprint-G2.5.437.md`
+* `docs/sprints/Sprint-G2.5.438.md`
+* `docs/sprints/Sprint-G2.5.439.md`
+* `docs/sprints/Sprint-G2.5.440.md`
 
 ---
 
