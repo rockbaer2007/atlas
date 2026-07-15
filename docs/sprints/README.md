@@ -286,7 +286,27 @@ quality validation and the delivered results.
 | G2.5.268 | Renderer Platform Adapter Registry Boundary Closure Review | Completed | - |
 | G2.5.269 | Renderer Platform Adapter Lookup Boundary Closure Review | Completed | - |
 | G2.5.270 | Renderer Platform Adapter Return-To-Conflicts Review | Completed | - |
-| G2.5.271 | Renderer Platform Adapter Conflict Review | Planned | - |
+| G2.5.271 | Renderer Platform Adapter Conflict Review | Completed | - |
+| G2.5.272 | Renderer Platform Adapter Conflict Reference Review | Completed | - |
+| G2.5.273 | Renderer Platform Adapter Conflict Empty Platform Review | Completed | - |
+| G2.5.274 | Renderer Platform Adapter Conflict Detection Review | Completed | - |
+| G2.5.275 | Renderer Platform Adapter Multiple Conflict Review | Completed | - |
+| G2.5.276 | Renderer Platform Adapter Conflict No-Conflict Review | Completed | - |
+| G2.5.277 | Renderer Platform Adapter Conflict Resolution Review | Completed | - |
+| G2.5.278 | Renderer Platform Adapter Conflict Resolution Shape Review | Completed | - |
+| G2.5.279 | Renderer Platform Adapter Conflict First Candidate Review | Completed | - |
+| G2.5.280 | Renderer Platform Adapter Conflict Selection Boundary Review | Completed | - |
+| G2.5.281 | Renderer Platform Adapter Registry Conflict Resolution Review | Completed | - |
+| G2.5.282 | Renderer Platform Adapter Registry Conflict Ordering Review | Completed | - |
+| G2.5.283 | Renderer Platform Adapter Resolved Mount Review | Completed | - |
+| G2.5.284 | Renderer Platform Adapter Unresolved Mount Review | Completed | - |
+| G2.5.285 | Renderer Platform Adapter Unresolved Reference Review | Completed | - |
+| G2.5.286 | Renderer Platform Adapter Rejected Mount Reference Review | Completed | - |
+| G2.5.287 | Renderer Platform Adapter Conflict Documentation Review | Completed | - |
+| G2.5.288 | Renderer Platform Adapter Resolution Documentation Review | Completed | - |
+| G2.5.289 | Renderer Platform Adapter Conflict Boundary Closure Review | Completed | - |
+| G2.5.290 | Renderer Platform Adapter Conflict Return-To-Selection Review | Completed | - |
+| G2.5.291 | Renderer Platform Adapter Selection Review | Planned | - |
 
 ---
 
@@ -3724,15 +3744,255 @@ Highlights
 
 ---
 
+## G2.5.271 - Renderer Platform Adapter Conflict Review
+
+Reviewed platform adapter conflict contracts after registry and lookup closure.
+
+Highlights
+
+- Confirmed duplicate platform conflict groups remain package-root contracts
+- Kept conflict creation separate from detection and resolution behavior
+- Protected the next pass for reference and ordering review
+
+---
+
+## G2.5.272 - Renderer Platform Adapter Conflict Reference Review
+
+Reviewed platform adapter conflict reference behavior.
+
+Highlights
+
+- Confirmed conflict entries preserve platform adapter references
+- Kept conflict lists copy-protected against source-array mutation
+- Preserved package-root conflict creation behavior
+
+---
+
+## G2.5.273 - Renderer Platform Adapter Conflict Empty Platform Review
+
+Reviewed explicit empty platform handling for platform adapter conflicts.
+
+Highlights
+
+- Confirmed empty platform names remain explicit data
+- Kept empty conflict groups valid through the package root
+- Avoided implicit platform normalization
+
+---
+
+## G2.5.274 - Renderer Platform Adapter Conflict Detection Review
+
+Reviewed duplicate platform conflict detection.
+
+Highlights
+
+- Confirmed duplicate registry entries produce conflict groups
+- Preserved platform adapter references inside detected conflicts
+- Kept detection separate from adapter selection
+
+---
+
+## G2.5.275 - Renderer Platform Adapter Multiple Conflict Review
+
+Reviewed multiple duplicate platform groups.
+
+Highlights
+
+- Confirmed multiple conflicts are reported in first-duplicate order
+- Preserved duplicate group membership by reference
+- Kept registry insertion order visible at the conflict boundary
+
+---
+
+## G2.5.276 - Renderer Platform Adapter Conflict No-Conflict Review
+
+Reviewed no-conflict states for platform adapter registries.
+
+Highlights
+
+- Confirmed unique registries report no conflicts
+- Confirmed empty registries report no conflicts
+- Kept no-conflict behavior available through the package root
+
+---
+
+## G2.5.277 - Renderer Platform Adapter Conflict Resolution Review
+
+Reviewed platform adapter conflict resolution contracts.
+
+Highlights
+
+- Confirmed unresolved and resolved resolution shapes
+- Preserved selected platform adapter references
+- Kept embedded conflicts copy-protected
+
+---
+
+## G2.5.278 - Renderer Platform Adapter Conflict Resolution Shape Review
+
+Reviewed conflict resolution field shape.
+
+Highlights
+
+- Confirmed unresolved resolutions omit platformAdapter fields
+- Confirmed resolved resolutions include the selected platform adapter
+- Preserved conflict copies inside resolution results
+
+---
+
+## G2.5.279 - Renderer Platform Adapter Conflict First Candidate Review
+
+Reviewed first-candidate conflict resolution.
+
+Highlights
+
+- Confirmed the first platform adapter candidate is selected by reference
+- Confirmed empty candidate lists remain unresolved
+- Kept first-candidate behavior deterministic
+
+---
+
+## G2.5.280 - Renderer Platform Adapter Conflict Selection Boundary Review
+
+Reviewed the boundary between conflict selection and mounting.
+
+Highlights
+
+- Confirmed first-candidate conflict resolution does not invoke adapters
+- Kept mount behavior outside selection helpers
+- Preserved conflict copy behavior during integration
+
+---
+
+## G2.5.281 - Renderer Platform Adapter Registry Conflict Resolution Review
+
+Reviewed registry conflict resolution.
+
+Highlights
+
+- Confirmed registry conflicts resolve through first-candidate selection
+- Preserved duplicate conflict groups inside resolutions
+- Kept unique registries resolution-free
+
+---
+
+## G2.5.282 - Renderer Platform Adapter Registry Conflict Ordering Review
+
+Reviewed registry conflict resolution ordering.
+
+Highlights
+
+- Confirmed conflict resolutions follow duplicate platform order
+- Preserved selected platform adapter references
+- Kept ordering aligned with registry insertion behavior
+
+---
+
+## G2.5.283 - Renderer Platform Adapter Resolved Mount Review
+
+Reviewed resolved platform adapter mounting.
+
+Highlights
+
+- Confirmed resolved choices drive guarded mount execution
+- Preserved request output and target references
+- Kept resolved mounting asynchronous-capable
+
+---
+
+## G2.5.284 - Renderer Platform Adapter Unresolved Mount Review
+
+Reviewed unresolved platform adapter mounting.
+
+Highlights
+
+- Confirmed unresolved choices return unmounted results
+- Confirmed unresolved choices do not invoke adapter mount handlers
+- Preserved guarded mount behavior for unresolved resolutions
+
+---
+
+## G2.5.285 - Renderer Platform Adapter Unresolved Reference Review
+
+Reviewed unresolved mount reference preservation.
+
+Highlights
+
+- Confirmed unresolved results preserve request output references
+- Confirmed unresolved results preserve request target references
+- Kept unresolved reference behavior stable even before integrations
+
+---
+
+## G2.5.286 - Renderer Platform Adapter Rejected Mount Reference Review
+
+Reviewed rejected resolved mount reference preservation.
+
+Highlights
+
+- Confirmed rejected platform adapter mounts become unmounted results
+- Preserved request output and target references on failure
+- Kept failure messages stable for Error and non-Error rejections
+
+---
+
+## G2.5.287 - Renderer Platform Adapter Conflict Documentation Review
+
+Reviewed platform adapter conflict documentation.
+
+Highlights
+
+- Documented conflict reference and copy behavior
+- Documented duplicate grouping and no-conflict states
+- Kept concrete platform behavior outside Renderer docs
+
+---
+
+## G2.5.288 - Renderer Platform Adapter Resolution Documentation Review
+
+Reviewed platform adapter resolution documentation.
+
+Highlights
+
+- Documented unresolved and resolved resolution shapes
+- Documented first-candidate selection without mount execution
+- Documented guarded mount reference preservation
+
+---
+
+## G2.5.289 - Renderer Platform Adapter Conflict Boundary Closure Review
+
+Reviewed platform adapter conflict boundary closure.
+
+Highlights
+
+- Confirmed conflict and resolution behavior is protected for this pass
+- Kept changes within existing public API
+- Prepared return to platform adapter selection review
+
+---
+
+## G2.5.290 - Renderer Platform Adapter Conflict Return-To-Selection Review
+
+Reviewed readiness to return from conflict work to selection work.
+
+Highlights
+
+- Confirmed platform adapter conflict boundaries are covered
+- Confirmed guarded mount failure boundaries remain protected
+- Prepared next sprint for platform adapter selection review
+
+---
+
 # Planned Sprints
 
-## G2.5.271 - Renderer Platform Adapter Conflict Review
+## G2.5.291 - Renderer Platform Adapter Selection Review
 
 Planned deliverables
 
-- Review Renderer platform adapter conflict contracts after registry and lookup boundary closure
-- Confirm duplicate platform groups preserve references and ordering
-- Protect platform conflict resolution boundaries
+- Review Renderer platform adapter selection contracts after conflict boundary closure
+- Confirm platform candidate request copy and first-candidate result behavior
+- Protect platform selection boundaries before resolved mounting review
 
 ---
 
@@ -3863,6 +4123,26 @@ Planned deliverables
 - [G2.5.268 - Renderer Platform Adapter Registry Boundary Closure Review](Sprint-G2.5.268.md)
 - [G2.5.269 - Renderer Platform Adapter Lookup Boundary Closure Review](Sprint-G2.5.269.md)
 - [G2.5.270 - Renderer Platform Adapter Return-To-Conflicts Review](Sprint-G2.5.270.md)
+- [G2.5.271 - Renderer Platform Adapter Conflict Review](Sprint-G2.5.271.md)
+- [G2.5.272 - Renderer Platform Adapter Conflict Reference Review](Sprint-G2.5.272.md)
+- [G2.5.273 - Renderer Platform Adapter Conflict Empty Platform Review](Sprint-G2.5.273.md)
+- [G2.5.274 - Renderer Platform Adapter Conflict Detection Review](Sprint-G2.5.274.md)
+- [G2.5.275 - Renderer Platform Adapter Multiple Conflict Review](Sprint-G2.5.275.md)
+- [G2.5.276 - Renderer Platform Adapter Conflict No-Conflict Review](Sprint-G2.5.276.md)
+- [G2.5.277 - Renderer Platform Adapter Conflict Resolution Review](Sprint-G2.5.277.md)
+- [G2.5.278 - Renderer Platform Adapter Conflict Resolution Shape Review](Sprint-G2.5.278.md)
+- [G2.5.279 - Renderer Platform Adapter Conflict First Candidate Review](Sprint-G2.5.279.md)
+- [G2.5.280 - Renderer Platform Adapter Conflict Selection Boundary Review](Sprint-G2.5.280.md)
+- [G2.5.281 - Renderer Platform Adapter Registry Conflict Resolution Review](Sprint-G2.5.281.md)
+- [G2.5.282 - Renderer Platform Adapter Registry Conflict Ordering Review](Sprint-G2.5.282.md)
+- [G2.5.283 - Renderer Platform Adapter Resolved Mount Review](Sprint-G2.5.283.md)
+- [G2.5.284 - Renderer Platform Adapter Unresolved Mount Review](Sprint-G2.5.284.md)
+- [G2.5.285 - Renderer Platform Adapter Unresolved Reference Review](Sprint-G2.5.285.md)
+- [G2.5.286 - Renderer Platform Adapter Rejected Mount Reference Review](Sprint-G2.5.286.md)
+- [G2.5.287 - Renderer Platform Adapter Conflict Documentation Review](Sprint-G2.5.287.md)
+- [G2.5.288 - Renderer Platform Adapter Resolution Documentation Review](Sprint-G2.5.288.md)
+- [G2.5.289 - Renderer Platform Adapter Conflict Boundary Closure Review](Sprint-G2.5.289.md)
+- [G2.5.290 - Renderer Platform Adapter Conflict Return-To-Selection Review](Sprint-G2.5.290.md)
 
 ---
 

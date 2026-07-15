@@ -200,19 +200,20 @@ selection, conflict handling or concrete platform execution. Missing lookup
 results omit platformAdapter fields, and duplicate platform matches resolve to
 the first registry entry. Platform adapter search is protected through the
 package root and remains first-match behavior before conflict handling exists.
-Renderer platform adapter conflicts
-now describe duplicate-platform adapter groups without detecting or resolving
-those conflicts automatically. Empty platform adapter conflict groups are
-supported through the package root and remain copy-protected before conflict
-detection behavior exists. Renderer platform adapter conflict detection now
-reports duplicate-platform adapter groups from registries without selecting or
-resolving those adapters. Unique and empty platform adapter registries are
-protected through the package root as no-conflict states before resolution
-behavior exists. Renderer platform adapter conflict resolution contracts can now
-describe unresolved conflicts or explicitly selected platform adapters without
-defining selection policies. Platform adapter conflict resolution review
-protects package-root exports and embedded conflict copy behavior before
-selection policies exist. Renderer platform adapter selection contracts now
+Renderer platform adapter conflicts now describe duplicate-platform adapter
+groups without detecting or resolving those conflicts automatically. Empty
+platform adapter conflict groups and explicit empty platform names are supported
+through the package root, conflict lists remain copy-protected, and conflict
+entries preserve their platform adapter references. Renderer platform adapter
+conflict detection now reports duplicate-platform adapter groups from
+registries without selecting, resolving or mounting those adapters. Multiple
+conflict groups follow first-duplicate registry order, and unique or empty
+platform adapter registries remain no-conflict states. Renderer platform
+adapter conflict resolution contracts can now describe unresolved conflicts or
+explicitly selected platform adapters without defining selection policies.
+Unresolved resolutions omit platformAdapter fields, resolved resolutions
+preserve selected platform adapter references, and embedded conflict lists stay
+copy-protected. Renderer platform adapter selection contracts now
 describe platform-specific candidate selection requests and selected or
 unselected platform adapter results without automatic conflict policies. Empty
 platform adapter selection candidate lists are supported as a valid request
@@ -222,10 +223,11 @@ available platform adapter candidate or reports an unselected result without
 resolving conflicts automatically. Platform adapter selection policy review
 protects candidate order before conflict integration exists.
 Renderer platform adapter conflicts can now be resolved through first-candidate
-selection, while concrete mounting, Home Assistant cards, device targets and
-theme resolution remain outside this integration boundary. Platform adapter
-conflict integration preserves conflict copy boundaries so later source-array
-mutations do not alter produced resolutions.
+selection without invoking selected platform adapter mount handlers, while
+concrete mounting, Home Assistant cards, device targets and theme resolution
+remain outside this integration boundary. Platform adapter conflict integration
+preserves conflict copy boundaries so later source-array mutations do not alter
+produced resolutions.
 Renderer platform adapter registry conflicts can now be resolved through
 first-candidate selection without executing concrete mounting or changing
 registry lookup behavior. Registry conflict resolutions preserve duplicate
@@ -234,9 +236,11 @@ Resolved platform adapter choices can now drive guarded mount execution through
 their underlying Renderer adapter, while unresolved choices return an unmounted
 result without invoking an adapter. Resolved platform adapter mounting supports
 asynchronous adapter mount handlers before concrete integrations exist.
+Unresolved guarded mount results preserve request output and target references
+even if a platform adapter field is present on the resolution.
 Rejected resolved platform adapter mounts return unmounted results with optional
-error messages. Non-Error platform adapter mount rejections are stringified for
-stable failure reporting.
+error messages while preserving request output and target references. Non-Error
+platform adapter mount rejections are stringified for stable failure reporting.
 Platform adapter mount failures can now be inspected as Foundation-compatible
 diagnostic reports without introducing concrete platform diagnostics.
 Successful platform adapter mount results now produce empty successful

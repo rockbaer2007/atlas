@@ -1273,6 +1273,38 @@ describe("renderer public API", () => {
     expect(conflict.platformAdapters).not.toBe(platformAdapters);
   });
 
+  it("preserves explicit empty Renderer platform adapter conflict platforms", () => {
+    const conflict = Renderer.createRendererPlatformAdapterConflict({
+      platform: "",
+      platformAdapters: [],
+    });
+
+    expect(conflict.platform).toBe("");
+    expect(Object.hasOwn(conflict, "platform")).toBe(true);
+  });
+
+  it("keeps Renderer platform adapter conflict entries as platform adapter references", () => {
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "reference-conflict-platform",
+      adapter: createRendererAdapter({
+        name: "reference-conflict-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "reference-conflict-platform",
+      platformAdapters: [platformAdapter],
+    });
+
+    expect(conflict.platformAdapters[0]).toBe(platformAdapter);
+  });
+
   it("finds Renderer platform adapter conflicts from registries", () => {
     const first = createRendererPlatformAdapter({
       platform: "surface",
@@ -1318,6 +1350,76 @@ describe("renderer public API", () => {
       platform: "surface",
       platformAdapters: [first, second],
     }]);
+    expect(conflicts[0]?.platformAdapters[0]).toBe(first);
+    expect(conflicts[0]?.platformAdapters[1]).toBe(second);
+  });
+
+  it("finds multiple Renderer platform adapter conflicts in first-duplicate order", () => {
+    const firstMemory = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "first-detected-memory-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const firstSurface = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "first-detected-surface-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: false,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const secondMemory = createRendererPlatformAdapter({
+      platform: "memory",
+      adapter: createRendererAdapter({
+        name: "second-detected-memory-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const secondSurface = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "second-detected-surface-platform-adapter",
+        mount: request => createRendererMountResult({
+          mounted: true,
+          output: request.output,
+          target: request.target,
+        }),
+      }),
+      capabilities: ["mount"],
+    });
+    const registry = createRendererPlatformAdapterRegistry([
+      firstMemory,
+      firstSurface,
+      secondMemory,
+      secondSurface,
+    ]);
+
+    expect(findRendererPlatformAdapterConflicts(registry)).toEqual([
+      {
+        platform: "memory",
+        platformAdapters: [firstMemory, secondMemory],
+      },
+      {
+        platform: "surface",
+        platformAdapters: [firstSurface, secondSurface],
+      },
+    ]);
   });
 
   it("reports no Renderer platform adapter conflicts for unique registries", () => {
@@ -1384,6 +1486,7 @@ describe("renderer public API", () => {
       resolved: false,
     });
     expect(resolution.conflict).not.toBe(conflict);
+    expect(resolution).not.toHaveProperty("platformAdapter");
   });
 
   it("creates resolved Renderer platform adapter conflict resolutions", () => {
@@ -1547,6 +1650,7 @@ describe("renderer public API", () => {
       resolved: true,
       platformAdapter: first,
     });
+    expect(resolution.platformAdapter).toBe(first);
     expect(resolution.conflict).not.toBe(conflict);
   });
 
@@ -1563,6 +1667,40 @@ describe("renderer public API", () => {
       resolved: false,
     });
     expect(resolution.conflict).not.toBe(conflict);
+    expect(resolution).not.toHaveProperty("platformAdapter");
+  });
+
+  it("resolves Renderer platform adapter conflicts without invoking selected adapters", () => {
+    let mounted = false;
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "no-mount-platform-conflict-adapter",
+        mount: request => {
+          mounted = true;
+
+          return createRendererMountResult({
+            mounted: true,
+            output: request.output,
+            target: request.target,
+          });
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const conflict = createRendererPlatformAdapterConflict({
+      platform: "surface",
+      platformAdapters: [platformAdapter],
+    });
+
+    const resolution = resolveRendererPlatformAdapterConflictWithFirstCandidate(conflict);
+
+    expect(resolution).toEqual({
+      conflict,
+      resolved: true,
+      platformAdapter,
+    });
+    expect(mounted).toBe(false);
   });
 
   it("keeps Renderer platform adapter conflict integrations independent from source arrays", () => {
@@ -3444,6 +3582,80 @@ describe("renderer public API", () => {
     });
   });
 
+  it("does not mount Renderer platform adapter resolutions marked unresolved even with platform adapters", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "unresolved-with-platform-adapter-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "unresolved-with-platform-adapter-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    let mounted = false;
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "unresolved-with-platform-adapter",
+        mount: () => {
+          mounted = true;
+
+          return createRendererMountResult({
+            mounted: true,
+            output,
+            target,
+          });
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: false,
+      platformAdapter,
+    });
+
+    await expect(mountResolvedRendererPlatformAdapter(resolution, request)).resolves.toEqual({
+      mounted: false,
+      output,
+      target,
+    });
+    expect(mounted).toBe(false);
+  });
+
+  it("preserves Renderer mount request references for unresolved platform adapter resolutions", async () => {
+    const output = createRendererOutput({
+      kind: "document",
+      name: "unresolved-platform-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "unresolved-platform-reference-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [],
+      }),
+      resolved: false,
+    });
+
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(result.output).toBe(output);
+    expect(result.target).toBe(target);
+  });
+
   it("awaits asynchronous resolved Renderer platform adapter mounts", async () => {
     const output = createRendererOutput({
       kind: "fragment",
@@ -3531,6 +3743,45 @@ describe("renderer public API", () => {
       target,
       error: "platform adapter mount failed",
     });
+  });
+
+  it("preserves Renderer mount request references for rejected platform adapter resolutions", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "failed-platform-reference-output",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "failed-platform-reference-target",
+    });
+    const request = createRendererMountRequest({
+      output,
+      target,
+    });
+    const platformAdapter = createRendererPlatformAdapter({
+      platform: "surface",
+      adapter: createRendererAdapter({
+        name: "failed-platform-reference-adapter",
+        mount() {
+          throw new Error("failed platform reference mount");
+        },
+      }),
+      capabilities: ["mount"],
+    });
+    const resolution = createRendererPlatformAdapterConflictResolution({
+      conflict: createRendererPlatformAdapterConflict({
+        platform: "surface",
+        platformAdapters: [platformAdapter],
+      }),
+      resolved: true,
+      platformAdapter,
+    });
+
+    const result = await mountResolvedRendererPlatformAdapter(resolution, request);
+
+    expect(result.output).toBe(output);
+    expect(result.target).toBe(target);
+    expect(result.error).toBe("failed platform reference mount");
   });
 
   it("reports non-Error resolved Renderer platform adapter mount rejections as strings", async () => {
