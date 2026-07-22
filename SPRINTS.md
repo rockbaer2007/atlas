@@ -593,23 +593,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.578 | Renderer Mount Lifecycle Future Home Assistant Boundary Review | Completed | - |
 | G2.5.579 | Renderer Mount Lifecycle Execution Compatibility Review | Completed | - |
 | G2.5.580 | Renderer Mount Lifecycle Return-To-Reporting Review | Completed | - |
-| G2.5.581 | Renderer Mount Reporting Review | Planned | - |
+| G2.5.581 | Renderer Mount Reporting Review | Completed | - |
+| G2.5.582 | Renderer Mount Reporting Contract Review | Completed | - |
+| G2.5.583 | Renderer Mount Reporting Shape Review | Completed | - |
+| G2.5.584 | Renderer Mount Reporting Planned State Review | Completed | - |
+| G2.5.585 | Renderer Mount Reporting Executed State Review | Completed | - |
+| G2.5.586 | Renderer Mount Reporting Reported State Review | Completed | - |
+| G2.5.587 | Renderer Mount Reporting Strategy Review | Completed | - |
+| G2.5.588 | Renderer Mount Reporting Quality Gate Review | Completed | - |
+| G2.5.589 | Renderer Mount Reporting Mounted State Review | Completed | - |
+| G2.5.590 | Renderer Mount Reporting Diagnostics Status Review | Completed | - |
+| G2.5.591 | Renderer Mount Reporting Issue List Review | Completed | - |
+| G2.5.592 | Renderer Mount Reporting Summary Review | Completed | - |
+| G2.5.593 | Renderer Mount Reporting Empty Summary Review | Completed | - |
+| G2.5.594 | Renderer Mount Reporting Failure Summary Review | Completed | - |
+| G2.5.595 | Renderer Mount Reporting Success Summary Review | Completed | - |
+| G2.5.596 | Renderer Mount Reporting Plan Name Review | Completed | - |
+| G2.5.597 | Renderer Mount Reporting Output Name Review | Completed | - |
+| G2.5.598 | Renderer Mount Reporting Target Name Review | Completed | - |
+| G2.5.599 | Renderer Mount Reporting No-DOM Review | Completed | - |
+| G2.5.600 | Renderer Mount Reporting No-Theme Review | Completed | - |
+| G2.5.601 | Renderer Mount Reporting No-Home-Assistant Review | Completed | - |
+| G2.5.602 | Renderer Mount Reporting No-Platform-Metadata Review | Completed | - |
+| G2.5.603 | Renderer Mount Reporting Package Root Review | Completed | - |
+| G2.5.604 | Renderer Mount Reporting Type Surface Review | Completed | - |
+| G2.5.605 | Renderer Mount Reporting Documentation Review | Completed | - |
+| G2.5.606 | Renderer Mount Reporting Changelog Review | Completed | - |
+| G2.5.607 | Renderer Mount Reporting Regression Review | Completed | - |
+| G2.5.608 | Renderer Mount Reporting Summary Count Review | Completed | - |
+| G2.5.609 | Renderer Mount Reporting Summary Mounted Review | Completed | - |
+| G2.5.610 | Renderer Mount Reporting Summary Diagnostics Review | Completed | - |
+| G2.5.611 | Renderer Mount Reporting Summary Failure Review | Completed | - |
+| G2.5.612 | Renderer Mount Reporting Summary Issues Review | Completed | - |
+| G2.5.613 | Renderer Mount Reporting Copy Boundary Review | Completed | - |
+| G2.5.614 | Renderer Mount Reporting Planned Lifecycle Review | Completed | - |
+| G2.5.615 | Renderer Mount Reporting Executed Lifecycle Review | Completed | - |
+| G2.5.616 | Renderer Mount Reporting Reported Lifecycle Review | Completed | - |
+| G2.5.617 | Renderer Mount Reporting Diagnostics Reuse Review | Completed | - |
+| G2.5.618 | Renderer Mount Reporting Plan Report Reuse Review | Completed | - |
+| G2.5.619 | Renderer Mount Reporting Independence Review | Completed | - |
+| G2.5.620 | Renderer Mount Reporting Future DOM Boundary Review | Completed | - |
+| G2.5.621 | Renderer Mount Reporting Future Theme Boundary Review | Completed | - |
+| G2.5.622 | Renderer Mount Reporting Future Home Assistant Boundary Review | Completed | - |
+| G2.5.623 | Renderer Mount Reporting Future Platform Boundary Review | Completed | - |
+| G2.5.624 | Renderer Mount Reporting Public API Review | Completed | - |
+| G2.5.625 | Renderer Mount Reporting README Review | Completed | - |
+| G2.5.626 | Renderer Mount Reporting Sprint Documentation Review | Completed | - |
+| G2.5.627 | Renderer Mount Reporting Workspace Regression Review | Completed | - |
+| G2.5.628 | Renderer Mount Reporting Integration Closure Review | Completed | - |
+| G2.5.629 | Renderer Mount Reporting Compatibility Review | Completed | - |
+| G2.5.630 | Renderer Mount Reporting Return-To-Renderer Review | Completed | - |
+| G2.5.631 | Renderer Mount Reporting Consumption Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.580 - Renderer Mount Lifecycle Return-To-Reporting Review
+## G2.5.630 - Renderer Mount Reporting Return-To-Renderer Review
 
 Goal:
 
-Define Renderer mount lifecycle records across planning, execution and diagnostics reporting.
+Define Renderer mount reports and summaries across lifecycle records, plan data and diagnostics.
 
 Deliverables:
 
-* Renderer mount lifecycle records
-* Lifecycle inspection reports
-* Diagnostics-compatible reporting
+* Renderer mount report records
+* Renderer mount report summaries
+* Lifecycle-compatible diagnostics aggregation
 * Sprint documentation
 
 Status:
@@ -620,13 +670,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.581 - Renderer Mount Reporting Review
+## G2.5.631 - Renderer Mount Reporting Consumption Review
 
 Suggested focus:
 
-* Decide whether lifecycle reports should feed a broader Renderer reporting surface
-* Keep reporting generic and diagnostics-compatible
-* Preserve existing lifecycle, plan and result contracts
+* Decide whether mount reports should feed a broader Renderer reporting consumer
+* Keep consumption generic and diagnostics-compatible
+* Preserve existing lifecycle, report and summary contracts
 
 ---
 
@@ -1217,6 +1267,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.578.md`
 * `docs/sprints/Sprint-G2.5.579.md`
 * `docs/sprints/Sprint-G2.5.580.md`
+* `docs/sprints/Sprint-G2.5.581.md`
+* `docs/sprints/Sprint-G2.5.582.md`
+* `docs/sprints/Sprint-G2.5.583.md`
+* `docs/sprints/Sprint-G2.5.584.md`
+* `docs/sprints/Sprint-G2.5.585.md`
+* `docs/sprints/Sprint-G2.5.586.md`
+* `docs/sprints/Sprint-G2.5.587.md`
+* `docs/sprints/Sprint-G2.5.588.md`
+* `docs/sprints/Sprint-G2.5.589.md`
+* `docs/sprints/Sprint-G2.5.590.md`
+* `docs/sprints/Sprint-G2.5.591.md`
+* `docs/sprints/Sprint-G2.5.592.md`
+* `docs/sprints/Sprint-G2.5.593.md`
+* `docs/sprints/Sprint-G2.5.594.md`
+* `docs/sprints/Sprint-G2.5.595.md`
+* `docs/sprints/Sprint-G2.5.596.md`
+* `docs/sprints/Sprint-G2.5.597.md`
+* `docs/sprints/Sprint-G2.5.598.md`
+* `docs/sprints/Sprint-G2.5.599.md`
+* `docs/sprints/Sprint-G2.5.600.md`
+* `docs/sprints/Sprint-G2.5.601.md`
+* `docs/sprints/Sprint-G2.5.602.md`
+* `docs/sprints/Sprint-G2.5.603.md`
+* `docs/sprints/Sprint-G2.5.604.md`
+* `docs/sprints/Sprint-G2.5.605.md`
+* `docs/sprints/Sprint-G2.5.606.md`
+* `docs/sprints/Sprint-G2.5.607.md`
+* `docs/sprints/Sprint-G2.5.608.md`
+* `docs/sprints/Sprint-G2.5.609.md`
+* `docs/sprints/Sprint-G2.5.610.md`
+* `docs/sprints/Sprint-G2.5.611.md`
+* `docs/sprints/Sprint-G2.5.612.md`
+* `docs/sprints/Sprint-G2.5.613.md`
+* `docs/sprints/Sprint-G2.5.614.md`
+* `docs/sprints/Sprint-G2.5.615.md`
+* `docs/sprints/Sprint-G2.5.616.md`
+* `docs/sprints/Sprint-G2.5.617.md`
+* `docs/sprints/Sprint-G2.5.618.md`
+* `docs/sprints/Sprint-G2.5.619.md`
+* `docs/sprints/Sprint-G2.5.620.md`
+* `docs/sprints/Sprint-G2.5.621.md`
+* `docs/sprints/Sprint-G2.5.622.md`
+* `docs/sprints/Sprint-G2.5.623.md`
+* `docs/sprints/Sprint-G2.5.624.md`
+* `docs/sprints/Sprint-G2.5.625.md`
+* `docs/sprints/Sprint-G2.5.626.md`
+* `docs/sprints/Sprint-G2.5.627.md`
+* `docs/sprints/Sprint-G2.5.628.md`
+* `docs/sprints/Sprint-G2.5.629.md`
+* `docs/sprints/Sprint-G2.5.630.md`
 
 ---
 

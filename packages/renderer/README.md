@@ -45,6 +45,9 @@ descriptive only and do not mount output yet.
 - `RendererMountPlanReport`
 - `RendererMountPlanStatus`
 - `RendererMountPlanStrategy`
+- `RendererMountReport`
+- `RendererMountReportIssue`
+- `RendererMountReportSummary`
 - `RendererOutput`
 - `RendererOutputKind`
 - `RendererPipeline`
@@ -72,6 +75,7 @@ descriptive only and do not mount output yet.
 - `createRendererHostContext`
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
+- `createRendererMountReport`
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
@@ -106,6 +110,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
+- `summarizeRendererMountReports`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface
@@ -304,6 +309,13 @@ references, can create reports from existing mount diagnostics, support
 reporting before execution as a successful empty diagnostic state, and expose a
 compact lifecycle inspection report without adding integration metadata, DOM
 elements, Home Assistant fields or Theme fields.
+
+Renderer mount reports now aggregate lifecycle records into compact reporting
+shapes. Reports include plan strategy, output and target names, copied quality
+gates, lifecycle flags, mounted status, diagnostics state and diagnostic issues.
+Report summaries count planned, executed, reported, mounted, diagnostics-ok and
+failed records without adding platform metadata, DOM elements, Home Assistant
+fields or Theme fields.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

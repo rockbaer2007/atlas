@@ -23,6 +23,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount lifecycle records now describe planned, executed and reported
   mount work across plans, results and diagnostics without adding concrete DOM,
   Theme or Home Assistant bindings.
+* Renderer mount reporting now aggregates lifecycle records into compact report
+  and summary shapes with plan strategy, quality gates, mounted state and
+  diagnostics issues while staying free of DOM, Theme and Home Assistant
+  bindings.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
