@@ -11,12 +11,14 @@ import {
   executeRendererTargetMount,
   executeRendererTargetMountBatch,
   executeRendererTargetMountWithReport,
+  exportRendererTargetMountBatchDiagnosticCatalog,
   findRendererTargetMountBatchFailures,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
   handoffRendererTargetMountBatchDiagnostics,
   RendererDefaultMountAdapterNames,
   resolveRendererTargetMountAdapter,
+  snapshotRendererTargetMountBatchDiagnosticCatalog,
   snapshotRendererTargetMountBatchDiagnostics,
 } from "../src";
 
@@ -1053,5 +1055,136 @@ describe("renderer mount adapter routing", () => {
       blockedCount: 0,
       transferableCount: 1,
     });
+  });
+
+  it("snapshots ready target mount batch diagnostic catalogs", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-snapshot-ready",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "catalog-snapshot-cache",
+        }),
+      }],
+    });
+    const handoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(execution),
+    );
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([handoff]);
+
+    expect(snapshotRendererTargetMountBatchDiagnosticCatalog(catalog)).toEqual({
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+      ready: true,
+      blocked: false,
+    });
+  });
+
+  it("snapshots blocked target mount batch diagnostic catalogs", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-snapshot-blocked",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "catalog-snapshot-surface",
+        }),
+      }],
+    });
+    const handoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(execution),
+    );
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([handoff]);
+
+    expect(snapshotRendererTargetMountBatchDiagnosticCatalog(catalog)).toEqual({
+      handoffCount: 1,
+      readyCount: 0,
+      blockedCount: 1,
+      transferableCount: 0,
+      ready: false,
+      blocked: true,
+    });
+  });
+
+  it("snapshots empty target mount batch diagnostic catalogs as blocked", () => {
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([]);
+
+    expect(snapshotRendererTargetMountBatchDiagnosticCatalog(catalog)).toEqual({
+      handoffCount: 0,
+      readyCount: 0,
+      blockedCount: 0,
+      transferableCount: 0,
+      ready: false,
+      blocked: true,
+    });
+  });
+
+  it("exports ready target mount batch diagnostic catalogs", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-export-ready",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "catalog-export-cache",
+        }),
+      }],
+    });
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([
+      handoffRendererTargetMountBatchDiagnostics(
+        closeRendererTargetMountBatchDiagnostics(execution),
+      ),
+    ]);
+
+    const exported = exportRendererTargetMountBatchDiagnosticCatalog(catalog);
+
+    expect(exported.catalog).toBe(catalog);
+    expect(exported.ready).toBe(true);
+    expect(exported.exportable).toBe(true);
+    expect(exported.snapshot.ready).toBe(true);
+  });
+
+  it("exports blocked target mount batch diagnostic catalogs as not exportable", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-export-blocked",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "catalog-export-surface",
+        }),
+      }],
+    });
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([
+      handoffRendererTargetMountBatchDiagnostics(
+        closeRendererTargetMountBatchDiagnostics(execution),
+      ),
+    ]);
+
+    const exported = exportRendererTargetMountBatchDiagnosticCatalog(catalog);
+
+    expect(exported.catalog).toBe(catalog);
+    expect(exported.ready).toBe(false);
+    expect(exported.exportable).toBe(false);
+    expect(exported.snapshot.blocked).toBe(true);
   });
 });

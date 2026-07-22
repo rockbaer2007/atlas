@@ -131,6 +131,22 @@ export type RendererUnifiedMountBatchDiagnosticCatalog = Readonly<{
   summary: RendererUnifiedMountBatchDiagnosticCatalogSummary;
 }>;
 
+export type RendererUnifiedMountBatchDiagnosticCatalogSnapshot = Readonly<{
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+  ready: boolean;
+  blocked: boolean;
+}>;
+
+export type RendererUnifiedMountBatchDiagnosticCatalogExport = Readonly<{
+  catalog: RendererUnifiedMountBatchDiagnosticCatalog;
+  snapshot: RendererUnifiedMountBatchDiagnosticCatalogSnapshot;
+  ready: boolean;
+  exportable: boolean;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -333,5 +349,28 @@ export function createRendererTargetMountBatchDiagnosticCatalog(
       blockedCount: catalogHandoffs.filter(handoff => handoff.blocked).length,
       transferableCount: catalogHandoffs.filter(handoff => handoff.transferable).length,
     },
+  };
+}
+
+export function snapshotRendererTargetMountBatchDiagnosticCatalog(
+  catalog: RendererUnifiedMountBatchDiagnosticCatalog,
+): RendererUnifiedMountBatchDiagnosticCatalogSnapshot {
+  return {
+    ...catalog.summary,
+    ready: catalog.summary.handoffCount > 0 && catalog.summary.blockedCount === 0,
+    blocked: catalog.summary.handoffCount === 0 || catalog.summary.blockedCount > 0,
+  };
+}
+
+export function exportRendererTargetMountBatchDiagnosticCatalog(
+  catalog: RendererUnifiedMountBatchDiagnosticCatalog,
+): RendererUnifiedMountBatchDiagnosticCatalogExport {
+  const snapshot = snapshotRendererTargetMountBatchDiagnosticCatalog(catalog);
+
+  return {
+    catalog,
+    snapshot,
+    ready: snapshot.ready,
+    exportable: snapshot.ready,
   };
 }

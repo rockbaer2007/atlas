@@ -119,6 +119,8 @@ import type {
   RendererTargetKind,
   RendererUnifiedMountBatchConsumptionRequest,
   RendererUnifiedMountBatchDiagnosticCatalog,
+  RendererUnifiedMountBatchDiagnosticCatalogExport,
+  RendererUnifiedMountBatchDiagnosticCatalogSnapshot,
   RendererUnifiedMountBatchDiagnosticCatalogSummary,
   RendererUnifiedMountBatchDiagnosticClosure,
   RendererUnifiedMountBatchDiagnosticHandoff,
@@ -210,6 +212,7 @@ import {
   executeRendererTargetMountBatch,
   executeRendererTargetMount,
   executeRendererTargetMountWithReport,
+  exportRendererTargetMountBatchDiagnosticCatalog,
   executeRendererPipeline,
   findRendererTargetMountBatchFailures,
   findRendererAdapter,
@@ -258,6 +261,7 @@ import {
   snapshotRendererConcreteIntegrationBoundaryPlan,
   snapshotRendererIntegrationHandoff,
   snapshotRendererMountReportConsumerDiagnosticDeliveryBundle,
+  snapshotRendererTargetMountBatchDiagnosticCatalog,
   snapshotRendererTargetMountBatchDiagnostics,
   summarizeRendererMountReports,
   summarizeRendererMountReportConsumerDiagnosticAggregation,
@@ -369,6 +373,10 @@ describe("renderer public API", () => {
     expect(executeRendererTargetMountWithReport).toBe(
       Renderer.executeRendererTargetMountWithReport,
     );
+    expect(Renderer.exportRendererTargetMountBatchDiagnosticCatalog).toBeTypeOf("function");
+    expect(exportRendererTargetMountBatchDiagnosticCatalog).toBe(
+      Renderer.exportRendererTargetMountBatchDiagnosticCatalog,
+    );
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.finalizeRendererConcreteIntegrationBoundary).toBeTypeOf("function");
     expect(Renderer.findRendererTargetMountBatchFailures).toBeTypeOf("function");
@@ -443,6 +451,10 @@ describe("renderer public API", () => {
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
     expect(Renderer.snapshotRendererIntegrationHandoff).toBeTypeOf("function");
     expect(Renderer.snapshotRendererMountReportConsumerDiagnosticDeliveryBundle).toBeTypeOf("function");
+    expect(Renderer.snapshotRendererTargetMountBatchDiagnosticCatalog).toBeTypeOf("function");
+    expect(snapshotRendererTargetMountBatchDiagnosticCatalog).toBe(
+      Renderer.snapshotRendererTargetMountBatchDiagnosticCatalog,
+    );
     expect(Renderer.snapshotRendererTargetMountBatchDiagnostics).toBeTypeOf("function");
     expect(snapshotRendererTargetMountBatchDiagnostics).toBe(
       Renderer.snapshotRendererTargetMountBatchDiagnostics,
@@ -1299,6 +1311,22 @@ describe("renderer public API", () => {
       handoffs: [unifiedMountBatchDiagnosticHandoff],
       summary: unifiedMountBatchDiagnosticCatalogSummary,
     };
+    const unifiedMountBatchDiagnosticCatalogSnapshot:
+      RendererUnifiedMountBatchDiagnosticCatalogSnapshot = {
+        handoffCount: 1,
+        readyCount: 1,
+        blockedCount: 0,
+        transferableCount: 1,
+        ready: true,
+        blocked: false,
+      };
+    const unifiedMountBatchDiagnosticCatalogExport:
+      RendererUnifiedMountBatchDiagnosticCatalogExport = {
+        catalog: unifiedMountBatchDiagnosticCatalog,
+        snapshot: unifiedMountBatchDiagnosticCatalogSnapshot,
+        ready: true,
+        exportable: true,
+      };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1341,6 +1369,12 @@ describe("renderer public API", () => {
     );
     expect(unifiedMountBatchDiagnosticCatalog.summary).toBe(
       unifiedMountBatchDiagnosticCatalogSummary,
+    );
+    expect(unifiedMountBatchDiagnosticCatalogExport.catalog).toBe(
+      unifiedMountBatchDiagnosticCatalog,
+    );
+    expect(unifiedMountBatchDiagnosticCatalogExport.snapshot).toBe(
+      unifiedMountBatchDiagnosticCatalogSnapshot,
     );
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);

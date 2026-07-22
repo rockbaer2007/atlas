@@ -83,6 +83,8 @@ Assistant or theme execution paths.
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchDiagnosticCatalog`
+- `RendererUnifiedMountBatchDiagnosticCatalogExport`
+- `RendererUnifiedMountBatchDiagnosticCatalogSnapshot`
 - `RendererUnifiedMountBatchDiagnosticCatalogSummary`
 - `RendererUnifiedMountBatchDiagnosticClosure`
 - `RendererUnifiedMountBatchDiagnosticHandoff`
@@ -251,6 +253,7 @@ Assistant or theme execution paths.
 - `executeRendererTargetMountBatch`
 - `executeRendererTargetMount`
 - `executeRendererTargetMountWithReport`
+- `exportRendererTargetMountBatchDiagnosticCatalog`
 - `executeRendererPipeline`
 - `executeRendererMemoryMountPlan`
 - `finalizeRendererConcreteIntegrationBoundary`
@@ -305,6 +308,7 @@ Assistant or theme execution paths.
 - `snapshotRendererConcreteIntegrationBoundaryPlan`
 - `snapshotRendererIntegrationHandoff`
 - `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
+- `snapshotRendererTargetMountBatchDiagnosticCatalog`
 - `snapshotRendererTargetMountBatchDiagnostics`
 - `summarizeRendererDomMountStore`
 - `summarizeRendererMemoryMountStore`
@@ -371,6 +375,9 @@ the closure while marking only ready batches as transferable.
 Batch diagnostic catalogs collect multiple diagnostic handoffs, preserve
 handoff references, protect against later source-array mutation and summarize
 handoff, ready, blocked and transferable counts for later integration layers.
+Catalog snapshots compact those counts into ready or blocked catalog state, and
+catalog exports preserve the catalog reference with an exportable signal only
+when every collected handoff is ready.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

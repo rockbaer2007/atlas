@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer target mount batch diagnostic catalogs now provide compact snapshots
+  and export envelopes with ready/exportable state.
 * Renderer target mount batch diagnostic catalogs now collect handoffs and
   summarize ready, blocked and transferable counts for integration layers.
 * Renderer target mount batch diagnostics now provide compact snapshots and
