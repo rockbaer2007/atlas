@@ -55,6 +55,7 @@ import type {
   RendererIntegrationHandoffSnapshotCatalog,
   RendererIntegrationPreparation,
   RendererIntegrationReadiness,
+  RendererDefaultMountAdapterRegistry,
   RendererMountDiagnosticReport,
   RendererMountLifecycleRecord,
   RendererMountLifecycleReport,
@@ -113,8 +114,10 @@ import type {
   RendererPlatformAdapterSelectionResult,
   RendererPipelineStage,
   RendererPipelineStageResult,
+  RendererTargetMountAdapterResolution,
   RendererTarget,
   RendererTargetKind,
+  RendererUnifiedMountRequest,
 } from "../src";
 import * as Renderer from "../src";
 import {
@@ -164,6 +167,7 @@ import {
   createRendererMountReportConsumerSelectionRequest,
   createRendererMountReportConsumerSelectionResult,
   createRendererMountReportConsumption,
+  createDefaultRendererMountAdapterRegistry,
   createDefaultRendererMountPlan,
   createRendererMountPlan,
   createRendererMountResult,
@@ -191,6 +195,7 @@ import {
   consumeRendererMountReports,
   evaluateRendererMountReportConsumerDiagnosticPolicy,
   executeRendererMountPlan,
+  executeRendererTargetMount,
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
@@ -213,12 +218,14 @@ import {
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
   resolveRendererMountReportConsumerConflictWithFirstCandidate,
   resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate,
+  resolveRendererTargetMountAdapter,
   resolveRendererPlatformAdapterConflictWithFirstCandidate,
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
   reviewRendererMountReportConsumerDiagnosticDeliveryManifest,
   reviewRendererMountReportConsumerDiagnosticRegistryExecution,
   reviewRendererConcreteIntegrationBoundary,
   reviewRendererIntegrationPreparationReadiness,
+  RendererDefaultMountAdapterNames,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
   selectFirstRendererPlatformAdapterCandidate,
@@ -296,6 +303,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountReportConsumerSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumption).toBeTypeOf("function");
+    expect(Renderer.createDefaultRendererMountAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererDomMountAdapter).toBeTypeOf("function");
@@ -324,6 +332,8 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererDomMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
+    expect(Renderer.executeRendererTargetMount).toBeTypeOf("function");
+    expect(executeRendererTargetMount).toBe(Renderer.executeRendererTargetMount);
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.finalizeRendererConcreteIntegrationBoundary).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
@@ -364,6 +374,8 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererMountReportConsumerConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.resolveRendererTargetMountAdapter).toBeTypeOf("function");
+    expect(resolveRendererTargetMountAdapter).toBe(Renderer.resolveRendererTargetMountAdapter);
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticDeliveryManifest).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
     expect(Renderer.reviewRendererConcreteIntegrationBoundary).toBeTypeOf("function");
@@ -373,6 +385,8 @@ describe("renderer public API", () => {
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererMountReportConsumerCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererPlatformAdapterCandidate).toBeTypeOf("function");
+    expect(Renderer.RendererDefaultMountAdapterNames.Memory).toBe("renderer.memory");
+    expect(Renderer.RendererDefaultMountAdapterNames.Dom).toBe("renderer.dom");
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryExecutionClosure).toBeTypeOf("function");
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryExecutionDelivery).toBeTypeOf("function");
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryExecutionExport).toBeTypeOf("function");
@@ -1165,6 +1179,18 @@ describe("renderer public API", () => {
     const adapterRegistry: RendererAdapterRegistry = {
       adapters: [adapter],
     };
+    const defaultMountAdapterRegistry: RendererDefaultMountAdapterRegistry =
+      createDefaultRendererMountAdapterRegistry();
+    const targetMountAdapterResolution: RendererTargetMountAdapterResolution = {
+      target,
+      adapterName: RendererDefaultMountAdapterNames.Memory,
+      adapter: defaultMountAdapterRegistry.memoryAdapter,
+    };
+    const unifiedMountRequest: RendererUnifiedMountRequest = {
+      output,
+      target,
+      registry: defaultMountAdapterRegistry.registry,
+    };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1185,6 +1211,12 @@ describe("renderer public API", () => {
     expect(adapterConflict.adapters[0]).toBe(adapter);
     expect(adapterConflictResolution.conflict).toBe(adapterConflict);
     expect(adapterRegistry.adapters[0]).toBe(adapter);
+    expect(defaultMountAdapterRegistry.memoryAdapter.name).toBe(
+      RendererDefaultMountAdapterNames.Memory,
+    );
+    expect(defaultMountAdapterRegistry.domAdapter.name).toBe(RendererDefaultMountAdapterNames.Dom);
+    expect(targetMountAdapterResolution.adapter).toBe(defaultMountAdapterRegistry.memoryAdapter);
+    expect(unifiedMountRequest.registry).toBe(defaultMountAdapterRegistry.registry);
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);

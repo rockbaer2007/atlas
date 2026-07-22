@@ -12,6 +12,7 @@ export * from "./RendererAdapterSelection";
 export * from "./RendererMount";
 export * from "./RendererMountDiagnostics";
 export * from "./RendererDomMount";
+export * from "./RendererMountAdapterRouting";
 export * from "./RendererMountLifecycle";
 export * from "./RendererMountPlan";
 export * from "./RendererMountPlanExecution";

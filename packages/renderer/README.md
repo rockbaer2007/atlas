@@ -79,6 +79,9 @@ Assistant or theme execution paths.
 - `RendererMountResult`
 - `RendererMountDiagnosticCodes`
 - `RendererMountDiagnosticReport`
+- `RendererDefaultMountAdapterRegistry`
+- `RendererTargetMountAdapterResolution`
+- `RendererUnifiedMountRequest`
 - `RendererDomMountAdapter`
 - `RendererDomMountDiagnostic`
 - `RendererDomMountLookupRequest`
@@ -145,6 +148,7 @@ Assistant or theme execution paths.
 - `RendererPlatformAdapterSelectionResult`
 - `RendererPipelineStage`
 - `RendererPipelineStageResult`
+- `RendererDefaultMountAdapterNames`
 - `RendererTarget`
 - `RendererTargetKind`
 - `aggregateRendererMountReportConsumerDiagnostics`
@@ -202,6 +206,7 @@ Assistant or theme execution paths.
 - `createRendererMountReportConsumerSelectionRequest`
 - `createRendererMountReportConsumerSelectionResult`
 - `createRendererMountReportConsumption`
+- `createDefaultRendererMountAdapterRegistry`
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
@@ -231,6 +236,7 @@ Assistant or theme execution paths.
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
 - `executeRendererDomMountPlan`
 - `executeRendererMountPlan`
+- `executeRendererTargetMount`
 - `executeRendererPipeline`
 - `executeRendererMemoryMountPlan`
 - `finalizeRendererConcreteIntegrationBoundary`
@@ -260,6 +266,7 @@ Assistant or theme execution paths.
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `resolveRendererMountReportConsumerConflictWithFirstCandidate`
 - `resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate`
+- `resolveRendererTargetMountAdapter`
 - `reviewRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `reviewRendererMountReportConsumerDiagnosticRegistryExecution`
 - `reviewRendererConcreteIntegrationBoundary`
@@ -323,6 +330,11 @@ The DOM-like mount adapter records output HTML against `surface` target
 identifiers, rejects memory targets, rejects surface targets without
 identifiers and exposes lookup, latest-record, summary, clear, diagnostics and
 plan-execution helpers without touching browser globals or Home Assistant APIs.
+The default target mount routing layer now pairs Memory and DOM adapters in a
+single registry, resolves `memory` targets to the Memory adapter, resolves
+`surface` targets to the DOM adapter and executes output-to-target mounts
+through one helper. Missing adapter entries and surface targets without
+identifiers return stable unmounted results instead of mutating adapter stores.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

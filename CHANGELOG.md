@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer mount adapter routing now provides a default Memory/DOM registry,
+  target-kind adapter resolution and unified execution with missing-adapter and
+  invalid-surface failure results.
 * Renderer DOM mounting now provides a controlled surface-target usage path that
   records output HTML by target identifier while rejecting memory targets and
   missing identifiers without browser, Theme or Home Assistant bindings.
