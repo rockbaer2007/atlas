@@ -71,6 +71,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   transport-neutral.
 * Renderer mount report consumer diagnostic delivery manifest closure now
   reviews manifests with delivery, ready, blocked and collected issue counts.
+* Renderer mount report consumer diagnostic delivery bundles now package
+  manifest closures into data-only bundle state with ready, manifest and issue
+  counts.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

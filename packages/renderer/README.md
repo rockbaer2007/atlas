@@ -49,6 +49,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumer`
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
+- `RendererMountReportConsumerDiagnosticDeliveryBundle`
 - `RendererMountReportConsumerDiagnosticDelivery`
 - `RendererMountReportConsumerDiagnosticDeliveryManifest`
 - `RendererMountReportConsumerDiagnosticDeliveryManifestClosure`
@@ -107,6 +108,7 @@ descriptive only and do not mount output yet.
 - `createRendererMountReportConsumer`
 - `createRendererMountReportConsumerConflict`
 - `createRendererMountReportConsumerConflictResolution`
+- `createRendererMountReportConsumerDiagnosticDeliveryBundle`
 - `createRendererMountReportConsumerDiagnosticDelivery`
 - `createRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `createRendererMountReportConsumerLookupRequest`
@@ -458,6 +460,12 @@ delivery manifests into compact closure reports. Manifest closures preserve the
 manifest name, report delivery, ready, blocked and issue counts, collect issues
 from delivery closures and remain data-only without transport or platform
 metadata.
+
+Renderer mount report consumer diagnostic delivery bundles now package manifest
+closures into data-only bundle state. Bundles expose a stable kind,
+caller-provided name, ready state, manifest count, issue count and copied
+closure references without adding transport, DOM, Home Assistant, Theme or
+platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

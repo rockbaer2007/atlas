@@ -134,6 +134,15 @@ export type RendererMountReportConsumerDiagnosticDeliveryManifestClosure = Reado
   }>;
 }>;
 
+export type RendererMountReportConsumerDiagnosticDeliveryBundle = Readonly<{
+  kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle";
+  name: string;
+  ready: boolean;
+  manifestCount: number;
+  issueCount: number;
+  closures: readonly RendererMountReportConsumerDiagnosticDeliveryManifestClosure[];
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -471,6 +480,23 @@ export function reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
       issueCount: issues.length,
       issues,
     },
+  };
+}
+
+export function createRendererMountReportConsumerDiagnosticDeliveryBundle(
+  name: string,
+  closures: readonly RendererMountReportConsumerDiagnosticDeliveryManifestClosure[],
+): RendererMountReportConsumerDiagnosticDeliveryBundle {
+  const copiedClosures = [...closures];
+
+  return {
+    kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle",
+    name,
+    ready: copiedClosures.every(closure => closure.result.ok),
+    manifestCount: copiedClosures.length,
+    issueCount: copiedClosures
+      .reduce((issueCount, closure) => issueCount + closure.result.issueCount, 0),
+    closures: copiedClosures,
   };
 }
 
