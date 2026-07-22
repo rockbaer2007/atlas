@@ -33,6 +33,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumers now provide a generic sync or async consumer
   integration point for consumption views while preserving summary references
   and integration-free boundaries.
+* Renderer mount report consumer registries now add generic lookup and
+  first-candidate selection while preserving consumer references and avoiding
+  handler execution during selection.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

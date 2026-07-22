@@ -24,8 +24,13 @@ import type {
   RendererMountPlanStatus,
   RendererMountPlanStrategy,
   RendererMountReportConsumer,
+  RendererMountReportConsumerLookupRequest,
+  RendererMountReportConsumerLookupResult,
   RendererMountReportConsumerOutput,
+  RendererMountReportConsumerRegistry,
   RendererMountReportConsumerResult,
+  RendererMountReportConsumerSelectionRequest,
+  RendererMountReportConsumerSelectionResult,
   RendererMountReport,
   RendererMountReportConsumption,
   RendererMountReportConsumptionRequest,
@@ -65,6 +70,11 @@ import {
   createRendererMountLifecycleRecord,
   createRendererMountReport,
   createRendererMountReportConsumer,
+  createRendererMountReportConsumerLookupRequest,
+  createRendererMountReportConsumerLookupResult,
+  createRendererMountReportConsumerRegistry,
+  createRendererMountReportConsumerSelectionRequest,
+  createRendererMountReportConsumerSelectionResult,
   createRendererMountReportConsumption,
   createDefaultRendererMountPlan,
   createRendererMountPlan,
@@ -86,6 +96,7 @@ import {
   executeRendererPipeline,
   findRendererAdapter,
   findRendererAdapterConflicts,
+  findRendererMountReportConsumer,
   findRendererPlatformAdapter,
   findRendererPlatformAdapterConflicts,
   inspectRendererMountResult,
@@ -101,6 +112,7 @@ import {
   resolveRendererPlatformAdapterConflictWithFirstCandidate,
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
+  selectFirstRendererMountReportConsumerCandidate,
   selectFirstRendererPlatformAdapterCandidate,
   summarizeRendererMountReports,
 } from "../src";
@@ -121,6 +133,11 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountReport).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumer).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerLookupRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerLookupResult).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerRegistry).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerSelectionRequest).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumption).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
@@ -140,6 +157,7 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.findRendererMountReportConsumer).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountLifecycleRecord).toBeTypeOf("function");
@@ -156,6 +174,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
+    expect(Renderer.selectFirstRendererMountReportConsumerCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererPlatformAdapterCandidate).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMountReports).toBeTypeOf("function");
   });
@@ -287,6 +306,24 @@ describe("renderer public API", () => {
       name: "type-consumer",
       consume: () => mountReportConsumerOutput,
     };
+    const mountReportConsumerRegistry: RendererMountReportConsumerRegistry = {
+      consumers: [mountReportConsumer],
+    };
+    const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
+      name: mountReportConsumer.name,
+    };
+    const mountReportConsumerLookupResult: RendererMountReportConsumerLookupResult = {
+      name: mountReportConsumer.name,
+      consumer: mountReportConsumer,
+    };
+    const mountReportConsumerSelectionRequest: RendererMountReportConsumerSelectionRequest = {
+      name: mountReportConsumer.name,
+      candidates: [mountReportConsumer],
+    };
+    const mountReportConsumerSelectionResult: RendererMountReportConsumerSelectionResult = {
+      name: mountReportConsumer.name,
+      consumer: mountReportConsumer,
+    };
     const mountResult: RendererMountResult = {
       mounted: false,
       output,
@@ -395,6 +432,11 @@ describe("renderer public API", () => {
     expect(mountReportConsumption.reports[0]).toBe(mountReport);
     expect(mountReportSummary.total).toBe(1);
     expect(mountReportConsumer.consume(mountReportConsumption)).toBe(mountReportConsumerResult);
+    expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
+    expect(mountReportConsumerLookupRequest.name).toBe(mountReportConsumer.name);
+    expect(mountReportConsumerLookupResult.consumer).toBe(mountReportConsumer);
+    expect(mountReportConsumerSelectionRequest.candidates[0]).toBe(mountReportConsumer);
+    expect(mountReportConsumerSelectionResult.consumer).toBe(mountReportConsumer);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
@@ -2137,6 +2179,234 @@ describe("renderer public API", () => {
     expect(consumer).not.toHaveProperty("theme");
     expect(consumer).not.toHaveProperty("homeAssistant");
     expect(consumer).not.toHaveProperty("element");
+  });
+
+  it("creates Renderer mount report consumer registries", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "registry-consumer",
+      consume: consumption => ({
+        consumerName: "registry-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(createRendererMountReportConsumerRegistry([consumer])).toEqual({
+      consumers: [consumer],
+    });
+  });
+
+  it("keeps Renderer mount report consumer registries independent from source arrays", () => {
+    const first = createRendererMountReportConsumer({
+      name: "first-registry-consumer",
+      consume: consumption => ({
+        consumerName: "first-registry-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "second-registry-consumer",
+      consume: consumption => ({
+        consumerName: "second-registry-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const consumers = [first];
+
+    const registry = createRendererMountReportConsumerRegistry(consumers);
+    consumers.push(second);
+
+    expect(registry.consumers).toEqual([first]);
+  });
+
+  it("creates Renderer mount report consumer lookup requests and results", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "lookup-shape-consumer",
+      consume: consumption => ({
+        consumerName: "lookup-shape-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(createRendererMountReportConsumerLookupRequest({
+      name: consumer.name,
+    })).toEqual({
+      name: "lookup-shape-consumer",
+    });
+    expect(createRendererMountReportConsumerLookupResult({
+      name: consumer.name,
+      consumer,
+    })).toEqual({
+      name: "lookup-shape-consumer",
+      consumer,
+    });
+  });
+
+  it("finds Renderer mount report consumers by name", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "lookup-consumer",
+      consume: consumption => ({
+        consumerName: "lookup-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const registry = createRendererMountReportConsumerRegistry([consumer]);
+
+    expect(findRendererMountReportConsumer(
+      registry,
+      createRendererMountReportConsumerLookupRequest({
+        name: "lookup-consumer",
+      }),
+    )).toEqual({
+      name: "lookup-consumer",
+      consumer,
+    });
+  });
+
+  it("reports missing Renderer mount report consumers", () => {
+    const registry = createRendererMountReportConsumerRegistry([]);
+
+    expect(Renderer.findRendererMountReportConsumer(
+      registry,
+      createRendererMountReportConsumerLookupRequest({
+        name: "missing-consumer",
+      }),
+    )).toEqual({
+      name: "missing-consumer",
+    });
+  });
+
+  it("creates Renderer mount report consumer selection requests and results", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "selection-shape-consumer",
+      consume: consumption => ({
+        consumerName: "selection-shape-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(createRendererMountReportConsumerSelectionRequest({
+      name: consumer.name,
+      candidates: [consumer],
+    })).toEqual({
+      name: "selection-shape-consumer",
+      candidates: [consumer],
+    });
+    expect(createRendererMountReportConsumerSelectionResult({
+      name: consumer.name,
+      consumer,
+    })).toEqual({
+      name: "selection-shape-consumer",
+      consumer,
+    });
+  });
+
+  it("keeps Renderer mount report consumer selection candidates independent from source arrays", () => {
+    const first = createRendererMountReportConsumer({
+      name: "candidate-consumer",
+      consume: consumption => ({
+        consumerName: "candidate-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "candidate-consumer",
+      consume: consumption => ({
+        consumerName: "candidate-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const candidates = [first];
+
+    const request = createRendererMountReportConsumerSelectionRequest({
+      name: "candidate-consumer",
+      candidates,
+    });
+    candidates.push(second);
+
+    expect(request.candidates).toEqual([first]);
+  });
+
+  it("selects the first Renderer mount report consumer candidate", () => {
+    const first = createRendererMountReportConsumer({
+      name: "first-candidate-consumer",
+      consume: consumption => ({
+        consumerName: "first-candidate-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "second-candidate-consumer",
+      consume: consumption => ({
+        consumerName: "second-candidate-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(selectFirstRendererMountReportConsumerCandidate(
+      createRendererMountReportConsumerSelectionRequest({
+        name: "candidate-consumer",
+        candidates: [first, second],
+      }),
+    )).toEqual({
+      name: "candidate-consumer",
+      consumer: first,
+    });
+  });
+
+  it("selects Renderer mount report consumer candidates without consuming reports", () => {
+    let consumed = false;
+    const consumer = createRendererMountReportConsumer({
+      name: "no-consume-selection-consumer",
+      consume: consumption => {
+        consumed = true;
+
+        return {
+          consumerName: "no-consume-selection-consumer",
+          consumed: true,
+          summary: consumption.summary,
+        };
+      },
+    });
+
+    const result = selectFirstRendererMountReportConsumerCandidate(
+      createRendererMountReportConsumerSelectionRequest({
+        name: consumer.name,
+        candidates: [consumer],
+      }),
+    );
+
+    expect(result.consumer).toBe(consumer);
+    expect(consumed).toBe(false);
+  });
+
+  it("reports missing Renderer mount report consumer selection candidates", () => {
+    expect(selectFirstRendererMountReportConsumerCandidate(
+      createRendererMountReportConsumerSelectionRequest({
+        name: "missing-selection-consumer",
+        candidates: [],
+      }),
+    )).toEqual({
+      name: "missing-selection-consumer",
+    });
+  });
+
+  it("keeps Renderer mount report consumer registries free of integration metadata", () => {
+    const registry = createRendererMountReportConsumerRegistry([]);
+
+    expect(registry).not.toHaveProperty("platform");
+    expect(registry).not.toHaveProperty("theme");
+    expect(registry).not.toHaveProperty("homeAssistant");
+    expect(registry).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

@@ -47,8 +47,13 @@ descriptive only and do not mount output yet.
 - `RendererMountPlanStrategy`
 - `RendererMountReport`
 - `RendererMountReportConsumer`
+- `RendererMountReportConsumerLookupRequest`
+- `RendererMountReportConsumerLookupResult`
 - `RendererMountReportConsumerOutput`
+- `RendererMountReportConsumerRegistry`
 - `RendererMountReportConsumerResult`
+- `RendererMountReportConsumerSelectionRequest`
+- `RendererMountReportConsumerSelectionResult`
 - `RendererMountReportConsumption`
 - `RendererMountReportConsumptionRequest`
 - `RendererMountReportFilter`
@@ -83,6 +88,11 @@ descriptive only and do not mount output yet.
 - `createRendererMountPlan`
 - `createRendererMountReport`
 - `createRendererMountReportConsumer`
+- `createRendererMountReportConsumerLookupRequest`
+- `createRendererMountReportConsumerLookupResult`
+- `createRendererMountReportConsumerRegistry`
+- `createRendererMountReportConsumerSelectionRequest`
+- `createRendererMountReportConsumerSelectionResult`
 - `createRendererMountReportConsumption`
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
@@ -103,6 +113,7 @@ descriptive only and do not mount output yet.
 - `executeRendererPipeline`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `findRendererMountReportConsumer`
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
 - `inspectRendererMountLifecycleRecord`
@@ -118,6 +129,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
+- `selectFirstRendererMountReportConsumerCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
 - `summarizeRendererMountReports`
 
@@ -337,6 +349,12 @@ for filtered consumption views. Consumers can synchronously or asynchronously
 return consumed, failed and summary-bearing results, receive the consumption
 view by reference, and remain independent from DOM elements, Home Assistant
 fields, Theme fields and platform metadata.
+
+Renderer mount report consumer registries now provide generic consumer lookup
+and first-candidate selection. Registries and selection requests copy their
+source arrays, lookup and selection preserve consumer references, and selection
+does not invoke consumer handlers or add DOM, Home Assistant, Theme or platform
+metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
