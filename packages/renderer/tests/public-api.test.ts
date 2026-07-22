@@ -12,6 +12,7 @@ import type {
   RendererAdapterRegistry,
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
+  RendererConcreteIntegrationBoundaryExecutionPreparation,
   RendererConcreteIntegrationBoundaryDecision,
   RendererConcreteIntegrationBoundaryPlan,
   RendererConcreteIntegrationBoundaryPlanSnapshot,
@@ -155,6 +156,7 @@ import {
   recordRendererMountLifecycleExecution,
   recordRendererMountLifecycleReport,
   mountResolvedRendererPlatformAdapter,
+  prepareRendererConcreteIntegrationBoundaryExecution,
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
   resolveRendererMountReportConsumerConflictWithFirstCandidate,
@@ -252,6 +254,7 @@ describe("renderer public API", () => {
     expect(Renderer.summarizeRendererMountReportConsumerDiagnosticAggregation).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
+    expect(Renderer.prepareRendererConcreteIntegrationBoundaryExecution).toBeTypeOf("function");
     expect(Renderer.recordRendererMountLifecycleExecution).toBeTypeOf("function");
     expect(Renderer.recordRendererMountLifecycleReport).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
@@ -653,6 +656,19 @@ describe("renderer public API", () => {
         blockedCount: 0,
         issueCount: 0,
       };
+    const concreteIntegrationBoundaryExecutionPreparation:
+      RendererConcreteIntegrationBoundaryExecutionPreparation = {
+        kind: "renderer.concrete.integration.boundary.execution.preparation",
+        name: "type-concrete-integration-boundary-execution-preparation",
+        ready: true,
+        issueCount: 0,
+        catalog: concreteIntegrationBoundaryPlanSnapshotCatalog,
+        execution: {
+          prepared: true,
+          executable: false,
+          planCount: 1,
+        },
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -825,6 +841,9 @@ describe("renderer public API", () => {
     expect(concreteIntegrationBoundaryPlanSnapshot.planName).toBe(concreteIntegrationBoundaryPlan.name);
     expect(concreteIntegrationBoundaryPlanSnapshotCatalog.snapshots[0]).toBe(
       concreteIntegrationBoundaryPlanSnapshot,
+    );
+    expect(concreteIntegrationBoundaryExecutionPreparation.catalog).toBe(
+      concreteIntegrationBoundaryPlanSnapshotCatalog,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -4291,6 +4310,76 @@ describe("renderer public API", () => {
     expect(catalog).not.toHaveProperty("plans");
     expect(catalog).not.toHaveProperty("execute");
     expect(catalog).not.toHaveProperty("element");
+  });
+
+  it("prepares ready Renderer concrete integration boundary execution state", () => {
+    const catalog = createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+      "ready-execution-preparation-catalog",
+      [{
+        kind: "renderer.concrete.integration.boundary.plan.snapshot",
+        planName: "ready-execution-preparation-plan",
+        ready: true,
+        issueCount: 0,
+        stepCount: 3,
+        plannedBoundary: "transport",
+      }],
+    );
+
+    expect(prepareRendererConcreteIntegrationBoundaryExecution(
+      "ready-execution-preparation",
+      catalog,
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.execution.preparation",
+      name: "ready-execution-preparation",
+      ready: true,
+      issueCount: 0,
+      catalog,
+      execution: {
+        prepared: true,
+        executable: false,
+        planCount: 1,
+      },
+    });
+  });
+
+  it("prepares blocked Renderer concrete integration boundary execution state", () => {
+    const catalog = Renderer.createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+      "blocked-execution-preparation-catalog",
+      [{
+        kind: "renderer.concrete.integration.boundary.plan.snapshot",
+        planName: "blocked-execution-preparation-plan",
+        ready: false,
+        issueCount: 15,
+        stepCount: 3,
+      }],
+    );
+
+    const preparation = Renderer.prepareRendererConcreteIntegrationBoundaryExecution(
+      "blocked-execution-preparation",
+      catalog,
+    );
+
+    expect(preparation.ready).toBe(false);
+    expect(preparation.issueCount).toBe(15);
+    expect(preparation.execution.prepared).toBe(false);
+  });
+
+  it("keeps Renderer concrete integration boundary execution preparations non-executable", () => {
+    const preparation = prepareRendererConcreteIntegrationBoundaryExecution(
+      "non-executable-preparation",
+      createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+        "non-executable-preparation-catalog",
+        [],
+      ),
+    );
+
+    expect(preparation.execution).toEqual({
+      prepared: true,
+      executable: false,
+      planCount: 0,
+    });
+    expect(preparation).not.toHaveProperty("execute");
+    expect(preparation).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {
