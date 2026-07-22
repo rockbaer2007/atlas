@@ -5,6 +5,11 @@ export const RendererMountReportConsumerDiagnosticCodes = {
   ConsumerFailed: "renderer.mount.report.consumer.failed",
 } as const;
 
+export const RendererMountReportConsumerDiagnosticPolicyCodes = {
+  ConsumerDiagnosticsFailed: "renderer.mount.report.consumer.diagnostics.policy.consumer_failed",
+  IssueLimitExceeded: "renderer.mount.report.consumer.diagnostics.policy.issue_limit_exceeded",
+} as const;
+
 export type RendererMountReportConsumerDiagnosticReport = Readonly<{
   context: Readonly<{
     component: string;
@@ -38,6 +43,26 @@ export type RendererMountReportConsumerDiagnosticAggregationSummary = Readonly<{
   okConsumerCount: number;
   failedConsumerCount: number;
   issueCount: number;
+}>;
+
+export type RendererMountReportConsumerDiagnosticPolicy = Readonly<{
+  requireAllConsumersOk?: boolean;
+  maxIssueCount?: number;
+}>;
+
+export type RendererMountReportConsumerDiagnosticPolicyEvaluation = Readonly<{
+  context: Readonly<{
+    component: string;
+  }>;
+  result: Readonly<{
+    ok: boolean;
+    summary: RendererMountReportConsumerDiagnosticAggregationSummary;
+    issues: readonly Readonly<{
+      code: string;
+      message: string;
+      severity: "error";
+    }>[];
+  }>;
 }>;
 
 export type RendererMountReportConsumerResult = Readonly<{
@@ -300,5 +325,35 @@ export function summarizeRendererMountReportConsumerDiagnosticAggregation(
     okConsumerCount,
     failedConsumerCount,
     issueCount: aggregation.result.issues.length,
+  };
+}
+
+export function evaluateRendererMountReportConsumerDiagnosticPolicy(
+  summary: RendererMountReportConsumerDiagnosticAggregationSummary,
+  policy: RendererMountReportConsumerDiagnosticPolicy = {},
+): RendererMountReportConsumerDiagnosticPolicyEvaluation {
+  const requireAllConsumersOk = policy.requireAllConsumersOk ?? true;
+  const issues = [
+    ...(requireAllConsumersOk && summary.failedConsumerCount > 0 ? [{
+      code: RendererMountReportConsumerDiagnosticPolicyCodes.ConsumerDiagnosticsFailed,
+      message: `${summary.failedConsumerCount} Renderer mount report consumers failed diagnostics`,
+      severity: "error" as const,
+    }] : []),
+    ...(policy.maxIssueCount !== undefined && summary.issueCount > policy.maxIssueCount ? [{
+      code: RendererMountReportConsumerDiagnosticPolicyCodes.IssueLimitExceeded,
+      message: `Renderer mount report consumer diagnostics reported ${summary.issueCount} issues, exceeding ${policy.maxIssueCount}`,
+      severity: "error" as const,
+    }] : []),
+  ];
+
+  return {
+    context: {
+      component: "renderer.mount.report.consumer.diagnostics.policy",
+    },
+    result: {
+      ok: issues.length === 0,
+      summary,
+      issues,
+    },
   };
 }

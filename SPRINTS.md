@@ -993,23 +993,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.978 | Renderer Mount Reporting Consumer Diagnostics Summary Policy Gate Review | Completed | - |
 | G2.5.979 | Renderer Mount Reporting Consumer Diagnostics Summary Policy Failure Review | Completed | - |
 | G2.5.980 | Renderer Mount Reporting Consumer Diagnostics Summary Policy Handoff Review | Completed | - |
-| G2.5.981 | Renderer Mount Reporting Consumer Diagnostics Policy Review | Planned | - |
+| G2.5.981 | Renderer Mount Reporting Consumer Diagnostics Policy Review | Completed | - |
+| G2.5.982 | Renderer Mount Reporting Consumer Diagnostics Policy Contract Review | Completed | - |
+| G2.5.983 | Renderer Mount Reporting Consumer Diagnostics Policy Shape Review | Completed | - |
+| G2.5.984 | Renderer Mount Reporting Consumer Diagnostics Policy Default Review | Completed | - |
+| G2.5.985 | Renderer Mount Reporting Consumer Diagnostics Policy Success Review | Completed | - |
+| G2.5.986 | Renderer Mount Reporting Consumer Diagnostics Policy Failure Review | Completed | - |
+| G2.5.987 | Renderer Mount Reporting Consumer Diagnostics Policy Issue Limit Review | Completed | - |
+| G2.5.988 | Renderer Mount Reporting Consumer Diagnostics Policy Allow Failure Review | Completed | - |
+| G2.5.989 | Renderer Mount Reporting Consumer Diagnostics Policy Codes Review | Completed | - |
+| G2.5.990 | Renderer Mount Reporting Consumer Diagnostics Policy Package Root Review | Completed | - |
+| G2.5.991 | Renderer Mount Reporting Consumer Diagnostics Policy Type Surface Review | Completed | - |
+| G2.5.992 | Renderer Mount Reporting Consumer Diagnostics Policy Documentation Review | Completed | - |
+| G2.5.993 | Renderer Mount Reporting Consumer Diagnostics Policy Changelog Review | Completed | - |
+| G2.5.994 | Renderer Mount Reporting Consumer Diagnostics Policy Regression Review | Completed | - |
+| G2.5.995 | Renderer Mount Reporting Consumer Diagnostics Policy Public API Review | Completed | - |
+| G2.5.996 | Renderer Mount Reporting Consumer Diagnostics Policy README Review | Completed | - |
+| G2.5.997 | Renderer Mount Reporting Consumer Diagnostics Policy Sprint Documentation Review | Completed | - |
+| G2.5.998 | Renderer Mount Reporting Consumer Diagnostics Policy Workspace Regression Review | Completed | - |
+| G2.5.999 | Renderer Mount Reporting Consumer Diagnostics Policy Integration Closure Review | Completed | - |
+| G2.5.1000 | Renderer Mount Reporting Consumer Diagnostics Policy Compatibility Review | Completed | - |
+| G2.5.1001 | Renderer Mount Reporting Consumer Diagnostics Policy Future DOM Boundary Review | Completed | - |
+| G2.5.1002 | Renderer Mount Reporting Consumer Diagnostics Policy Future Theme Boundary Review | Completed | - |
+| G2.5.1003 | Renderer Mount Reporting Consumer Diagnostics Policy Future Home Assistant Boundary Review | Completed | - |
+| G2.5.1004 | Renderer Mount Reporting Consumer Diagnostics Policy Future Platform Boundary Review | Completed | - |
+| G2.5.1005 | Renderer Mount Reporting Consumer Diagnostics Policy Stability Review | Completed | - |
+| G2.5.1006 | Renderer Mount Reporting Consumer Diagnostics Policy Success Stability Review | Completed | - |
+| G2.5.1007 | Renderer Mount Reporting Consumer Diagnostics Policy Failure Stability Review | Completed | - |
+| G2.5.1008 | Renderer Mount Reporting Consumer Diagnostics Policy Issue Stability Review | Completed | - |
+| G2.5.1009 | Renderer Mount Reporting Consumer Diagnostics Policy Context Stability Review | Completed | - |
+| G2.5.1010 | Renderer Mount Reporting Consumer Diagnostics Policy Summary Boundary Review | Completed | - |
+| G2.5.1011 | Renderer Mount Reporting Consumer Diagnostics Policy Derivation Review | Completed | - |
+| G2.5.1012 | Renderer Mount Reporting Consumer Diagnostics Policy No Mutation Review | Completed | - |
+| G2.5.1013 | Renderer Mount Reporting Consumer Diagnostics Policy Empty Summary Review | Completed | - |
+| G2.5.1014 | Renderer Mount Reporting Consumer Diagnostics Policy Multiple Consumer Review | Completed | - |
+| G2.5.1015 | Renderer Mount Reporting Consumer Diagnostics Policy Mixed Result Review | Completed | - |
+| G2.5.1016 | Renderer Mount Reporting Consumer Diagnostics Policy Count Consistency Review | Completed | - |
+| G2.5.1017 | Renderer Mount Reporting Consumer Diagnostics Policy Result Boundary Review | Completed | - |
+| G2.5.1018 | Renderer Mount Reporting Consumer Diagnostics Policy API Closure Review | Completed | - |
+| G2.5.1019 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Summary Review | Completed | - |
+| G2.5.1020 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Aggregation Review | Completed | - |
+| G2.5.1021 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Diagnostics Review | Completed | - |
+| G2.5.1022 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Consumer Review | Completed | - |
+| G2.5.1023 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Registry Review | Completed | - |
+| G2.5.1024 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Conflict Review | Completed | - |
+| G2.5.1025 | Renderer Mount Reporting Consumer Diagnostics Policy Return-To-Renderer Review | Completed | - |
+| G2.5.1026 | Renderer Mount Reporting Consumer Diagnostics Policy Handoff Preparation Review | Completed | - |
+| G2.5.1027 | Renderer Mount Reporting Consumer Diagnostics Policy Handoff Boundary Review | Completed | - |
+| G2.5.1028 | Renderer Mount Reporting Consumer Diagnostics Policy Handoff Metrics Review | Completed | - |
+| G2.5.1029 | Renderer Mount Reporting Consumer Diagnostics Policy Handoff Gate Review | Completed | - |
+| G2.5.1030 | Renderer Mount Reporting Consumer Diagnostics Policy Handoff Review | Completed | - |
+| G2.5.1031 | Renderer Mount Reporting Consumer Diagnostics Execution Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.980 - Renderer Mount Reporting Consumer Diagnostics Summary Policy Handoff Review
+## G2.5.1030 - Renderer Mount Reporting Consumer Diagnostics Policy Handoff Review
 
 Goal:
 
-Summarize aggregated Renderer mount report consumer diagnostics into compact metrics.
+Evaluate summarized Renderer mount report consumer diagnostics through simple policy gates.
 
 Deliverables:
 
-* Consumer diagnostic aggregation summary type
-* Derived summary helper
-* Summary public API tests
+* Consumer diagnostic policy contract
+* Policy evaluation helper
+* Stable policy diagnostic codes
 * Sprint documentation
 
 Status:
@@ -1020,13 +1070,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.981 - Renderer Mount Reporting Consumer Diagnostics Policy Review
+## G2.5.1031 - Renderer Mount Reporting Consumer Diagnostics Execution Review
 
 Suggested focus:
 
-* Decide whether summarized consumer diagnostics should support simple policy gates
-* Keep policy output derived from summaries
-* Preserve existing consumer, registry, conflict, aggregation and summary contracts
+* Decide whether consumer execution should produce diagnostics directly
+* Keep execution, aggregation, summary and policy helpers composable
+* Preserve existing consumer, registry and conflict contracts
 
 ---
 
@@ -2017,6 +2067,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.978.md`
 * `docs/sprints/Sprint-G2.5.979.md`
 * `docs/sprints/Sprint-G2.5.980.md`
+* `docs/sprints/Sprint-G2.5.981.md`
+* `docs/sprints/Sprint-G2.5.982.md`
+* `docs/sprints/Sprint-G2.5.983.md`
+* `docs/sprints/Sprint-G2.5.984.md`
+* `docs/sprints/Sprint-G2.5.985.md`
+* `docs/sprints/Sprint-G2.5.986.md`
+* `docs/sprints/Sprint-G2.5.987.md`
+* `docs/sprints/Sprint-G2.5.988.md`
+* `docs/sprints/Sprint-G2.5.989.md`
+* `docs/sprints/Sprint-G2.5.990.md`
+* `docs/sprints/Sprint-G2.5.991.md`
+* `docs/sprints/Sprint-G2.5.992.md`
+* `docs/sprints/Sprint-G2.5.993.md`
+* `docs/sprints/Sprint-G2.5.994.md`
+* `docs/sprints/Sprint-G2.5.995.md`
+* `docs/sprints/Sprint-G2.5.996.md`
+* `docs/sprints/Sprint-G2.5.997.md`
+* `docs/sprints/Sprint-G2.5.998.md`
+* `docs/sprints/Sprint-G2.5.999.md`
+* `docs/sprints/Sprint-G2.5.1000.md`
+* `docs/sprints/Sprint-G2.5.1001.md`
+* `docs/sprints/Sprint-G2.5.1002.md`
+* `docs/sprints/Sprint-G2.5.1003.md`
+* `docs/sprints/Sprint-G2.5.1004.md`
+* `docs/sprints/Sprint-G2.5.1005.md`
+* `docs/sprints/Sprint-G2.5.1006.md`
+* `docs/sprints/Sprint-G2.5.1007.md`
+* `docs/sprints/Sprint-G2.5.1008.md`
+* `docs/sprints/Sprint-G2.5.1009.md`
+* `docs/sprints/Sprint-G2.5.1010.md`
+* `docs/sprints/Sprint-G2.5.1011.md`
+* `docs/sprints/Sprint-G2.5.1012.md`
+* `docs/sprints/Sprint-G2.5.1013.md`
+* `docs/sprints/Sprint-G2.5.1014.md`
+* `docs/sprints/Sprint-G2.5.1015.md`
+* `docs/sprints/Sprint-G2.5.1016.md`
+* `docs/sprints/Sprint-G2.5.1017.md`
+* `docs/sprints/Sprint-G2.5.1018.md`
+* `docs/sprints/Sprint-G2.5.1019.md`
+* `docs/sprints/Sprint-G2.5.1020.md`
+* `docs/sprints/Sprint-G2.5.1021.md`
+* `docs/sprints/Sprint-G2.5.1022.md`
+* `docs/sprints/Sprint-G2.5.1023.md`
+* `docs/sprints/Sprint-G2.5.1024.md`
+* `docs/sprints/Sprint-G2.5.1025.md`
+* `docs/sprints/Sprint-G2.5.1026.md`
+* `docs/sprints/Sprint-G2.5.1027.md`
+* `docs/sprints/Sprint-G2.5.1028.md`
+* `docs/sprints/Sprint-G2.5.1029.md`
+* `docs/sprints/Sprint-G2.5.1030.md`
 
 ---
 

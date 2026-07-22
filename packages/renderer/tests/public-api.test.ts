@@ -28,6 +28,8 @@ import type {
   RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerDiagnosticAggregation,
   RendererMountReportConsumerDiagnosticAggregationSummary,
+  RendererMountReportConsumerDiagnosticPolicy,
+  RendererMountReportConsumerDiagnosticPolicyEvaluation,
   RendererMountReportConsumerDiagnosticReport,
   RendererMountReportConsumerLookupRequest,
   RendererMountReportConsumerLookupResult,
@@ -100,6 +102,7 @@ import {
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
   consumeRendererMountReports,
+  evaluateRendererMountReportConsumerDiagnosticPolicy,
   executeRendererMountPlan,
   executeRendererPipeline,
   findRendererAdapter,
@@ -185,7 +188,11 @@ describe("renderer public API", () => {
     expect(Renderer.RendererMountReportConsumerDiagnosticCodes.NotConsumed).toBe(
       "renderer.mount.report.consumer.not_consumed",
     );
+    expect(Renderer.RendererMountReportConsumerDiagnosticPolicyCodes.ConsumerDiagnosticsFailed).toBe(
+      "renderer.mount.report.consumer.diagnostics.policy.consumer_failed",
+    );
     expect(Renderer.aggregateRendererMountReportConsumerDiagnostics).toBeTypeOf("function");
+    expect(Renderer.evaluateRendererMountReportConsumerDiagnosticPolicy).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMountReportConsumerDiagnosticAggregation).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
@@ -353,6 +360,21 @@ describe("renderer public API", () => {
         failedConsumerCount: 0,
         issueCount: 0,
       };
+    const mountReportConsumerDiagnosticPolicy: RendererMountReportConsumerDiagnosticPolicy = {
+      requireAllConsumersOk: true,
+      maxIssueCount: 0,
+    };
+    const mountReportConsumerDiagnosticPolicyEvaluation:
+      RendererMountReportConsumerDiagnosticPolicyEvaluation = {
+        context: {
+          component: "renderer.mount.report.consumer.diagnostics.policy",
+        },
+        result: {
+          ok: true,
+          summary: mountReportConsumerDiagnosticAggregationSummary,
+          issues: [],
+        },
+      };
     const mountReportConsumerOutput: RendererMountReportConsumerOutput =
       mountReportConsumerResult;
     const mountReportConsumer: RendererMountReportConsumer = {
@@ -499,6 +521,10 @@ describe("renderer public API", () => {
       mountReportConsumerDiagnosticReport,
     );
     expect(mountReportConsumerDiagnosticAggregationSummary.consumerCount).toBe(1);
+    expect(mountReportConsumerDiagnosticPolicy.maxIssueCount).toBe(0);
+    expect(mountReportConsumerDiagnosticPolicyEvaluation.result.summary).toBe(
+      mountReportConsumerDiagnosticAggregationSummary,
+    );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3074,6 +3100,102 @@ describe("renderer public API", () => {
     expect(summary).not.toHaveProperty("theme");
     expect(summary).not.toHaveProperty("homeAssistant");
     expect(summary).not.toHaveProperty("element");
+  });
+
+  it("evaluates successful Renderer mount report consumer diagnostic policies", () => {
+    const summary: RendererMountReportConsumerDiagnosticAggregationSummary = {
+      ok: true,
+      consumerCount: 2,
+      okConsumerCount: 2,
+      failedConsumerCount: 0,
+      issueCount: 0,
+    };
+
+    expect(evaluateRendererMountReportConsumerDiagnosticPolicy(summary)).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer.diagnostics.policy",
+      },
+      result: {
+        ok: true,
+        summary,
+        issues: [],
+      },
+    });
+  });
+
+  it("fails Renderer mount report consumer diagnostic policies when consumers fail by default", () => {
+    const summary: RendererMountReportConsumerDiagnosticAggregationSummary = {
+      ok: false,
+      consumerCount: 2,
+      okConsumerCount: 1,
+      failedConsumerCount: 1,
+      issueCount: 1,
+    };
+
+    expect(evaluateRendererMountReportConsumerDiagnosticPolicy(summary).result).toEqual({
+      ok: false,
+      summary,
+      issues: [{
+        code: "renderer.mount.report.consumer.diagnostics.policy.consumer_failed",
+        message: "1 Renderer mount report consumers failed diagnostics",
+        severity: "error",
+      }],
+    });
+  });
+
+  it("allows Renderer mount report consumer diagnostic policy consumers to fail when configured", () => {
+    const summary: RendererMountReportConsumerDiagnosticAggregationSummary = {
+      ok: false,
+      consumerCount: 2,
+      okConsumerCount: 1,
+      failedConsumerCount: 1,
+      issueCount: 1,
+    };
+
+    expect(evaluateRendererMountReportConsumerDiagnosticPolicy(summary, {
+      requireAllConsumersOk: false,
+    }).result).toEqual({
+      ok: true,
+      summary,
+      issues: [],
+    });
+  });
+
+  it("fails Renderer mount report consumer diagnostic policies when issue limits are exceeded", () => {
+    const summary: RendererMountReportConsumerDiagnosticAggregationSummary = {
+      ok: false,
+      consumerCount: 3,
+      okConsumerCount: 1,
+      failedConsumerCount: 2,
+      issueCount: 3,
+    };
+
+    expect(evaluateRendererMountReportConsumerDiagnosticPolicy(summary, {
+      maxIssueCount: 2,
+    }).result.issues).toEqual([{
+      code: "renderer.mount.report.consumer.diagnostics.policy.consumer_failed",
+      message: "2 Renderer mount report consumers failed diagnostics",
+      severity: "error",
+    }, {
+      code: "renderer.mount.report.consumer.diagnostics.policy.issue_limit_exceeded",
+      message: "Renderer mount report consumer diagnostics reported 3 issues, exceeding 2",
+      severity: "error",
+    }]);
+  });
+
+  it("keeps Renderer mount report consumer diagnostic policy evaluations free of integration metadata", () => {
+    const evaluation = evaluateRendererMountReportConsumerDiagnosticPolicy({
+      ok: true,
+      consumerCount: 0,
+      okConsumerCount: 0,
+      failedConsumerCount: 0,
+      issueCount: 0,
+    });
+
+    expect(evaluation).not.toHaveProperty("platform");
+    expect(evaluation).not.toHaveProperty("theme");
+    expect(evaluation).not.toHaveProperty("homeAssistant");
+    expect(evaluation).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

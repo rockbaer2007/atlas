@@ -48,6 +48,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer diagnostic aggregation summaries now expose
   compact consumer, failure and issue counts derived from aggregate
   diagnostics.
+* Renderer mount report consumer diagnostic policy evaluation now provides
+  stable summary-derived gate results for failed consumers and exceeded issue
+  limits.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

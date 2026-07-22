@@ -51,6 +51,9 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
+- `RendererMountReportConsumerDiagnosticPolicy`
+- `RendererMountReportConsumerDiagnosticPolicyCodes`
+- `RendererMountReportConsumerDiagnosticPolicyEvaluation`
 - `RendererMountReportConsumerDiagnosticReport`
 - `RendererMountReportConsumerDiagnosticCodes`
 - `RendererMountReportConsumerLookupRequest`
@@ -118,6 +121,7 @@ descriptive only and do not mount output yet.
 - `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
 - `consumeRendererMountReports`
+- `evaluateRendererMountReportConsumerDiagnosticPolicy`
 - `executeRendererMountPlan`
 - `executeRendererPipeline`
 - `findRendererAdapter`
@@ -392,6 +396,12 @@ Renderer mount report consumer diagnostic aggregation summaries now derive
 compact metrics from aggregate diagnostics. Summaries report aggregate ok
 state, consumer count, successful consumer count, failed consumer count and
 issue count without copying integration metadata into the summary surface.
+
+Renderer mount report consumer diagnostic policy evaluation now derives a
+small gate result from aggregation summaries. Policies can require every
+consumer diagnostic report to be ok and can set a maximum aggregate issue
+count, producing stable policy issue codes without adding DOM elements, Home
+Assistant fields, Theme fields or platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
