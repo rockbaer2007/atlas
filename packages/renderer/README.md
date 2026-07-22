@@ -36,6 +36,9 @@ descriptive only and do not mount output yet.
 - `RendererMountResult`
 - `RendererMountDiagnosticCodes`
 - `RendererMountDiagnosticReport`
+- `RendererMountLifecycleRecord`
+- `RendererMountLifecycleReport`
+- `RendererMountLifecycleState`
 - `RendererMountPlan`
 - `RendererMountPlanExecution`
 - `RendererMountPlanQualityGate`
@@ -70,6 +73,7 @@ descriptive only and do not mount output yet.
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
 - `createRendererMountRequest`
+- `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
 - `createRendererOutput`
 - `createRendererPipeline`
@@ -88,11 +92,14 @@ descriptive only and do not mount output yet.
 - `findRendererAdapterConflicts`
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
+- `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
 - `inspectRendererMountResult`
 - `isRendererMountPlanReady`
 - `mountResolvedRendererAdapter`
 - `mountResolvedRendererPlatformAdapter`
+- `recordRendererMountLifecycleExecution`
+- `recordRendererMountLifecycleReport`
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
@@ -290,6 +297,13 @@ error messages, missing adapter resolutions are reported without invoking mount
 handlers, and execution results remain ordinary `RendererMountResult` objects
 without plan metadata, platform metadata, DOM bindings, Home Assistant surfaces
 or Theme bindings.
+
+Renderer mount lifecycle records now describe planned, executed and reported
+mount work. Lifecycle records preserve plan, result and diagnostic report
+references, can create reports from existing mount diagnostics, support
+reporting before execution as a successful empty diagnostic state, and expose a
+compact lifecycle inspection report without adding integration metadata, DOM
+elements, Home Assistant fields or Theme fields.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

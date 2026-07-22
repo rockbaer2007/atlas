@@ -14,6 +14,9 @@ import type {
   RendererAdapterSelectionResult,
   RendererHostContext,
   RendererMountDiagnosticReport,
+  RendererMountLifecycleRecord,
+  RendererMountLifecycleReport,
+  RendererMountLifecycleState,
   RendererMountPlan,
   RendererMountPlanQualityGate,
   RendererMountPlanExecution,
@@ -50,6 +53,7 @@ import {
   createRendererAdapterSelectionRequest,
   createRendererAdapterSelectionResult,
   createRendererMountRequest,
+  createRendererMountLifecycleRecord,
   createDefaultRendererMountPlan,
   createRendererMountPlan,
   createRendererMountResult,
@@ -72,9 +76,12 @@ import {
   findRendererPlatformAdapter,
   findRendererPlatformAdapterConflicts,
   inspectRendererMountResult,
+  inspectRendererMountLifecycleRecord,
   inspectRendererMountPlan,
   isRendererMountPlanReady,
   mountResolvedRendererAdapter,
+  recordRendererMountLifecycleExecution,
+  recordRendererMountLifecycleReport,
   mountResolvedRendererPlatformAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
@@ -96,6 +103,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createDefaultRendererMountPlan).toBeTypeOf("function");
+    expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
@@ -116,12 +124,15 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.inspectRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
     expect(Renderer.isRendererMountPlanReady).toBeTypeOf("function");
     expect(Renderer.RendererMountDiagnosticCodes.MountFailed).toBe("renderer.mount.failed");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
+    expect(Renderer.recordRendererMountLifecycleExecution).toBeTypeOf("function");
+    expect(Renderer.recordRendererMountLifecycleReport).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
@@ -193,6 +204,17 @@ describe("renderer public API", () => {
     };
     const mountPlanExecution: RendererMountPlanExecution = {
       plan: mountPlan,
+    };
+    const mountLifecycleState: RendererMountLifecycleState = "planned";
+    const mountLifecycleRecord: RendererMountLifecycleRecord = {
+      plan: mountPlan,
+      state: mountLifecycleState,
+    };
+    const mountLifecycleReport: RendererMountLifecycleReport = {
+      state: mountLifecycleState,
+      planName: mountPlan.name,
+      outputName: output.name,
+      targetName: target.name,
     };
     const mountResult: RendererMountResult = {
       mounted: false,
@@ -295,6 +317,8 @@ describe("renderer public API", () => {
     expect(mountPlan.request).toBe(mountRequest);
     expect(mountPlanReport.outputName).toBe(output.name);
     expect(mountPlanExecution.plan).toBe(mountPlan);
+    expect(mountLifecycleRecord.plan).toBe(mountPlan);
+    expect(mountLifecycleReport.planName).toBe(mountPlan.name);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
@@ -1182,6 +1206,179 @@ describe("renderer public API", () => {
     expect(result).not.toHaveProperty("platform");
     expect(result).not.toHaveProperty("theme");
     expect(result).not.toHaveProperty("homeAssistant");
+  });
+
+  it("creates Renderer mount lifecycle records from plans", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "lifecycle-plan-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "lifecycle-plan-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+
+    const record = createRendererMountLifecycleRecord(plan);
+
+    expect(record).toEqual({
+      plan,
+      state: "planned",
+    });
+    expect(record.plan).toBe(plan);
+    expect(record).not.toHaveProperty("result");
+    expect(record).not.toHaveProperty("report");
+  });
+
+  it("records Renderer mount lifecycle execution results", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "lifecycle-execution-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "lifecycle-execution-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+    const record = createRendererMountLifecycleRecord(plan);
+    const result = await executeRendererMountPlan({ plan });
+
+    expect(recordRendererMountLifecycleExecution(record, result)).toEqual({
+      plan,
+      state: "executed",
+      result,
+    });
+  });
+
+  it("records Renderer mount lifecycle reports from execution results", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "lifecycle-report-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "lifecycle-report-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+    const result = createRendererMountResult({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+      error: "lifecycle mount failed",
+    });
+    const executed = recordRendererMountLifecycleExecution(
+      createRendererMountLifecycleRecord(plan),
+      result,
+    );
+
+    expect(recordRendererMountLifecycleReport(executed)).toEqual({
+      plan,
+      state: "reported",
+      result,
+      report: {
+        context: {
+          component: "renderer.mount",
+        },
+        result: {
+          ok: false,
+          issues: [{
+            code: "renderer.mount.failed",
+            message: "lifecycle mount failed",
+            severity: "error",
+          }],
+        },
+      },
+    });
+  });
+
+  it("supports Renderer mount lifecycle reports before execution", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "lifecycle-pre-report-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "lifecycle-pre-report-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+    const record = createRendererMountLifecycleRecord(plan);
+
+    expect(Renderer.recordRendererMountLifecycleReport(record)).toEqual({
+      plan,
+      state: "reported",
+      report: {
+        context: {
+          component: "renderer.mount",
+        },
+        result: {
+          ok: true,
+          issues: [],
+        },
+      },
+    });
+  });
+
+  it("inspects Renderer mount lifecycle records", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "lifecycle-inspection-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "lifecycle-inspection-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+    const result = createRendererMountResult({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
+    const reported = recordRendererMountLifecycleReport(
+      recordRendererMountLifecycleExecution(
+        createRendererMountLifecycleRecord(plan),
+        result,
+      ),
+    );
+
+    expect(inspectRendererMountLifecycleRecord(reported)).toEqual({
+      state: "reported",
+      planName: "lifecycle-inspection-output->lifecycle-inspection-target",
+      outputName: "lifecycle-inspection-output",
+      targetName: "lifecycle-inspection-target",
+      mounted: true,
+      diagnosticsOk: true,
+    });
+  });
+
+  it("keeps Renderer mount lifecycle records independent from integration metadata", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "lifecycle-boundary-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "lifecycle-boundary-target",
+      }),
+    });
+    const record = createRendererMountLifecycleRecord(
+      createDefaultRendererMountPlan(request),
+    );
+
+    expect(record).not.toHaveProperty("platform");
+    expect(record).not.toHaveProperty("theme");
+    expect(record).not.toHaveProperty("homeAssistant");
+    expect(record).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

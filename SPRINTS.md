@@ -543,23 +543,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.528 | Renderer Plan Execution Future Theme Boundary Review | Completed | - |
 | G2.5.529 | Renderer Plan Execution Future Home Assistant Boundary Review | Completed | - |
 | G2.5.530 | Renderer Plan Execution Return-To-Mount Lifecycle Review | Completed | - |
-| G2.5.531 | Renderer Mount Lifecycle Review | Planned | - |
+| G2.5.531 | Renderer Mount Lifecycle Review | Completed | - |
+| G2.5.532 | Renderer Mount Lifecycle Contract Review | Completed | - |
+| G2.5.533 | Renderer Mount Lifecycle State Review | Completed | - |
+| G2.5.534 | Renderer Mount Lifecycle Planned Record Review | Completed | - |
+| G2.5.535 | Renderer Mount Lifecycle Execution Record Review | Completed | - |
+| G2.5.536 | Renderer Mount Lifecycle Report Record Review | Completed | - |
+| G2.5.537 | Renderer Mount Lifecycle Pre-Execution Report Review | Completed | - |
+| G2.5.538 | Renderer Mount Lifecycle Inspection Review | Completed | - |
+| G2.5.539 | Renderer Mount Lifecycle Diagnostics Review | Completed | - |
+| G2.5.540 | Renderer Mount Lifecycle Boundary Review | Completed | - |
+| G2.5.541 | Renderer Mount Lifecycle Package Root Review | Completed | - |
+| G2.5.542 | Renderer Mount Lifecycle Type Surface Review | Completed | - |
+| G2.5.543 | Renderer Mount Lifecycle Documentation Review | Completed | - |
+| G2.5.544 | Renderer Mount Lifecycle Changelog Review | Completed | - |
+| G2.5.545 | Renderer Mount Lifecycle Regression Review | Completed | - |
+| G2.5.546 | Renderer Mount Lifecycle Plan Reference Review | Completed | - |
+| G2.5.547 | Renderer Mount Lifecycle Result Reference Review | Completed | - |
+| G2.5.548 | Renderer Mount Lifecycle Report Reference Review | Completed | - |
+| G2.5.549 | Renderer Mount Lifecycle Output Report Review | Completed | - |
+| G2.5.550 | Renderer Mount Lifecycle Target Report Review | Completed | - |
+| G2.5.551 | Renderer Mount Lifecycle Mounted Report Review | Completed | - |
+| G2.5.552 | Renderer Mount Lifecycle Diagnostics Status Review | Completed | - |
+| G2.5.553 | Renderer Mount Lifecycle Empty Diagnostics Review | Completed | - |
+| G2.5.554 | Renderer Mount Lifecycle Failure Diagnostics Review | Completed | - |
+| G2.5.555 | Renderer Mount Lifecycle Success Diagnostics Review | Completed | - |
+| G2.5.556 | Renderer Mount Lifecycle No-DOM Review | Completed | - |
+| G2.5.557 | Renderer Mount Lifecycle No-Theme Review | Completed | - |
+| G2.5.558 | Renderer Mount Lifecycle No-Home-Assistant Review | Completed | - |
+| G2.5.559 | Renderer Mount Lifecycle No-Platform-Metadata Review | Completed | - |
+| G2.5.560 | Renderer Mount Lifecycle Result Boundary Review | Completed | - |
+| G2.5.561 | Renderer Mount Lifecycle Planned-To-Executed Review | Completed | - |
+| G2.5.562 | Renderer Mount Lifecycle Executed-To-Reported Review | Completed | - |
+| G2.5.563 | Renderer Mount Lifecycle Planned-To-Reported Review | Completed | - |
+| G2.5.564 | Renderer Mount Lifecycle Inspection Shape Review | Completed | - |
+| G2.5.565 | Renderer Mount Lifecycle Inspection Optional Fields Review | Completed | - |
+| G2.5.566 | Renderer Mount Lifecycle Diagnostic Reuse Review | Completed | - |
+| G2.5.567 | Renderer Mount Lifecycle Report Defaults Review | Completed | - |
+| G2.5.568 | Renderer Mount Lifecycle Manual Plan Review | Completed | - |
+| G2.5.569 | Renderer Mount Lifecycle Adapter Plan Review | Completed | - |
+| G2.5.570 | Renderer Mount Lifecycle Platform Plan Review | Completed | - |
+| G2.5.571 | Renderer Mount Lifecycle Public API Review | Completed | - |
+| G2.5.572 | Renderer Mount Lifecycle README Review | Completed | - |
+| G2.5.573 | Renderer Mount Lifecycle Sprint Documentation Review | Completed | - |
+| G2.5.574 | Renderer Mount Lifecycle Workspace Regression Review | Completed | - |
+| G2.5.575 | Renderer Mount Lifecycle Integration Closure Review | Completed | - |
+| G2.5.576 | Renderer Mount Lifecycle Future DOM Boundary Review | Completed | - |
+| G2.5.577 | Renderer Mount Lifecycle Future Theme Boundary Review | Completed | - |
+| G2.5.578 | Renderer Mount Lifecycle Future Home Assistant Boundary Review | Completed | - |
+| G2.5.579 | Renderer Mount Lifecycle Execution Compatibility Review | Completed | - |
+| G2.5.580 | Renderer Mount Lifecycle Return-To-Reporting Review | Completed | - |
+| G2.5.581 | Renderer Mount Reporting Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.530 - Renderer Plan Execution Return-To-Mount Lifecycle Review
+## G2.5.580 - Renderer Mount Lifecycle Return-To-Reporting Review
 
 Goal:
 
-Route Renderer mount plans through generic guarded execution while preserving integration-free result boundaries.
+Define Renderer mount lifecycle records across planning, execution and diagnostics reporting.
 
 Deliverables:
 
-* Renderer mount plan execution contracts
-* Generic guarded adapter and platform execution
-* Execution boundary documentation
+* Renderer mount lifecycle records
+* Lifecycle inspection reports
+* Diagnostics-compatible reporting
 * Sprint documentation
 
 Status:
@@ -570,13 +620,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.531 - Renderer Mount Lifecycle Review
+## G2.5.581 - Renderer Mount Reporting Review
 
 Suggested focus:
 
-* Define lifecycle terminology around planned, executed and reported mount work
-* Keep lifecycle metadata separate from concrete DOM and integrations
-* Preserve existing mount request, plan and result contracts
+* Decide whether lifecycle reports should feed a broader Renderer reporting surface
+* Keep reporting generic and diagnostics-compatible
+* Preserve existing lifecycle, plan and result contracts
 
 ---
 
@@ -1117,6 +1167,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.528.md`
 * `docs/sprints/Sprint-G2.5.529.md`
 * `docs/sprints/Sprint-G2.5.530.md`
+* `docs/sprints/Sprint-G2.5.531.md`
+* `docs/sprints/Sprint-G2.5.532.md`
+* `docs/sprints/Sprint-G2.5.533.md`
+* `docs/sprints/Sprint-G2.5.534.md`
+* `docs/sprints/Sprint-G2.5.535.md`
+* `docs/sprints/Sprint-G2.5.536.md`
+* `docs/sprints/Sprint-G2.5.537.md`
+* `docs/sprints/Sprint-G2.5.538.md`
+* `docs/sprints/Sprint-G2.5.539.md`
+* `docs/sprints/Sprint-G2.5.540.md`
+* `docs/sprints/Sprint-G2.5.541.md`
+* `docs/sprints/Sprint-G2.5.542.md`
+* `docs/sprints/Sprint-G2.5.543.md`
+* `docs/sprints/Sprint-G2.5.544.md`
+* `docs/sprints/Sprint-G2.5.545.md`
+* `docs/sprints/Sprint-G2.5.546.md`
+* `docs/sprints/Sprint-G2.5.547.md`
+* `docs/sprints/Sprint-G2.5.548.md`
+* `docs/sprints/Sprint-G2.5.549.md`
+* `docs/sprints/Sprint-G2.5.550.md`
+* `docs/sprints/Sprint-G2.5.551.md`
+* `docs/sprints/Sprint-G2.5.552.md`
+* `docs/sprints/Sprint-G2.5.553.md`
+* `docs/sprints/Sprint-G2.5.554.md`
+* `docs/sprints/Sprint-G2.5.555.md`
+* `docs/sprints/Sprint-G2.5.556.md`
+* `docs/sprints/Sprint-G2.5.557.md`
+* `docs/sprints/Sprint-G2.5.558.md`
+* `docs/sprints/Sprint-G2.5.559.md`
+* `docs/sprints/Sprint-G2.5.560.md`
+* `docs/sprints/Sprint-G2.5.561.md`
+* `docs/sprints/Sprint-G2.5.562.md`
+* `docs/sprints/Sprint-G2.5.563.md`
+* `docs/sprints/Sprint-G2.5.564.md`
+* `docs/sprints/Sprint-G2.5.565.md`
+* `docs/sprints/Sprint-G2.5.566.md`
+* `docs/sprints/Sprint-G2.5.567.md`
+* `docs/sprints/Sprint-G2.5.568.md`
+* `docs/sprints/Sprint-G2.5.569.md`
+* `docs/sprints/Sprint-G2.5.570.md`
+* `docs/sprints/Sprint-G2.5.571.md`
+* `docs/sprints/Sprint-G2.5.572.md`
+* `docs/sprints/Sprint-G2.5.573.md`
+* `docs/sprints/Sprint-G2.5.574.md`
+* `docs/sprints/Sprint-G2.5.575.md`
+* `docs/sprints/Sprint-G2.5.576.md`
+* `docs/sprints/Sprint-G2.5.577.md`
+* `docs/sprints/Sprint-G2.5.578.md`
+* `docs/sprints/Sprint-G2.5.579.md`
+* `docs/sprints/Sprint-G2.5.580.md`
 
 ---
 

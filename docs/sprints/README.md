@@ -546,7 +546,57 @@ quality validation and the delivered results.
 | G2.5.528 | Renderer Plan Execution Future Theme Boundary Review | Completed | - |
 | G2.5.529 | Renderer Plan Execution Future Home Assistant Boundary Review | Completed | - |
 | G2.5.530 | Renderer Plan Execution Return-To-Mount Lifecycle Review | Completed | - |
-| G2.5.531 | Renderer Mount Lifecycle Review | Planned | - |
+| G2.5.531 | Renderer Mount Lifecycle Review | Completed | - |
+| G2.5.532 | Renderer Mount Lifecycle Contract Review | Completed | - |
+| G2.5.533 | Renderer Mount Lifecycle State Review | Completed | - |
+| G2.5.534 | Renderer Mount Lifecycle Planned Record Review | Completed | - |
+| G2.5.535 | Renderer Mount Lifecycle Execution Record Review | Completed | - |
+| G2.5.536 | Renderer Mount Lifecycle Report Record Review | Completed | - |
+| G2.5.537 | Renderer Mount Lifecycle Pre-Execution Report Review | Completed | - |
+| G2.5.538 | Renderer Mount Lifecycle Inspection Review | Completed | - |
+| G2.5.539 | Renderer Mount Lifecycle Diagnostics Review | Completed | - |
+| G2.5.540 | Renderer Mount Lifecycle Boundary Review | Completed | - |
+| G2.5.541 | Renderer Mount Lifecycle Package Root Review | Completed | - |
+| G2.5.542 | Renderer Mount Lifecycle Type Surface Review | Completed | - |
+| G2.5.543 | Renderer Mount Lifecycle Documentation Review | Completed | - |
+| G2.5.544 | Renderer Mount Lifecycle Changelog Review | Completed | - |
+| G2.5.545 | Renderer Mount Lifecycle Regression Review | Completed | - |
+| G2.5.546 | Renderer Mount Lifecycle Plan Reference Review | Completed | - |
+| G2.5.547 | Renderer Mount Lifecycle Result Reference Review | Completed | - |
+| G2.5.548 | Renderer Mount Lifecycle Report Reference Review | Completed | - |
+| G2.5.549 | Renderer Mount Lifecycle Output Report Review | Completed | - |
+| G2.5.550 | Renderer Mount Lifecycle Target Report Review | Completed | - |
+| G2.5.551 | Renderer Mount Lifecycle Mounted Report Review | Completed | - |
+| G2.5.552 | Renderer Mount Lifecycle Diagnostics Status Review | Completed | - |
+| G2.5.553 | Renderer Mount Lifecycle Empty Diagnostics Review | Completed | - |
+| G2.5.554 | Renderer Mount Lifecycle Failure Diagnostics Review | Completed | - |
+| G2.5.555 | Renderer Mount Lifecycle Success Diagnostics Review | Completed | - |
+| G2.5.556 | Renderer Mount Lifecycle No-DOM Review | Completed | - |
+| G2.5.557 | Renderer Mount Lifecycle No-Theme Review | Completed | - |
+| G2.5.558 | Renderer Mount Lifecycle No-Home-Assistant Review | Completed | - |
+| G2.5.559 | Renderer Mount Lifecycle No-Platform-Metadata Review | Completed | - |
+| G2.5.560 | Renderer Mount Lifecycle Result Boundary Review | Completed | - |
+| G2.5.561 | Renderer Mount Lifecycle Planned-To-Executed Review | Completed | - |
+| G2.5.562 | Renderer Mount Lifecycle Executed-To-Reported Review | Completed | - |
+| G2.5.563 | Renderer Mount Lifecycle Planned-To-Reported Review | Completed | - |
+| G2.5.564 | Renderer Mount Lifecycle Inspection Shape Review | Completed | - |
+| G2.5.565 | Renderer Mount Lifecycle Inspection Optional Fields Review | Completed | - |
+| G2.5.566 | Renderer Mount Lifecycle Diagnostic Reuse Review | Completed | - |
+| G2.5.567 | Renderer Mount Lifecycle Report Defaults Review | Completed | - |
+| G2.5.568 | Renderer Mount Lifecycle Manual Plan Review | Completed | - |
+| G2.5.569 | Renderer Mount Lifecycle Adapter Plan Review | Completed | - |
+| G2.5.570 | Renderer Mount Lifecycle Platform Plan Review | Completed | - |
+| G2.5.571 | Renderer Mount Lifecycle Public API Review | Completed | - |
+| G2.5.572 | Renderer Mount Lifecycle README Review | Completed | - |
+| G2.5.573 | Renderer Mount Lifecycle Sprint Documentation Review | Completed | - |
+| G2.5.574 | Renderer Mount Lifecycle Workspace Regression Review | Completed | - |
+| G2.5.575 | Renderer Mount Lifecycle Integration Closure Review | Completed | - |
+| G2.5.576 | Renderer Mount Lifecycle Future DOM Boundary Review | Completed | - |
+| G2.5.577 | Renderer Mount Lifecycle Future Theme Boundary Review | Completed | - |
+| G2.5.578 | Renderer Mount Lifecycle Future Home Assistant Boundary Review | Completed | - |
+| G2.5.579 | Renderer Mount Lifecycle Execution Compatibility Review | Completed | - |
+| G2.5.580 | Renderer Mount Lifecycle Return-To-Reporting Review | Completed | - |
+| G2.5.581 | Renderer Mount Reporting Review | Planned | - |
 
 ---
 
@@ -6506,13 +6556,13 @@ Highlights
 
 # Planned Sprints
 
-## G2.5.531 - Renderer Mount Lifecycle Review
+## G2.5.581 - Renderer Mount Reporting Review
 
 Planned deliverables
 
-- Define lifecycle terminology around planned, executed and reported mount work
-- Keep lifecycle metadata separate from concrete DOM and integrations
-- Preserve existing mount request, plan and result contracts
+- Decide whether lifecycle reports should feed a broader Renderer reporting surface
+- Keep reporting generic and diagnostics-compatible
+- Preserve existing lifecycle, plan and result contracts
 
 ---
 
@@ -6903,6 +6953,56 @@ Planned deliverables
 - [G2.5.528 - Renderer Plan Execution Future Theme Boundary Review](Sprint-G2.5.528.md)
 - [G2.5.529 - Renderer Plan Execution Future Home Assistant Boundary Review](Sprint-G2.5.529.md)
 - [G2.5.530 - Renderer Plan Execution Return-To-Mount Lifecycle Review](Sprint-G2.5.530.md)
+- [G2.5.531 - Renderer Mount Lifecycle Review](Sprint-G2.5.531.md)
+- [G2.5.532 - Renderer Mount Lifecycle Contract Review](Sprint-G2.5.532.md)
+- [G2.5.533 - Renderer Mount Lifecycle State Review](Sprint-G2.5.533.md)
+- [G2.5.534 - Renderer Mount Lifecycle Planned Record Review](Sprint-G2.5.534.md)
+- [G2.5.535 - Renderer Mount Lifecycle Execution Record Review](Sprint-G2.5.535.md)
+- [G2.5.536 - Renderer Mount Lifecycle Report Record Review](Sprint-G2.5.536.md)
+- [G2.5.537 - Renderer Mount Lifecycle Pre-Execution Report Review](Sprint-G2.5.537.md)
+- [G2.5.538 - Renderer Mount Lifecycle Inspection Review](Sprint-G2.5.538.md)
+- [G2.5.539 - Renderer Mount Lifecycle Diagnostics Review](Sprint-G2.5.539.md)
+- [G2.5.540 - Renderer Mount Lifecycle Boundary Review](Sprint-G2.5.540.md)
+- [G2.5.541 - Renderer Mount Lifecycle Package Root Review](Sprint-G2.5.541.md)
+- [G2.5.542 - Renderer Mount Lifecycle Type Surface Review](Sprint-G2.5.542.md)
+- [G2.5.543 - Renderer Mount Lifecycle Documentation Review](Sprint-G2.5.543.md)
+- [G2.5.544 - Renderer Mount Lifecycle Changelog Review](Sprint-G2.5.544.md)
+- [G2.5.545 - Renderer Mount Lifecycle Regression Review](Sprint-G2.5.545.md)
+- [G2.5.546 - Renderer Mount Lifecycle Plan Reference Review](Sprint-G2.5.546.md)
+- [G2.5.547 - Renderer Mount Lifecycle Result Reference Review](Sprint-G2.5.547.md)
+- [G2.5.548 - Renderer Mount Lifecycle Report Reference Review](Sprint-G2.5.548.md)
+- [G2.5.549 - Renderer Mount Lifecycle Output Report Review](Sprint-G2.5.549.md)
+- [G2.5.550 - Renderer Mount Lifecycle Target Report Review](Sprint-G2.5.550.md)
+- [G2.5.551 - Renderer Mount Lifecycle Mounted Report Review](Sprint-G2.5.551.md)
+- [G2.5.552 - Renderer Mount Lifecycle Diagnostics Status Review](Sprint-G2.5.552.md)
+- [G2.5.553 - Renderer Mount Lifecycle Empty Diagnostics Review](Sprint-G2.5.553.md)
+- [G2.5.554 - Renderer Mount Lifecycle Failure Diagnostics Review](Sprint-G2.5.554.md)
+- [G2.5.555 - Renderer Mount Lifecycle Success Diagnostics Review](Sprint-G2.5.555.md)
+- [G2.5.556 - Renderer Mount Lifecycle No-DOM Review](Sprint-G2.5.556.md)
+- [G2.5.557 - Renderer Mount Lifecycle No-Theme Review](Sprint-G2.5.557.md)
+- [G2.5.558 - Renderer Mount Lifecycle No-Home-Assistant Review](Sprint-G2.5.558.md)
+- [G2.5.559 - Renderer Mount Lifecycle No-Platform-Metadata Review](Sprint-G2.5.559.md)
+- [G2.5.560 - Renderer Mount Lifecycle Result Boundary Review](Sprint-G2.5.560.md)
+- [G2.5.561 - Renderer Mount Lifecycle Planned-To-Executed Review](Sprint-G2.5.561.md)
+- [G2.5.562 - Renderer Mount Lifecycle Executed-To-Reported Review](Sprint-G2.5.562.md)
+- [G2.5.563 - Renderer Mount Lifecycle Planned-To-Reported Review](Sprint-G2.5.563.md)
+- [G2.5.564 - Renderer Mount Lifecycle Inspection Shape Review](Sprint-G2.5.564.md)
+- [G2.5.565 - Renderer Mount Lifecycle Inspection Optional Fields Review](Sprint-G2.5.565.md)
+- [G2.5.566 - Renderer Mount Lifecycle Diagnostic Reuse Review](Sprint-G2.5.566.md)
+- [G2.5.567 - Renderer Mount Lifecycle Report Defaults Review](Sprint-G2.5.567.md)
+- [G2.5.568 - Renderer Mount Lifecycle Manual Plan Review](Sprint-G2.5.568.md)
+- [G2.5.569 - Renderer Mount Lifecycle Adapter Plan Review](Sprint-G2.5.569.md)
+- [G2.5.570 - Renderer Mount Lifecycle Platform Plan Review](Sprint-G2.5.570.md)
+- [G2.5.571 - Renderer Mount Lifecycle Public API Review](Sprint-G2.5.571.md)
+- [G2.5.572 - Renderer Mount Lifecycle README Review](Sprint-G2.5.572.md)
+- [G2.5.573 - Renderer Mount Lifecycle Sprint Documentation Review](Sprint-G2.5.573.md)
+- [G2.5.574 - Renderer Mount Lifecycle Workspace Regression Review](Sprint-G2.5.574.md)
+- [G2.5.575 - Renderer Mount Lifecycle Integration Closure Review](Sprint-G2.5.575.md)
+- [G2.5.576 - Renderer Mount Lifecycle Future DOM Boundary Review](Sprint-G2.5.576.md)
+- [G2.5.577 - Renderer Mount Lifecycle Future Theme Boundary Review](Sprint-G2.5.577.md)
+- [G2.5.578 - Renderer Mount Lifecycle Future Home Assistant Boundary Review](Sprint-G2.5.578.md)
+- [G2.5.579 - Renderer Mount Lifecycle Execution Compatibility Review](Sprint-G2.5.579.md)
+- [G2.5.580 - Renderer Mount Lifecycle Return-To-Reporting Review](Sprint-G2.5.580.md)
 
 ---
 

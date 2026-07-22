@@ -20,6 +20,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount plan execution now routes ready plans through generic guarded
   adapter and platform-adapter resolutions while preserving manual non-execution
   and integration-free result boundaries.
+* Renderer mount lifecycle records now describe planned, executed and reported
+  mount work across plans, results and diagnostics without adding concrete DOM,
+  Theme or Home Assistant bindings.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
