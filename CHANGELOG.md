@@ -27,6 +27,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   and summary shapes with plan strategy, quality gates, mounted state and
   diagnostics issues while staying free of DOM, Theme and Home Assistant
   bindings.
+* Renderer mount report consumption now filters lifecycle-backed reports by
+  state, mounted status and diagnostics status while returning matching summary
+  counts without adding integration metadata.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

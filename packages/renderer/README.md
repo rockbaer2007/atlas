@@ -46,6 +46,9 @@ descriptive only and do not mount output yet.
 - `RendererMountPlanStatus`
 - `RendererMountPlanStrategy`
 - `RendererMountReport`
+- `RendererMountReportConsumption`
+- `RendererMountReportConsumptionRequest`
+- `RendererMountReportFilter`
 - `RendererMountReportIssue`
 - `RendererMountReportSummary`
 - `RendererOutput`
@@ -76,6 +79,7 @@ descriptive only and do not mount output yet.
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
 - `createRendererMountReport`
+- `createRendererMountReportConsumption`
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
@@ -316,6 +320,12 @@ gates, lifecycle flags, mounted status, diagnostics state and diagnostic issues.
 Report summaries count planned, executed, reported, mounted, diagnostics-ok and
 failed records without adding platform metadata, DOM elements, Home Assistant
 fields or Theme fields.
+
+Renderer mount report consumption now creates filtered report views from
+lifecycle records. Consumption can filter by lifecycle state, mounted state and
+diagnostics status, returns reports with a matching summary, and keeps source
+arrays, DOM elements, Home Assistant fields, Theme fields and platform metadata
+outside the reporting boundary.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

@@ -24,6 +24,9 @@ import type {
   RendererMountPlanStatus,
   RendererMountPlanStrategy,
   RendererMountReport,
+  RendererMountReportConsumption,
+  RendererMountReportConsumptionRequest,
+  RendererMountReportFilter,
   RendererMountReportIssue,
   RendererMountReportSummary,
   RendererMountRequest,
@@ -58,6 +61,7 @@ import {
   createRendererMountRequest,
   createRendererMountLifecycleRecord,
   createRendererMountReport,
+  createRendererMountReportConsumption,
   createDefaultRendererMountPlan,
   createRendererMountPlan,
   createRendererMountResult,
@@ -111,6 +115,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountReport).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumption).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
@@ -241,6 +246,15 @@ describe("renderer public API", () => {
       issueCount: 1,
       issues: [mountReportIssue],
     };
+    const mountReportFilter: RendererMountReportFilter = {
+      states: [mountLifecycleState],
+      mounted: false,
+      diagnosticsOk: false,
+    };
+    const mountReportConsumptionRequest: RendererMountReportConsumptionRequest = {
+      records: [mountLifecycleRecord],
+      filter: mountReportFilter,
+    };
     const mountReportSummary: RendererMountReportSummary = {
       total: 1,
       planned: 1,
@@ -250,6 +264,10 @@ describe("renderer public API", () => {
       diagnosticsOk: 0,
       failed: 0,
       issueCount: 1,
+    };
+    const mountReportConsumption: RendererMountReportConsumption = {
+      reports: [mountReport],
+      summary: mountReportSummary,
     };
     const mountResult: RendererMountResult = {
       mounted: false,
@@ -355,6 +373,8 @@ describe("renderer public API", () => {
     expect(mountLifecycleRecord.plan).toBe(mountPlan);
     expect(mountLifecycleReport.planName).toBe(mountPlan.name);
     expect(mountReport.issues[0]).toBe(mountReportIssue);
+    expect(mountReportConsumptionRequest.filter).toBe(mountReportFilter);
+    expect(mountReportConsumption.reports[0]).toBe(mountReport);
     expect(mountReportSummary.total).toBe(1);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
@@ -1659,6 +1679,286 @@ describe("renderer public API", () => {
     expect(report).not.toHaveProperty("theme");
     expect(report).not.toHaveProperty("homeAssistant");
     expect(report).not.toHaveProperty("element");
+  });
+
+  it("creates Renderer mount report consumption views", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-target",
+      }),
+    });
+    const record = createRendererMountLifecycleRecord(
+      createDefaultRendererMountPlan(request),
+    );
+
+    expect(createRendererMountReportConsumption({
+      records: [record],
+    })).toEqual({
+      reports: [{
+        state: "planned",
+        planName: "consumption-output->consumption-target",
+        strategy: "manual",
+        outputName: "consumption-output",
+        targetName: "consumption-target",
+        qualityGates: ["request", "output", "target", "diagnostics"],
+        planned: true,
+        executed: false,
+        reported: false,
+        issueCount: 0,
+        issues: [],
+      }],
+      summary: {
+        total: 1,
+        planned: 1,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+  });
+
+  it("filters Renderer mount report consumption by lifecycle states", () => {
+    const plannedRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-state-planned-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-state-planned-target",
+      }),
+    });
+    const reportedRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-state-reported-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-state-reported-target",
+      }),
+    });
+    const planned = createRendererMountLifecycleRecord(
+      createDefaultRendererMountPlan(plannedRequest),
+    );
+    const reported = recordRendererMountLifecycleReport(
+      createRendererMountLifecycleRecord(
+        createDefaultRendererMountPlan(reportedRequest),
+      ),
+    );
+
+    const consumption = createRendererMountReportConsumption({
+      records: [planned, reported],
+      filter: {
+        states: ["reported"],
+      },
+    });
+
+    expect(consumption.reports.map(report => report.state)).toEqual(["reported"]);
+    expect(consumption.summary).toMatchObject({
+      total: 1,
+      planned: 0,
+      reported: 1,
+    });
+  });
+
+  it("filters Renderer mount report consumption by mounted state", () => {
+    const mountedRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-mounted-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-mounted-target",
+      }),
+    });
+    const unmountedRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-unmounted-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-unmounted-target",
+      }),
+    });
+    const mounted = recordRendererMountLifecycleExecution(
+      createRendererMountLifecycleRecord(
+        createDefaultRendererMountPlan(mountedRequest),
+      ),
+      createRendererMountResult({
+        mounted: true,
+        output: mountedRequest.output,
+        target: mountedRequest.target,
+      }),
+    );
+    const unmounted = recordRendererMountLifecycleExecution(
+      createRendererMountLifecycleRecord(
+        createDefaultRendererMountPlan(unmountedRequest),
+      ),
+      createRendererMountResult({
+        mounted: false,
+        output: unmountedRequest.output,
+        target: unmountedRequest.target,
+      }),
+    );
+
+    const consumption = Renderer.createRendererMountReportConsumption({
+      records: [mounted, unmounted],
+      filter: {
+        mounted: true,
+      },
+    });
+
+    expect(consumption.reports.map(report => report.outputName)).toEqual([
+      "consumption-mounted-output",
+    ]);
+    expect(consumption.summary.mounted).toBe(1);
+  });
+
+  it("filters Renderer mount report consumption by diagnostics status", () => {
+    const okRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-ok-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-ok-target",
+      }),
+    });
+    const failedRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-failed-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-failed-target",
+      }),
+    });
+    const ok = recordRendererMountLifecycleReport(
+      recordRendererMountLifecycleExecution(
+        createRendererMountLifecycleRecord(
+          createDefaultRendererMountPlan(okRequest),
+        ),
+        createRendererMountResult({
+          mounted: true,
+          output: okRequest.output,
+          target: okRequest.target,
+        }),
+      ),
+    );
+    const failed = recordRendererMountLifecycleReport(
+      recordRendererMountLifecycleExecution(
+        createRendererMountLifecycleRecord(
+          createDefaultRendererMountPlan(failedRequest),
+        ),
+        createRendererMountResult({
+          mounted: false,
+          output: failedRequest.output,
+          target: failedRequest.target,
+          error: "consumption failed",
+        }),
+      ),
+    );
+
+    const consumption = createRendererMountReportConsumption({
+      records: [ok, failed],
+      filter: {
+        diagnosticsOk: false,
+      },
+    });
+
+    expect(consumption.reports.map(report => report.outputName)).toEqual([
+      "consumption-failed-output",
+    ]);
+    expect(consumption.summary).toMatchObject({
+      total: 1,
+      failed: 1,
+      issueCount: 1,
+    });
+  });
+
+  it("keeps Renderer mount report consumption independent from source arrays", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-copy-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-copy-target",
+      }),
+    });
+    const records = [
+      createRendererMountLifecycleRecord(
+        createDefaultRendererMountPlan(request),
+      ),
+    ];
+
+    const consumption = createRendererMountReportConsumption({ records });
+    records.push(recordRendererMountLifecycleReport(records[0]));
+
+    expect(consumption.reports).toHaveLength(1);
+    expect(consumption.summary.total).toBe(1);
+  });
+
+  it("reports empty Renderer mount report consumption views", () => {
+    expect(createRendererMountReportConsumption({
+      records: [],
+      filter: {
+        states: ["reported"],
+        mounted: true,
+        diagnosticsOk: true,
+      },
+    })).toEqual({
+      reports: [],
+      summary: {
+        total: 0,
+        planned: 0,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+  });
+
+  it("keeps Renderer mount report consumption free of integration metadata", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumption-boundary-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumption-boundary-target",
+      }),
+    });
+    const consumption = createRendererMountReportConsumption({
+      records: [
+        createRendererMountLifecycleRecord(
+          createDefaultRendererMountPlan(request),
+        ),
+      ],
+    });
+
+    expect(consumption).not.toHaveProperty("platform");
+    expect(consumption).not.toHaveProperty("theme");
+    expect(consumption).not.toHaveProperty("homeAssistant");
+    expect(consumption).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

@@ -35,6 +35,22 @@ export type RendererMountReportSummary = Readonly<{
   issueCount: number;
 }>;
 
+export type RendererMountReportFilter = Readonly<{
+  states?: readonly RendererMountLifecycleState[];
+  mounted?: boolean;
+  diagnosticsOk?: boolean;
+}>;
+
+export type RendererMountReportConsumption = Readonly<{
+  reports: readonly RendererMountReport[];
+  summary: RendererMountReportSummary;
+}>;
+
+export type RendererMountReportConsumptionRequest = Readonly<{
+  records: readonly RendererMountLifecycleRecord[];
+  filter?: RendererMountReportFilter;
+}>;
+
 export function createRendererMountReport(
   record: RendererMountLifecycleRecord,
 ): RendererMountReport {
@@ -61,8 +77,25 @@ export function createRendererMountReport(
 export function summarizeRendererMountReports(
   records: readonly RendererMountLifecycleRecord[],
 ): RendererMountReportSummary {
-  const reports = records.map(createRendererMountReport);
+  return summarizeRendererMountReportList(records.map(createRendererMountReport));
+}
 
+export function createRendererMountReportConsumption(
+  request: RendererMountReportConsumptionRequest,
+): RendererMountReportConsumption {
+  const reports = request.records
+    .map(createRendererMountReport)
+    .filter(report => matchesRendererMountReportFilter(report, request.filter));
+
+  return {
+    reports,
+    summary: summarizeRendererMountReportList(reports),
+  };
+}
+
+function summarizeRendererMountReportList(
+  reports: readonly RendererMountReport[],
+): RendererMountReportSummary {
   return {
     total: reports.length,
     planned: reports.filter(report => report.state === "planned").length,
@@ -73,4 +106,18 @@ export function summarizeRendererMountReports(
     failed: reports.filter(report => report.diagnosticsOk === false).length,
     issueCount: reports.reduce((total, report) => total + report.issueCount, 0),
   };
+}
+
+function matchesRendererMountReportFilter(
+  report: RendererMountReport,
+  filter: RendererMountReportFilter = {},
+): boolean {
+  return (
+    (!filter.states || filter.states.includes(report.state)) &&
+    (filter.mounted === undefined || report.mounted === filter.mounted) &&
+    (
+      filter.diagnosticsOk === undefined ||
+      report.diagnosticsOk === filter.diagnosticsOk
+    )
+  );
 }
