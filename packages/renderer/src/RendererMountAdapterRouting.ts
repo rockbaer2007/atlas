@@ -88,6 +88,18 @@ export type RendererUnifiedMountBatchConsumptionRequest = Readonly<{
   filter?: RendererMountReportFilter;
 }>;
 
+export type RendererUnifiedMountBatchDiagnosticClosure = Readonly<{
+  execution: RendererUnifiedMountBatchExecution;
+  summary: RendererMountReportSummary;
+  failures: readonly RendererUnifiedMountExecution[];
+  ready: boolean;
+  blocked: boolean;
+  totalCount: number;
+  mountedCount: number;
+  failureCount: number;
+  issueCount: number;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -227,4 +239,23 @@ export function findRendererTargetMountBatchFailures(
   execution: RendererUnifiedMountBatchExecution,
 ): readonly RendererUnifiedMountExecution[] {
   return execution.executions.filter(item => item.report.diagnosticsOk === false);
+}
+
+export function closeRendererTargetMountBatchDiagnostics(
+  execution: RendererUnifiedMountBatchExecution,
+): RendererUnifiedMountBatchDiagnosticClosure {
+  const failures = findRendererTargetMountBatchFailures(execution);
+  const ready = execution.summary.total > 0 && failures.length === 0;
+
+  return {
+    execution,
+    summary: execution.summary,
+    failures,
+    ready,
+    blocked: !ready,
+    totalCount: execution.summary.total,
+    mountedCount: execution.summary.mounted,
+    failureCount: failures.length,
+    issueCount: execution.summary.issueCount,
+  };
 }

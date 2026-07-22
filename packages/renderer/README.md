@@ -82,6 +82,7 @@ Assistant or theme execution paths.
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
+- `RendererUnifiedMountBatchDiagnosticClosure`
 - `RendererUnifiedMountBatchExecution`
 - `RendererUnifiedMountBatchRequest`
 - `RendererUnifiedMountExecution`
@@ -158,6 +159,7 @@ Assistant or theme execution paths.
 - `aggregateRendererMountReportConsumerDiagnostics`
 - `closeRendererConcreteIntegrationBoundaryExecution`
 - `closeRendererConcreteIntegrationBoundaryRelease`
+- `closeRendererTargetMountBatchDiagnostics`
 - `clearRendererDomMountStore`
 - `clearRendererMemoryMountStore`
 - `createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog`
@@ -353,6 +355,9 @@ existing mount report summary shape.
 Batch reports can be consumed with the existing mount-report filters without
 rerunning mounts, and failed batch executions can be selected by reference for
 follow-up diagnostics.
+Batch diagnostic closures summarize routed batch execution state into a compact
+ready or blocked decision with total, mounted, failure and issue counts while
+preserving references to the original execution and failed entries.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

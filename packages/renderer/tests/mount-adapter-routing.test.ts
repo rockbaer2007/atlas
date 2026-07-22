@@ -5,6 +5,7 @@ import {
   createRendererAdapterRegistry,
   createRendererOutput,
   createRendererTarget,
+  closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
   executeRendererTargetMount,
   executeRendererTargetMountBatch,
@@ -682,5 +683,102 @@ describe("renderer mount adapter routing", () => {
     });
 
     expect(findRendererTargetMountBatchFailures(execution)).toEqual([]);
+  });
+
+  it("closes successful target mount batch diagnostics as ready", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "closure-ready-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "closure-ready-cache",
+        }),
+      }, {
+        output: createRendererOutput({
+          kind: "document",
+          name: "closure-ready-dom",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "closure-ready-surface",
+          identifier: "closure-ready-root",
+        }),
+      }],
+    });
+
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    expect(closure).toEqual({
+      execution,
+      summary: execution.summary,
+      failures: [],
+      ready: true,
+      blocked: false,
+      totalCount: 2,
+      mountedCount: 2,
+      failureCount: 0,
+      issueCount: 0,
+    });
+  });
+
+  it("closes mixed target mount batch diagnostics as blocked", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "closure-blocked-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "closure-blocked-surface",
+        }),
+      }, {
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "closure-blocked-valid",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "closure-blocked-cache",
+        }),
+      }],
+    });
+
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    expect(closure.ready).toBe(false);
+    expect(closure.blocked).toBe(true);
+    expect(closure.totalCount).toBe(2);
+    expect(closure.mountedCount).toBe(1);
+    expect(closure.failureCount).toBe(1);
+    expect(closure.issueCount).toBe(1);
+    expect(closure.failures).toEqual([execution.executions[0]]);
+  });
+
+  it("closes empty target mount batch diagnostics as blocked", async () => {
+    const execution = await executeRendererTargetMountBatch({
+      requests: [],
+    });
+
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    expect(closure).toEqual({
+      execution,
+      summary: execution.summary,
+      failures: [],
+      ready: false,
+      blocked: true,
+      totalCount: 0,
+      mountedCount: 0,
+      failureCount: 0,
+      issueCount: 0,
+    });
   });
 });

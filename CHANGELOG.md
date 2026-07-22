@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer target mount batch diagnostics now close routed batch executions into
+  ready or blocked decisions with failure and issue counts.
 * Renderer target mount batch reports can now be consumed with existing report
   filters, and failed batch executions can be selected by reference for
   diagnostics.

@@ -118,6 +118,7 @@ import type {
   RendererTarget,
   RendererTargetKind,
   RendererUnifiedMountBatchConsumptionRequest,
+  RendererUnifiedMountBatchDiagnosticClosure,
   RendererUnifiedMountBatchExecution,
   RendererUnifiedMountBatchRequest,
   RendererUnifiedMountExecution,
@@ -193,6 +194,7 @@ import {
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
+  closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
   consumeAndInspectRendererMountReportConsumerRegistry,
   consumeAndInspectRendererMountReportConsumers,
@@ -258,6 +260,10 @@ describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.closeRendererConcreteIntegrationBoundaryExecution).toBeTypeOf("function");
     expect(Renderer.closeRendererConcreteIntegrationBoundaryRelease).toBeTypeOf("function");
+    expect(Renderer.closeRendererTargetMountBatchDiagnostics).toBeTypeOf("function");
+    expect(closeRendererTargetMountBatchDiagnostics).toBe(
+      Renderer.closeRendererTargetMountBatchDiagnostics,
+    );
     expect(Renderer.clearRendererDomMountStore).toBeTypeOf("function");
     expect(Renderer.clearRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.createRendererAdapter).toBeTypeOf("function");
@@ -1235,6 +1241,17 @@ describe("renderer public API", () => {
         diagnosticsOk: true,
       },
     };
+    const unifiedMountBatchDiagnosticClosure: RendererUnifiedMountBatchDiagnosticClosure = {
+      execution: unifiedMountBatchExecution,
+      summary: mountReportSummary,
+      failures: [],
+      ready: true,
+      blocked: false,
+      totalCount: 1,
+      mountedCount: 1,
+      failureCount: 0,
+      issueCount: 0,
+    };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1265,6 +1282,7 @@ describe("renderer public API", () => {
     expect(unifiedMountExecution.report).toBe(mountReport);
     expect(unifiedMountBatchExecution.summary).toBe(mountReportSummary);
     expect(unifiedMountBatchConsumptionRequest.execution).toBe(unifiedMountBatchExecution);
+    expect(unifiedMountBatchDiagnosticClosure.execution).toBe(unifiedMountBatchExecution);
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);
