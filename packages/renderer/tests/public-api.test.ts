@@ -18,6 +18,7 @@ import type {
   RendererConcreteIntegrationBoundaryExecutionDelivery,
   RendererConcreteIntegrationBoundaryExecutionDeliverySnapshot,
   RendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog,
+  RendererConcreteIntegrationBoundaryExecutionExport,
   RendererConcreteIntegrationBoundaryExecutionPreparation,
   RendererConcreteIntegrationBoundaryDecision,
   RendererConcreteIntegrationBoundaryPlan,
@@ -98,6 +99,7 @@ import {
   createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog,
   createRendererConcreteIntegrationBoundaryExecutionDelivery,
   createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog,
+  createRendererConcreteIntegrationBoundaryExecutionExport,
   createRendererAdapter,
   createRendererAdapterConflict,
   createRendererAdapterConflictResolution,
@@ -203,6 +205,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionDelivery).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog).toBeTypeOf("function");
+    expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionExport).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryDecision).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
@@ -747,6 +750,15 @@ describe("renderer public API", () => {
         issueCount: 0,
         executableCount: 0,
       };
+    const concreteIntegrationBoundaryExecutionExport:
+      RendererConcreteIntegrationBoundaryExecutionExport = {
+        kind: "renderer.concrete.integration.boundary.execution.export",
+        name: "type-concrete-integration-boundary-execution-export",
+        ready: true,
+        issueCount: 0,
+        catalog: concreteIntegrationBoundaryExecutionDeliverySnapshotCatalog,
+        executable: false,
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -940,6 +952,9 @@ describe("renderer public API", () => {
     );
     expect(concreteIntegrationBoundaryExecutionDeliverySnapshotCatalog.snapshots[0]).toBe(
       concreteIntegrationBoundaryExecutionDeliverySnapshot,
+    );
+    expect(concreteIntegrationBoundaryExecutionExport.catalog).toBe(
+      concreteIntegrationBoundaryExecutionDeliverySnapshotCatalog,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -4886,6 +4901,62 @@ describe("renderer public API", () => {
     expect(catalog.executableCount).toBe(0);
     expect(catalog).not.toHaveProperty("execute");
     expect(catalog).not.toHaveProperty("element");
+  });
+
+  it("creates ready Renderer concrete integration boundary execution exports", () => {
+    const catalog = createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog(
+      "ready-execution-export-catalog",
+      [],
+    );
+
+    expect(createRendererConcreteIntegrationBoundaryExecutionExport(
+      "ready-execution-export",
+      catalog,
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.execution.export",
+      name: "ready-execution-export",
+      ready: true,
+      issueCount: 0,
+      catalog,
+      executable: false,
+    });
+  });
+
+  it("creates blocked Renderer concrete integration boundary execution exports", () => {
+    const catalog = Renderer.createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog(
+      "blocked-execution-export-catalog",
+      [{
+        kind: "renderer.concrete.integration.boundary.execution.delivery.snapshot",
+        deliveryName: "blocked-execution-export-delivery",
+        ready: false,
+        issueCount: 24,
+        closureSnapshotCount: 1,
+        executable: false,
+      }],
+    );
+
+    const executionExport = Renderer.createRendererConcreteIntegrationBoundaryExecutionExport(
+      "blocked-execution-export",
+      catalog,
+    );
+
+    expect(executionExport.ready).toBe(false);
+    expect(executionExport.issueCount).toBe(24);
+    expect(executionExport.catalog).toBe(catalog);
+  });
+
+  it("keeps Renderer concrete integration boundary execution exports non-executable", () => {
+    const executionExport = createRendererConcreteIntegrationBoundaryExecutionExport(
+      "non-executable-execution-export",
+      createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog(
+        "non-executable-execution-export-catalog",
+        [],
+      ),
+    );
+
+    expect(executionExport.executable).toBe(false);
+    expect(executionExport).not.toHaveProperty("execute");
+    expect(executionExport).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

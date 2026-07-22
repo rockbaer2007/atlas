@@ -43,6 +43,7 @@ descriptive only and do not mount output yet.
 - `RendererConcreteIntegrationBoundaryExecutionDelivery`
 - `RendererConcreteIntegrationBoundaryExecutionDeliverySnapshot`
 - `RendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog`
+- `RendererConcreteIntegrationBoundaryExecutionExport`
 - `RendererConcreteIntegrationBoundaryExecutionPreparation`
 - `RendererConcreteIntegrationBoundaryDecision`
 - `RendererConcreteIntegrationBoundaryPlan`
@@ -117,6 +118,7 @@ descriptive only and do not mount output yet.
 - `createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog`
 - `createRendererConcreteIntegrationBoundaryExecutionDelivery`
 - `createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog`
+- `createRendererConcreteIntegrationBoundaryExecutionExport`
 - `createRendererAdapter`
 - `createRendererAdapterConflict`
 - `createRendererAdapterConflictResolution`
@@ -597,6 +599,10 @@ counts and an explicit non-executable flag while omitting catalog payloads.
 Renderer concrete integration boundary execution delivery snapshot catalogs now
 group compact delivery snapshots with ready, blocked, issue and executable
 counts while keeping executable counts fixed at zero.
+
+Renderer concrete integration boundary execution exports now wrap delivery
+snapshot catalogs in non-executable export envelopes with ready state and issue
+counts.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

@@ -119,6 +119,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer concrete integration boundary execution delivery snapshot catalogs
   now group compact delivery summaries while keeping executable counts fixed at
   zero.
+* Renderer concrete integration boundary execution exports now wrap delivery
+  snapshot catalogs in non-executable export envelopes.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
