@@ -57,6 +57,7 @@ descriptive only and do not mount output yet.
 - `RendererConcreteIntegrationBoundaryFinalizationSnapshot`
 - `RendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog`
 - `RendererConcreteIntegrationBoundaryRelease`
+- `RendererConcreteIntegrationBoundaryReleaseExport`
 - `RendererConcreteIntegrationBoundaryReleaseSnapshot`
 - `RendererConcreteIntegrationBoundaryReleaseSnapshotCatalog`
 - `RendererConcreteIntegrationBoundaryDecision`
@@ -140,6 +141,7 @@ descriptive only and do not mount output yet.
 - `createRendererConcreteIntegrationBoundaryFinalizationHandoffSnapshotCatalog`
 - `createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog`
 - `createRendererConcreteIntegrationBoundaryRelease`
+- `createRendererConcreteIntegrationBoundaryReleaseExport`
 - `createRendererConcreteIntegrationBoundaryReleaseSnapshotCatalog`
 - `createRendererAdapter`
 - `createRendererAdapterConflict`
@@ -687,6 +689,10 @@ non-executable flags.
 Renderer concrete integration boundary release snapshot catalogs now group
 compact release snapshots with ready, blocked, issue and executable counts while
 keeping executable counts fixed at zero.
+
+Renderer concrete integration boundary release exports now wrap release snapshot
+catalogs in exported, non-executable envelopes with ready state and issue
+counts.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

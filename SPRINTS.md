@@ -3193,23 +3193,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.3178 | Renderer Concrete Integration Boundary Release Snapshot Catalog Export Boundary Review | Completed | - |
 | G2.5.3179 | Renderer Concrete Integration Boundary Release Snapshot Catalog Export Contract Review | Completed | - |
 | G2.5.3180 | Renderer Concrete Integration Boundary Release Snapshot Catalog Export Gate Review | Completed | - |
-| G2.5.3181 | Renderer Concrete Integration Boundary Release Export Review | Planned | - |
+| G2.5.3181 | Renderer Concrete Integration Boundary Release Export Review | Completed | - |
+| G2.5.3182 | Renderer Concrete Integration Boundary Release Export Contract Review | Completed | - |
+| G2.5.3183 | Renderer Concrete Integration Boundary Release Export Shape Review | Completed | - |
+| G2.5.3184 | Renderer Concrete Integration Boundary Release Export Ready Review | Completed | - |
+| G2.5.3185 | Renderer Concrete Integration Boundary Release Export Blocked Review | Completed | - |
+| G2.5.3186 | Renderer Concrete Integration Boundary Release Export Boundary Review | Completed | - |
+| G2.5.3187 | Renderer Concrete Integration Boundary Release Export Catalog Reference Review | Completed | - |
+| G2.5.3188 | Renderer Concrete Integration Boundary Release Export Issue Count Review | Completed | - |
+| G2.5.3189 | Renderer Concrete Integration Boundary Release Export Executable Flag Review | Completed | - |
+| G2.5.3190 | Renderer Concrete Integration Boundary Release Export Package Root Review | Completed | - |
+| G2.5.3191 | Renderer Concrete Integration Boundary Release Export Type Surface Review | Completed | - |
+| G2.5.3192 | Renderer Concrete Integration Boundary Release Export Documentation Review | Completed | - |
+| G2.5.3193 | Renderer Concrete Integration Boundary Release Export Changelog Review | Completed | - |
+| G2.5.3194 | Renderer Concrete Integration Boundary Release Export Regression Review | Completed | - |
+| G2.5.3195 | Renderer Concrete Integration Boundary Release Export Public API Review | Completed | - |
+| G2.5.3196 | Renderer Concrete Integration Boundary Release Export README Review | Completed | - |
+| G2.5.3197 | Renderer Concrete Integration Boundary Release Export Sprint Documentation Review | Completed | - |
+| G2.5.3198 | Renderer Concrete Integration Boundary Release Export Workspace Regression Review | Completed | - |
+| G2.5.3199 | Renderer Concrete Integration Boundary Release Export Integration Closure Review | Completed | - |
+| G2.5.3200 | Renderer Concrete Integration Boundary Release Export Compatibility Review | Completed | - |
+| G2.5.3201 | Renderer Concrete Integration Boundary Release Export Transport Export Review | Completed | - |
+| G2.5.3202 | Renderer Concrete Integration Boundary Release Export DOM Export Review | Completed | - |
+| G2.5.3203 | Renderer Concrete Integration Boundary Release Export Home Assistant Export Review | Completed | - |
+| G2.5.3204 | Renderer Concrete Integration Boundary Release Export Theme Export Review | Completed | - |
+| G2.5.3205 | Renderer Concrete Integration Boundary Release Export Platform Export Review | Completed | - |
+| G2.5.3206 | Renderer Concrete Integration Boundary Release Export Stability Review | Completed | - |
+| G2.5.3207 | Renderer Concrete Integration Boundary Release Export Ready Stability Review | Completed | - |
+| G2.5.3208 | Renderer Concrete Integration Boundary Release Export Blocked Stability Review | Completed | - |
+| G2.5.3209 | Renderer Concrete Integration Boundary Release Export Issue Stability Review | Completed | - |
+| G2.5.3210 | Renderer Concrete Integration Boundary Release Export Context Stability Review | Completed | - |
+| G2.5.3211 | Renderer Concrete Integration Boundary Release Export Name Stability Review | Completed | - |
+| G2.5.3212 | Renderer Concrete Integration Boundary Release Export Result Boundary Review | Completed | - |
+| G2.5.3213 | Renderer Concrete Integration Boundary Release Export Export Boundary Review | Completed | - |
+| G2.5.3214 | Renderer Concrete Integration Boundary Release Export No Mutation Review | Completed | - |
+| G2.5.3215 | Renderer Concrete Integration Boundary Release Export Handler Boundary Review | Completed | - |
+| G2.5.3216 | Renderer Concrete Integration Boundary Release Export Consumption Boundary Review | Completed | - |
+| G2.5.3217 | Renderer Concrete Integration Boundary Release Export Conflict Boundary Review | Completed | - |
+| G2.5.3218 | Renderer Concrete Integration Boundary Release Export Lookup Boundary Review | Completed | - |
+| G2.5.3219 | Renderer Concrete Integration Boundary Release Export API Closure Review | Completed | - |
+| G2.5.3220 | Renderer Concrete Integration Boundary Release Export Return-To-Catalog Review | Completed | - |
+| G2.5.3221 | Renderer Concrete Integration Boundary Release Export Return-To-Snapshot Review | Completed | - |
+| G2.5.3222 | Renderer Concrete Integration Boundary Release Export Return-To-Release Review | Completed | - |
+| G2.5.3223 | Renderer Concrete Integration Boundary Release Export Return-To-Export Review | Completed | - |
+| G2.5.3224 | Renderer Concrete Integration Boundary Release Export Return-To-Handoff Review | Completed | - |
+| G2.5.3225 | Renderer Concrete Integration Boundary Release Export Return-To-Finalization Review | Completed | - |
+| G2.5.3226 | Renderer Concrete Integration Boundary Release Export Return-To-Delivery Review | Completed | - |
+| G2.5.3227 | Renderer Concrete Integration Boundary Release Export Snapshot Preparation Review | Completed | - |
+| G2.5.3228 | Renderer Concrete Integration Boundary Release Export Snapshot Boundary Review | Completed | - |
+| G2.5.3229 | Renderer Concrete Integration Boundary Release Export Snapshot Contract Review | Completed | - |
+| G2.5.3230 | Renderer Concrete Integration Boundary Release Export Snapshot Gate Review | Completed | - |
+| G2.5.3231 | Renderer Concrete Integration Boundary Release Export Snapshot Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.3180 - Renderer Concrete Integration Boundary Release Snapshot Catalog Export Gate Review
+## G2.5.3230 - Renderer Concrete Integration Boundary Release Export Snapshot Gate Review
 
 Goal:
 
-Group Renderer concrete integration boundary release snapshots in non-executable catalogs.
+Wrap Renderer concrete integration boundary release snapshot catalogs in non-executable export envelopes.
 
 Deliverables:
 
-* Renderer concrete integration boundary release snapshot catalog type
-* Boundary release snapshot catalog helper
-* Ready, blocked, copy and non-executable tests
+* Renderer concrete integration boundary release export type
+* Boundary release export helper
+* Ready, blocked and non-executable tests
 * Sprint documentation
 
 Status:
@@ -3220,13 +3270,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.3181 - Renderer Concrete Integration Boundary Release Export Review
+## G2.5.3231 - Renderer Concrete Integration Boundary Release Export Snapshot Review
 
 Suggested focus:
 
-* Decide whether release snapshot catalogs need export envelopes
-* Keep release exports non-executable
-* Preserve release snapshot catalog API boundaries
+* Decide whether release exports need compact snapshots
+* Keep release export snapshots non-executable
+* Preserve release export API boundaries
 
 ---
 
@@ -4849,6 +4899,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.3031.md`
 * `docs/sprints/Sprint-G2.5.3081.md`
 * `docs/sprints/Sprint-G2.5.3131.md`
+* `docs/sprints/Sprint-G2.5.3181.md`
+* `docs/sprints/Sprint-G2.5.3182.md`
+* `docs/sprints/Sprint-G2.5.3183.md`
+* `docs/sprints/Sprint-G2.5.3184.md`
+* `docs/sprints/Sprint-G2.5.3185.md`
+* `docs/sprints/Sprint-G2.5.3186.md`
+* `docs/sprints/Sprint-G2.5.3187.md`
+* `docs/sprints/Sprint-G2.5.3188.md`
+* `docs/sprints/Sprint-G2.5.3189.md`
+* `docs/sprints/Sprint-G2.5.3190.md`
+* `docs/sprints/Sprint-G2.5.3191.md`
+* `docs/sprints/Sprint-G2.5.3192.md`
+* `docs/sprints/Sprint-G2.5.3193.md`
+* `docs/sprints/Sprint-G2.5.3194.md`
+* `docs/sprints/Sprint-G2.5.3195.md`
+* `docs/sprints/Sprint-G2.5.3196.md`
+* `docs/sprints/Sprint-G2.5.3197.md`
+* `docs/sprints/Sprint-G2.5.3198.md`
+* `docs/sprints/Sprint-G2.5.3199.md`
+* `docs/sprints/Sprint-G2.5.3200.md`
+* `docs/sprints/Sprint-G2.5.3201.md`
+* `docs/sprints/Sprint-G2.5.3202.md`
+* `docs/sprints/Sprint-G2.5.3203.md`
+* `docs/sprints/Sprint-G2.5.3204.md`
+* `docs/sprints/Sprint-G2.5.3205.md`
+* `docs/sprints/Sprint-G2.5.3206.md`
+* `docs/sprints/Sprint-G2.5.3207.md`
+* `docs/sprints/Sprint-G2.5.3208.md`
+* `docs/sprints/Sprint-G2.5.3209.md`
+* `docs/sprints/Sprint-G2.5.3210.md`
+* `docs/sprints/Sprint-G2.5.3211.md`
+* `docs/sprints/Sprint-G2.5.3212.md`
+* `docs/sprints/Sprint-G2.5.3213.md`
+* `docs/sprints/Sprint-G2.5.3214.md`
+* `docs/sprints/Sprint-G2.5.3215.md`
+* `docs/sprints/Sprint-G2.5.3216.md`
+* `docs/sprints/Sprint-G2.5.3217.md`
+* `docs/sprints/Sprint-G2.5.3218.md`
+* `docs/sprints/Sprint-G2.5.3219.md`
+* `docs/sprints/Sprint-G2.5.3220.md`
+* `docs/sprints/Sprint-G2.5.3221.md`
+* `docs/sprints/Sprint-G2.5.3222.md`
+* `docs/sprints/Sprint-G2.5.3223.md`
+* `docs/sprints/Sprint-G2.5.3224.md`
+* `docs/sprints/Sprint-G2.5.3225.md`
+* `docs/sprints/Sprint-G2.5.3226.md`
+* `docs/sprints/Sprint-G2.5.3227.md`
+* `docs/sprints/Sprint-G2.5.3228.md`
+* `docs/sprints/Sprint-G2.5.3229.md`
+* `docs/sprints/Sprint-G2.5.3230.md`
 * `docs/sprints/Sprint-G2.5.3132.md`
 * `docs/sprints/Sprint-G2.5.3133.md`
 * `docs/sprints/Sprint-G2.5.3134.md`
