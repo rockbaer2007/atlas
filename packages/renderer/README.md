@@ -54,6 +54,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerDiagnosticDelivery`
 - `RendererMountReportConsumerDiagnosticDeliveryManifest`
 - `RendererMountReportConsumerDiagnosticDeliveryManifestClosure`
+- `RendererMountReportConsumerDiagnosticDeliverySnapshotCatalog`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
 - `RendererMountReportConsumerDiagnosticBatchExecution`
@@ -112,6 +113,7 @@ descriptive only and do not mount output yet.
 - `createRendererMountReportConsumerDiagnosticDeliveryBundle`
 - `createRendererMountReportConsumerDiagnosticDelivery`
 - `createRendererMountReportConsumerDiagnosticDeliveryManifest`
+- `createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog`
 - `createRendererMountReportConsumerLookupRequest`
 - `createRendererMountReportConsumerLookupResult`
 - `createRendererMountReportConsumerRegistry`
@@ -473,6 +475,11 @@ Renderer mount report consumer diagnostic delivery bundle snapshots now expose
 compact data-only summaries of delivery bundles. Snapshots preserve bundle
 name, ready state, manifest count, issue count and manifest names without
 including closure payloads or integration metadata.
+
+Renderer mount report consumer diagnostic delivery snapshot catalogs now group
+bundle snapshots into transport-neutral catalog data. Catalogs copy snapshot
+lists, preserve snapshot references, count ready and blocked snapshots and sum
+issue counts without adding DOM, Home Assistant, Theme or platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
