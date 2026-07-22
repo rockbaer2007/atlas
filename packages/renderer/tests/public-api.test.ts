@@ -115,7 +115,9 @@ import type {
   RendererPipelineStage,
   RendererPipelineStageResult,
   RendererTargetMountIntegrationReadiness,
+  RendererTargetMountIntegrationReadinessHandoff,
   RendererTargetMountIntegrationReadinessIssue,
+  RendererTargetMountIntegrationReadinessSnapshot,
   RendererTargetMountAdapterResolution,
   RendererTarget,
   RendererTargetKind,
@@ -225,6 +227,7 @@ import {
   findRendererPlatformAdapterConflicts,
   finalizeRendererConcreteIntegrationBoundary,
   handoffRendererTargetMountBatchDiagnostics,
+  handoffRendererTargetMountIntegrationReadiness,
   inspectRendererMountResult,
   inspectRendererMountLifecycleRecord,
   inspectRendererMountPlan,
@@ -266,6 +269,7 @@ import {
   snapshotRendererMountReportConsumerDiagnosticDeliveryBundle,
   snapshotRendererTargetMountBatchDiagnosticCatalog,
   snapshotRendererTargetMountBatchDiagnostics,
+  snapshotRendererTargetMountIntegrationReadiness,
   summarizeRendererMountReports,
   summarizeRendererMountReportConsumerDiagnosticAggregation,
 } from "../src";
@@ -438,6 +442,10 @@ describe("renderer public API", () => {
     expect(handoffRendererTargetMountBatchDiagnostics).toBe(
       Renderer.handoffRendererTargetMountBatchDiagnostics,
     );
+    expect(Renderer.handoffRendererTargetMountIntegrationReadiness).toBeTypeOf("function");
+    expect(handoffRendererTargetMountIntegrationReadiness).toBe(
+      Renderer.handoffRendererTargetMountIntegrationReadiness,
+    );
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
@@ -465,6 +473,10 @@ describe("renderer public API", () => {
     expect(Renderer.snapshotRendererTargetMountBatchDiagnostics).toBeTypeOf("function");
     expect(snapshotRendererTargetMountBatchDiagnostics).toBe(
       Renderer.snapshotRendererTargetMountBatchDiagnostics,
+    );
+    expect(Renderer.snapshotRendererTargetMountIntegrationReadiness).toBeTypeOf("function");
+    expect(snapshotRendererTargetMountIntegrationReadiness).toBe(
+      Renderer.snapshotRendererTargetMountIntegrationReadiness,
     );
     expect(Renderer.summarizeRendererMountReports).toBeTypeOf("function");
   });
@@ -1351,6 +1363,26 @@ describe("renderer public API", () => {
       transferableCount: 1,
       issues: [targetMountIntegrationReadinessIssue],
     };
+    const targetMountIntegrationReadinessSnapshot:
+      RendererTargetMountIntegrationReadinessSnapshot = {
+        ready: false,
+        blocked: true,
+        exportable: false,
+        handoffCount: 1,
+        readyCount: 1,
+        blockedCount: 0,
+        transferableCount: 1,
+        issueCount: 1,
+        issueCodes: [targetMountIntegrationReadinessIssue.code],
+      };
+    const targetMountIntegrationReadinessHandoff:
+      RendererTargetMountIntegrationReadinessHandoff = {
+        readiness: targetMountIntegrationReadiness,
+        snapshot: targetMountIntegrationReadinessSnapshot,
+        ready: false,
+        blocked: true,
+        transferable: false,
+      };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1405,6 +1437,12 @@ describe("renderer public API", () => {
     );
     expect(targetMountIntegrationReadiness.issues[0]).toBe(
       targetMountIntegrationReadinessIssue,
+    );
+    expect(targetMountIntegrationReadinessHandoff.readiness).toBe(
+      targetMountIntegrationReadiness,
+    );
+    expect(targetMountIntegrationReadinessHandoff.snapshot).toBe(
+      targetMountIntegrationReadinessSnapshot,
     );
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);

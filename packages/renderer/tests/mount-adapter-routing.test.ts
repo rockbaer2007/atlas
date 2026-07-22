@@ -16,11 +16,13 @@ import {
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
   handoffRendererTargetMountBatchDiagnostics,
+  handoffRendererTargetMountIntegrationReadiness,
   RendererDefaultMountAdapterNames,
   resolveRendererTargetMountAdapter,
   reviewRendererTargetMountIntegrationReadiness,
   snapshotRendererTargetMountBatchDiagnosticCatalog,
   snapshotRendererTargetMountBatchDiagnostics,
+  snapshotRendererTargetMountIntegrationReadiness,
 } from "../src";
 
 describe("renderer mount adapter routing", () => {
@@ -1293,5 +1295,116 @@ describe("renderer mount adapter routing", () => {
         severity: "error",
       }],
     });
+  });
+
+  it("snapshots ready target mount integration readiness", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "readiness-snapshot-ready",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "readiness-snapshot-cache",
+        }),
+      }],
+    });
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(
+        createRendererTargetMountBatchDiagnosticCatalog([
+          handoffRendererTargetMountBatchDiagnostics(
+            closeRendererTargetMountBatchDiagnostics(execution),
+          ),
+        ]),
+      ),
+    );
+
+    expect(snapshotRendererTargetMountIntegrationReadiness(readiness)).toEqual({
+      ready: true,
+      blocked: false,
+      exportable: true,
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+      issueCount: 0,
+      issueCodes: [],
+    });
+  });
+
+  it("snapshots blocked target mount integration readiness with issue codes", () => {
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(
+        createRendererTargetMountBatchDiagnosticCatalog([]),
+      ),
+    );
+
+    expect(snapshotRendererTargetMountIntegrationReadiness(readiness)).toEqual({
+      ready: false,
+      blocked: true,
+      exportable: false,
+      handoffCount: 0,
+      readyCount: 0,
+      blockedCount: 0,
+      transferableCount: 0,
+      issueCount: 2,
+      issueCodes: [
+        "renderer.target.mount.integration.empty",
+        "renderer.target.mount.integration.not_exportable",
+      ],
+    });
+  });
+
+  it("hands off ready target mount integration readiness as transferable", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "readiness-handoff-ready",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "readiness-handoff-cache",
+        }),
+      }],
+    });
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(
+        createRendererTargetMountBatchDiagnosticCatalog([
+          handoffRendererTargetMountBatchDiagnostics(
+            closeRendererTargetMountBatchDiagnostics(execution),
+          ),
+        ]),
+      ),
+    );
+
+    const handoff = handoffRendererTargetMountIntegrationReadiness(readiness);
+
+    expect(handoff.readiness).toBe(readiness);
+    expect(handoff.ready).toBe(true);
+    expect(handoff.blocked).toBe(false);
+    expect(handoff.transferable).toBe(true);
+    expect(handoff.snapshot.ready).toBe(true);
+  });
+
+  it("hands off blocked target mount integration readiness as not transferable", () => {
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(
+        createRendererTargetMountBatchDiagnosticCatalog([]),
+      ),
+    );
+
+    const handoff = handoffRendererTargetMountIntegrationReadiness(readiness);
+
+    expect(handoff.readiness).toBe(readiness);
+    expect(handoff.ready).toBe(false);
+    expect(handoff.blocked).toBe(true);
+    expect(handoff.transferable).toBe(false);
+    expect(handoff.snapshot.issueCount).toBe(2);
   });
 });

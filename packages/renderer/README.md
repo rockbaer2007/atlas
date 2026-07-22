@@ -81,7 +81,9 @@ Assistant or theme execution paths.
 - `RendererMountDiagnosticReport`
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountIntegrationReadiness`
+- `RendererTargetMountIntegrationReadinessHandoff`
 - `RendererTargetMountIntegrationReadinessIssue`
+- `RendererTargetMountIntegrationReadinessSnapshot`
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchDiagnosticCatalog`
@@ -271,6 +273,7 @@ Assistant or theme execution paths.
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
 - `handoffRendererTargetMountBatchDiagnostics`
+- `handoffRendererTargetMountIntegrationReadiness`
 - `inspectRendererDomMountResult`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
@@ -313,6 +316,7 @@ Assistant or theme execution paths.
 - `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
 - `snapshotRendererTargetMountBatchDiagnosticCatalog`
 - `snapshotRendererTargetMountBatchDiagnostics`
+- `snapshotRendererTargetMountIntegrationReadiness`
 - `summarizeRendererDomMountStore`
 - `summarizeRendererMemoryMountStore`
 - `summarizeRendererMountReports`
@@ -384,6 +388,9 @@ when every collected handoff is ready.
 Target mount integration readiness reviews exported catalogs into a clear
 ready or blocked gate, carrying exportable state, handoff counts and stable
 issues for empty, blocked or non-exportable exports.
+Readiness snapshots compact the integration gate into counts and issue codes,
+and readiness handoffs preserve the review reference while marking only ready
+integration states as transferable.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

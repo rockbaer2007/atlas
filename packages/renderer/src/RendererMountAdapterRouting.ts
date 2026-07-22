@@ -165,6 +165,26 @@ export type RendererTargetMountIntegrationReadiness = Readonly<{
   issues: readonly RendererTargetMountIntegrationReadinessIssue[];
 }>;
 
+export type RendererTargetMountIntegrationReadinessSnapshot = Readonly<{
+  ready: boolean;
+  blocked: boolean;
+  exportable: boolean;
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+  issueCount: number;
+  issueCodes: readonly string[];
+}>;
+
+export type RendererTargetMountIntegrationReadinessHandoff = Readonly<{
+  readiness: RendererTargetMountIntegrationReadiness;
+  snapshot: RendererTargetMountIntegrationReadinessSnapshot;
+  ready: boolean;
+  blocked: boolean;
+  transferable: boolean;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -434,5 +454,35 @@ export function reviewRendererTargetMountIntegrationReadiness(
     blockedCount: exported.snapshot.blockedCount,
     transferableCount: exported.snapshot.transferableCount,
     issues,
+  };
+}
+
+export function snapshotRendererTargetMountIntegrationReadiness(
+  readiness: RendererTargetMountIntegrationReadiness,
+): RendererTargetMountIntegrationReadinessSnapshot {
+  return {
+    ready: readiness.ready,
+    blocked: readiness.blocked,
+    exportable: readiness.exportable,
+    handoffCount: readiness.handoffCount,
+    readyCount: readiness.readyCount,
+    blockedCount: readiness.blockedCount,
+    transferableCount: readiness.transferableCount,
+    issueCount: readiness.issues.length,
+    issueCodes: readiness.issues.map(issue => issue.code),
+  };
+}
+
+export function handoffRendererTargetMountIntegrationReadiness(
+  readiness: RendererTargetMountIntegrationReadiness,
+): RendererTargetMountIntegrationReadinessHandoff {
+  const snapshot = snapshotRendererTargetMountIntegrationReadiness(readiness);
+
+  return {
+    readiness,
+    snapshot,
+    ready: readiness.ready,
+    blocked: readiness.blocked,
+    transferable: readiness.ready,
   };
 }
