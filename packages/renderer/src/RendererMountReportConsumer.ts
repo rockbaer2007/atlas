@@ -32,6 +32,14 @@ export type RendererMountReportConsumerDiagnosticAggregation = Readonly<{
   }>;
 }>;
 
+export type RendererMountReportConsumerDiagnosticAggregationSummary = Readonly<{
+  ok: boolean;
+  consumerCount: number;
+  okConsumerCount: number;
+  failedConsumerCount: number;
+  issueCount: number;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -276,5 +284,21 @@ export function aggregateRendererMountReportConsumerDiagnostics(
       reports: copiedReports,
       issues,
     },
+  };
+}
+
+export function summarizeRendererMountReportConsumerDiagnosticAggregation(
+  aggregation: RendererMountReportConsumerDiagnosticAggregation,
+): RendererMountReportConsumerDiagnosticAggregationSummary {
+  const okConsumerCount = aggregation.result.reports
+    .filter(report => report.result.ok).length;
+  const failedConsumerCount = aggregation.result.reports.length - okConsumerCount;
+
+  return {
+    ok: aggregation.result.ok,
+    consumerCount: aggregation.result.reports.length,
+    okConsumerCount,
+    failedConsumerCount,
+    issueCount: aggregation.result.issues.length,
   };
 }

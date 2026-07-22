@@ -50,6 +50,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticAggregation`
+- `RendererMountReportConsumerDiagnosticAggregationSummary`
 - `RendererMountReportConsumerDiagnosticReport`
 - `RendererMountReportConsumerDiagnosticCodes`
 - `RendererMountReportConsumerLookupRequest`
@@ -144,6 +145,7 @@ descriptive only and do not mount output yet.
 - `selectFirstRendererMountReportConsumerCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
 - `summarizeRendererMountReports`
+- `summarizeRendererMountReportConsumerDiagnosticAggregation`
 
 Renderer currently depends on `@atlas/core` and keeps its public surface compact
 while rendering contracts are defined. The package-root value and type surface
@@ -385,6 +387,11 @@ preserve consumer order, copy report arrays away from caller-owned arrays,
 collect issues across consumers, report empty aggregations as successful and
 remain independent from DOM elements, Home Assistant fields, Theme fields and
 platform metadata.
+
+Renderer mount report consumer diagnostic aggregation summaries now derive
+compact metrics from aggregate diagnostics. Summaries report aggregate ok
+state, consumer count, successful consumer count, failed consumer count and
+issue count without copying integration metadata into the summary surface.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
