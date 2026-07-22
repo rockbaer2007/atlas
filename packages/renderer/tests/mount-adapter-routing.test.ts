@@ -6,6 +6,7 @@ import {
   createRendererOutput,
   createRendererTarget,
   executeRendererTargetMount,
+  executeRendererTargetMountBatch,
   executeRendererTargetMountWithReport,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
@@ -343,5 +344,181 @@ describe("renderer mount adapter routing", () => {
     });
     expect(routing.memoryAdapter.store.records).toEqual([]);
     expect(routing.domAdapter.store.records).toEqual([]);
+  });
+
+  it("executes empty target mount batches with an empty summary", async () => {
+    const execution = await executeRendererTargetMountBatch({
+      requests: [],
+    });
+
+    expect(execution).toEqual({
+      executions: [],
+      lifecycleRecords: [],
+      reports: [],
+      summary: {
+        total: 0,
+        planned: 0,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+  });
+
+  it("executes mixed Memory and DOM target mount batches through one registry", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const memoryOutput = createRendererOutput({
+      kind: "fragment",
+      name: "batch-memory-fragment",
+      content: "batch memory",
+    });
+    const domOutput = createRendererOutput({
+      kind: "document",
+      name: "batch-dom-document",
+      content: "<article>batch dom</article>",
+    });
+    const memoryTarget = createRendererTarget({
+      kind: "memory",
+      name: "batch-memory-cache",
+    });
+    const domTarget = createRendererTarget({
+      kind: "surface",
+      name: "batch-dom-surface",
+      identifier: "batch-dom-root",
+    });
+
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: memoryOutput,
+        target: memoryTarget,
+      }, {
+        output: domOutput,
+        target: domTarget,
+      }],
+    });
+
+    expect(execution.summary).toEqual({
+      total: 2,
+      planned: 0,
+      executed: 0,
+      reported: 2,
+      mounted: 2,
+      diagnosticsOk: 2,
+      failed: 0,
+      issueCount: 0,
+    });
+    expect(routing.memoryAdapter.store.records).toHaveLength(1);
+    expect(routing.domAdapter.store.records).toHaveLength(1);
+  });
+
+  it("keeps target mount batch execution order stable", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const first = createRendererOutput({
+      kind: "fragment",
+      name: "batch-first",
+    });
+    const second = createRendererOutput({
+      kind: "fragment",
+      name: "batch-second",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "ordered-cache",
+    });
+
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: first,
+        target,
+      }, {
+        output: second,
+        target,
+      }],
+    });
+
+    expect(execution.reports.map(report => report.outputName)).toEqual([
+      "batch-first",
+      "batch-second",
+    ]);
+    expect(routing.memoryAdapter.store.records.map(record => record.outputName)).toEqual([
+      "batch-first",
+      "batch-second",
+    ]);
+  });
+
+  it("continues target mount batches after routable failure results", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const invalidSurfaceOutput = createRendererOutput({
+      kind: "fragment",
+      name: "batch-invalid-surface",
+    });
+    const validMemoryOutput = createRendererOutput({
+      kind: "fragment",
+      name: "batch-valid-memory",
+      content: "still mounted",
+    });
+
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: invalidSurfaceOutput,
+        target: createRendererTarget({
+          kind: "surface",
+          name: "batch-invalid-surface-target",
+        }),
+      }, {
+        output: validMemoryOutput,
+        target: createRendererTarget({
+          kind: "memory",
+          name: "batch-valid-memory-target",
+        }),
+      }],
+    });
+
+    expect(execution.summary).toEqual({
+      total: 2,
+      planned: 0,
+      executed: 0,
+      reported: 2,
+      mounted: 1,
+      diagnosticsOk: 1,
+      failed: 1,
+      issueCount: 1,
+    });
+    expect(execution.executions.map(item => item.result.mounted)).toEqual([false, true]);
+    expect(routing.memoryAdapter.store.records).toHaveLength(1);
+    expect(routing.domAdapter.store.records).toEqual([]);
+  });
+
+  it("allows target mount batch entries to override the batch registry", async () => {
+    const batchRouting = createDefaultRendererMountAdapterRegistry();
+    const entryRouting = createDefaultRendererMountAdapterRegistry();
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "batch-override-memory",
+      content: "override",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "batch-override-target",
+    });
+
+    const execution = await executeRendererTargetMountBatch({
+      registry: batchRouting.registry,
+      requests: [{
+        output,
+        target,
+        registry: entryRouting.registry,
+      }],
+    });
+
+    expect(execution.summary.mounted).toBe(1);
+    expect(batchRouting.memoryAdapter.store.records).toEqual([]);
+    expect(entryRouting.memoryAdapter.store.records).toHaveLength(1);
   });
 });

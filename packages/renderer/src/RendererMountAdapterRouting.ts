@@ -17,7 +17,10 @@ import {
   createRendererMountResult,
   type RendererMountResult,
 } from "./RendererMount";
-import { inspectRendererMountResult, type RendererMountDiagnosticReport } from "./RendererMountDiagnostics";
+import {
+  inspectRendererMountResult,
+  type RendererMountDiagnosticReport,
+} from "./RendererMountDiagnostics";
 import {
   createRendererMountLifecycleRecord,
   recordRendererMountLifecycleExecution,
@@ -25,7 +28,12 @@ import {
   type RendererMountLifecycleRecord,
 } from "./RendererMountLifecycle";
 import { createRendererMountPlan } from "./RendererMountPlan";
-import { createRendererMountReport, type RendererMountReport } from "./RendererMountReporting";
+import {
+  createRendererMountReport,
+  summarizeRendererMountReports,
+  type RendererMountReport,
+  type RendererMountReportSummary,
+} from "./RendererMountReporting";
 import type { RendererOutput } from "./RendererOutput";
 import type { RendererTarget, RendererTargetKind } from "./RendererTarget";
 
@@ -58,6 +66,18 @@ export type RendererUnifiedMountExecution = Readonly<{
   lifecycleRecord: RendererMountLifecycleRecord;
   diagnosticReport: RendererMountDiagnosticReport;
   report: RendererMountReport;
+}>;
+
+export type RendererUnifiedMountBatchRequest = Readonly<{
+  requests: readonly RendererUnifiedMountRequest[];
+  registry?: RendererAdapterRegistry;
+}>;
+
+export type RendererUnifiedMountBatchExecution = Readonly<{
+  executions: readonly RendererUnifiedMountExecution[];
+  lifecycleRecords: readonly RendererMountLifecycleRecord[];
+  reports: readonly RendererMountReport[];
+  summary: RendererMountReportSummary;
 }>;
 
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
@@ -160,5 +180,28 @@ export async function executeRendererTargetMountWithReport(
     lifecycleRecord,
     diagnosticReport,
     report: createRendererMountReport(lifecycleRecord),
+  };
+}
+
+export async function executeRendererTargetMountBatch(
+  request: RendererUnifiedMountBatchRequest,
+): Promise<RendererUnifiedMountBatchExecution> {
+  const registry = request.registry ?? createDefaultRendererMountAdapterRegistry().registry;
+  const executions: RendererUnifiedMountExecution[] = [];
+
+  for (const mountRequest of request.requests) {
+    executions.push(await executeRendererTargetMountWithReport({
+      ...mountRequest,
+      registry: mountRequest.registry ?? registry,
+    }));
+  }
+
+  const lifecycleRecords = executions.map(execution => execution.lifecycleRecord);
+
+  return {
+    executions,
+    lifecycleRecords,
+    reports: executions.map(execution => execution.report),
+    summary: summarizeRendererMountReports(lifecycleRecords),
   };
 }

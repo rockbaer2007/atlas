@@ -117,6 +117,8 @@ import type {
   RendererTargetMountAdapterResolution,
   RendererTarget,
   RendererTargetKind,
+  RendererUnifiedMountBatchExecution,
+  RendererUnifiedMountBatchRequest,
   RendererUnifiedMountExecution,
   RendererUnifiedMountRequest,
 } from "../src";
@@ -196,6 +198,7 @@ import {
   consumeRendererMountReports,
   evaluateRendererMountReportConsumerDiagnosticPolicy,
   executeRendererMountPlan,
+  executeRendererTargetMountBatch,
   executeRendererTargetMount,
   executeRendererTargetMountWithReport,
   executeRendererPipeline,
@@ -334,6 +337,8 @@ describe("renderer public API", () => {
     expect(Renderer.executeRendererDomMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
+    expect(Renderer.executeRendererTargetMountBatch).toBeTypeOf("function");
+    expect(executeRendererTargetMountBatch).toBe(Renderer.executeRendererTargetMountBatch);
     expect(Renderer.executeRendererTargetMount).toBeTypeOf("function");
     expect(executeRendererTargetMount).toBe(Renderer.executeRendererTargetMount);
     expect(Renderer.executeRendererTargetMountWithReport).toBeTypeOf("function");
@@ -1197,11 +1202,21 @@ describe("renderer public API", () => {
       target,
       registry: defaultMountAdapterRegistry.registry,
     };
+    const unifiedMountBatchRequest: RendererUnifiedMountBatchRequest = {
+      requests: [unifiedMountRequest],
+      registry: defaultMountAdapterRegistry.registry,
+    };
     const unifiedMountExecution: RendererUnifiedMountExecution = {
       result: mountResult,
       lifecycleRecord: mountLifecycleRecord,
       diagnosticReport: mountDiagnosticReport,
       report: mountReport,
+    };
+    const unifiedMountBatchExecution: RendererUnifiedMountBatchExecution = {
+      executions: [unifiedMountExecution],
+      lifecycleRecords: [mountLifecycleRecord],
+      reports: [mountReport],
+      summary: mountReportSummary,
     };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
@@ -1229,7 +1244,9 @@ describe("renderer public API", () => {
     expect(defaultMountAdapterRegistry.domAdapter.name).toBe(RendererDefaultMountAdapterNames.Dom);
     expect(targetMountAdapterResolution.adapter).toBe(defaultMountAdapterRegistry.memoryAdapter);
     expect(unifiedMountRequest.registry).toBe(defaultMountAdapterRegistry.registry);
+    expect(unifiedMountBatchRequest.requests[0]).toBe(unifiedMountRequest);
     expect(unifiedMountExecution.report).toBe(mountReport);
+    expect(unifiedMountBatchExecution.summary).toBe(mountReportSummary);
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);

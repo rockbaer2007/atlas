@@ -81,6 +81,8 @@ Assistant or theme execution paths.
 - `RendererMountDiagnosticReport`
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountAdapterResolution`
+- `RendererUnifiedMountBatchExecution`
+- `RendererUnifiedMountBatchRequest`
 - `RendererUnifiedMountExecution`
 - `RendererUnifiedMountRequest`
 - `RendererDomMountAdapter`
@@ -237,6 +239,7 @@ Assistant or theme execution paths.
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
 - `executeRendererDomMountPlan`
 - `executeRendererMountPlan`
+- `executeRendererTargetMountBatch`
 - `executeRendererTargetMount`
 - `executeRendererTargetMountWithReport`
 - `executeRendererPipeline`
@@ -340,6 +343,10 @@ identifiers return stable unmounted results instead of mutating adapter stores.
 Unified target mount executions can also be reported in one step, producing the
 mount result, reported lifecycle record, diagnostic report and mount report from
 the same Memory or DOM routing path.
+Unified target mount batches execute ordered Memory and DOM requests through a
+shared registry, preserve per-request registry overrides, continue across
+routable failure results and summarize reported lifecycle records with the
+existing mount report summary shape.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer unified target mount batches now execute ordered Memory/DOM requests,
+  preserve per-entry registry overrides and summarize reported lifecycle
+  records.
 * Renderer unified target mounts can now emit result, lifecycle, diagnostic and
   report data from the same Memory/DOM adapter routing path.
 * Renderer mount adapter routing now provides a default Memory/DOM registry,
