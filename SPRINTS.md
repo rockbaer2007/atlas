@@ -1843,23 +1843,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1828 | Renderer Integration Handoff Snapshot Catalog Concrete Boundary Preparation Review | Completed | - |
 | G2.5.1829 | Renderer Integration Handoff Snapshot Catalog Concrete Boundary Planning Review | Completed | - |
 | G2.5.1830 | Renderer Integration Handoff Snapshot Catalog Concrete Boundary Gate Review | Completed | - |
-| G2.5.1831 | Renderer Concrete Integration Boundary Review | Planned | - |
+| G2.5.1831 | Renderer Concrete Integration Boundary Review | Completed | - |
+| G2.5.1832 | Renderer Concrete Integration Boundary Contract Review | Completed | - |
+| G2.5.1833 | Renderer Concrete Integration Boundary Shape Review | Completed | - |
+| G2.5.1834 | Renderer Concrete Integration Boundary Ready Review | Completed | - |
+| G2.5.1835 | Renderer Concrete Integration Boundary Blocked Review | Completed | - |
+| G2.5.1836 | Renderer Concrete Integration Boundary Boundary Review | Completed | - |
+| G2.5.1837 | Renderer Concrete Integration Boundary Catalog Reference Review | Completed | - |
+| G2.5.1838 | Renderer Concrete Integration Boundary Issue Count Review | Completed | - |
+| G2.5.1839 | Renderer Concrete Integration Boundary Name Review | Completed | - |
+| G2.5.1840 | Renderer Concrete Integration Boundary Package Root Review | Completed | - |
+| G2.5.1841 | Renderer Concrete Integration Boundary Type Surface Review | Completed | - |
+| G2.5.1842 | Renderer Concrete Integration Boundary Documentation Review | Completed | - |
+| G2.5.1843 | Renderer Concrete Integration Boundary Changelog Review | Completed | - |
+| G2.5.1844 | Renderer Concrete Integration Boundary Regression Review | Completed | - |
+| G2.5.1845 | Renderer Concrete Integration Boundary Public API Review | Completed | - |
+| G2.5.1846 | Renderer Concrete Integration Boundary README Review | Completed | - |
+| G2.5.1847 | Renderer Concrete Integration Boundary Sprint Documentation Review | Completed | - |
+| G2.5.1848 | Renderer Concrete Integration Boundary Workspace Regression Review | Completed | - |
+| G2.5.1849 | Renderer Concrete Integration Boundary Integration Closure Review | Completed | - |
+| G2.5.1850 | Renderer Concrete Integration Boundary Compatibility Review | Completed | - |
+| G2.5.1851 | Renderer Concrete Integration Boundary Transport Boundary Review | Completed | - |
+| G2.5.1852 | Renderer Concrete Integration Boundary DOM Boundary Review | Completed | - |
+| G2.5.1853 | Renderer Concrete Integration Boundary Home Assistant Boundary Review | Completed | - |
+| G2.5.1854 | Renderer Concrete Integration Boundary Theme Boundary Review | Completed | - |
+| G2.5.1855 | Renderer Concrete Integration Boundary Platform Boundary Review | Completed | - |
+| G2.5.1856 | Renderer Concrete Integration Boundary Stability Review | Completed | - |
+| G2.5.1857 | Renderer Concrete Integration Boundary Ready Stability Review | Completed | - |
+| G2.5.1858 | Renderer Concrete Integration Boundary Blocked Stability Review | Completed | - |
+| G2.5.1859 | Renderer Concrete Integration Boundary Issue Stability Review | Completed | - |
+| G2.5.1860 | Renderer Concrete Integration Boundary Context Stability Review | Completed | - |
+| G2.5.1861 | Renderer Concrete Integration Boundary Name Stability Review | Completed | - |
+| G2.5.1862 | Renderer Concrete Integration Boundary Result Boundary Review | Completed | - |
+| G2.5.1863 | Renderer Concrete Integration Boundary Catalog Boundary Review | Completed | - |
+| G2.5.1864 | Renderer Concrete Integration Boundary No Mutation Review | Completed | - |
+| G2.5.1865 | Renderer Concrete Integration Boundary Handler Boundary Review | Completed | - |
+| G2.5.1866 | Renderer Concrete Integration Boundary Consumption Boundary Review | Completed | - |
+| G2.5.1867 | Renderer Concrete Integration Boundary Conflict Boundary Review | Completed | - |
+| G2.5.1868 | Renderer Concrete Integration Boundary Lookup Boundary Review | Completed | - |
+| G2.5.1869 | Renderer Concrete Integration Boundary API Closure Review | Completed | - |
+| G2.5.1870 | Renderer Concrete Integration Boundary Return-To-Catalog Review | Completed | - |
+| G2.5.1871 | Renderer Concrete Integration Boundary Return-To-Snapshot Review | Completed | - |
+| G2.5.1872 | Renderer Concrete Integration Boundary Return-To-Handoff Review | Completed | - |
+| G2.5.1873 | Renderer Concrete Integration Boundary Return-To-Readiness Review | Completed | - |
+| G2.5.1874 | Renderer Concrete Integration Boundary Return-To-Preparation Review | Completed | - |
+| G2.5.1875 | Renderer Concrete Integration Boundary Return-To-Delivery Export Review | Completed | - |
+| G2.5.1876 | Renderer Concrete Integration Boundary Return-To-Diagnostics Review | Completed | - |
+| G2.5.1877 | Renderer Concrete Integration Boundary Decision Preparation Review | Completed | - |
+| G2.5.1878 | Renderer Concrete Integration Boundary Decision Boundary Review | Completed | - |
+| G2.5.1879 | Renderer Concrete Integration Boundary Decision Contract Review | Completed | - |
+| G2.5.1880 | Renderer Concrete Integration Boundary Decision Gate Review | Completed | - |
+| G2.5.1881 | Renderer Concrete Integration Boundary Decision Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1830 - Renderer Integration Handoff Snapshot Catalog Concrete Boundary Gate Review
+## G2.5.1880 - Renderer Concrete Integration Boundary Decision Gate Review
 
 Goal:
 
-Catalog Renderer integration handoff snapshots without enabling concrete integration behavior.
+Review Renderer concrete integration boundaries without enabling concrete integration behavior.
 
 Deliverables:
 
-* Renderer integration handoff snapshot catalog type
-* Snapshot catalog creation helper
-* Ready, blocked, copy and boundary tests
+* Renderer concrete integration boundary review type
+* Boundary review helper
+* Ready, blocked and closure tests
 * Sprint documentation
 
 Status:
@@ -1870,13 +1920,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1831 - Renderer Concrete Integration Boundary Review
+## G2.5.1881 - Renderer Concrete Integration Boundary Decision Review
 
 Suggested focus:
 
-* Decide which concrete integration boundary should open first
-* Keep transport, DOM, Home Assistant, Theme and platform boundaries explicit
-* Preserve handoff snapshot catalog API boundaries
+* Decide how boundary reviews should express first-open candidates
+* Keep decision state data-only
+* Preserve concrete integration boundary review API boundaries
 
 ---
 
@@ -3472,6 +3522,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1681.md`
 * `docs/sprints/Sprint-G2.5.1731.md`
 * `docs/sprints/Sprint-G2.5.1781.md`
+* `docs/sprints/Sprint-G2.5.1831.md`
+* `docs/sprints/Sprint-G2.5.1832.md`
+* `docs/sprints/Sprint-G2.5.1833.md`
+* `docs/sprints/Sprint-G2.5.1834.md`
+* `docs/sprints/Sprint-G2.5.1835.md`
+* `docs/sprints/Sprint-G2.5.1836.md`
+* `docs/sprints/Sprint-G2.5.1837.md`
+* `docs/sprints/Sprint-G2.5.1838.md`
+* `docs/sprints/Sprint-G2.5.1839.md`
+* `docs/sprints/Sprint-G2.5.1840.md`
+* `docs/sprints/Sprint-G2.5.1841.md`
+* `docs/sprints/Sprint-G2.5.1842.md`
+* `docs/sprints/Sprint-G2.5.1843.md`
+* `docs/sprints/Sprint-G2.5.1844.md`
+* `docs/sprints/Sprint-G2.5.1845.md`
+* `docs/sprints/Sprint-G2.5.1846.md`
+* `docs/sprints/Sprint-G2.5.1847.md`
+* `docs/sprints/Sprint-G2.5.1848.md`
+* `docs/sprints/Sprint-G2.5.1849.md`
+* `docs/sprints/Sprint-G2.5.1850.md`
+* `docs/sprints/Sprint-G2.5.1851.md`
+* `docs/sprints/Sprint-G2.5.1852.md`
+* `docs/sprints/Sprint-G2.5.1853.md`
+* `docs/sprints/Sprint-G2.5.1854.md`
+* `docs/sprints/Sprint-G2.5.1855.md`
+* `docs/sprints/Sprint-G2.5.1856.md`
+* `docs/sprints/Sprint-G2.5.1857.md`
+* `docs/sprints/Sprint-G2.5.1858.md`
+* `docs/sprints/Sprint-G2.5.1859.md`
+* `docs/sprints/Sprint-G2.5.1860.md`
+* `docs/sprints/Sprint-G2.5.1861.md`
+* `docs/sprints/Sprint-G2.5.1862.md`
+* `docs/sprints/Sprint-G2.5.1863.md`
+* `docs/sprints/Sprint-G2.5.1864.md`
+* `docs/sprints/Sprint-G2.5.1865.md`
+* `docs/sprints/Sprint-G2.5.1866.md`
+* `docs/sprints/Sprint-G2.5.1867.md`
+* `docs/sprints/Sprint-G2.5.1868.md`
+* `docs/sprints/Sprint-G2.5.1869.md`
+* `docs/sprints/Sprint-G2.5.1870.md`
+* `docs/sprints/Sprint-G2.5.1871.md`
+* `docs/sprints/Sprint-G2.5.1872.md`
+* `docs/sprints/Sprint-G2.5.1873.md`
+* `docs/sprints/Sprint-G2.5.1874.md`
+* `docs/sprints/Sprint-G2.5.1875.md`
+* `docs/sprints/Sprint-G2.5.1876.md`
+* `docs/sprints/Sprint-G2.5.1877.md`
+* `docs/sprints/Sprint-G2.5.1878.md`
+* `docs/sprints/Sprint-G2.5.1879.md`
+* `docs/sprints/Sprint-G2.5.1880.md`
 * `docs/sprints/Sprint-G2.5.1782.md`
 * `docs/sprints/Sprint-G2.5.1783.md`
 * `docs/sprints/Sprint-G2.5.1784.md`

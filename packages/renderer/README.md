@@ -37,6 +37,7 @@ descriptive only and do not mount output yet.
 - `RendererAdapterRegistry`
 - `RendererAdapterSelectionRequest`
 - `RendererAdapterSelectionResult`
+- `RendererConcreteIntegrationBoundaryReview`
 - `RendererMountRequest`
 - `RendererMountResult`
 - `RendererMountDiagnosticCodes`
@@ -172,6 +173,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate`
 - `reviewRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `reviewRendererMountReportConsumerDiagnosticRegistryExecution`
+- `reviewRendererConcreteIntegrationBoundary`
 - `reviewRendererIntegrationPreparationReadiness`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
@@ -521,6 +523,11 @@ names while omitting readiness payloads and concrete integration metadata.
 Renderer integration handoff snapshot catalogs now group compact handoff
 snapshots with ready, blocked and issue counts. Catalogs copy the snapshot list
 at creation time and remain free of concrete integration metadata.
+
+Renderer concrete integration boundary reviews now evaluate handoff snapshot
+catalogs into explicit ready state while keeping transport, DOM, Home
+Assistant, Theme and platform boundaries closed before concrete integration
+behavior is introduced.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

@@ -12,6 +12,7 @@ import type {
   RendererAdapterRegistry,
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
+  RendererConcreteIntegrationBoundaryReview,
   RendererHostContext,
   RendererIntegrationHandoff,
   RendererIntegrationHandoffSnapshot,
@@ -155,6 +156,7 @@ import {
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
   reviewRendererMountReportConsumerDiagnosticDeliveryManifest,
   reviewRendererMountReportConsumerDiagnosticRegistryExecution,
+  reviewRendererConcreteIntegrationBoundary,
   reviewRendererIntegrationPreparationReadiness,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
@@ -247,6 +249,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticDeliveryManifest).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
+    expect(Renderer.reviewRendererConcreteIntegrationBoundary).toBeTypeOf("function");
     expect(Renderer.reviewRendererIntegrationPreparationReadiness).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
@@ -589,6 +592,20 @@ describe("renderer public API", () => {
       blockedCount: 0,
       issueCount: 0,
     };
+    const concreteIntegrationBoundaryReview: RendererConcreteIntegrationBoundaryReview = {
+      kind: "renderer.concrete.integration.boundary.review",
+      name: "type-concrete-integration-boundary-review",
+      ready: true,
+      issueCount: 0,
+      catalog: integrationHandoffSnapshotCatalog,
+      boundaries: {
+        transport: false,
+        dom: false,
+        homeAssistant: false,
+        theme: false,
+        platform: false,
+      },
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -755,6 +772,7 @@ describe("renderer public API", () => {
     expect(integrationHandoff.readiness).toBe(integrationReadiness);
     expect(integrationHandoffSnapshot.handoffName).toBe(integrationHandoff.name);
     expect(integrationHandoffSnapshotCatalog.snapshots[0]).toBe(integrationHandoffSnapshot);
+    expect(concreteIntegrationBoundaryReview.catalog).toBe(integrationHandoffSnapshotCatalog);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3867,6 +3885,70 @@ describe("renderer public API", () => {
     expect(catalog).not.toHaveProperty("readiness");
     expect(catalog).not.toHaveProperty("transport");
     expect(catalog).not.toHaveProperty("element");
+  });
+
+  it("reviews ready Renderer concrete integration boundaries", () => {
+    const catalog = createRendererIntegrationHandoffSnapshotCatalog(
+      "ready-boundary-catalog",
+      [],
+    );
+
+    expect(reviewRendererConcreteIntegrationBoundary(
+      "ready-boundary",
+      catalog,
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.review",
+      name: "ready-boundary",
+      ready: true,
+      issueCount: 0,
+      catalog,
+      boundaries: {
+        transport: false,
+        dom: false,
+        homeAssistant: false,
+        theme: false,
+        platform: false,
+      },
+    });
+  });
+
+  it("reviews blocked Renderer concrete integration boundaries", () => {
+    const catalog = Renderer.createRendererIntegrationHandoffSnapshotCatalog(
+      "blocked-boundary-catalog",
+      [{
+        kind: "renderer.integration.handoff.snapshot",
+        handoffName: "blocked-boundary-handoff",
+        ready: false,
+        issueCount: 8,
+        preparationName: "blocked-boundary-preparation",
+      }],
+    );
+
+    const review = Renderer.reviewRendererConcreteIntegrationBoundary(
+      "blocked-boundary",
+      catalog,
+    );
+
+    expect(review.ready).toBe(false);
+    expect(review.issueCount).toBe(8);
+    expect(review.catalog).toBe(catalog);
+  });
+
+  it("keeps Renderer concrete integration boundary reviews closed", () => {
+    const review = reviewRendererConcreteIntegrationBoundary(
+      "closed-boundary",
+      createRendererIntegrationHandoffSnapshotCatalog("closed-boundary-catalog", []),
+    );
+
+    expect(review.boundaries).toEqual({
+      transport: false,
+      dom: false,
+      homeAssistant: false,
+      theme: false,
+      platform: false,
+    });
+    expect(review).not.toHaveProperty("element");
+    expect(review).not.toHaveProperty("adapter");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

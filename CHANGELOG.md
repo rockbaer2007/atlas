@@ -92,6 +92,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   with preparation names while omitting readiness payloads.
 * Renderer integration handoff snapshot catalogs now group compact handoff
   summaries with copied snapshot lists and ready, blocked and issue counts.
+* Renderer concrete integration boundary reviews now evaluate handoff snapshot
+  catalogs while keeping transport, DOM, Home Assistant, Theme and platform
+  boundaries closed.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

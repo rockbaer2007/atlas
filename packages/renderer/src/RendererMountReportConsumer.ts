@@ -227,6 +227,21 @@ export type RendererIntegrationHandoffSnapshotCatalog = Readonly<{
   issueCount: number;
 }>;
 
+export type RendererConcreteIntegrationBoundaryReview = Readonly<{
+  kind: "renderer.concrete.integration.boundary.review";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  catalog: RendererIntegrationHandoffSnapshotCatalog;
+  boundaries: Readonly<{
+    transport: false;
+    dom: false;
+    homeAssistant: false;
+    theme: false;
+    platform: false;
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -715,6 +730,26 @@ export function createRendererIntegrationHandoffSnapshotCatalog(
     blockedCount: copiedSnapshots.filter(snapshot => !snapshot.ready).length,
     issueCount: copiedSnapshots
       .reduce((issueCount, snapshot) => issueCount + snapshot.issueCount, 0),
+  };
+}
+
+export function reviewRendererConcreteIntegrationBoundary(
+  name: string,
+  catalog: RendererIntegrationHandoffSnapshotCatalog,
+): RendererConcreteIntegrationBoundaryReview {
+  return {
+    kind: "renderer.concrete.integration.boundary.review",
+    name,
+    ready: catalog.blockedCount === 0,
+    issueCount: catalog.issueCount,
+    catalog,
+    boundaries: {
+      transport: false,
+      dom: false,
+      homeAssistant: false,
+      theme: false,
+      platform: false,
+    },
   };
 }
 
