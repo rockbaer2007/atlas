@@ -1993,23 +1993,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1978 | Renderer Concrete Integration Boundary Plan Snapshot Boundary Review | Completed | - |
 | G2.5.1979 | Renderer Concrete Integration Boundary Plan Snapshot Contract Review | Completed | - |
 | G2.5.1980 | Renderer Concrete Integration Boundary Plan Snapshot Gate Review | Completed | - |
-| G2.5.1981 | Renderer Concrete Integration Boundary Plan Snapshot Review | Planned | - |
+| G2.5.1981 | Renderer Concrete Integration Boundary Plan Snapshot Review | Completed | - |
+| G2.5.1982 | Renderer Concrete Integration Boundary Plan Snapshot Contract Review | Completed | - |
+| G2.5.1983 | Renderer Concrete Integration Boundary Plan Snapshot Shape Review | Completed | - |
+| G2.5.1984 | Renderer Concrete Integration Boundary Plan Snapshot Ready Review | Completed | - |
+| G2.5.1985 | Renderer Concrete Integration Boundary Plan Snapshot Blocked Review | Completed | - |
+| G2.5.1986 | Renderer Concrete Integration Boundary Plan Snapshot Boundary Review | Completed | - |
+| G2.5.1987 | Renderer Concrete Integration Boundary Plan Snapshot Plan Reference Review | Completed | - |
+| G2.5.1988 | Renderer Concrete Integration Boundary Plan Snapshot Step Count Review | Completed | - |
+| G2.5.1989 | Renderer Concrete Integration Boundary Plan Snapshot Planned Boundary Review | Completed | - |
+| G2.5.1990 | Renderer Concrete Integration Boundary Plan Snapshot Package Root Review | Completed | - |
+| G2.5.1991 | Renderer Concrete Integration Boundary Plan Snapshot Type Surface Review | Completed | - |
+| G2.5.1992 | Renderer Concrete Integration Boundary Plan Snapshot Documentation Review | Completed | - |
+| G2.5.1993 | Renderer Concrete Integration Boundary Plan Snapshot Changelog Review | Completed | - |
+| G2.5.1994 | Renderer Concrete Integration Boundary Plan Snapshot Regression Review | Completed | - |
+| G2.5.1995 | Renderer Concrete Integration Boundary Plan Snapshot Public API Review | Completed | - |
+| G2.5.1996 | Renderer Concrete Integration Boundary Plan Snapshot README Review | Completed | - |
+| G2.5.1997 | Renderer Concrete Integration Boundary Plan Snapshot Sprint Documentation Review | Completed | - |
+| G2.5.1998 | Renderer Concrete Integration Boundary Plan Snapshot Workspace Regression Review | Completed | - |
+| G2.5.1999 | Renderer Concrete Integration Boundary Plan Snapshot Integration Closure Review | Completed | - |
+| G2.5.2000 | Renderer Concrete Integration Boundary Plan Snapshot Compatibility Review | Completed | - |
+| G2.5.2001 | Renderer Concrete Integration Boundary Plan Snapshot Transport Snapshot Review | Completed | - |
+| G2.5.2002 | Renderer Concrete Integration Boundary Plan Snapshot DOM Snapshot Review | Completed | - |
+| G2.5.2003 | Renderer Concrete Integration Boundary Plan Snapshot Home Assistant Snapshot Review | Completed | - |
+| G2.5.2004 | Renderer Concrete Integration Boundary Plan Snapshot Theme Snapshot Review | Completed | - |
+| G2.5.2005 | Renderer Concrete Integration Boundary Plan Snapshot Platform Snapshot Review | Completed | - |
+| G2.5.2006 | Renderer Concrete Integration Boundary Plan Snapshot Stability Review | Completed | - |
+| G2.5.2007 | Renderer Concrete Integration Boundary Plan Snapshot Ready Stability Review | Completed | - |
+| G2.5.2008 | Renderer Concrete Integration Boundary Plan Snapshot Blocked Stability Review | Completed | - |
+| G2.5.2009 | Renderer Concrete Integration Boundary Plan Snapshot Issue Stability Review | Completed | - |
+| G2.5.2010 | Renderer Concrete Integration Boundary Plan Snapshot Context Stability Review | Completed | - |
+| G2.5.2011 | Renderer Concrete Integration Boundary Plan Snapshot Name Stability Review | Completed | - |
+| G2.5.2012 | Renderer Concrete Integration Boundary Plan Snapshot Result Boundary Review | Completed | - |
+| G2.5.2013 | Renderer Concrete Integration Boundary Plan Snapshot Snapshot Boundary Review | Completed | - |
+| G2.5.2014 | Renderer Concrete Integration Boundary Plan Snapshot No Mutation Review | Completed | - |
+| G2.5.2015 | Renderer Concrete Integration Boundary Plan Snapshot Handler Boundary Review | Completed | - |
+| G2.5.2016 | Renderer Concrete Integration Boundary Plan Snapshot Consumption Boundary Review | Completed | - |
+| G2.5.2017 | Renderer Concrete Integration Boundary Plan Snapshot Conflict Boundary Review | Completed | - |
+| G2.5.2018 | Renderer Concrete Integration Boundary Plan Snapshot Lookup Boundary Review | Completed | - |
+| G2.5.2019 | Renderer Concrete Integration Boundary Plan Snapshot API Closure Review | Completed | - |
+| G2.5.2020 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Plan Review | Completed | - |
+| G2.5.2021 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Decision Review | Completed | - |
+| G2.5.2022 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Review Review | Completed | - |
+| G2.5.2023 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Catalog Review | Completed | - |
+| G2.5.2024 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Handoff Review | Completed | - |
+| G2.5.2025 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Readiness Review | Completed | - |
+| G2.5.2026 | Renderer Concrete Integration Boundary Plan Snapshot Return-To-Preparation Review | Completed | - |
+| G2.5.2027 | Renderer Concrete Integration Boundary Plan Snapshot Catalog Preparation Review | Completed | - |
+| G2.5.2028 | Renderer Concrete Integration Boundary Plan Snapshot Catalog Boundary Review | Completed | - |
+| G2.5.2029 | Renderer Concrete Integration Boundary Plan Snapshot Catalog Contract Review | Completed | - |
+| G2.5.2030 | Renderer Concrete Integration Boundary Plan Snapshot Catalog Gate Review | Completed | - |
+| G2.5.2031 | Renderer Concrete Integration Boundary Plan Snapshot Catalog Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1980 - Renderer Concrete Integration Boundary Plan Snapshot Gate Review
+## G2.5.2030 - Renderer Concrete Integration Boundary Plan Snapshot Catalog Gate Review
 
 Goal:
 
-Wrap Renderer concrete integration boundary decisions in data-only plans.
+Snapshot Renderer concrete integration boundary plans into compact summaries.
 
 Deliverables:
 
-* Renderer concrete integration boundary plan type
-* Boundary plan helper
-* Ready, blocked and data-only tests
+* Renderer concrete integration boundary plan snapshot type
+* Boundary plan snapshot helper
+* Ready, blocked and compactness tests
 * Sprint documentation
 
 Status:
@@ -2020,13 +2070,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1981 - Renderer Concrete Integration Boundary Plan Snapshot Review
+## G2.5.2031 - Renderer Concrete Integration Boundary Plan Snapshot Catalog Review
 
 Suggested focus:
 
-* Decide whether boundary plans need compact snapshots
-* Keep snapshots data-only
-* Preserve boundary plan API boundaries
+* Decide whether boundary plan snapshots need catalog summaries
+* Keep catalogs data-only
+* Preserve boundary plan snapshot API boundaries
 
 ---
 
@@ -3625,6 +3675,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1831.md`
 * `docs/sprints/Sprint-G2.5.1881.md`
 * `docs/sprints/Sprint-G2.5.1931.md`
+* `docs/sprints/Sprint-G2.5.1981.md`
+* `docs/sprints/Sprint-G2.5.1982.md`
+* `docs/sprints/Sprint-G2.5.1983.md`
+* `docs/sprints/Sprint-G2.5.1984.md`
+* `docs/sprints/Sprint-G2.5.1985.md`
+* `docs/sprints/Sprint-G2.5.1986.md`
+* `docs/sprints/Sprint-G2.5.1987.md`
+* `docs/sprints/Sprint-G2.5.1988.md`
+* `docs/sprints/Sprint-G2.5.1989.md`
+* `docs/sprints/Sprint-G2.5.1990.md`
+* `docs/sprints/Sprint-G2.5.1991.md`
+* `docs/sprints/Sprint-G2.5.1992.md`
+* `docs/sprints/Sprint-G2.5.1993.md`
+* `docs/sprints/Sprint-G2.5.1994.md`
+* `docs/sprints/Sprint-G2.5.1995.md`
+* `docs/sprints/Sprint-G2.5.1996.md`
+* `docs/sprints/Sprint-G2.5.1997.md`
+* `docs/sprints/Sprint-G2.5.1998.md`
+* `docs/sprints/Sprint-G2.5.1999.md`
+* `docs/sprints/Sprint-G2.5.2000.md`
+* `docs/sprints/Sprint-G2.5.2001.md`
+* `docs/sprints/Sprint-G2.5.2002.md`
+* `docs/sprints/Sprint-G2.5.2003.md`
+* `docs/sprints/Sprint-G2.5.2004.md`
+* `docs/sprints/Sprint-G2.5.2005.md`
+* `docs/sprints/Sprint-G2.5.2006.md`
+* `docs/sprints/Sprint-G2.5.2007.md`
+* `docs/sprints/Sprint-G2.5.2008.md`
+* `docs/sprints/Sprint-G2.5.2009.md`
+* `docs/sprints/Sprint-G2.5.2010.md`
+* `docs/sprints/Sprint-G2.5.2011.md`
+* `docs/sprints/Sprint-G2.5.2012.md`
+* `docs/sprints/Sprint-G2.5.2013.md`
+* `docs/sprints/Sprint-G2.5.2014.md`
+* `docs/sprints/Sprint-G2.5.2015.md`
+* `docs/sprints/Sprint-G2.5.2016.md`
+* `docs/sprints/Sprint-G2.5.2017.md`
+* `docs/sprints/Sprint-G2.5.2018.md`
+* `docs/sprints/Sprint-G2.5.2019.md`
+* `docs/sprints/Sprint-G2.5.2020.md`
+* `docs/sprints/Sprint-G2.5.2021.md`
+* `docs/sprints/Sprint-G2.5.2022.md`
+* `docs/sprints/Sprint-G2.5.2023.md`
+* `docs/sprints/Sprint-G2.5.2024.md`
+* `docs/sprints/Sprint-G2.5.2025.md`
+* `docs/sprints/Sprint-G2.5.2026.md`
+* `docs/sprints/Sprint-G2.5.2027.md`
+* `docs/sprints/Sprint-G2.5.2028.md`
+* `docs/sprints/Sprint-G2.5.2029.md`
+* `docs/sprints/Sprint-G2.5.2030.md`
 * `docs/sprints/Sprint-G2.5.1932.md`
 * `docs/sprints/Sprint-G2.5.1933.md`
 * `docs/sprints/Sprint-G2.5.1934.md`

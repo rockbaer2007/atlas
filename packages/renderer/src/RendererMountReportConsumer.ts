@@ -262,6 +262,15 @@ export type RendererConcreteIntegrationBoundaryPlan = Readonly<{
   plannedBoundary?: string;
 }>;
 
+export type RendererConcreteIntegrationBoundaryPlanSnapshot = Readonly<{
+  kind: "renderer.concrete.integration.boundary.plan.snapshot";
+  planName: string;
+  ready: boolean;
+  issueCount: number;
+  stepCount: number;
+  plannedBoundary?: string;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -802,6 +811,19 @@ export function createRendererConcreteIntegrationBoundaryPlan(
     decision,
     steps: ["review", "decide", "prepare"],
     ...(decision.selectedBoundary ? { plannedBoundary: decision.selectedBoundary } : {}),
+  };
+}
+
+export function snapshotRendererConcreteIntegrationBoundaryPlan(
+  plan: RendererConcreteIntegrationBoundaryPlan,
+): RendererConcreteIntegrationBoundaryPlanSnapshot {
+  return {
+    kind: "renderer.concrete.integration.boundary.plan.snapshot",
+    planName: plan.name,
+    ready: plan.ready,
+    issueCount: plan.issueCount,
+    stepCount: plan.steps.length,
+    ...(plan.plannedBoundary ? { plannedBoundary: plan.plannedBoundary } : {}),
   };
 }
 

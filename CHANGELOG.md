@@ -99,6 +99,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   first-open candidates from boundary reviews.
 * Renderer concrete integration boundary plans now wrap decisions in data-only
   preparation steps without execution hooks.
+* Renderer concrete integration boundary plan snapshots now expose compact plan
+  summaries without decision payloads.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
