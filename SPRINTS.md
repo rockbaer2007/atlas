@@ -2843,23 +2843,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.2828 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Boundary Review | Completed | - |
 | G2.5.2829 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Contract Review | Completed | - |
 | G2.5.2830 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Gate Review | Completed | - |
-| G2.5.2831 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Review | Planned | - |
+| G2.5.2831 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Review | Completed | - |
+| G2.5.2832 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Contract Review | Completed | - |
+| G2.5.2833 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Shape Review | Completed | - |
+| G2.5.2834 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Ready Review | Completed | - |
+| G2.5.2835 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Blocked Review | Completed | - |
+| G2.5.2836 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Boundary Review | Completed | - |
+| G2.5.2837 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Snapshot Reference Review | Completed | - |
+| G2.5.2838 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Issue Count Review | Completed | - |
+| G2.5.2839 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Executable Count Review | Completed | - |
+| G2.5.2840 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Package Root Review | Completed | - |
+| G2.5.2841 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Type Surface Review | Completed | - |
+| G2.5.2842 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Documentation Review | Completed | - |
+| G2.5.2843 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Changelog Review | Completed | - |
+| G2.5.2844 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Regression Review | Completed | - |
+| G2.5.2845 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Public API Review | Completed | - |
+| G2.5.2846 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog README Review | Completed | - |
+| G2.5.2847 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Sprint Documentation Review | Completed | - |
+| G2.5.2848 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Workspace Regression Review | Completed | - |
+| G2.5.2849 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Integration Closure Review | Completed | - |
+| G2.5.2850 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Compatibility Review | Completed | - |
+| G2.5.2851 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Transport Catalog Review | Completed | - |
+| G2.5.2852 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog DOM Catalog Review | Completed | - |
+| G2.5.2853 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Home Assistant Catalog Review | Completed | - |
+| G2.5.2854 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Theme Catalog Review | Completed | - |
+| G2.5.2855 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Platform Catalog Review | Completed | - |
+| G2.5.2856 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Stability Review | Completed | - |
+| G2.5.2857 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Ready Stability Review | Completed | - |
+| G2.5.2858 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Blocked Stability Review | Completed | - |
+| G2.5.2859 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Issue Stability Review | Completed | - |
+| G2.5.2860 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Context Stability Review | Completed | - |
+| G2.5.2861 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Name Stability Review | Completed | - |
+| G2.5.2862 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Result Boundary Review | Completed | - |
+| G2.5.2863 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Catalog Boundary Review | Completed | - |
+| G2.5.2864 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog No Mutation Review | Completed | - |
+| G2.5.2865 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Handler Boundary Review | Completed | - |
+| G2.5.2866 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Consumption Boundary Review | Completed | - |
+| G2.5.2867 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Conflict Boundary Review | Completed | - |
+| G2.5.2868 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Lookup Boundary Review | Completed | - |
+| G2.5.2869 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog API Closure Review | Completed | - |
+| G2.5.2870 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Snapshot Review | Completed | - |
+| G2.5.2871 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Handoff Review | Completed | - |
+| G2.5.2872 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Catalog Review | Completed | - |
+| G2.5.2873 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Finalization Review | Completed | - |
+| G2.5.2874 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Export Review | Completed | - |
+| G2.5.2875 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Delivery Review | Completed | - |
+| G2.5.2876 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Return-To-Closure Review | Completed | - |
+| G2.5.2877 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Export Preparation Review | Completed | - |
+| G2.5.2878 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Export Boundary Review | Completed | - |
+| G2.5.2879 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Export Contract Review | Completed | - |
+| G2.5.2880 | Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Export Gate Review | Completed | - |
+| G2.5.2881 | Renderer Concrete Integration Boundary Finalization Export Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.2830 - Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Gate Review
+## G2.5.2880 - Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Export Gate Review
 
 Goal:
 
-Snapshot Renderer concrete integration boundary finalization handoffs without enabling execution.
+Catalog Renderer concrete integration boundary finalization handoff snapshots without enabling execution.
 
 Deliverables:
 
-* Renderer concrete integration boundary finalization handoff snapshot type
-* Finalization handoff snapshot helper
-* Ready, blocked and compactness tests
+* Renderer concrete integration boundary finalization handoff snapshot catalog type
+* Finalization handoff snapshot catalog helper
+* Ready, blocked, copy and non-executable tests
 * Sprint documentation
 
 Status:
@@ -2870,13 +2920,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.2831 - Renderer Concrete Integration Boundary Finalization Handoff Snapshot Catalog Review
+## G2.5.2881 - Renderer Concrete Integration Boundary Finalization Export Review
 
 Suggested focus:
 
-* Decide whether finalization handoff snapshots need catalog summaries
-* Keep handoff snapshot catalogs non-executable
-* Preserve finalization handoff snapshot API boundaries
+* Decide whether finalization handoff snapshot catalogs need export envelopes
+* Keep finalization exports non-executable
+* Preserve handoff snapshot catalog API boundaries
 
 ---
 
@@ -4492,6 +4542,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.2681.md`
 * `docs/sprints/Sprint-G2.5.2731.md`
 * `docs/sprints/Sprint-G2.5.2781.md`
+* `docs/sprints/Sprint-G2.5.2831.md`
+* `docs/sprints/Sprint-G2.5.2832.md`
+* `docs/sprints/Sprint-G2.5.2833.md`
+* `docs/sprints/Sprint-G2.5.2834.md`
+* `docs/sprints/Sprint-G2.5.2835.md`
+* `docs/sprints/Sprint-G2.5.2836.md`
+* `docs/sprints/Sprint-G2.5.2837.md`
+* `docs/sprints/Sprint-G2.5.2838.md`
+* `docs/sprints/Sprint-G2.5.2839.md`
+* `docs/sprints/Sprint-G2.5.2840.md`
+* `docs/sprints/Sprint-G2.5.2841.md`
+* `docs/sprints/Sprint-G2.5.2842.md`
+* `docs/sprints/Sprint-G2.5.2843.md`
+* `docs/sprints/Sprint-G2.5.2844.md`
+* `docs/sprints/Sprint-G2.5.2845.md`
+* `docs/sprints/Sprint-G2.5.2846.md`
+* `docs/sprints/Sprint-G2.5.2847.md`
+* `docs/sprints/Sprint-G2.5.2848.md`
+* `docs/sprints/Sprint-G2.5.2849.md`
+* `docs/sprints/Sprint-G2.5.2850.md`
+* `docs/sprints/Sprint-G2.5.2851.md`
+* `docs/sprints/Sprint-G2.5.2852.md`
+* `docs/sprints/Sprint-G2.5.2853.md`
+* `docs/sprints/Sprint-G2.5.2854.md`
+* `docs/sprints/Sprint-G2.5.2855.md`
+* `docs/sprints/Sprint-G2.5.2856.md`
+* `docs/sprints/Sprint-G2.5.2857.md`
+* `docs/sprints/Sprint-G2.5.2858.md`
+* `docs/sprints/Sprint-G2.5.2859.md`
+* `docs/sprints/Sprint-G2.5.2860.md`
+* `docs/sprints/Sprint-G2.5.2861.md`
+* `docs/sprints/Sprint-G2.5.2862.md`
+* `docs/sprints/Sprint-G2.5.2863.md`
+* `docs/sprints/Sprint-G2.5.2864.md`
+* `docs/sprints/Sprint-G2.5.2865.md`
+* `docs/sprints/Sprint-G2.5.2866.md`
+* `docs/sprints/Sprint-G2.5.2867.md`
+* `docs/sprints/Sprint-G2.5.2868.md`
+* `docs/sprints/Sprint-G2.5.2869.md`
+* `docs/sprints/Sprint-G2.5.2870.md`
+* `docs/sprints/Sprint-G2.5.2871.md`
+* `docs/sprints/Sprint-G2.5.2872.md`
+* `docs/sprints/Sprint-G2.5.2873.md`
+* `docs/sprints/Sprint-G2.5.2874.md`
+* `docs/sprints/Sprint-G2.5.2875.md`
+* `docs/sprints/Sprint-G2.5.2876.md`
+* `docs/sprints/Sprint-G2.5.2877.md`
+* `docs/sprints/Sprint-G2.5.2878.md`
+* `docs/sprints/Sprint-G2.5.2879.md`
+* `docs/sprints/Sprint-G2.5.2880.md`
 * `docs/sprints/Sprint-G2.5.2782.md`
 * `docs/sprints/Sprint-G2.5.2783.md`
 * `docs/sprints/Sprint-G2.5.2784.md`
