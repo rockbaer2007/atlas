@@ -41,6 +41,17 @@ export type RendererMountReportConsumerSelectionResult = Readonly<{
   consumer?: RendererMountReportConsumer;
 }>;
 
+export type RendererMountReportConsumerConflict = Readonly<{
+  name: string;
+  consumers: readonly RendererMountReportConsumer[];
+}>;
+
+export type RendererMountReportConsumerConflictResolution = Readonly<{
+  conflict: RendererMountReportConsumerConflict;
+  resolved: boolean;
+  consumer?: RendererMountReportConsumer;
+}>;
+
 export function createRendererMountReportConsumer(
   consumer: RendererMountReportConsumer,
 ): RendererMountReportConsumer {
@@ -90,6 +101,24 @@ export function createRendererMountReportConsumerSelectionResult(
   };
 }
 
+export function createRendererMountReportConsumerConflict(
+  conflict: RendererMountReportConsumerConflict,
+): RendererMountReportConsumerConflict {
+  return {
+    ...conflict,
+    consumers: [...conflict.consumers],
+  };
+}
+
+export function createRendererMountReportConsumerConflictResolution(
+  resolution: RendererMountReportConsumerConflictResolution,
+): RendererMountReportConsumerConflictResolution {
+  return {
+    ...resolution,
+    conflict: createRendererMountReportConsumerConflict(resolution.conflict),
+  };
+}
+
 export function findRendererMountReportConsumer(
   registry: RendererMountReportConsumerRegistry,
   request: RendererMountReportConsumerLookupRequest,
@@ -102,6 +131,25 @@ export function findRendererMountReportConsumer(
   });
 }
 
+export function findRendererMountReportConsumerConflicts(
+  registry: RendererMountReportConsumerRegistry,
+): readonly RendererMountReportConsumerConflict[] {
+  const consumersByName = new Map<string, RendererMountReportConsumer[]>();
+
+  for (const consumer of registry.consumers) {
+    const consumers = consumersByName.get(consumer.name) ?? [];
+    consumers.push(consumer);
+    consumersByName.set(consumer.name, consumers);
+  }
+
+  return [...consumersByName.entries()]
+    .filter(([, consumers]) => consumers.length > 1)
+    .map(([name, consumers]) => createRendererMountReportConsumerConflict({
+      name,
+      consumers,
+    }));
+}
+
 export function selectFirstRendererMountReportConsumerCandidate(
   request: RendererMountReportConsumerSelectionRequest,
 ): RendererMountReportConsumerSelectionResult {
@@ -111,6 +159,30 @@ export function selectFirstRendererMountReportConsumerCandidate(
     name: request.name,
     ...(consumer ? { consumer } : {}),
   });
+}
+
+export function resolveRendererMountReportConsumerConflictWithFirstCandidate(
+  conflict: RendererMountReportConsumerConflict,
+): RendererMountReportConsumerConflictResolution {
+  const selection = selectFirstRendererMountReportConsumerCandidate(
+    createRendererMountReportConsumerSelectionRequest({
+      name: conflict.name,
+      candidates: conflict.consumers,
+    }),
+  );
+
+  return createRendererMountReportConsumerConflictResolution({
+    conflict,
+    resolved: Boolean(selection.consumer),
+    ...(selection.consumer ? { consumer: selection.consumer } : {}),
+  });
+}
+
+export function resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate(
+  registry: RendererMountReportConsumerRegistry,
+): readonly RendererMountReportConsumerConflictResolution[] {
+  return findRendererMountReportConsumerConflicts(registry)
+    .map(resolveRendererMountReportConsumerConflictWithFirstCandidate);
 }
 
 export async function consumeRendererMountReports(

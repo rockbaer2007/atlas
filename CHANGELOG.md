@@ -36,6 +36,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer registries now add generic lookup and
   first-candidate selection while preserving consumer references and avoiding
   handler execution during selection.
+* Renderer mount report consumer registry conflicts now detect duplicate
+  consumer names and resolve them with the existing first-candidate policy
+  without invoking consumer handlers.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

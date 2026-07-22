@@ -24,6 +24,8 @@ import type {
   RendererMountPlanStatus,
   RendererMountPlanStrategy,
   RendererMountReportConsumer,
+  RendererMountReportConsumerConflict,
+  RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerLookupRequest,
   RendererMountReportConsumerLookupResult,
   RendererMountReportConsumerOutput,
@@ -70,6 +72,8 @@ import {
   createRendererMountLifecycleRecord,
   createRendererMountReport,
   createRendererMountReportConsumer,
+  createRendererMountReportConsumerConflict,
+  createRendererMountReportConsumerConflictResolution,
   createRendererMountReportConsumerLookupRequest,
   createRendererMountReportConsumerLookupResult,
   createRendererMountReportConsumerRegistry,
@@ -97,6 +101,7 @@ import {
   findRendererAdapter,
   findRendererAdapterConflicts,
   findRendererMountReportConsumer,
+  findRendererMountReportConsumerConflicts,
   findRendererPlatformAdapter,
   findRendererPlatformAdapterConflicts,
   inspectRendererMountResult,
@@ -109,6 +114,8 @@ import {
   mountResolvedRendererPlatformAdapter,
   resolveRendererAdapterConflictWithFirstCandidate,
   resolveRendererAdapterRegistryConflictsWithFirstCandidate,
+  resolveRendererMountReportConsumerConflictWithFirstCandidate,
+  resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate,
   resolveRendererPlatformAdapterConflictWithFirstCandidate,
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
@@ -133,6 +140,8 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountReport).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumer).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerConflict).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerConflictResolution).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerRegistry).toBeTypeOf("function");
@@ -158,6 +167,7 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.findRendererMountReportConsumer).toBeTypeOf("function");
+    expect(Renderer.findRendererMountReportConsumerConflicts).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountLifecycleRecord).toBeTypeOf("function");
@@ -171,6 +181,8 @@ describe("renderer public API", () => {
     expect(Renderer.recordRendererMountLifecycleReport).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.resolveRendererMountReportConsumerConflictWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
@@ -306,6 +318,15 @@ describe("renderer public API", () => {
       name: "type-consumer",
       consume: () => mountReportConsumerOutput,
     };
+    const mountReportConsumerConflict: RendererMountReportConsumerConflict = {
+      name: mountReportConsumer.name,
+      consumers: [mountReportConsumer],
+    };
+    const mountReportConsumerConflictResolution: RendererMountReportConsumerConflictResolution = {
+      conflict: mountReportConsumerConflict,
+      resolved: true,
+      consumer: mountReportConsumer,
+    };
     const mountReportConsumerRegistry: RendererMountReportConsumerRegistry = {
       consumers: [mountReportConsumer],
     };
@@ -432,6 +453,8 @@ describe("renderer public API", () => {
     expect(mountReportConsumption.reports[0]).toBe(mountReport);
     expect(mountReportSummary.total).toBe(1);
     expect(mountReportConsumer.consume(mountReportConsumption)).toBe(mountReportConsumerResult);
+    expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
+    expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerLookupRequest.name).toBe(mountReportConsumer.name);
     expect(mountReportConsumerLookupResult.consumer).toBe(mountReportConsumer);
@@ -2407,6 +2430,239 @@ describe("renderer public API", () => {
     expect(registry).not.toHaveProperty("theme");
     expect(registry).not.toHaveProperty("homeAssistant");
     expect(registry).not.toHaveProperty("element");
+  });
+
+  it("creates Renderer mount report consumer conflicts", () => {
+    const first = createRendererMountReportConsumer({
+      name: "conflict-consumer",
+      consume: consumption => ({
+        consumerName: "conflict-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "conflict-consumer",
+      consume: consumption => ({
+        consumerName: "conflict-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(createRendererMountReportConsumerConflict({
+      name: "conflict-consumer",
+      consumers: [first, second],
+    })).toEqual({
+      name: "conflict-consumer",
+      consumers: [first, second],
+    });
+  });
+
+  it("keeps Renderer mount report consumer conflict consumers independent from source arrays", () => {
+    const first = createRendererMountReportConsumer({
+      name: "copy-conflict-consumer",
+      consume: consumption => ({
+        consumerName: "copy-conflict-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "copy-conflict-consumer",
+      consume: consumption => ({
+        consumerName: "copy-conflict-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const consumers = [first];
+
+    const conflict = createRendererMountReportConsumerConflict({
+      name: "copy-conflict-consumer",
+      consumers,
+    });
+    consumers.push(second);
+
+    expect(conflict.consumers).toEqual([first]);
+  });
+
+  it("finds Renderer mount report consumer registry conflicts", () => {
+    const first = createRendererMountReportConsumer({
+      name: "duplicate-consumer",
+      consume: consumption => ({
+        consumerName: "duplicate-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "duplicate-consumer",
+      consume: consumption => ({
+        consumerName: "duplicate-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const unique = createRendererMountReportConsumer({
+      name: "unique-consumer",
+      consume: consumption => ({
+        consumerName: "unique-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(findRendererMountReportConsumerConflicts(
+      createRendererMountReportConsumerRegistry([first, unique, second]),
+    )).toEqual([{
+      name: "duplicate-consumer",
+      consumers: [first, second],
+    }]);
+  });
+
+  it("reports no Renderer mount report consumer conflicts for unique registries", () => {
+    const registry = createRendererMountReportConsumerRegistry([
+      createRendererMountReportConsumer({
+        name: "first-unique-consumer",
+        consume: consumption => ({
+          consumerName: "first-unique-consumer",
+          consumed: true,
+          summary: consumption.summary,
+        }),
+      }),
+      createRendererMountReportConsumer({
+        name: "second-unique-consumer",
+        consume: consumption => ({
+          consumerName: "second-unique-consumer",
+          consumed: true,
+          summary: consumption.summary,
+        }),
+      }),
+    ]);
+
+    expect(Renderer.findRendererMountReportConsumerConflicts(registry)).toEqual([]);
+  });
+
+  it("creates Renderer mount report consumer conflict resolutions", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "resolution-consumer",
+      consume: consumption => ({
+        consumerName: "resolution-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const conflict = createRendererMountReportConsumerConflict({
+      name: consumer.name,
+      consumers: [consumer],
+    });
+
+    expect(createRendererMountReportConsumerConflictResolution({
+      conflict,
+      resolved: true,
+      consumer,
+    })).toEqual({
+      conflict,
+      resolved: true,
+      consumer,
+    });
+  });
+
+  it("resolves Renderer mount report consumer conflicts with first candidates", () => {
+    const first = createRendererMountReportConsumer({
+      name: "resolved-consumer",
+      consume: consumption => ({
+        consumerName: "resolved-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "resolved-consumer",
+      consume: consumption => ({
+        consumerName: "resolved-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const conflict = createRendererMountReportConsumerConflict({
+      name: "resolved-consumer",
+      consumers: [first, second],
+    });
+
+    expect(resolveRendererMountReportConsumerConflictWithFirstCandidate(
+      conflict,
+    )).toEqual({
+      conflict,
+      resolved: true,
+      consumer: first,
+    });
+  });
+
+  it("resolves Renderer mount report consumer registry conflicts with first candidates", () => {
+    const first = createRendererMountReportConsumer({
+      name: "registry-resolution-consumer",
+      consume: consumption => ({
+        consumerName: "registry-resolution-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "registry-resolution-consumer",
+      consume: consumption => ({
+        consumerName: "registry-resolution-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate(
+      createRendererMountReportConsumerRegistry([first, second]),
+    )).toEqual([{
+      conflict: {
+        name: "registry-resolution-consumer",
+        consumers: [first, second],
+      },
+      resolved: true,
+      consumer: first,
+    }]);
+  });
+
+  it("resolves Renderer mount report consumer conflicts without consuming reports", () => {
+    let consumed = false;
+    const consumer = createRendererMountReportConsumer({
+      name: "no-consume-conflict-consumer",
+      consume: consumption => {
+        consumed = true;
+
+        return {
+          consumerName: "no-consume-conflict-consumer",
+          consumed: true,
+          summary: consumption.summary,
+        };
+      },
+    });
+
+    resolveRendererMountReportConsumerConflictWithFirstCandidate({
+      name: consumer.name,
+      consumers: [consumer, consumer],
+    });
+
+    expect(consumed).toBe(false);
+  });
+
+  it("keeps Renderer mount report consumer conflicts free of integration metadata", () => {
+    const conflict = createRendererMountReportConsumerConflict({
+      name: "boundary-conflict-consumer",
+      consumers: [],
+    });
+
+    expect(conflict).not.toHaveProperty("platform");
+    expect(conflict).not.toHaveProperty("theme");
+    expect(conflict).not.toHaveProperty("homeAssistant");
+    expect(conflict).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

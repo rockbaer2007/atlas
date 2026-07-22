@@ -47,6 +47,8 @@ descriptive only and do not mount output yet.
 - `RendererMountPlanStrategy`
 - `RendererMountReport`
 - `RendererMountReportConsumer`
+- `RendererMountReportConsumerConflict`
+- `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerLookupRequest`
 - `RendererMountReportConsumerLookupResult`
 - `RendererMountReportConsumerOutput`
@@ -88,6 +90,8 @@ descriptive only and do not mount output yet.
 - `createRendererMountPlan`
 - `createRendererMountReport`
 - `createRendererMountReportConsumer`
+- `createRendererMountReportConsumerConflict`
+- `createRendererMountReportConsumerConflictResolution`
 - `createRendererMountReportConsumerLookupRequest`
 - `createRendererMountReportConsumerLookupResult`
 - `createRendererMountReportConsumerRegistry`
@@ -114,6 +118,7 @@ descriptive only and do not mount output yet.
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
 - `findRendererMountReportConsumer`
+- `findRendererMountReportConsumerConflicts`
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
 - `inspectRendererMountLifecycleRecord`
@@ -126,6 +131,8 @@ descriptive only and do not mount output yet.
 - `recordRendererMountLifecycleReport`
 - `resolveRendererAdapterConflictWithFirstCandidate`
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
+- `resolveRendererMountReportConsumerConflictWithFirstCandidate`
+- `resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -355,6 +362,11 @@ and first-candidate selection. Registries and selection requests copy their
 source arrays, lookup and selection preserve consumer references, and selection
 does not invoke consumer handlers or add DOM, Home Assistant, Theme or platform
 metadata.
+
+Renderer mount report consumer registry conflicts now detect duplicate consumer
+names, preserve conflicting consumer references, and resolve duplicates with
+the existing first-candidate policy. Conflict detection and resolution do not
+invoke consumer handlers or add DOM, Home Assistant, Theme or platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
