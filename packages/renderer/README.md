@@ -25,6 +25,7 @@ descriptive only and do not mount output yet.
 - `RendererHostContext`
 - `RendererIntegrationHandoff`
 - `RendererIntegrationHandoffSnapshot`
+- `RendererIntegrationHandoffSnapshotCatalog`
 - `RendererIntegrationPreparation`
 - `RendererIntegrationReadiness`
 - `RendererAdapter`
@@ -110,6 +111,7 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
 - `createRendererIntegrationHandoff`
+- `createRendererIntegrationHandoffSnapshotCatalog`
 - `createRendererIntegrationPreparation`
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
@@ -515,6 +517,10 @@ or platform execution.
 Renderer integration handoff snapshots now expose compact handoff summaries.
 Snapshots preserve handoff names, ready state, issue counts and preparation
 names while omitting readiness payloads and concrete integration metadata.
+
+Renderer integration handoff snapshot catalogs now group compact handoff
+snapshots with ready, blocked and issue counts. Catalogs copy the snapshot list
+at creation time and remain free of concrete integration metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

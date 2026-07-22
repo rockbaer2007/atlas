@@ -15,6 +15,7 @@ import type {
   RendererHostContext,
   RendererIntegrationHandoff,
   RendererIntegrationHandoffSnapshot,
+  RendererIntegrationHandoffSnapshotCatalog,
   RendererIntegrationPreparation,
   RendererIntegrationReadiness,
   RendererMountDiagnosticReport,
@@ -112,6 +113,7 @@ import {
   createRendererOutput,
   createRendererHostContext,
   createRendererIntegrationHandoff,
+  createRendererIntegrationHandoffSnapshotCatalog,
   createRendererIntegrationPreparation,
   createRendererPipeline,
   createRendererPlatformAdapter,
@@ -175,6 +177,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoff).toBeTypeOf("function");
+    expect(Renderer.createRendererIntegrationHandoffSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationPreparation).toBeTypeOf("function");
     expect(Renderer.createDefaultRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
@@ -578,6 +581,14 @@ describe("renderer public API", () => {
       issueCount: 0,
       preparationName: integrationPreparation.name,
     };
+    const integrationHandoffSnapshotCatalog: RendererIntegrationHandoffSnapshotCatalog = {
+      kind: "renderer.integration.handoff.snapshot.catalog",
+      name: "type-integration-handoff-snapshot-catalog",
+      snapshots: [integrationHandoffSnapshot],
+      readyCount: 1,
+      blockedCount: 0,
+      issueCount: 0,
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -743,6 +754,7 @@ describe("renderer public API", () => {
     expect(integrationReadiness.context.preparationName).toBe(integrationPreparation.name);
     expect(integrationHandoff.readiness).toBe(integrationReadiness);
     expect(integrationHandoffSnapshot.handoffName).toBe(integrationHandoff.name);
+    expect(integrationHandoffSnapshotCatalog.snapshots[0]).toBe(integrationHandoffSnapshot);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3767,6 +3779,94 @@ describe("renderer public API", () => {
     expect(snapshot).not.toHaveProperty("readiness");
     expect(snapshot).not.toHaveProperty("transport");
     expect(snapshot).not.toHaveProperty("element");
+  });
+
+  it("catalogs ready Renderer integration handoff snapshots", () => {
+    const snapshot = snapshotRendererIntegrationHandoff(
+      createRendererIntegrationHandoff(
+        "ready-catalog-handoff",
+        reviewRendererIntegrationPreparationReadiness(
+          createRendererIntegrationPreparation(
+            "ready-catalog-preparation",
+            createRendererMountReportConsumerDiagnosticDeliveryExport(
+              "ready-catalog-export",
+              createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+                "ready-catalog-export-catalog",
+                [],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(createRendererIntegrationHandoffSnapshotCatalog(
+      "ready-catalog",
+      [snapshot],
+    )).toEqual({
+      kind: "renderer.integration.handoff.snapshot.catalog",
+      name: "ready-catalog",
+      snapshots: [snapshot],
+      readyCount: 1,
+      blockedCount: 0,
+      issueCount: 0,
+    });
+  });
+
+  it("catalogs blocked Renderer integration handoff snapshots", () => {
+    const blockedSnapshot: RendererIntegrationHandoffSnapshot = {
+      kind: "renderer.integration.handoff.snapshot",
+      handoffName: "blocked-catalog-handoff",
+      ready: false,
+      issueCount: 7,
+      preparationName: "blocked-catalog-preparation",
+    };
+
+    const catalog = Renderer.createRendererIntegrationHandoffSnapshotCatalog(
+      "blocked-catalog",
+      [blockedSnapshot],
+    );
+
+    expect(catalog.readyCount).toBe(0);
+    expect(catalog.blockedCount).toBe(1);
+    expect(catalog.issueCount).toBe(7);
+  });
+
+  it("copies Renderer integration handoff snapshot catalog inputs", () => {
+    const snapshots: RendererIntegrationHandoffSnapshot[] = [{
+      kind: "renderer.integration.handoff.snapshot",
+      handoffName: "copy-catalog-handoff",
+      ready: true,
+      issueCount: 0,
+      preparationName: "copy-catalog-preparation",
+    }];
+
+    const catalog = createRendererIntegrationHandoffSnapshotCatalog(
+      "copy-catalog",
+      snapshots,
+    );
+    snapshots.push({
+      kind: "renderer.integration.handoff.snapshot",
+      handoffName: "late-catalog-handoff",
+      ready: false,
+      issueCount: 9,
+      preparationName: "late-catalog-preparation",
+    });
+
+    expect(catalog.snapshots).toHaveLength(1);
+    expect(catalog.readyCount).toBe(1);
+    expect(catalog.blockedCount).toBe(0);
+  });
+
+  it("keeps Renderer integration handoff snapshot catalogs free of concrete integration metadata", () => {
+    const catalog = createRendererIntegrationHandoffSnapshotCatalog(
+      "boundary-catalog",
+      [],
+    );
+
+    expect(catalog).not.toHaveProperty("readiness");
+    expect(catalog).not.toHaveProperty("transport");
+    expect(catalog).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {
