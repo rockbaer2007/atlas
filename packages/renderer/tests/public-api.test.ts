@@ -14,6 +14,7 @@ import type {
   RendererAdapterSelectionResult,
   RendererHostContext,
   RendererIntegrationPreparation,
+  RendererIntegrationReadiness,
   RendererMountDiagnosticReport,
   RendererMountLifecycleRecord,
   RendererMountLifecycleReport,
@@ -149,6 +150,7 @@ import {
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
   reviewRendererMountReportConsumerDiagnosticDeliveryManifest,
   reviewRendererMountReportConsumerDiagnosticRegistryExecution,
+  reviewRendererIntegrationPreparationReadiness,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
   selectFirstRendererPlatformAdapterCandidate,
@@ -237,6 +239,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticDeliveryManifest).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
+    expect(Renderer.reviewRendererIntegrationPreparationReadiness).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
@@ -543,6 +546,18 @@ describe("renderer public API", () => {
         platform: false,
       },
     };
+    const integrationReadiness: RendererIntegrationReadiness = {
+      context: {
+        component: "renderer.integration",
+        preparationName: integrationPreparation.name,
+      },
+      result: {
+        ready: true,
+        issueCount: 0,
+        blockedBoundaries: ["transport", "dom", "homeAssistant", "theme", "platform"],
+        issues: [],
+      },
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -705,6 +720,7 @@ describe("renderer public API", () => {
       mountReportConsumerDiagnosticDeliverySnapshotCatalog,
     );
     expect(integrationPreparation.deliveryExport).toBe(mountReportConsumerDiagnosticDeliveryExport);
+    expect(integrationReadiness.context.preparationName).toBe(integrationPreparation.name);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3497,6 +3513,87 @@ describe("renderer public API", () => {
       platform: false,
     });
     expect(preparation).not.toHaveProperty("element");
+  });
+
+  it("reviews ready Renderer integration preparations", () => {
+    const preparation = createRendererIntegrationPreparation(
+      "ready-readiness",
+      createRendererMountReportConsumerDiagnosticDeliveryExport(
+        "ready-readiness-export",
+        createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+          "ready-readiness-catalog",
+          [],
+        ),
+      ),
+    );
+
+    expect(reviewRendererIntegrationPreparationReadiness(preparation)).toEqual({
+      context: {
+        component: "renderer.integration",
+        preparationName: "ready-readiness",
+      },
+      result: {
+        ready: true,
+        issueCount: 0,
+        blockedBoundaries: ["transport", "dom", "homeAssistant", "theme", "platform"],
+        issues: [],
+      },
+    });
+  });
+
+  it("reviews blocked Renderer integration preparations", () => {
+    const preparation = Renderer.createRendererIntegrationPreparation(
+      "blocked-readiness",
+      createRendererMountReportConsumerDiagnosticDeliveryExport(
+        "blocked-readiness-export",
+        createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+          "blocked-readiness-catalog",
+          [{
+            kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot",
+            bundleName: "blocked-readiness-bundle",
+            ready: false,
+            manifestCount: 1,
+            issueCount: 4,
+            manifestNames: ["blocked-readiness-manifest"],
+          }],
+        ),
+      ),
+    );
+
+    const readiness = Renderer.reviewRendererIntegrationPreparationReadiness(preparation);
+
+    expect(readiness.result.ready).toBe(false);
+    expect(readiness.result.issueCount).toBe(4);
+    expect(readiness.result.issues).toEqual([{
+      code: "renderer.integration.preparation.not_ready",
+      message: "blocked-readiness is not ready for Renderer integration",
+      severity: "error",
+    }]);
+  });
+
+  it("keeps Renderer integration readiness free of concrete integration metadata", () => {
+    const readiness = reviewRendererIntegrationPreparationReadiness(
+      createRendererIntegrationPreparation(
+        "boundary-readiness",
+        createRendererMountReportConsumerDiagnosticDeliveryExport(
+          "boundary-readiness-export",
+          createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+            "boundary-readiness-catalog",
+            [],
+          ),
+        ),
+      ),
+    );
+
+    expect(readiness.result.blockedBoundaries).toEqual([
+      "transport",
+      "dom",
+      "homeAssistant",
+      "theme",
+      "platform",
+    ]);
+    expect(readiness).not.toHaveProperty("adapter");
+    expect(readiness).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

@@ -185,6 +185,23 @@ export type RendererIntegrationPreparation = Readonly<{
   }>;
 }>;
 
+export type RendererIntegrationReadiness = Readonly<{
+  context: Readonly<{
+    component: "renderer.integration";
+    preparationName: string;
+  }>;
+  result: Readonly<{
+    ready: boolean;
+    issueCount: number;
+    blockedBoundaries: readonly string[];
+    issues: readonly Readonly<{
+      code: "renderer.integration.preparation.not_ready";
+      message: string;
+      severity: "error";
+    }>[];
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -602,6 +619,34 @@ export function createRendererIntegrationPreparation(
       homeAssistant: false,
       theme: false,
       platform: false,
+    },
+  };
+}
+
+export function reviewRendererIntegrationPreparationReadiness(
+  preparation: RendererIntegrationPreparation,
+): RendererIntegrationReadiness {
+  const blockedBoundaries = Object.entries(preparation.boundaries)
+    .filter(([, enabled]) => !enabled)
+    .map(([boundary]) => boundary);
+  const issues = [
+    ...(!preparation.ready ? [{
+      code: "renderer.integration.preparation.not_ready" as const,
+      message: `${preparation.name} is not ready for Renderer integration`,
+      severity: "error" as const,
+    }] : []),
+  ];
+
+  return {
+    context: {
+      component: "renderer.integration",
+      preparationName: preparation.name,
+    },
+    result: {
+      ready: issues.length === 0,
+      issueCount: preparation.issueCount,
+      blockedBoundaries,
+      issues,
     },
   };
 }

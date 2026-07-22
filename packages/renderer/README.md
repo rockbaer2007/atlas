@@ -24,6 +24,7 @@ descriptive only and do not mount output yet.
 
 - `RendererHostContext`
 - `RendererIntegrationPreparation`
+- `RendererIntegrationReadiness`
 - `RendererAdapter`
 - `RendererAdapterConflict`
 - `RendererAdapterConflictResolution`
@@ -166,6 +167,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate`
 - `reviewRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `reviewRendererMountReportConsumerDiagnosticRegistryExecution`
+- `reviewRendererIntegrationPreparationReadiness`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -495,6 +497,11 @@ explicit preparation data. Preparations preserve delivery export references,
 surface ready state and issue count, and keep transport, DOM, Home Assistant,
 Theme and platform boundaries explicitly disabled before concrete integration
 work begins.
+
+Renderer integration readiness now reviews preparation data into a stable
+readiness result. Readiness keeps blocked boundary names visible, carries
+preparation issue counts forward and reports blocked preparations without
+opening transport, DOM, Home Assistant, Theme or platform behavior.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
