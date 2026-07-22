@@ -531,6 +531,16 @@ export type RendererConcreteIntegrationBoundaryReleaseExportSnapshotCatalog = Re
   executableCount: 0;
 }>;
 
+export type RendererConcreteIntegrationBoundaryReleaseClosure = Readonly<{
+  kind: "renderer.concrete.integration.boundary.release.closure";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  catalog: RendererConcreteIntegrationBoundaryReleaseExportSnapshotCatalog;
+  closed: true;
+  executable: false;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -1493,6 +1503,21 @@ export function createRendererConcreteIntegrationBoundaryReleaseExportSnapshotCa
     issueCount: copiedSnapshots
       .reduce((issueCount, snapshot) => issueCount + snapshot.issueCount, 0),
     executableCount: 0,
+  };
+}
+
+export function closeRendererConcreteIntegrationBoundaryRelease(
+  name: string,
+  catalog: RendererConcreteIntegrationBoundaryReleaseExportSnapshotCatalog,
+): RendererConcreteIntegrationBoundaryReleaseClosure {
+  return {
+    kind: "renderer.concrete.integration.boundary.release.closure",
+    name,
+    ready: catalog.blockedCount === 0,
+    issueCount: catalog.issueCount,
+    catalog,
+    closed: true,
+    executable: false,
   };
 }
 

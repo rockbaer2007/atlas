@@ -160,6 +160,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   compact exported, non-executable export summaries without catalog payloads.
 * Renderer concrete integration boundary release export snapshot catalogs now
   group compact export summaries while keeping executable counts fixed at zero.
+* Renderer concrete integration boundary release closures now wrap release
+  export snapshot catalogs in closed, non-executable closure envelopes.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
