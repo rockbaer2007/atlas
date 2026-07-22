@@ -297,6 +297,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountRecord).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
@@ -314,11 +315,13 @@ describe("renderer public API", () => {
     expect(Renderer.consumeAndInspectRendererMountReportConsumers).toBeTypeOf("function");
     expect(Renderer.consumeAndInspectRendererMountReports).toBeTypeOf("function");
     expect(Renderer.consumeRendererMountReports).toBeTypeOf("function");
+    expect(Renderer.executeRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.finalizeRendererConcreteIntegrationBoundary).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.findRendererMemoryMountRecords).toBeTypeOf("function");
     expect(Renderer.findRendererMountReportConsumer).toBeTypeOf("function");
     expect(Renderer.findRendererMountReportConsumerConflicts).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
@@ -337,6 +340,7 @@ describe("renderer public API", () => {
     );
     expect(Renderer.aggregateRendererMountReportConsumerDiagnostics).toBeTypeOf("function");
     expect(Renderer.evaluateRendererMountReportConsumerDiagnosticPolicy).toBeTypeOf("function");
+    expect(Renderer.summarizeRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMountReportConsumerDiagnosticAggregation).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");

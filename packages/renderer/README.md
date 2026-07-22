@@ -198,6 +198,7 @@ Assistant or theme execution paths.
 - `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
 - `createRendererMemoryMountAdapter`
+- `createRendererMemoryMountPlan`
 - `createRendererMemoryMountRecord`
 - `createRendererMemoryMountStore`
 - `createRendererOutput`
@@ -218,9 +219,11 @@ Assistant or theme execution paths.
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
 - `executeRendererMountPlan`
 - `executeRendererPipeline`
+- `executeRendererMemoryMountPlan`
 - `finalizeRendererConcreteIntegrationBoundary`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `findRendererMemoryMountRecords`
 - `findRendererMountReportConsumer`
 - `findRendererMountReportConsumerConflicts`
 - `findRendererPlatformAdapter`
@@ -261,6 +264,7 @@ Assistant or theme execution paths.
 - `snapshotRendererConcreteIntegrationBoundaryPlan`
 - `snapshotRendererIntegrationHandoff`
 - `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
+- `summarizeRendererMemoryMountStore`
 - `summarizeRendererMountReports`
 - `summarizeRendererMountReportConsumerDiagnosticAggregation`
 
@@ -290,6 +294,10 @@ and target contract shapes, and optional explicit failure messages. Successful
 mount results do not include failure messages. The memory mount adapter provides
 the first concrete renderer usage path by recording output content against
 memory targets while rejecting non-memory targets without mutating its store.
+Memory mount records can be looked up by output and target metadata, memory
+stores can be summarized for scenario assertions, and memory mount plans can be
+executed through the shared renderer mount-plan executor with adapter strategy
+semantics.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

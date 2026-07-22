@@ -11,6 +11,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer memory mounting now provides the first concrete renderer usage path
   by mounting output content into memory targets while rejecting non-memory
   targets without DOM, Theme or Home Assistant bindings.
+* Renderer memory mounting now supports record lookup, store summaries,
+  adapter-based memory mount plans and execution through the shared mount-plan
+  executor.
 * Added a G2.5 stabilization review that records the 100% sprint close-out,
   quality gates, current stability posture and recommended next product phase.
 * Framework readiness now has a dedicated `@atlas/workspace` package that
