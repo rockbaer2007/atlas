@@ -38,6 +38,7 @@ descriptive only and do not mount output yet.
 - `RendererAdapterSelectionRequest`
 - `RendererAdapterSelectionResult`
 - `RendererConcreteIntegrationBoundaryDecision`
+- `RendererConcreteIntegrationBoundaryPlan`
 - `RendererConcreteIntegrationBoundaryReview`
 - `RendererMountRequest`
 - `RendererMountResult`
@@ -113,6 +114,7 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
 - `createRendererConcreteIntegrationBoundaryDecision`
+- `createRendererConcreteIntegrationBoundaryPlan`
 - `createRendererIntegrationHandoff`
 - `createRendererIntegrationHandoffSnapshotCatalog`
 - `createRendererIntegrationPreparation`
@@ -535,6 +537,10 @@ Renderer concrete integration boundary decisions now derive first-open
 candidate data from boundary reviews. Decisions carry candidate names and
 selected boundaries only when ready, without creating handlers or concrete
 surface bindings.
+
+Renderer concrete integration boundary plans now wrap boundary decisions in
+data-only preparation steps. Plans preserve selected boundary names when ready
+and stay free of execution hooks or concrete surface bindings.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

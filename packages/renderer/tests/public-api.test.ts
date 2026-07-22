@@ -13,6 +13,7 @@ import type {
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
   RendererConcreteIntegrationBoundaryDecision,
+  RendererConcreteIntegrationBoundaryPlan,
   RendererConcreteIntegrationBoundaryReview,
   RendererHostContext,
   RendererIntegrationHandoff,
@@ -115,6 +116,7 @@ import {
   createRendererOutput,
   createRendererHostContext,
   createRendererConcreteIntegrationBoundaryDecision,
+  createRendererConcreteIntegrationBoundaryPlan,
   createRendererIntegrationHandoff,
   createRendererIntegrationHandoffSnapshotCatalog,
   createRendererIntegrationPreparation,
@@ -181,6 +183,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryDecision).toBeTypeOf("function");
+    expect(Renderer.createRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoff).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoffSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationPreparation).toBeTypeOf("function");
@@ -618,6 +621,15 @@ describe("renderer public API", () => {
       candidates: ["transport", "dom", "homeAssistant", "theme", "platform"],
       selectedBoundary: "transport",
     };
+    const concreteIntegrationBoundaryPlan: RendererConcreteIntegrationBoundaryPlan = {
+      kind: "renderer.concrete.integration.boundary.plan",
+      name: "type-concrete-integration-boundary-plan",
+      ready: true,
+      issueCount: 0,
+      decision: concreteIntegrationBoundaryDecision,
+      steps: ["review", "decide", "prepare"],
+      plannedBoundary: "transport",
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -786,6 +798,7 @@ describe("renderer public API", () => {
     expect(integrationHandoffSnapshotCatalog.snapshots[0]).toBe(integrationHandoffSnapshot);
     expect(concreteIntegrationBoundaryReview.catalog).toBe(integrationHandoffSnapshotCatalog);
     expect(concreteIntegrationBoundaryDecision.review).toBe(concreteIntegrationBoundaryReview);
+    expect(concreteIntegrationBoundaryPlan.decision).toBe(concreteIntegrationBoundaryDecision);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -4027,6 +4040,74 @@ describe("renderer public API", () => {
     ]);
     expect(decision).not.toHaveProperty("element");
     expect(decision).not.toHaveProperty("handler");
+  });
+
+  it("creates ready Renderer concrete integration boundary plans", () => {
+    const decision = createRendererConcreteIntegrationBoundaryDecision(
+      "ready-plan-decision",
+      reviewRendererConcreteIntegrationBoundary(
+        "ready-plan-review",
+        createRendererIntegrationHandoffSnapshotCatalog("ready-plan-catalog", []),
+      ),
+    );
+
+    expect(createRendererConcreteIntegrationBoundaryPlan(
+      "ready-plan",
+      decision,
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.plan",
+      name: "ready-plan",
+      ready: true,
+      issueCount: 0,
+      decision,
+      steps: ["review", "decide", "prepare"],
+      plannedBoundary: "transport",
+    });
+  });
+
+  it("creates blocked Renderer concrete integration boundary plans without planned boundaries", () => {
+    const decision = createRendererConcreteIntegrationBoundaryDecision(
+      "blocked-plan-decision",
+      reviewRendererConcreteIntegrationBoundary(
+        "blocked-plan-review",
+        createRendererIntegrationHandoffSnapshotCatalog(
+          "blocked-plan-catalog",
+          [{
+            kind: "renderer.integration.handoff.snapshot",
+            handoffName: "blocked-plan-handoff",
+            ready: false,
+            issueCount: 11,
+            preparationName: "blocked-plan-preparation",
+          }],
+        ),
+      ),
+    );
+
+    const plan = Renderer.createRendererConcreteIntegrationBoundaryPlan(
+      "blocked-plan",
+      decision,
+    );
+
+    expect(plan.ready).toBe(false);
+    expect(plan.issueCount).toBe(11);
+    expect(plan.plannedBoundary).toBeUndefined();
+  });
+
+  it("keeps Renderer concrete integration boundary plans data-only", () => {
+    const plan = createRendererConcreteIntegrationBoundaryPlan(
+      "data-only-plan",
+      createRendererConcreteIntegrationBoundaryDecision(
+        "data-only-plan-decision",
+        reviewRendererConcreteIntegrationBoundary(
+          "data-only-plan-review",
+          createRendererIntegrationHandoffSnapshotCatalog("data-only-plan-catalog", []),
+        ),
+      ),
+    );
+
+    expect(plan.steps).toEqual(["review", "decide", "prepare"]);
+    expect(plan).not.toHaveProperty("element");
+    expect(plan).not.toHaveProperty("execute");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {
