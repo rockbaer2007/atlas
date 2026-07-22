@@ -33,6 +33,7 @@ import type {
   RendererMountReportConsumerDiagnosticPolicy,
   RendererMountReportConsumerDiagnosticPolicyEvaluation,
   RendererMountReportConsumerDiagnosticRegistryExecution,
+  RendererMountReportConsumerDiagnosticRegistryExecutionClosure,
   RendererMountReportConsumerDiagnosticReport,
   RendererMountReportConsumerLookupRequest,
   RendererMountReportConsumerLookupResult,
@@ -132,6 +133,7 @@ import {
   resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate,
   resolveRendererPlatformAdapterConflictWithFirstCandidate,
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
+  reviewRendererMountReportConsumerDiagnosticRegistryExecution,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
   selectFirstRendererPlatformAdapterCandidate,
@@ -211,6 +213,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererMountReportConsumerConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
@@ -420,6 +423,21 @@ describe("renderer public API", () => {
         registry: mountReportConsumerRegistry,
         batch: mountReportConsumerDiagnosticBatchExecution,
       };
+    const mountReportConsumerDiagnosticRegistryExecutionClosure:
+      RendererMountReportConsumerDiagnosticRegistryExecutionClosure = {
+        context: {
+          component: "renderer.mount.report.consumer.registry.execution.closure",
+        },
+        result: {
+          ok: true,
+          registryConsumerCount: 1,
+          executedConsumerCount: 1,
+          conflictCount: 0,
+          diagnosticsOk: true,
+          policyOk: true,
+          issues: [],
+        },
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -561,6 +579,7 @@ describe("renderer public API", () => {
     expect(mountReportConsumerDiagnosticRegistryExecution.registry).toBe(
       mountReportConsumerRegistry,
     );
+    expect(mountReportConsumerDiagnosticRegistryExecutionClosure.result.ok).toBe(true);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -2652,6 +2671,121 @@ describe("renderer public API", () => {
     expect(execution).not.toHaveProperty("theme");
     expect(execution).not.toHaveProperty("homeAssistant");
     expect(execution).not.toHaveProperty("element");
+  });
+
+  it("reviews successful Renderer mount report consumer registry diagnostic executions", async () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "closure-success-consumer",
+      consume: consumption => ({
+        consumerName: "closure-success-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const execution = await consumeAndInspectRendererMountReportConsumerRegistry(
+      createRendererMountReportConsumerRegistry([consumer]),
+      createRendererMountReportConsumption({
+        records: [],
+      }),
+      {
+        maxIssueCount: 0,
+      },
+    );
+
+    expect(reviewRendererMountReportConsumerDiagnosticRegistryExecution(execution)).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer.registry.execution.closure",
+      },
+      result: {
+        ok: true,
+        registryConsumerCount: 1,
+        executedConsumerCount: 1,
+        conflictCount: 0,
+        diagnosticsOk: true,
+        policyOk: true,
+        issues: [],
+      },
+    });
+  });
+
+  it("reports Renderer mount report consumer registry execution closure conflicts", async () => {
+    const first = createRendererMountReportConsumer({
+      name: "closure-conflict-consumer",
+      consume: consumption => ({
+        consumerName: "closure-conflict-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "closure-conflict-consumer",
+      consume: consumption => ({
+        consumerName: "closure-conflict-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+    const execution = await consumeAndInspectRendererMountReportConsumerRegistry(
+      createRendererMountReportConsumerRegistry([first, second]),
+      createRendererMountReportConsumption({
+        records: [],
+      }),
+    );
+
+    const closure = Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution(execution);
+
+    expect(closure.result.ok).toBe(false);
+    expect(closure.result.conflictCount).toBe(1);
+    expect(closure.result.issues).toEqual([{
+      code: "renderer.mount.report.consumer.registry.execution.conflict",
+      message: "closure-conflict-consumer has 2 Renderer mount report consumers",
+      severity: "error",
+    }]);
+  });
+
+  it("includes Renderer mount report consumer registry execution policy issues in closure", async () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "closure-policy-consumer",
+      consume: consumption => ({
+        consumerName: "closure-policy-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const execution = await consumeAndInspectRendererMountReportConsumerRegistry(
+      createRendererMountReportConsumerRegistry([consumer]),
+      createRendererMountReportConsumption({
+        records: [],
+      }),
+      {
+        maxIssueCount: 0,
+      },
+    );
+
+    const closure = reviewRendererMountReportConsumerDiagnosticRegistryExecution(execution);
+
+    expect(closure.result.policyOk).toBe(false);
+    expect(closure.result.issues.map(issue => issue.code)).toEqual([
+      "renderer.mount.report.consumer.not_consumed",
+      "renderer.mount.report.consumer.diagnostics.policy.consumer_failed",
+      "renderer.mount.report.consumer.diagnostics.policy.issue_limit_exceeded",
+    ]);
+  });
+
+  it("keeps Renderer mount report consumer registry execution closures free of integration metadata", async () => {
+    const closure = reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+      await consumeAndInspectRendererMountReportConsumerRegistry(
+        createRendererMountReportConsumerRegistry([]),
+        createRendererMountReportConsumption({
+          records: [],
+        }),
+      ),
+    );
+
+    expect(closure).not.toHaveProperty("platform");
+    expect(closure).not.toHaveProperty("theme");
+    expect(closure).not.toHaveProperty("homeAssistant");
+    expect(closure).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

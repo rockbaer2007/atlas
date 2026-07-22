@@ -83,6 +83,25 @@ export type RendererMountReportConsumerDiagnosticRegistryExecution = Readonly<{
   batch: RendererMountReportConsumerDiagnosticBatchExecution;
 }>;
 
+export type RendererMountReportConsumerDiagnosticRegistryExecutionClosure = Readonly<{
+  context: Readonly<{
+    component: string;
+  }>;
+  result: Readonly<{
+    ok: boolean;
+    registryConsumerCount: number;
+    executedConsumerCount: number;
+    conflictCount: number;
+    diagnosticsOk: boolean;
+    policyOk?: boolean;
+    issues: readonly Readonly<{
+      code: string;
+      message: string;
+      severity: "error";
+    }>[];
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -337,6 +356,37 @@ export async function consumeAndInspectRendererMountReportConsumerRegistry(
       consumption,
       policy,
     ),
+  };
+}
+
+export function reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+  execution: RendererMountReportConsumerDiagnosticRegistryExecution,
+): RendererMountReportConsumerDiagnosticRegistryExecutionClosure {
+  const conflicts = findRendererMountReportConsumerConflicts(execution.registry);
+  const policyOk = execution.batch.policyEvaluation?.result.ok;
+  const issues = [
+    ...execution.batch.aggregation.result.issues,
+    ...conflicts.map(conflict => ({
+      code: "renderer.mount.report.consumer.registry.execution.conflict",
+      message: `${conflict.name} has ${conflict.consumers.length} Renderer mount report consumers`,
+      severity: "error" as const,
+    })),
+    ...(execution.batch.policyEvaluation?.result.issues ?? []),
+  ];
+
+  return {
+    context: {
+      component: "renderer.mount.report.consumer.registry.execution.closure",
+    },
+    result: {
+      ok: issues.length === 0,
+      registryConsumerCount: execution.registry.consumers.length,
+      executedConsumerCount: execution.batch.executions.length,
+      conflictCount: conflicts.length,
+      diagnosticsOk: execution.batch.aggregation.result.ok,
+      ...(policyOk === undefined ? {} : { policyOk }),
+      issues,
+    },
   };
 }
 

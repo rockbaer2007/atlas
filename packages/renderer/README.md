@@ -57,6 +57,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerDiagnosticPolicyCodes`
 - `RendererMountReportConsumerDiagnosticPolicyEvaluation`
 - `RendererMountReportConsumerDiagnosticRegistryExecution`
+- `RendererMountReportConsumerDiagnosticRegistryExecutionClosure`
 - `RendererMountReportConsumerDiagnosticReport`
 - `RendererMountReportConsumerDiagnosticCodes`
 - `RendererMountReportConsumerLookupRequest`
@@ -149,6 +150,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `resolveRendererMountReportConsumerConflictWithFirstCandidate`
 - `resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate`
+- `reviewRendererMountReportConsumerDiagnosticRegistryExecution`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -426,6 +428,12 @@ registry's ordered consumers through batch execution while preserving the
 registry reference. Registry execution supports optional policy evaluation,
 does not resolve conflicts or change lookup behavior, and remains independent
 from DOM elements, Home Assistant fields, Theme fields and platform metadata.
+
+Renderer mount report consumer diagnostic registry execution closure now
+reviews registry executions into compact closure reports. Closure reports
+include registry and execution counts, conflict counts, diagnostics state,
+optional policy state and collected issues without resolving conflicts,
+changing lookup behavior or adding integration metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
