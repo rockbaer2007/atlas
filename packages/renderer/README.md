@@ -13,8 +13,9 @@ Renderer is the first integration package above `@atlas/core`. It provides a
 small package-root API for creating a renderer host context from a Core Runtime
 host, defining ordered renderer pipeline stages and executing those stages
 sequentially. It also defines a first output shape without binding output to a
-target, DOM, Home Assistant surface or theme model yet. Renderer targets are
-descriptive only and do not mount output yet.
+target, DOM, Home Assistant surface or theme model yet. Renderer targets can now
+be exercised through a concrete memory adapter without opening DOM, Home
+Assistant or theme execution paths.
 
 ---
 
@@ -81,6 +82,9 @@ descriptive only and do not mount output yet.
 - `RendererMountLifecycleRecord`
 - `RendererMountLifecycleReport`
 - `RendererMountLifecycleState`
+- `RendererMemoryMountAdapter`
+- `RendererMemoryMountRecord`
+- `RendererMemoryMountStore`
 - `RendererMountPlan`
 - `RendererMountPlanExecution`
 - `RendererMountPlanQualityGate`
@@ -193,6 +197,9 @@ descriptive only and do not mount output yet.
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
+- `createRendererMemoryMountAdapter`
+- `createRendererMemoryMountRecord`
+- `createRendererMemoryMountStore`
 - `createRendererOutput`
 - `createRendererPipeline`
 - `createRendererPlatformAdapter`
@@ -280,7 +287,10 @@ DOM references, Home Assistant surfaces or side effects. Mount requests and
 results keep references to existing output and target objects. Mount results
 currently report only whether the output is mounted, together with the output
 and target contract shapes, and optional explicit failure messages. Successful
-mount results do not include failure messages. Renderer adapters currently
+mount results do not include failure messages. The memory mount adapter provides
+the first concrete renderer usage path by recording output content against
+memory targets while rejecting non-memory targets without mutating its store.
+Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains
 limited to name and mount contracts without platform, capability or registry

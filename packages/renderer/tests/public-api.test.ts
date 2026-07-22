@@ -296,6 +296,9 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountReportConsumption).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
+    expect(Renderer.createRendererMemoryMountAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererMemoryMountRecord).toBeTypeOf("function");
+    expect(Renderer.createRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
     expect(Renderer.createRendererPipeline).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapter).toBeTypeOf("function");
