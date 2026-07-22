@@ -81,6 +81,7 @@ Assistant or theme execution paths.
 - `RendererMountDiagnosticReport`
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountAdapterResolution`
+- `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchExecution`
 - `RendererUnifiedMountBatchRequest`
 - `RendererUnifiedMountExecution`
@@ -232,6 +233,7 @@ Assistant or theme execution paths.
 - `createRendererPlatformAdapterSelectionRequest`
 - `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
+- `consumeRendererTargetMountBatchReports`
 - `consumeAndInspectRendererMountReportConsumerRegistry`
 - `consumeAndInspectRendererMountReportConsumers`
 - `consumeAndInspectRendererMountReports`
@@ -245,6 +247,7 @@ Assistant or theme execution paths.
 - `executeRendererPipeline`
 - `executeRendererMemoryMountPlan`
 - `finalizeRendererConcreteIntegrationBoundary`
+- `findRendererTargetMountBatchFailures`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
 - `findLatestRendererDomMountRecord`
@@ -347,6 +350,9 @@ Unified target mount batches execute ordered Memory and DOM requests through a
 shared registry, preserve per-request registry overrides, continue across
 routable failure results and summarize reported lifecycle records with the
 existing mount report summary shape.
+Batch reports can be consumed with the existing mount-report filters without
+rerunning mounts, and failed batch executions can be selected by reference for
+follow-up diagnostics.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

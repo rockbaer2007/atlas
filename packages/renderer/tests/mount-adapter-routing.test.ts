@@ -5,9 +5,11 @@ import {
   createRendererAdapterRegistry,
   createRendererOutput,
   createRendererTarget,
+  consumeRendererTargetMountBatchReports,
   executeRendererTargetMount,
   executeRendererTargetMountBatch,
   executeRendererTargetMountWithReport,
+  findRendererTargetMountBatchFailures,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
   RendererDefaultMountAdapterNames,
@@ -520,5 +522,165 @@ describe("renderer mount adapter routing", () => {
     expect(execution.summary.mounted).toBe(1);
     expect(batchRouting.memoryAdapter.store.records).toEqual([]);
     expect(entryRouting.memoryAdapter.store.records).toHaveLength(1);
+  });
+
+  it("consumes all reports from target mount batches", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "consume-all-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "consume-all-cache",
+        }),
+      }],
+    });
+
+    const consumption = consumeRendererTargetMountBatchReports({
+      execution,
+    });
+
+    expect(consumption.reports).toEqual(execution.reports);
+    expect(consumption.summary).toEqual(execution.summary);
+  });
+
+  it("filters mounted reports from target mount batches", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "consume-mounted-success",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "consume-mounted-cache",
+        }),
+      }, {
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "consume-mounted-failure",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "consume-mounted-invalid-surface",
+        }),
+      }],
+    });
+
+    const consumption = consumeRendererTargetMountBatchReports({
+      execution,
+      filter: {
+        mounted: true,
+      },
+    });
+
+    expect(consumption.reports.map(report => report.outputName)).toEqual([
+      "consume-mounted-success",
+    ]);
+    expect(consumption.summary).toEqual({
+      total: 1,
+      planned: 0,
+      executed: 0,
+      reported: 1,
+      mounted: 1,
+      diagnosticsOk: 1,
+      failed: 0,
+      issueCount: 0,
+    });
+  });
+
+  it("filters failed diagnostics from target mount batches", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "consume-failed-success",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "consume-failed-cache",
+        }),
+      }, {
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "consume-failed-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "consume-failed-surface",
+        }),
+      }],
+    });
+
+    const consumption = consumeRendererTargetMountBatchReports({
+      execution,
+      filter: {
+        diagnosticsOk: false,
+      },
+    });
+
+    expect(consumption.reports.map(report => report.outputName)).toEqual([
+      "consume-failed-invalid",
+    ]);
+    expect(consumption.summary.failed).toBe(1);
+    expect(consumption.summary.issueCount).toBe(1);
+  });
+
+  it("finds failed target mount batch executions by reference", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "find-failure-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "find-failure-surface",
+        }),
+      }, {
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "find-failure-valid",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "find-failure-cache",
+        }),
+      }],
+    });
+
+    const failures = findRendererTargetMountBatchFailures(execution);
+
+    expect(failures).toEqual([execution.executions[0]]);
+    expect(failures[0]?.report.outputName).toBe("find-failure-invalid");
+  });
+
+  it("reports no failed target mount batch executions for successful batches", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "no-failure-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "no-failure-cache",
+        }),
+      }],
+    });
+
+    expect(findRendererTargetMountBatchFailures(execution)).toEqual([]);
   });
 });

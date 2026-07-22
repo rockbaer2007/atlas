@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer target mount batch reports can now be consumed with existing report
+  filters, and failed batch executions can be selected by reference for
+  diagnostics.
 * Renderer unified target mount batches now execute ordered Memory/DOM requests,
   preserve per-entry registry overrides and summarize reported lifecycle
   records.

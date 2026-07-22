@@ -29,8 +29,11 @@ import {
 } from "./RendererMountLifecycle";
 import { createRendererMountPlan } from "./RendererMountPlan";
 import {
+  createRendererMountReportConsumption,
   createRendererMountReport,
   summarizeRendererMountReports,
+  type RendererMountReportConsumption,
+  type RendererMountReportFilter,
   type RendererMountReport,
   type RendererMountReportSummary,
 } from "./RendererMountReporting";
@@ -78,6 +81,11 @@ export type RendererUnifiedMountBatchExecution = Readonly<{
   lifecycleRecords: readonly RendererMountLifecycleRecord[];
   reports: readonly RendererMountReport[];
   summary: RendererMountReportSummary;
+}>;
+
+export type RendererUnifiedMountBatchConsumptionRequest = Readonly<{
+  execution: RendererUnifiedMountBatchExecution;
+  filter?: RendererMountReportFilter;
 }>;
 
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
@@ -204,4 +212,19 @@ export async function executeRendererTargetMountBatch(
     reports: executions.map(execution => execution.report),
     summary: summarizeRendererMountReports(lifecycleRecords),
   };
+}
+
+export function consumeRendererTargetMountBatchReports(
+  request: RendererUnifiedMountBatchConsumptionRequest,
+): RendererMountReportConsumption {
+  return createRendererMountReportConsumption({
+    records: request.execution.lifecycleRecords,
+    ...(request.filter ? { filter: request.filter } : {}),
+  });
+}
+
+export function findRendererTargetMountBatchFailures(
+  execution: RendererUnifiedMountBatchExecution,
+): readonly RendererUnifiedMountExecution[] {
+  return execution.executions.filter(item => item.report.diagnosticsOk === false);
 }

@@ -117,6 +117,7 @@ import type {
   RendererTargetMountAdapterResolution,
   RendererTarget,
   RendererTargetKind,
+  RendererUnifiedMountBatchConsumptionRequest,
   RendererUnifiedMountBatchExecution,
   RendererUnifiedMountBatchRequest,
   RendererUnifiedMountExecution,
@@ -192,6 +193,7 @@ import {
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
+  consumeRendererTargetMountBatchReports,
   consumeAndInspectRendererMountReportConsumerRegistry,
   consumeAndInspectRendererMountReportConsumers,
   consumeAndInspectRendererMountReports,
@@ -202,6 +204,7 @@ import {
   executeRendererTargetMount,
   executeRendererTargetMountWithReport,
   executeRendererPipeline,
+  findRendererTargetMountBatchFailures,
   findRendererAdapter,
   findRendererAdapterConflicts,
   findRendererMountReportConsumer,
@@ -330,6 +333,10 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
+    expect(Renderer.consumeRendererTargetMountBatchReports).toBeTypeOf("function");
+    expect(consumeRendererTargetMountBatchReports).toBe(
+      Renderer.consumeRendererTargetMountBatchReports,
+    );
     expect(Renderer.consumeAndInspectRendererMountReportConsumerRegistry).toBeTypeOf("function");
     expect(Renderer.consumeAndInspectRendererMountReportConsumers).toBeTypeOf("function");
     expect(Renderer.consumeAndInspectRendererMountReports).toBeTypeOf("function");
@@ -347,6 +354,10 @@ describe("renderer public API", () => {
     );
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.finalizeRendererConcreteIntegrationBoundary).toBeTypeOf("function");
+    expect(Renderer.findRendererTargetMountBatchFailures).toBeTypeOf("function");
+    expect(findRendererTargetMountBatchFailures).toBe(
+      Renderer.findRendererTargetMountBatchFailures,
+    );
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.findLatestRendererDomMountRecord).toBeTypeOf("function");
@@ -1218,6 +1229,12 @@ describe("renderer public API", () => {
       reports: [mountReport],
       summary: mountReportSummary,
     };
+    const unifiedMountBatchConsumptionRequest: RendererUnifiedMountBatchConsumptionRequest = {
+      execution: unifiedMountBatchExecution,
+      filter: {
+        diagnosticsOk: true,
+      },
+    };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1247,6 +1264,7 @@ describe("renderer public API", () => {
     expect(unifiedMountBatchRequest.requests[0]).toBe(unifiedMountRequest);
     expect(unifiedMountExecution.report).toBe(mountReport);
     expect(unifiedMountBatchExecution.summary).toBe(mountReportSummary);
+    expect(unifiedMountBatchConsumptionRequest.execution).toBe(unifiedMountBatchExecution);
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);
     expect(adapterLookupRequest.name).toBe(adapter.name);
