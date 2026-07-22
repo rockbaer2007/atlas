@@ -23,6 +23,9 @@ import type {
   RendererMountPlanReport,
   RendererMountPlanStatus,
   RendererMountPlanStrategy,
+  RendererMountReport,
+  RendererMountReportIssue,
+  RendererMountReportSummary,
   RendererMountRequest,
   RendererMountResult,
   RendererOutput,
@@ -54,6 +57,7 @@ import {
   createRendererAdapterSelectionResult,
   createRendererMountRequest,
   createRendererMountLifecycleRecord,
+  createRendererMountReport,
   createDefaultRendererMountPlan,
   createRendererMountPlan,
   createRendererMountResult,
@@ -89,6 +93,7 @@ import {
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererPlatformAdapterCandidate,
+  summarizeRendererMountReports,
 } from "../src";
 
 describe("renderer public API", () => {
@@ -105,6 +110,7 @@ describe("renderer public API", () => {
     expect(Renderer.createDefaultRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReport).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
     expect(Renderer.createRendererOutput).toBeTypeOf("function");
@@ -139,6 +145,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererPlatformAdapterCandidate).toBeTypeOf("function");
+    expect(Renderer.summarizeRendererMountReports).toBeTypeOf("function");
   });
 
   it("exports the Renderer package type surface from the package root", () => {
@@ -215,6 +222,34 @@ describe("renderer public API", () => {
       planName: mountPlan.name,
       outputName: output.name,
       targetName: target.name,
+    };
+    const mountReportIssue: RendererMountReportIssue = {
+      code: "renderer.mount.failed",
+      message: "type mount failed",
+      severity: "error",
+    };
+    const mountReport: RendererMountReport = {
+      state: mountLifecycleState,
+      planName: mountPlan.name,
+      strategy: mountPlan.strategy,
+      outputName: output.name,
+      targetName: target.name,
+      qualityGates: mountPlan.qualityGates,
+      planned: true,
+      executed: false,
+      reported: false,
+      issueCount: 1,
+      issues: [mountReportIssue],
+    };
+    const mountReportSummary: RendererMountReportSummary = {
+      total: 1,
+      planned: 1,
+      executed: 0,
+      reported: 0,
+      mounted: 0,
+      diagnosticsOk: 0,
+      failed: 0,
+      issueCount: 1,
     };
     const mountResult: RendererMountResult = {
       mounted: false,
@@ -319,6 +354,8 @@ describe("renderer public API", () => {
     expect(mountPlanExecution.plan).toBe(mountPlan);
     expect(mountLifecycleRecord.plan).toBe(mountPlan);
     expect(mountLifecycleReport.planName).toBe(mountPlan.name);
+    expect(mountReport.issues[0]).toBe(mountReportIssue);
+    expect(mountReportSummary.total).toBe(1);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
@@ -1379,6 +1416,249 @@ describe("renderer public API", () => {
     expect(record).not.toHaveProperty("theme");
     expect(record).not.toHaveProperty("homeAssistant");
     expect(record).not.toHaveProperty("element");
+  });
+
+  it("creates Renderer mount reports from planned lifecycle records", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "report-planned-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "report-planned-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+
+    expect(createRendererMountReport(
+      createRendererMountLifecycleRecord(plan),
+    )).toEqual({
+      state: "planned",
+      planName: "report-planned-output->report-planned-target",
+      strategy: "manual",
+      outputName: "report-planned-output",
+      targetName: "report-planned-target",
+      qualityGates: ["request", "output", "target", "diagnostics"],
+      planned: true,
+      executed: false,
+      reported: false,
+      issueCount: 0,
+      issues: [],
+    });
+  });
+
+  it("creates Renderer mount reports from executed lifecycle records", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "document",
+        name: "report-executed-output",
+      }),
+      target: createRendererTarget({
+        kind: "surface",
+        name: "report-executed-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+    const result = createRendererMountResult({
+      mounted: true,
+      output: request.output,
+      target: request.target,
+    });
+
+    expect(createRendererMountReport(
+      recordRendererMountLifecycleExecution(
+        createRendererMountLifecycleRecord(plan),
+        result,
+      ),
+    )).toMatchObject({
+      state: "executed",
+      planned: false,
+      executed: true,
+      reported: false,
+      mounted: true,
+      issueCount: 0,
+      issues: [],
+    });
+  });
+
+  it("creates Renderer mount reports from reported lifecycle diagnostics", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "report-diagnostics-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "report-diagnostics-target",
+      }),
+    });
+    const plan = createDefaultRendererMountPlan(request);
+    const result = createRendererMountResult({
+      mounted: false,
+      output: request.output,
+      target: request.target,
+      error: "report diagnostics failed",
+    });
+    const report = createRendererMountReport(
+      recordRendererMountLifecycleReport(
+        recordRendererMountLifecycleExecution(
+          createRendererMountLifecycleRecord(plan),
+          result,
+        ),
+      ),
+    );
+
+    expect(report).toMatchObject({
+      state: "reported",
+      reported: true,
+      mounted: false,
+      diagnosticsOk: false,
+      issueCount: 1,
+    });
+    expect(report.issues).toEqual([{
+      code: "renderer.mount.failed",
+      message: "report diagnostics failed",
+      severity: "error",
+    }]);
+  });
+
+  it("keeps Renderer mount report quality gates independent from source plans", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "report-gates-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "report-gates-target",
+      }),
+    });
+    const qualityGates: RendererMountPlanQualityGate[] = ["request"];
+    const plan = createRendererMountPlan({
+      name: "report-gates-plan",
+      status: "planned",
+      strategy: "adapter",
+      request,
+      qualityGates,
+    });
+
+    const report = createRendererMountReport(
+      createRendererMountLifecycleRecord(plan),
+    );
+    qualityGates.push("diagnostics");
+
+    expect(report.qualityGates).toEqual(["request"]);
+  });
+
+  it("summarizes Renderer mount reports across lifecycle states", () => {
+    const firstRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "summary-planned-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "summary-planned-target",
+      }),
+    });
+    const secondRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "summary-executed-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "summary-executed-target",
+      }),
+    });
+    const thirdRequest = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "summary-reported-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "summary-reported-target",
+      }),
+    });
+    const planned = createRendererMountLifecycleRecord(
+      createDefaultRendererMountPlan(firstRequest),
+    );
+    const executed = recordRendererMountLifecycleExecution(
+      createRendererMountLifecycleRecord(
+        createDefaultRendererMountPlan(secondRequest),
+      ),
+      createRendererMountResult({
+        mounted: true,
+        output: secondRequest.output,
+        target: secondRequest.target,
+      }),
+    );
+    const reported = recordRendererMountLifecycleReport(
+      recordRendererMountLifecycleExecution(
+        createRendererMountLifecycleRecord(
+          createDefaultRendererMountPlan(thirdRequest),
+        ),
+        createRendererMountResult({
+          mounted: false,
+          output: thirdRequest.output,
+          target: thirdRequest.target,
+          error: "summary failed",
+        }),
+      ),
+    );
+
+    expect(summarizeRendererMountReports([
+      planned,
+      executed,
+      reported,
+    ])).toEqual({
+      total: 3,
+      planned: 1,
+      executed: 1,
+      reported: 1,
+      mounted: 1,
+      diagnosticsOk: 0,
+      failed: 1,
+      issueCount: 1,
+    });
+  });
+
+  it("reports empty Renderer mount report summaries", () => {
+    expect(Renderer.summarizeRendererMountReports([])).toEqual({
+      total: 0,
+      planned: 0,
+      executed: 0,
+      reported: 0,
+      mounted: 0,
+      diagnosticsOk: 0,
+      failed: 0,
+      issueCount: 0,
+    });
+  });
+
+  it("keeps Renderer mount reports independent from integration metadata", () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "report-boundary-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "report-boundary-target",
+      }),
+    });
+    const report = createRendererMountReport(
+      createRendererMountLifecycleRecord(
+        createDefaultRendererMountPlan(request),
+      ),
+    );
+
+    expect(report).not.toHaveProperty("platform");
+    expect(report).not.toHaveProperty("theme");
+    expect(report).not.toHaveProperty("homeAssistant");
+    expect(report).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {
