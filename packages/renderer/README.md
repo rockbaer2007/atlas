@@ -50,6 +50,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticDelivery`
+- `RendererMountReportConsumerDiagnosticDeliveryManifest`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
 - `RendererMountReportConsumerDiagnosticBatchExecution`
@@ -106,6 +107,7 @@ descriptive only and do not mount output yet.
 - `createRendererMountReportConsumerConflict`
 - `createRendererMountReportConsumerConflictResolution`
 - `createRendererMountReportConsumerDiagnosticDelivery`
+- `createRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `createRendererMountReportConsumerLookupRequest`
 - `createRendererMountReportConsumerLookupResult`
 - `createRendererMountReportConsumerRegistry`
@@ -442,6 +444,12 @@ execution closures into a data-only delivery envelope. Deliveries expose a
 stable kind, caller-provided name, ready state, issue count and closure
 reference without adding transport, DOM, Home Assistant, Theme or platform
 metadata.
+
+Renderer mount report consumer diagnostic delivery manifests now group
+multiple delivery envelopes into transport-neutral manifest data. Manifests
+copy delivery lists, preserve delivery references, count ready and blocked
+deliveries and total issue counts without adding DOM, Home Assistant, Theme or
+platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

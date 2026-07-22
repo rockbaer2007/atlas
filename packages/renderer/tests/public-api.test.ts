@@ -27,6 +27,7 @@ import type {
   RendererMountReportConsumerConflict,
   RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerDiagnosticDelivery,
+  RendererMountReportConsumerDiagnosticDeliveryManifest,
   RendererMountReportConsumerDiagnosticAggregation,
   RendererMountReportConsumerDiagnosticAggregationSummary,
   RendererMountReportConsumerDiagnosticBatchExecution,
@@ -86,6 +87,7 @@ import {
   createRendererMountReportConsumerConflict,
   createRendererMountReportConsumerConflictResolution,
   createRendererMountReportConsumerDiagnosticDelivery,
+  createRendererMountReportConsumerDiagnosticDeliveryManifest,
   createRendererMountReportConsumerLookupRequest,
   createRendererMountReportConsumerLookupResult,
   createRendererMountReportConsumerRegistry,
@@ -162,6 +164,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountReportConsumerConflict).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerConflictResolution).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerDiagnosticDelivery).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumerDiagnosticDeliveryManifest).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerLookupRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerLookupResult).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumerRegistry).toBeTypeOf("function");
@@ -448,6 +451,15 @@ describe("renderer public API", () => {
       issueCount: 0,
       closure: mountReportConsumerDiagnosticRegistryExecutionClosure,
     };
+    const mountReportConsumerDiagnosticDeliveryManifest:
+      RendererMountReportConsumerDiagnosticDeliveryManifest = {
+        kind: "renderer.mount.report.consumer.diagnostics.delivery.manifest",
+        name: "type-manifest",
+        deliveries: [mountReportConsumerDiagnosticDelivery],
+        readyCount: 1,
+        blockedCount: 0,
+        issueCount: 0,
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -592,6 +604,9 @@ describe("renderer public API", () => {
     expect(mountReportConsumerDiagnosticRegistryExecutionClosure.result.ok).toBe(true);
     expect(mountReportConsumerDiagnosticDelivery.closure).toBe(
       mountReportConsumerDiagnosticRegistryExecutionClosure,
+    );
+    expect(mountReportConsumerDiagnosticDeliveryManifest.deliveries[0]).toBe(
+      mountReportConsumerDiagnosticDelivery,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -2881,6 +2896,107 @@ describe("renderer public API", () => {
     expect(delivery).not.toHaveProperty("theme");
     expect(delivery).not.toHaveProperty("homeAssistant");
     expect(delivery).not.toHaveProperty("element");
+  });
+
+  it("creates empty Renderer mount report consumer diagnostic delivery manifests", () => {
+    expect(createRendererMountReportConsumerDiagnosticDeliveryManifest(
+      "empty-manifest",
+      [],
+    )).toEqual({
+      kind: "renderer.mount.report.consumer.diagnostics.delivery.manifest",
+      name: "empty-manifest",
+      deliveries: [],
+      readyCount: 0,
+      blockedCount: 0,
+      issueCount: 0,
+    });
+  });
+
+  it("summarizes Renderer mount report consumer diagnostic delivery manifests", async () => {
+    const readyClosure = reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+      await consumeAndInspectRendererMountReportConsumerRegistry(
+        createRendererMountReportConsumerRegistry([]),
+        createRendererMountReportConsumption({
+          records: [],
+        }),
+      ),
+    );
+    const blockedConsumer = createRendererMountReportConsumer({
+      name: "manifest-blocked-consumer",
+      consume: consumption => ({
+        consumerName: "manifest-blocked-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const blockedClosure = reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+      await consumeAndInspectRendererMountReportConsumerRegistry(
+        createRendererMountReportConsumerRegistry([blockedConsumer]),
+        createRendererMountReportConsumption({
+          records: [],
+        }),
+      ),
+    );
+    const readyDelivery = createRendererMountReportConsumerDiagnosticDelivery(
+      "ready-manifest-delivery",
+      readyClosure,
+    );
+    const blockedDelivery = createRendererMountReportConsumerDiagnosticDelivery(
+      "blocked-manifest-delivery",
+      blockedClosure,
+    );
+
+    expect(Renderer.createRendererMountReportConsumerDiagnosticDeliveryManifest(
+      "mixed-manifest",
+      [readyDelivery, blockedDelivery],
+    )).toEqual({
+      kind: "renderer.mount.report.consumer.diagnostics.delivery.manifest",
+      name: "mixed-manifest",
+      deliveries: [readyDelivery, blockedDelivery],
+      readyCount: 1,
+      blockedCount: 1,
+      issueCount: 1,
+    });
+  });
+
+  it("keeps Renderer mount report consumer diagnostic delivery manifests independent from source arrays", async () => {
+    const closure = reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+      await consumeAndInspectRendererMountReportConsumerRegistry(
+        createRendererMountReportConsumerRegistry([]),
+        createRendererMountReportConsumption({
+          records: [],
+        }),
+      ),
+    );
+    const first = createRendererMountReportConsumerDiagnosticDelivery(
+      "first-manifest-delivery",
+      closure,
+    );
+    const second = createRendererMountReportConsumerDiagnosticDelivery(
+      "second-manifest-delivery",
+      closure,
+    );
+    const deliveries = [first];
+
+    const manifest = createRendererMountReportConsumerDiagnosticDeliveryManifest(
+      "copy-manifest",
+      deliveries,
+    );
+    deliveries.push(second);
+
+    expect(manifest.deliveries).toEqual([first]);
+  });
+
+  it("keeps Renderer mount report consumer diagnostic delivery manifests free of integration metadata", () => {
+    const manifest = createRendererMountReportConsumerDiagnosticDeliveryManifest(
+      "boundary-manifest",
+      [],
+    );
+
+    expect(manifest).not.toHaveProperty("platform");
+    expect(manifest).not.toHaveProperty("theme");
+    expect(manifest).not.toHaveProperty("homeAssistant");
+    expect(manifest).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

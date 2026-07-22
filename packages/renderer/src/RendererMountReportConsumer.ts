@@ -110,6 +110,15 @@ export type RendererMountReportConsumerDiagnosticDelivery = Readonly<{
   closure: RendererMountReportConsumerDiagnosticRegistryExecutionClosure;
 }>;
 
+export type RendererMountReportConsumerDiagnosticDeliveryManifest = Readonly<{
+  kind: "renderer.mount.report.consumer.diagnostics.delivery.manifest";
+  name: string;
+  deliveries: readonly RendererMountReportConsumerDiagnosticDelivery[];
+  readyCount: number;
+  blockedCount: number;
+  issueCount: number;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -408,6 +417,23 @@ export function createRendererMountReportConsumerDiagnosticDelivery(
     ready: closure.result.ok,
     issueCount: closure.result.issues.length,
     closure,
+  };
+}
+
+export function createRendererMountReportConsumerDiagnosticDeliveryManifest(
+  name: string,
+  deliveries: readonly RendererMountReportConsumerDiagnosticDelivery[],
+): RendererMountReportConsumerDiagnosticDeliveryManifest {
+  const copiedDeliveries = [...deliveries];
+
+  return {
+    kind: "renderer.mount.report.consumer.diagnostics.delivery.manifest",
+    name,
+    deliveries: copiedDeliveries,
+    readyCount: copiedDeliveries.filter(delivery => delivery.ready).length,
+    blockedCount: copiedDeliveries.filter(delivery => !delivery.ready).length,
+    issueCount: copiedDeliveries
+      .reduce((issueCount, delivery) => issueCount + delivery.issueCount, 0),
   };
 }
 

@@ -66,6 +66,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer diagnostic delivery now packages registry
   execution closures into ready-state delivery envelopes without transport or
   platform metadata.
+* Renderer mount report consumer diagnostic delivery manifests now group
+  delivery envelopes with ready, blocked and issue counts while staying
+  transport-neutral.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
