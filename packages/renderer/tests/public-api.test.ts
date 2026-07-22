@@ -14,6 +14,7 @@ import type {
   RendererAdapterSelectionResult,
   RendererConcreteIntegrationBoundaryExecutionClosure,
   RendererConcreteIntegrationBoundaryExecutionClosureSnapshot,
+  RendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog,
   RendererConcreteIntegrationBoundaryExecutionPreparation,
   RendererConcreteIntegrationBoundaryDecision,
   RendererConcreteIntegrationBoundaryPlan,
@@ -91,6 +92,7 @@ import * as Renderer from "../src";
 import {
   aggregateRendererMountReportConsumerDiagnostics,
   closeRendererConcreteIntegrationBoundaryExecution,
+  createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog,
   createRendererAdapter,
   createRendererAdapterConflict,
   createRendererAdapterConflictResolution,
@@ -192,6 +194,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
+    expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryDecision).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
@@ -697,6 +700,16 @@ describe("renderer public API", () => {
         planCount: 1,
         executable: false,
       };
+    const concreteIntegrationBoundaryExecutionClosureSnapshotCatalog:
+      RendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog = {
+        kind: "renderer.concrete.integration.boundary.execution.closure.snapshot.catalog",
+        name: "type-concrete-integration-boundary-execution-closure-snapshot-catalog",
+        snapshots: [concreteIntegrationBoundaryExecutionClosureSnapshot],
+        readyCount: 1,
+        blockedCount: 0,
+        issueCount: 0,
+        executableCount: 0,
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -878,6 +891,9 @@ describe("renderer public API", () => {
     );
     expect(concreteIntegrationBoundaryExecutionClosureSnapshot.closureName).toBe(
       concreteIntegrationBoundaryExecutionClosure.name,
+    );
+    expect(concreteIntegrationBoundaryExecutionClosureSnapshotCatalog.snapshots[0]).toBe(
+      concreteIntegrationBoundaryExecutionClosureSnapshot,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -4548,6 +4564,87 @@ describe("renderer public API", () => {
     expect(snapshot).not.toHaveProperty("preparation");
     expect(snapshot).not.toHaveProperty("result");
     expect(snapshot).not.toHaveProperty("execute");
+  });
+
+  it("catalogs ready Renderer concrete integration boundary execution closure snapshots", () => {
+    const snapshot: RendererConcreteIntegrationBoundaryExecutionClosureSnapshot = {
+      kind: "renderer.concrete.integration.boundary.execution.closure.snapshot",
+      closureName: "ready-execution-closure-snapshot-catalog-closure",
+      ready: true,
+      issueCount: 0,
+      planCount: 1,
+      executable: false,
+    };
+
+    expect(createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog(
+      "ready-execution-closure-snapshot-catalog",
+      [snapshot],
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.execution.closure.snapshot.catalog",
+      name: "ready-execution-closure-snapshot-catalog",
+      snapshots: [snapshot],
+      readyCount: 1,
+      blockedCount: 0,
+      issueCount: 0,
+      executableCount: 0,
+    });
+  });
+
+  it("catalogs blocked Renderer concrete integration boundary execution closure snapshots", () => {
+    const catalog = Renderer.createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog(
+      "blocked-execution-closure-snapshot-catalog",
+      [{
+        kind: "renderer.concrete.integration.boundary.execution.closure.snapshot",
+        closureName: "blocked-execution-closure-snapshot-catalog-closure",
+        ready: false,
+        issueCount: 18,
+        planCount: 1,
+        executable: false,
+      }],
+    );
+
+    expect(catalog.readyCount).toBe(0);
+    expect(catalog.blockedCount).toBe(1);
+    expect(catalog.issueCount).toBe(18);
+  });
+
+  it("copies Renderer concrete integration boundary execution closure snapshot catalog inputs", () => {
+    const snapshots: RendererConcreteIntegrationBoundaryExecutionClosureSnapshot[] = [{
+      kind: "renderer.concrete.integration.boundary.execution.closure.snapshot",
+      closureName: "copy-execution-closure-snapshot-catalog-closure",
+      ready: true,
+      issueCount: 0,
+      planCount: 1,
+      executable: false,
+    }];
+
+    const catalog = createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog(
+      "copy-execution-closure-snapshot-catalog",
+      snapshots,
+    );
+    snapshots.push({
+      kind: "renderer.concrete.integration.boundary.execution.closure.snapshot",
+      closureName: "late-execution-closure-snapshot-catalog-closure",
+      ready: false,
+      issueCount: 19,
+      planCount: 1,
+      executable: false,
+    });
+
+    expect(catalog.snapshots).toHaveLength(1);
+    expect(catalog.readyCount).toBe(1);
+    expect(catalog.blockedCount).toBe(0);
+  });
+
+  it("keeps Renderer concrete integration boundary execution closure snapshot catalogs non-executable", () => {
+    const catalog = createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog(
+      "non-executable-execution-closure-snapshot-catalog",
+      [],
+    );
+
+    expect(catalog.executableCount).toBe(0);
+    expect(catalog).not.toHaveProperty("execute");
+    expect(catalog).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

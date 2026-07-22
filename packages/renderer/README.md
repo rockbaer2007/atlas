@@ -39,6 +39,7 @@ descriptive only and do not mount output yet.
 - `RendererAdapterSelectionResult`
 - `RendererConcreteIntegrationBoundaryExecutionClosure`
 - `RendererConcreteIntegrationBoundaryExecutionClosureSnapshot`
+- `RendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog`
 - `RendererConcreteIntegrationBoundaryExecutionPreparation`
 - `RendererConcreteIntegrationBoundaryDecision`
 - `RendererConcreteIntegrationBoundaryPlan`
@@ -110,6 +111,7 @@ descriptive only and do not mount output yet.
 - `RendererTargetKind`
 - `aggregateRendererMountReportConsumerDiagnostics`
 - `closeRendererConcreteIntegrationBoundaryExecution`
+- `createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog`
 - `createRendererAdapter`
 - `createRendererAdapterConflict`
 - `createRendererAdapterConflictResolution`
@@ -573,6 +575,10 @@ hooks or concrete surface bindings.
 Renderer concrete integration boundary execution closure snapshots now expose
 compact closure summaries with ready state, issue counts, plan counts and an
 explicit non-executable flag while omitting preparation payloads.
+
+Renderer concrete integration boundary execution closure snapshot catalogs now
+group compact closure snapshots with ready, blocked, issue and executable
+counts while keeping executable counts fixed at zero.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

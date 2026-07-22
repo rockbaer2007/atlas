@@ -110,6 +110,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   execution preparations into closed, non-executable result state.
 * Renderer concrete integration boundary execution closure snapshots now expose
   compact non-executable closure summaries without preparation payloads.
+* Renderer concrete integration boundary execution closure snapshot catalogs now
+  group compact closure summaries while keeping executable counts fixed at zero.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
