@@ -893,23 +893,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.878 | Renderer Mount Reporting Consumer Diagnostics Return-To-Conflict Review | Completed | - |
 | G2.5.879 | Renderer Mount Reporting Consumer Diagnostics Return-To-Consumer Review | Completed | - |
 | G2.5.880 | Renderer Mount Reporting Consumer Diagnostics Return-To-Renderer Review | Completed | - |
-| G2.5.881 | Renderer Mount Reporting Consumer Diagnostics Aggregation Review | Planned | - |
+| G2.5.881 | Renderer Mount Reporting Consumer Diagnostics Aggregation Review | Completed | - |
+| G2.5.882 | Renderer Mount Reporting Consumer Diagnostics Aggregation Contract Review | Completed | - |
+| G2.5.883 | Renderer Mount Reporting Consumer Diagnostics Aggregation Shape Review | Completed | - |
+| G2.5.884 | Renderer Mount Reporting Consumer Diagnostics Aggregation Empty Review | Completed | - |
+| G2.5.885 | Renderer Mount Reporting Consumer Diagnostics Aggregation Order Review | Completed | - |
+| G2.5.886 | Renderer Mount Reporting Consumer Diagnostics Aggregation Issue Collection Review | Completed | - |
+| G2.5.887 | Renderer Mount Reporting Consumer Diagnostics Aggregation Consumer Names Review | Completed | - |
+| G2.5.888 | Renderer Mount Reporting Consumer Diagnostics Aggregation Result Ok Review | Completed | - |
+| G2.5.889 | Renderer Mount Reporting Consumer Diagnostics Aggregation Copy Boundary Review | Completed | - |
+| G2.5.890 | Renderer Mount Reporting Consumer Diagnostics Aggregation Package Root Review | Completed | - |
+| G2.5.891 | Renderer Mount Reporting Consumer Diagnostics Aggregation Type Surface Review | Completed | - |
+| G2.5.892 | Renderer Mount Reporting Consumer Diagnostics Aggregation Documentation Review | Completed | - |
+| G2.5.893 | Renderer Mount Reporting Consumer Diagnostics Aggregation Changelog Review | Completed | - |
+| G2.5.894 | Renderer Mount Reporting Consumer Diagnostics Aggregation Regression Review | Completed | - |
+| G2.5.895 | Renderer Mount Reporting Consumer Diagnostics Aggregation Public API Review | Completed | - |
+| G2.5.896 | Renderer Mount Reporting Consumer Diagnostics Aggregation README Review | Completed | - |
+| G2.5.897 | Renderer Mount Reporting Consumer Diagnostics Aggregation Sprint Documentation Review | Completed | - |
+| G2.5.898 | Renderer Mount Reporting Consumer Diagnostics Aggregation Workspace Regression Review | Completed | - |
+| G2.5.899 | Renderer Mount Reporting Consumer Diagnostics Aggregation Integration Closure Review | Completed | - |
+| G2.5.900 | Renderer Mount Reporting Consumer Diagnostics Aggregation Compatibility Review | Completed | - |
+| G2.5.901 | Renderer Mount Reporting Consumer Diagnostics Aggregation Future DOM Boundary Review | Completed | - |
+| G2.5.902 | Renderer Mount Reporting Consumer Diagnostics Aggregation Future Theme Boundary Review | Completed | - |
+| G2.5.903 | Renderer Mount Reporting Consumer Diagnostics Aggregation Future Home Assistant Boundary Review | Completed | - |
+| G2.5.904 | Renderer Mount Reporting Consumer Diagnostics Aggregation Future Platform Boundary Review | Completed | - |
+| G2.5.905 | Renderer Mount Reporting Consumer Diagnostics Aggregation Stability Review | Completed | - |
+| G2.5.906 | Renderer Mount Reporting Consumer Diagnostics Aggregation Success Stability Review | Completed | - |
+| G2.5.907 | Renderer Mount Reporting Consumer Diagnostics Aggregation Failure Stability Review | Completed | - |
+| G2.5.908 | Renderer Mount Reporting Consumer Diagnostics Aggregation Issue Stability Review | Completed | - |
+| G2.5.909 | Renderer Mount Reporting Consumer Diagnostics Aggregation Context Stability Review | Completed | - |
+| G2.5.910 | Renderer Mount Reporting Consumer Diagnostics Aggregation Consumer Order Stability Review | Completed | - |
+| G2.5.911 | Renderer Mount Reporting Consumer Diagnostics Aggregation Report Copy Review | Completed | - |
+| G2.5.912 | Renderer Mount Reporting Consumer Diagnostics Aggregation Issue Copy Review | Completed | - |
+| G2.5.913 | Renderer Mount Reporting Consumer Diagnostics Aggregation Empty Issue Review | Completed | - |
+| G2.5.914 | Renderer Mount Reporting Consumer Diagnostics Aggregation Multiple Consumer Review | Completed | - |
+| G2.5.915 | Renderer Mount Reporting Consumer Diagnostics Aggregation Mixed Result Review | Completed | - |
+| G2.5.916 | Renderer Mount Reporting Consumer Diagnostics Aggregation Consumer Name Order Review | Completed | - |
+| G2.5.917 | Renderer Mount Reporting Consumer Diagnostics Aggregation Context Review | Completed | - |
+| G2.5.918 | Renderer Mount Reporting Consumer Diagnostics Aggregation Result Boundary Review | Completed | - |
+| G2.5.919 | Renderer Mount Reporting Consumer Diagnostics Aggregation API Closure Review | Completed | - |
+| G2.5.920 | Renderer Mount Reporting Consumer Diagnostics Aggregation Return-To-Diagnostics Review | Completed | - |
+| G2.5.921 | Renderer Mount Reporting Consumer Diagnostics Aggregation Return-To-Consumer Review | Completed | - |
+| G2.5.922 | Renderer Mount Reporting Consumer Diagnostics Aggregation Return-To-Registry Review | Completed | - |
+| G2.5.923 | Renderer Mount Reporting Consumer Diagnostics Aggregation Return-To-Conflict Review | Completed | - |
+| G2.5.924 | Renderer Mount Reporting Consumer Diagnostics Aggregation Return-To-Renderer Review | Completed | - |
+| G2.5.925 | Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Preparation Review | Completed | - |
+| G2.5.926 | Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Boundary Review | Completed | - |
+| G2.5.927 | Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Metrics Review | Completed | - |
+| G2.5.928 | Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Consumer Count Review | Completed | - |
+| G2.5.929 | Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Issue Count Review | Completed | - |
+| G2.5.930 | Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Handoff Review | Completed | - |
+| G2.5.931 | Renderer Mount Reporting Consumer Diagnostics Summary Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.880 - Renderer Mount Reporting Consumer Diagnostics Return-To-Renderer Review
+## G2.5.930 - Renderer Mount Reporting Consumer Diagnostics Aggregation Summary Handoff Review
 
 Goal:
 
-Define Renderer mount report consumer diagnostics for success, not-consumed and failed consumer results.
+Aggregate Renderer mount report consumer diagnostic reports across multiple consumers.
 
 Deliverables:
 
-* Renderer mount report consumer diagnostic codes
-* Consumer diagnostic reports
-* Consumer result inspection
+* Consumer diagnostic aggregation type
+* Ordered aggregate diagnostic result
+* Aggregation public API tests
 * Sprint documentation
 
 Status:
@@ -920,13 +970,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.881 - Renderer Mount Reporting Consumer Diagnostics Aggregation Review
+## G2.5.931 - Renderer Mount Reporting Consumer Diagnostics Summary Review
 
 Suggested focus:
 
-* Decide whether multiple consumer diagnostics should be aggregated
-* Keep aggregation generic and diagnostics-compatible
-* Preserve existing consumer, registry and conflict contracts
+* Decide whether aggregated consumer diagnostics need compact summary metrics
+* Keep summary output derived from aggregate diagnostics
+* Preserve existing consumer, registry, conflict and aggregation contracts
 
 ---
 
@@ -1817,6 +1867,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.878.md`
 * `docs/sprints/Sprint-G2.5.879.md`
 * `docs/sprints/Sprint-G2.5.880.md`
+* `docs/sprints/Sprint-G2.5.881.md`
+* `docs/sprints/Sprint-G2.5.882.md`
+* `docs/sprints/Sprint-G2.5.883.md`
+* `docs/sprints/Sprint-G2.5.884.md`
+* `docs/sprints/Sprint-G2.5.885.md`
+* `docs/sprints/Sprint-G2.5.886.md`
+* `docs/sprints/Sprint-G2.5.887.md`
+* `docs/sprints/Sprint-G2.5.888.md`
+* `docs/sprints/Sprint-G2.5.889.md`
+* `docs/sprints/Sprint-G2.5.890.md`
+* `docs/sprints/Sprint-G2.5.891.md`
+* `docs/sprints/Sprint-G2.5.892.md`
+* `docs/sprints/Sprint-G2.5.893.md`
+* `docs/sprints/Sprint-G2.5.894.md`
+* `docs/sprints/Sprint-G2.5.895.md`
+* `docs/sprints/Sprint-G2.5.896.md`
+* `docs/sprints/Sprint-G2.5.897.md`
+* `docs/sprints/Sprint-G2.5.898.md`
+* `docs/sprints/Sprint-G2.5.899.md`
+* `docs/sprints/Sprint-G2.5.900.md`
+* `docs/sprints/Sprint-G2.5.901.md`
+* `docs/sprints/Sprint-G2.5.902.md`
+* `docs/sprints/Sprint-G2.5.903.md`
+* `docs/sprints/Sprint-G2.5.904.md`
+* `docs/sprints/Sprint-G2.5.905.md`
+* `docs/sprints/Sprint-G2.5.906.md`
+* `docs/sprints/Sprint-G2.5.907.md`
+* `docs/sprints/Sprint-G2.5.908.md`
+* `docs/sprints/Sprint-G2.5.909.md`
+* `docs/sprints/Sprint-G2.5.910.md`
+* `docs/sprints/Sprint-G2.5.911.md`
+* `docs/sprints/Sprint-G2.5.912.md`
+* `docs/sprints/Sprint-G2.5.913.md`
+* `docs/sprints/Sprint-G2.5.914.md`
+* `docs/sprints/Sprint-G2.5.915.md`
+* `docs/sprints/Sprint-G2.5.916.md`
+* `docs/sprints/Sprint-G2.5.917.md`
+* `docs/sprints/Sprint-G2.5.918.md`
+* `docs/sprints/Sprint-G2.5.919.md`
+* `docs/sprints/Sprint-G2.5.920.md`
+* `docs/sprints/Sprint-G2.5.921.md`
+* `docs/sprints/Sprint-G2.5.922.md`
+* `docs/sprints/Sprint-G2.5.923.md`
+* `docs/sprints/Sprint-G2.5.924.md`
+* `docs/sprints/Sprint-G2.5.925.md`
+* `docs/sprints/Sprint-G2.5.926.md`
+* `docs/sprints/Sprint-G2.5.927.md`
+* `docs/sprints/Sprint-G2.5.928.md`
+* `docs/sprints/Sprint-G2.5.929.md`
+* `docs/sprints/Sprint-G2.5.930.md`
 
 ---
 

@@ -49,6 +49,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumer`
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
+- `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticReport`
 - `RendererMountReportConsumerDiagnosticCodes`
 - `RendererMountReportConsumerLookupRequest`
@@ -79,6 +80,7 @@ descriptive only and do not mount output yet.
 - `RendererPipelineStageResult`
 - `RendererTarget`
 - `RendererTargetKind`
+- `aggregateRendererMountReportConsumerDiagnostics`
 - `createRendererAdapter`
 - `createRendererAdapterConflict`
 - `createRendererAdapterConflictResolution`
@@ -376,6 +378,13 @@ stable diagnostics shape. Successful consumption is issue-free, unconsumed
 results report a stable not-consumed code, consumer errors report a stable
 failure code, and diagnostics remain independent from DOM elements, Home
 Assistant fields, Theme fields and platform metadata.
+
+Renderer mount report consumer diagnostic aggregation now combines multiple
+consumer diagnostic reports into a stable aggregate result. Aggregations
+preserve consumer order, copy report arrays away from caller-owned arrays,
+collect issues across consumers, report empty aggregations as successful and
+remain independent from DOM elements, Home Assistant fields, Theme fields and
+platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

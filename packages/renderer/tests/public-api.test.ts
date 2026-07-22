@@ -26,6 +26,7 @@ import type {
   RendererMountReportConsumer,
   RendererMountReportConsumerConflict,
   RendererMountReportConsumerConflictResolution,
+  RendererMountReportConsumerDiagnosticAggregation,
   RendererMountReportConsumerDiagnosticReport,
   RendererMountReportConsumerLookupRequest,
   RendererMountReportConsumerLookupResult,
@@ -61,6 +62,7 @@ import type {
 } from "../src";
 import * as Renderer from "../src";
 import {
+  aggregateRendererMountReportConsumerDiagnostics,
   createRendererAdapter,
   createRendererAdapterConflict,
   createRendererAdapterConflictResolution,
@@ -181,6 +183,7 @@ describe("renderer public API", () => {
     expect(Renderer.RendererMountReportConsumerDiagnosticCodes.NotConsumed).toBe(
       "renderer.mount.report.consumer.not_consumed",
     );
+    expect(Renderer.aggregateRendererMountReportConsumerDiagnostics).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.recordRendererMountLifecycleExecution).toBeTypeOf("function");
@@ -328,6 +331,17 @@ describe("renderer public API", () => {
         issues: [],
       },
     };
+    const mountReportConsumerDiagnosticAggregation: RendererMountReportConsumerDiagnosticAggregation = {
+      context: {
+        component: "renderer.mount.report.consumer.diagnostics",
+        consumerNames: [mountReportConsumerResult.consumerName],
+      },
+      result: {
+        ok: true,
+        reports: [mountReportConsumerDiagnosticReport],
+        issues: [],
+      },
+    };
     const mountReportConsumerOutput: RendererMountReportConsumerOutput =
       mountReportConsumerResult;
     const mountReportConsumer: RendererMountReportConsumer = {
@@ -470,6 +484,9 @@ describe("renderer public API", () => {
     expect(mountReportSummary.total).toBe(1);
     expect(mountReportConsumer.consume(mountReportConsumption)).toBe(mountReportConsumerResult);
     expect(mountReportConsumerDiagnosticReport.result.ok).toBe(true);
+    expect(mountReportConsumerDiagnosticAggregation.result.reports[0]).toBe(
+      mountReportConsumerDiagnosticReport,
+    );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -2793,6 +2810,159 @@ describe("renderer public API", () => {
     expect(report).not.toHaveProperty("theme");
     expect(report).not.toHaveProperty("homeAssistant");
     expect(report).not.toHaveProperty("element");
+  });
+
+  it("aggregates Renderer mount report consumer diagnostics", () => {
+    const first = inspectRendererMountReportConsumerResult({
+      consumerName: "first-aggregate-consumer",
+      consumed: true,
+      summary: {
+        total: 0,
+        planned: 0,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+    const second = inspectRendererMountReportConsumerResult({
+      consumerName: "second-aggregate-consumer",
+      consumed: false,
+      summary: {
+        total: 1,
+        planned: 1,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+
+    expect(aggregateRendererMountReportConsumerDiagnostics([first, second])).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer.diagnostics",
+        consumerNames: [
+          "first-aggregate-consumer",
+          "second-aggregate-consumer",
+        ],
+      },
+      result: {
+        ok: false,
+        reports: [first, second],
+        issues: second.result.issues,
+      },
+    });
+  });
+
+  it("reports empty Renderer mount report consumer diagnostic aggregations as ok", () => {
+    expect(aggregateRendererMountReportConsumerDiagnostics([])).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer.diagnostics",
+        consumerNames: [],
+      },
+      result: {
+        ok: true,
+        reports: [],
+        issues: [],
+      },
+    });
+  });
+
+  it("preserves Renderer mount report consumer diagnostic aggregation order", () => {
+    const first = inspectRendererMountReportConsumerResult({
+      consumerName: "first-order-consumer",
+      consumed: false,
+      summary: {
+        total: 1,
+        planned: 1,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+    const second = inspectRendererMountReportConsumerResult({
+      consumerName: "second-order-consumer",
+      consumed: false,
+      summary: {
+        total: 1,
+        planned: 1,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+      error: "second consumer failed",
+    });
+
+    const aggregation = Renderer.aggregateRendererMountReportConsumerDiagnostics([
+      first,
+      second,
+    ]);
+
+    expect(aggregation.context.consumerNames).toEqual([
+      "first-order-consumer",
+      "second-order-consumer",
+    ]);
+    expect(aggregation.result.issues.map(issue => issue.message)).toEqual([
+      "first-order-consumer did not consume Renderer mount reports",
+      "second-order-consumer did not consume Renderer mount reports",
+      "second consumer failed",
+    ]);
+  });
+
+  it("copies Renderer mount report consumer diagnostic aggregations from source arrays", () => {
+    const report = inspectRendererMountReportConsumerResult({
+      consumerName: "copy-aggregate-consumer",
+      consumed: true,
+      summary: {
+        total: 0,
+        planned: 0,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+    const reports = [report];
+
+    const aggregation = aggregateRendererMountReportConsumerDiagnostics(reports);
+    reports.push(inspectRendererMountReportConsumerResult({
+      consumerName: "late-aggregate-consumer",
+      consumed: false,
+      summary: {
+        total: 0,
+        planned: 0,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    }));
+
+    expect(aggregation.context.consumerNames).toEqual(["copy-aggregate-consumer"]);
+    expect(aggregation.result.reports).toEqual([report]);
+  });
+
+  it("keeps Renderer mount report consumer diagnostic aggregations free of integration metadata", () => {
+    const aggregation = aggregateRendererMountReportConsumerDiagnostics([]);
+
+    expect(aggregation).not.toHaveProperty("platform");
+    expect(aggregation).not.toHaveProperty("theme");
+    expect(aggregation).not.toHaveProperty("homeAssistant");
+    expect(aggregation).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

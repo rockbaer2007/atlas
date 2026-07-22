@@ -20,6 +20,18 @@ export type RendererMountReportConsumerDiagnosticReport = Readonly<{
   }>;
 }>;
 
+export type RendererMountReportConsumerDiagnosticAggregation = Readonly<{
+  context: Readonly<{
+    component: string;
+    consumerNames: readonly string[];
+  }>;
+  result: Readonly<{
+    ok: boolean;
+    reports: readonly RendererMountReportConsumerDiagnosticReport[];
+    issues: readonly RendererMountReportConsumerDiagnosticReport["result"]["issues"][number][];
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -235,6 +247,33 @@ export function inspectRendererMountReportConsumerResult(
     },
     result: {
       ok: issues.length === 0,
+      issues,
+    },
+  };
+}
+
+export function aggregateRendererMountReportConsumerDiagnostics(
+  reports: readonly RendererMountReportConsumerDiagnosticReport[],
+): RendererMountReportConsumerDiagnosticAggregation {
+  const copiedReports = reports.map(report => ({
+    context: {
+      ...report.context,
+    },
+    result: {
+      ok: report.result.ok,
+      issues: [...report.result.issues],
+    },
+  }));
+  const issues = copiedReports.flatMap(report => report.result.issues);
+
+  return {
+    context: {
+      component: "renderer.mount.report.consumer.diagnostics",
+      consumerNames: copiedReports.map(report => report.context.consumerName),
+    },
+    result: {
+      ok: issues.length === 0,
+      reports: copiedReports,
       issues,
     },
   };

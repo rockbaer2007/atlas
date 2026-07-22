@@ -42,6 +42,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer diagnostics now inspect consumer results into
   stable success, not-consumed and failure diagnostics without platform
   metadata.
+* Renderer mount report consumer diagnostic aggregation now combines multiple
+  consumer diagnostic reports into stable ordered aggregate diagnostics without
+  platform metadata.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
