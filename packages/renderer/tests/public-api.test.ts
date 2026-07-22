@@ -118,6 +118,8 @@ import type {
   RendererTarget,
   RendererTargetKind,
   RendererUnifiedMountBatchConsumptionRequest,
+  RendererUnifiedMountBatchDiagnosticCatalog,
+  RendererUnifiedMountBatchDiagnosticCatalogSummary,
   RendererUnifiedMountBatchDiagnosticClosure,
   RendererUnifiedMountBatchDiagnosticHandoff,
   RendererUnifiedMountBatchDiagnosticSnapshot,
@@ -195,6 +197,7 @@ import {
   createRendererPlatformAdapterRegistry,
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
+  createRendererTargetMountBatchDiagnosticCatalog,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
@@ -342,6 +345,10 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterRegistry).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
+    expect(Renderer.createRendererTargetMountBatchDiagnosticCatalog).toBeTypeOf("function");
+    expect(createRendererTargetMountBatchDiagnosticCatalog).toBe(
+      Renderer.createRendererTargetMountBatchDiagnosticCatalog,
+    );
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
     expect(Renderer.consumeRendererTargetMountBatchReports).toBeTypeOf("function");
     expect(consumeRendererTargetMountBatchReports).toBe(
@@ -1281,6 +1288,17 @@ describe("renderer public API", () => {
       blocked: false,
       transferable: true,
     };
+    const unifiedMountBatchDiagnosticCatalogSummary:
+      RendererUnifiedMountBatchDiagnosticCatalogSummary = {
+        handoffCount: 1,
+        readyCount: 1,
+        blockedCount: 0,
+        transferableCount: 1,
+      };
+    const unifiedMountBatchDiagnosticCatalog: RendererUnifiedMountBatchDiagnosticCatalog = {
+      handoffs: [unifiedMountBatchDiagnosticHandoff],
+      summary: unifiedMountBatchDiagnosticCatalogSummary,
+    };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1317,6 +1335,12 @@ describe("renderer public API", () => {
     );
     expect(unifiedMountBatchDiagnosticHandoff.snapshot).toBe(
       unifiedMountBatchDiagnosticSnapshot,
+    );
+    expect(unifiedMountBatchDiagnosticCatalog.handoffs[0]).toBe(
+      unifiedMountBatchDiagnosticHandoff,
+    );
+    expect(unifiedMountBatchDiagnosticCatalog.summary).toBe(
+      unifiedMountBatchDiagnosticCatalogSummary,
     );
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);

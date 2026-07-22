@@ -82,6 +82,8 @@ Assistant or theme execution paths.
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
+- `RendererUnifiedMountBatchDiagnosticCatalog`
+- `RendererUnifiedMountBatchDiagnosticCatalogSummary`
 - `RendererUnifiedMountBatchDiagnosticClosure`
 - `RendererUnifiedMountBatchDiagnosticHandoff`
 - `RendererUnifiedMountBatchDiagnosticSnapshot`
@@ -236,6 +238,7 @@ Assistant or theme execution paths.
 - `createRendererPlatformAdapterRegistry`
 - `createRendererPlatformAdapterSelectionRequest`
 - `createRendererPlatformAdapterSelectionResult`
+- `createRendererTargetMountBatchDiagnosticCatalog`
 - `createRendererTarget`
 - `consumeRendererTargetMountBatchReports`
 - `consumeAndInspectRendererMountReportConsumerRegistry`
@@ -365,6 +368,9 @@ preserving references to the original execution and failed entries.
 Batch diagnostic snapshots expose the closure decision and failed output or
 target names as compact data, and diagnostic handoffs pair that snapshot with
 the closure while marking only ready batches as transferable.
+Batch diagnostic catalogs collect multiple diagnostic handoffs, preserve
+handoff references, protect against later source-array mutation and summarize
+handoff, ready, blocked and transferable counts for later integration layers.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

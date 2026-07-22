@@ -4,6 +4,7 @@ import {
   createDefaultRendererMountAdapterRegistry,
   createRendererAdapterRegistry,
   createRendererOutput,
+  createRendererTargetMountBatchDiagnosticCatalog,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
@@ -919,5 +920,138 @@ describe("renderer mount adapter routing", () => {
     expect(handoff.blocked).toBe(true);
     expect(handoff.transferable).toBe(false);
     expect(handoff.snapshot.failedOutputNames).toEqual(["handoff-blocked-invalid"]);
+  });
+
+  it("creates empty target mount batch diagnostic catalogs", () => {
+    expect(createRendererTargetMountBatchDiagnosticCatalog([])).toEqual({
+      handoffs: [],
+      summary: {
+        handoffCount: 0,
+        readyCount: 0,
+        blockedCount: 0,
+        transferableCount: 0,
+      },
+    });
+  });
+
+  it("summarizes mixed target mount batch diagnostic catalogs", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const readyExecution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-ready-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "catalog-ready-cache",
+        }),
+      }],
+    });
+    const blockedExecution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-blocked-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "catalog-blocked-surface",
+        }),
+      }],
+    });
+    const readyHandoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(readyExecution),
+    );
+    const blockedHandoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(blockedExecution),
+    );
+
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([
+      readyHandoff,
+      blockedHandoff,
+    ]);
+
+    expect(catalog.summary).toEqual({
+      handoffCount: 2,
+      readyCount: 1,
+      blockedCount: 1,
+      transferableCount: 1,
+    });
+    expect(catalog.handoffs).toEqual([readyHandoff, blockedHandoff]);
+  });
+
+  it("keeps target mount batch diagnostic catalog handoff references", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-reference-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "catalog-reference-cache",
+        }),
+      }],
+    });
+    const handoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(execution),
+    );
+
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([handoff]);
+
+    expect(catalog.handoffs[0]).toBe(handoff);
+  });
+
+  it("keeps target mount batch diagnostic catalogs independent from source arrays", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const readyExecution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-copy-ready",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "catalog-copy-cache",
+        }),
+      }],
+    });
+    const blockedExecution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "catalog-copy-blocked",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "catalog-copy-surface",
+        }),
+      }],
+    });
+    const readyHandoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(readyExecution),
+    );
+    const blockedHandoff = handoffRendererTargetMountBatchDiagnostics(
+      closeRendererTargetMountBatchDiagnostics(blockedExecution),
+    );
+    const handoffs = [readyHandoff];
+
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog(handoffs);
+    handoffs.push(blockedHandoff);
+
+    expect(catalog.handoffs).toEqual([readyHandoff]);
+    expect(catalog.summary).toEqual({
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+    });
   });
 });

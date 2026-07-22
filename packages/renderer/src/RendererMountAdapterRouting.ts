@@ -119,6 +119,18 @@ export type RendererUnifiedMountBatchDiagnosticHandoff = Readonly<{
   transferable: boolean;
 }>;
 
+export type RendererUnifiedMountBatchDiagnosticCatalogSummary = Readonly<{
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+}>;
+
+export type RendererUnifiedMountBatchDiagnosticCatalog = Readonly<{
+  handoffs: readonly RendererUnifiedMountBatchDiagnosticHandoff[];
+  summary: RendererUnifiedMountBatchDiagnosticCatalogSummary;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -305,5 +317,21 @@ export function handoffRendererTargetMountBatchDiagnostics(
     ready: closure.ready,
     blocked: closure.blocked,
     transferable: closure.ready,
+  };
+}
+
+export function createRendererTargetMountBatchDiagnosticCatalog(
+  handoffs: readonly RendererUnifiedMountBatchDiagnosticHandoff[],
+): RendererUnifiedMountBatchDiagnosticCatalog {
+  const catalogHandoffs = [...handoffs];
+
+  return {
+    handoffs: catalogHandoffs,
+    summary: {
+      handoffCount: catalogHandoffs.length,
+      readyCount: catalogHandoffs.filter(handoff => handoff.ready).length,
+      blockedCount: catalogHandoffs.filter(handoff => handoff.blocked).length,
+      transferableCount: catalogHandoffs.filter(handoff => handoff.transferable).length,
+    },
   };
 }
