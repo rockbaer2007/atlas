@@ -1893,23 +1893,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1878 | Renderer Concrete Integration Boundary Decision Boundary Review | Completed | - |
 | G2.5.1879 | Renderer Concrete Integration Boundary Decision Contract Review | Completed | - |
 | G2.5.1880 | Renderer Concrete Integration Boundary Decision Gate Review | Completed | - |
-| G2.5.1881 | Renderer Concrete Integration Boundary Decision Review | Planned | - |
+| G2.5.1881 | Renderer Concrete Integration Boundary Decision Review | Completed | - |
+| G2.5.1882 | Renderer Concrete Integration Boundary Decision Contract Review | Completed | - |
+| G2.5.1883 | Renderer Concrete Integration Boundary Decision Shape Review | Completed | - |
+| G2.5.1884 | Renderer Concrete Integration Boundary Decision Ready Review | Completed | - |
+| G2.5.1885 | Renderer Concrete Integration Boundary Decision Blocked Review | Completed | - |
+| G2.5.1886 | Renderer Concrete Integration Boundary Decision Boundary Review | Completed | - |
+| G2.5.1887 | Renderer Concrete Integration Boundary Decision Review Reference Review | Completed | - |
+| G2.5.1888 | Renderer Concrete Integration Boundary Decision Candidate Review | Completed | - |
+| G2.5.1889 | Renderer Concrete Integration Boundary Decision Selected Boundary Review | Completed | - |
+| G2.5.1890 | Renderer Concrete Integration Boundary Decision Package Root Review | Completed | - |
+| G2.5.1891 | Renderer Concrete Integration Boundary Decision Type Surface Review | Completed | - |
+| G2.5.1892 | Renderer Concrete Integration Boundary Decision Documentation Review | Completed | - |
+| G2.5.1893 | Renderer Concrete Integration Boundary Decision Changelog Review | Completed | - |
+| G2.5.1894 | Renderer Concrete Integration Boundary Decision Regression Review | Completed | - |
+| G2.5.1895 | Renderer Concrete Integration Boundary Decision Public API Review | Completed | - |
+| G2.5.1896 | Renderer Concrete Integration Boundary Decision README Review | Completed | - |
+| G2.5.1897 | Renderer Concrete Integration Boundary Decision Sprint Documentation Review | Completed | - |
+| G2.5.1898 | Renderer Concrete Integration Boundary Decision Workspace Regression Review | Completed | - |
+| G2.5.1899 | Renderer Concrete Integration Boundary Decision Integration Closure Review | Completed | - |
+| G2.5.1900 | Renderer Concrete Integration Boundary Decision Compatibility Review | Completed | - |
+| G2.5.1901 | Renderer Concrete Integration Boundary Decision Transport Candidate Review | Completed | - |
+| G2.5.1902 | Renderer Concrete Integration Boundary Decision DOM Candidate Review | Completed | - |
+| G2.5.1903 | Renderer Concrete Integration Boundary Decision Home Assistant Candidate Review | Completed | - |
+| G2.5.1904 | Renderer Concrete Integration Boundary Decision Theme Candidate Review | Completed | - |
+| G2.5.1905 | Renderer Concrete Integration Boundary Decision Platform Candidate Review | Completed | - |
+| G2.5.1906 | Renderer Concrete Integration Boundary Decision Stability Review | Completed | - |
+| G2.5.1907 | Renderer Concrete Integration Boundary Decision Ready Stability Review | Completed | - |
+| G2.5.1908 | Renderer Concrete Integration Boundary Decision Blocked Stability Review | Completed | - |
+| G2.5.1909 | Renderer Concrete Integration Boundary Decision Issue Stability Review | Completed | - |
+| G2.5.1910 | Renderer Concrete Integration Boundary Decision Context Stability Review | Completed | - |
+| G2.5.1911 | Renderer Concrete Integration Boundary Decision Name Stability Review | Completed | - |
+| G2.5.1912 | Renderer Concrete Integration Boundary Decision Result Boundary Review | Completed | - |
+| G2.5.1913 | Renderer Concrete Integration Boundary Decision Decision Boundary Review | Completed | - |
+| G2.5.1914 | Renderer Concrete Integration Boundary Decision No Mutation Review | Completed | - |
+| G2.5.1915 | Renderer Concrete Integration Boundary Decision Handler Boundary Review | Completed | - |
+| G2.5.1916 | Renderer Concrete Integration Boundary Decision Consumption Boundary Review | Completed | - |
+| G2.5.1917 | Renderer Concrete Integration Boundary Decision Conflict Boundary Review | Completed | - |
+| G2.5.1918 | Renderer Concrete Integration Boundary Decision Lookup Boundary Review | Completed | - |
+| G2.5.1919 | Renderer Concrete Integration Boundary Decision API Closure Review | Completed | - |
+| G2.5.1920 | Renderer Concrete Integration Boundary Decision Return-To-Review Review | Completed | - |
+| G2.5.1921 | Renderer Concrete Integration Boundary Decision Return-To-Catalog Review | Completed | - |
+| G2.5.1922 | Renderer Concrete Integration Boundary Decision Return-To-Snapshot Review | Completed | - |
+| G2.5.1923 | Renderer Concrete Integration Boundary Decision Return-To-Handoff Review | Completed | - |
+| G2.5.1924 | Renderer Concrete Integration Boundary Decision Return-To-Readiness Review | Completed | - |
+| G2.5.1925 | Renderer Concrete Integration Boundary Decision Return-To-Preparation Review | Completed | - |
+| G2.5.1926 | Renderer Concrete Integration Boundary Decision Return-To-Delivery Export Review | Completed | - |
+| G2.5.1927 | Renderer Concrete Integration Boundary Decision Plan Preparation Review | Completed | - |
+| G2.5.1928 | Renderer Concrete Integration Boundary Decision Plan Boundary Review | Completed | - |
+| G2.5.1929 | Renderer Concrete Integration Boundary Decision Plan Contract Review | Completed | - |
+| G2.5.1930 | Renderer Concrete Integration Boundary Decision Plan Gate Review | Completed | - |
+| G2.5.1931 | Renderer Concrete Integration Boundary Plan Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1880 - Renderer Concrete Integration Boundary Decision Gate Review
+## G2.5.1930 - Renderer Concrete Integration Boundary Decision Plan Gate Review
 
 Goal:
 
-Review Renderer concrete integration boundaries without enabling concrete integration behavior.
+Derive data-only Renderer concrete integration boundary decisions from boundary reviews.
 
 Deliverables:
 
-* Renderer concrete integration boundary review type
-* Boundary review helper
-* Ready, blocked and closure tests
+* Renderer concrete integration boundary decision type
+* Boundary decision helper
+* Ready, blocked and data-only tests
 * Sprint documentation
 
 Status:
@@ -1920,13 +1970,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1881 - Renderer Concrete Integration Boundary Decision Review
+## G2.5.1931 - Renderer Concrete Integration Boundary Plan Review
 
 Suggested focus:
 
-* Decide how boundary reviews should express first-open candidates
-* Keep decision state data-only
-* Preserve concrete integration boundary review API boundaries
+* Decide whether boundary decisions need plan envelopes
+* Keep plans data-only
+* Preserve boundary decision API boundaries
 
 ---
 
@@ -3523,6 +3573,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1731.md`
 * `docs/sprints/Sprint-G2.5.1781.md`
 * `docs/sprints/Sprint-G2.5.1831.md`
+* `docs/sprints/Sprint-G2.5.1881.md`
+* `docs/sprints/Sprint-G2.5.1882.md`
+* `docs/sprints/Sprint-G2.5.1883.md`
+* `docs/sprints/Sprint-G2.5.1884.md`
+* `docs/sprints/Sprint-G2.5.1885.md`
+* `docs/sprints/Sprint-G2.5.1886.md`
+* `docs/sprints/Sprint-G2.5.1887.md`
+* `docs/sprints/Sprint-G2.5.1888.md`
+* `docs/sprints/Sprint-G2.5.1889.md`
+* `docs/sprints/Sprint-G2.5.1890.md`
+* `docs/sprints/Sprint-G2.5.1891.md`
+* `docs/sprints/Sprint-G2.5.1892.md`
+* `docs/sprints/Sprint-G2.5.1893.md`
+* `docs/sprints/Sprint-G2.5.1894.md`
+* `docs/sprints/Sprint-G2.5.1895.md`
+* `docs/sprints/Sprint-G2.5.1896.md`
+* `docs/sprints/Sprint-G2.5.1897.md`
+* `docs/sprints/Sprint-G2.5.1898.md`
+* `docs/sprints/Sprint-G2.5.1899.md`
+* `docs/sprints/Sprint-G2.5.1900.md`
+* `docs/sprints/Sprint-G2.5.1901.md`
+* `docs/sprints/Sprint-G2.5.1902.md`
+* `docs/sprints/Sprint-G2.5.1903.md`
+* `docs/sprints/Sprint-G2.5.1904.md`
+* `docs/sprints/Sprint-G2.5.1905.md`
+* `docs/sprints/Sprint-G2.5.1906.md`
+* `docs/sprints/Sprint-G2.5.1907.md`
+* `docs/sprints/Sprint-G2.5.1908.md`
+* `docs/sprints/Sprint-G2.5.1909.md`
+* `docs/sprints/Sprint-G2.5.1910.md`
+* `docs/sprints/Sprint-G2.5.1911.md`
+* `docs/sprints/Sprint-G2.5.1912.md`
+* `docs/sprints/Sprint-G2.5.1913.md`
+* `docs/sprints/Sprint-G2.5.1914.md`
+* `docs/sprints/Sprint-G2.5.1915.md`
+* `docs/sprints/Sprint-G2.5.1916.md`
+* `docs/sprints/Sprint-G2.5.1917.md`
+* `docs/sprints/Sprint-G2.5.1918.md`
+* `docs/sprints/Sprint-G2.5.1919.md`
+* `docs/sprints/Sprint-G2.5.1920.md`
+* `docs/sprints/Sprint-G2.5.1921.md`
+* `docs/sprints/Sprint-G2.5.1922.md`
+* `docs/sprints/Sprint-G2.5.1923.md`
+* `docs/sprints/Sprint-G2.5.1924.md`
+* `docs/sprints/Sprint-G2.5.1925.md`
+* `docs/sprints/Sprint-G2.5.1926.md`
+* `docs/sprints/Sprint-G2.5.1927.md`
+* `docs/sprints/Sprint-G2.5.1928.md`
+* `docs/sprints/Sprint-G2.5.1929.md`
+* `docs/sprints/Sprint-G2.5.1930.md`
 * `docs/sprints/Sprint-G2.5.1832.md`
 * `docs/sprints/Sprint-G2.5.1833.md`
 * `docs/sprints/Sprint-G2.5.1834.md`

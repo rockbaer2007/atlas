@@ -12,6 +12,7 @@ import type {
   RendererAdapterRegistry,
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
+  RendererConcreteIntegrationBoundaryDecision,
   RendererConcreteIntegrationBoundaryReview,
   RendererHostContext,
   RendererIntegrationHandoff,
@@ -113,6 +114,7 @@ import {
   createRendererMountResult,
   createRendererOutput,
   createRendererHostContext,
+  createRendererConcreteIntegrationBoundaryDecision,
   createRendererIntegrationHandoff,
   createRendererIntegrationHandoffSnapshotCatalog,
   createRendererIntegrationPreparation,
@@ -178,6 +180,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
+    expect(Renderer.createRendererConcreteIntegrationBoundaryDecision).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoff).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoffSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationPreparation).toBeTypeOf("function");
@@ -606,6 +609,15 @@ describe("renderer public API", () => {
         platform: false,
       },
     };
+    const concreteIntegrationBoundaryDecision: RendererConcreteIntegrationBoundaryDecision = {
+      kind: "renderer.concrete.integration.boundary.decision",
+      name: "type-concrete-integration-boundary-decision",
+      ready: true,
+      issueCount: 0,
+      review: concreteIntegrationBoundaryReview,
+      candidates: ["transport", "dom", "homeAssistant", "theme", "platform"],
+      selectedBoundary: "transport",
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -773,6 +785,7 @@ describe("renderer public API", () => {
     expect(integrationHandoffSnapshot.handoffName).toBe(integrationHandoff.name);
     expect(integrationHandoffSnapshotCatalog.snapshots[0]).toBe(integrationHandoffSnapshot);
     expect(concreteIntegrationBoundaryReview.catalog).toBe(integrationHandoffSnapshotCatalog);
+    expect(concreteIntegrationBoundaryDecision.review).toBe(concreteIntegrationBoundaryReview);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3949,6 +3962,71 @@ describe("renderer public API", () => {
     });
     expect(review).not.toHaveProperty("element");
     expect(review).not.toHaveProperty("adapter");
+  });
+
+  it("creates ready Renderer concrete integration boundary decisions", () => {
+    const review = reviewRendererConcreteIntegrationBoundary(
+      "ready-decision-review",
+      createRendererIntegrationHandoffSnapshotCatalog("ready-decision-catalog", []),
+    );
+
+    expect(createRendererConcreteIntegrationBoundaryDecision(
+      "ready-decision",
+      review,
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.decision",
+      name: "ready-decision",
+      ready: true,
+      issueCount: 0,
+      review,
+      candidates: ["transport", "dom", "homeAssistant", "theme", "platform"],
+      selectedBoundary: "transport",
+    });
+  });
+
+  it("creates blocked Renderer concrete integration boundary decisions without selections", () => {
+    const review = Renderer.reviewRendererConcreteIntegrationBoundary(
+      "blocked-decision-review",
+      createRendererIntegrationHandoffSnapshotCatalog(
+        "blocked-decision-catalog",
+        [{
+          kind: "renderer.integration.handoff.snapshot",
+          handoffName: "blocked-decision-handoff",
+          ready: false,
+          issueCount: 10,
+          preparationName: "blocked-decision-preparation",
+        }],
+      ),
+    );
+
+    const decision = Renderer.createRendererConcreteIntegrationBoundaryDecision(
+      "blocked-decision",
+      review,
+    );
+
+    expect(decision.ready).toBe(false);
+    expect(decision.issueCount).toBe(10);
+    expect(decision.selectedBoundary).toBeUndefined();
+  });
+
+  it("keeps Renderer concrete integration boundary decisions data-only", () => {
+    const decision = createRendererConcreteIntegrationBoundaryDecision(
+      "data-only-decision",
+      reviewRendererConcreteIntegrationBoundary(
+        "data-only-decision-review",
+        createRendererIntegrationHandoffSnapshotCatalog("data-only-decision-catalog", []),
+      ),
+    );
+
+    expect(decision.candidates).toEqual([
+      "transport",
+      "dom",
+      "homeAssistant",
+      "theme",
+      "platform",
+    ]);
+    expect(decision).not.toHaveProperty("element");
+    expect(decision).not.toHaveProperty("handler");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

@@ -37,6 +37,7 @@ descriptive only and do not mount output yet.
 - `RendererAdapterRegistry`
 - `RendererAdapterSelectionRequest`
 - `RendererAdapterSelectionResult`
+- `RendererConcreteIntegrationBoundaryDecision`
 - `RendererConcreteIntegrationBoundaryReview`
 - `RendererMountRequest`
 - `RendererMountResult`
@@ -111,6 +112,7 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterSelectionRequest`
 - `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
+- `createRendererConcreteIntegrationBoundaryDecision`
 - `createRendererIntegrationHandoff`
 - `createRendererIntegrationHandoffSnapshotCatalog`
 - `createRendererIntegrationPreparation`
@@ -528,6 +530,11 @@ Renderer concrete integration boundary reviews now evaluate handoff snapshot
 catalogs into explicit ready state while keeping transport, DOM, Home
 Assistant, Theme and platform boundaries closed before concrete integration
 behavior is introduced.
+
+Renderer concrete integration boundary decisions now derive first-open
+candidate data from boundary reviews. Decisions carry candidate names and
+selected boundaries only when ready, without creating handlers or concrete
+surface bindings.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

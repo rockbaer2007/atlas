@@ -242,6 +242,16 @@ export type RendererConcreteIntegrationBoundaryReview = Readonly<{
   }>;
 }>;
 
+export type RendererConcreteIntegrationBoundaryDecision = Readonly<{
+  kind: "renderer.concrete.integration.boundary.decision";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  review: RendererConcreteIntegrationBoundaryReview;
+  candidates: readonly string[];
+  selectedBoundary?: string;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -750,6 +760,23 @@ export function reviewRendererConcreteIntegrationBoundary(
       theme: false,
       platform: false,
     },
+  };
+}
+
+export function createRendererConcreteIntegrationBoundaryDecision(
+  name: string,
+  review: RendererConcreteIntegrationBoundaryReview,
+): RendererConcreteIntegrationBoundaryDecision {
+  const candidates = Object.keys(review.boundaries);
+
+  return {
+    kind: "renderer.concrete.integration.boundary.decision",
+    name,
+    ready: review.ready,
+    issueCount: review.issueCount,
+    review,
+    candidates,
+    ...(review.ready ? { selectedBoundary: candidates[0] } : {}),
   };
 }
 
