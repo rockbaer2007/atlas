@@ -561,6 +561,16 @@ export type RendererConcreteIntegrationBoundaryReleaseClosureSnapshotCatalog = R
   executableCount: 0;
 }>;
 
+export type RendererConcreteIntegrationBoundaryReleaseClosureExport = Readonly<{
+  kind: "renderer.concrete.integration.boundary.release.closure.export";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  catalog: RendererConcreteIntegrationBoundaryReleaseClosureSnapshotCatalog;
+  exported: true;
+  executable: false;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -1570,6 +1580,21 @@ export function createRendererConcreteIntegrationBoundaryReleaseClosureSnapshotC
     issueCount: copiedSnapshots
       .reduce((issueCount, snapshot) => issueCount + snapshot.issueCount, 0),
     executableCount: 0,
+  };
+}
+
+export function createRendererConcreteIntegrationBoundaryReleaseClosureExport(
+  name: string,
+  catalog: RendererConcreteIntegrationBoundaryReleaseClosureSnapshotCatalog,
+): RendererConcreteIntegrationBoundaryReleaseClosureExport {
+  return {
+    kind: "renderer.concrete.integration.boundary.release.closure.export",
+    name,
+    ready: catalog.blockedCount === 0,
+    issueCount: catalog.issueCount,
+    catalog,
+    exported: true,
+    executable: false,
   };
 }
 
