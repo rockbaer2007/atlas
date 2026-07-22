@@ -421,6 +421,16 @@ export type RendererConcreteIntegrationBoundaryFinalizationHandoff = Readonly<{
   executable: false;
 }>;
 
+export type RendererConcreteIntegrationBoundaryFinalizationHandoffSnapshot = Readonly<{
+  kind: "renderer.concrete.integration.boundary.finalization.handoff.snapshot";
+  handoffName: string;
+  ready: boolean;
+  issueCount: number;
+  finalizationSnapshotCount: number;
+  finalized: true;
+  executable: false;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -1208,6 +1218,20 @@ export function createRendererConcreteIntegrationBoundaryFinalizationHandoff(
     ready: catalog.blockedCount === 0,
     issueCount: catalog.issueCount,
     catalog,
+    finalized: true,
+    executable: false,
+  };
+}
+
+export function snapshotRendererConcreteIntegrationBoundaryFinalizationHandoff(
+  handoff: RendererConcreteIntegrationBoundaryFinalizationHandoff,
+): RendererConcreteIntegrationBoundaryFinalizationHandoffSnapshot {
+  return {
+    kind: "renderer.concrete.integration.boundary.finalization.handoff.snapshot",
+    handoffName: handoff.name,
+    ready: handoff.ready,
+    issueCount: handoff.issueCount,
+    finalizationSnapshotCount: handoff.catalog.snapshots.length,
     finalized: true,
     executable: false,
   };

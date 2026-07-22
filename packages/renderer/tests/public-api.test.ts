@@ -24,6 +24,7 @@ import type {
   RendererConcreteIntegrationBoundaryExecutionPreparation,
   RendererConcreteIntegrationBoundaryFinalization,
   RendererConcreteIntegrationBoundaryFinalizationHandoff,
+  RendererConcreteIntegrationBoundaryFinalizationHandoffSnapshot,
   RendererConcreteIntegrationBoundaryFinalizationSnapshot,
   RendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog,
   RendererConcreteIntegrationBoundaryDecision,
@@ -196,6 +197,7 @@ import {
   snapshotRendererConcreteIntegrationBoundaryExecutionDelivery,
   snapshotRendererConcreteIntegrationBoundaryExecutionExport,
   snapshotRendererConcreteIntegrationBoundaryFinalization,
+  snapshotRendererConcreteIntegrationBoundaryFinalizationHandoff,
   snapshotRendererConcreteIntegrationBoundaryPlan,
   snapshotRendererIntegrationHandoff,
   snapshotRendererMountReportConsumerDiagnosticDeliveryBundle,
@@ -309,6 +311,7 @@ describe("renderer public API", () => {
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryExecutionDelivery).toBeTypeOf("function");
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryExecutionExport).toBeTypeOf("function");
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryFinalization).toBeTypeOf("function");
+    expect(Renderer.snapshotRendererConcreteIntegrationBoundaryFinalizationHandoff).toBeTypeOf("function");
     expect(Renderer.snapshotRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
     expect(Renderer.snapshotRendererIntegrationHandoff).toBeTypeOf("function");
     expect(Renderer.snapshotRendererMountReportConsumerDiagnosticDeliveryBundle).toBeTypeOf("function");
@@ -836,6 +839,16 @@ describe("renderer public API", () => {
         finalized: true,
         executable: false,
       };
+    const concreteIntegrationBoundaryFinalizationHandoffSnapshot:
+      RendererConcreteIntegrationBoundaryFinalizationHandoffSnapshot = {
+        kind: "renderer.concrete.integration.boundary.finalization.handoff.snapshot",
+        handoffName: concreteIntegrationBoundaryFinalizationHandoff.name,
+        ready: true,
+        issueCount: 0,
+        finalizationSnapshotCount: 1,
+        finalized: true,
+        executable: false,
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -1050,6 +1063,9 @@ describe("renderer public API", () => {
     );
     expect(concreteIntegrationBoundaryFinalizationHandoff.catalog).toBe(
       concreteIntegrationBoundaryFinalizationSnapshotCatalog,
+    );
+    expect(concreteIntegrationBoundaryFinalizationHandoffSnapshot.handoffName).toBe(
+      concreteIntegrationBoundaryFinalizationHandoff.name,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -5452,6 +5468,68 @@ describe("renderer public API", () => {
     expect(handoff.finalized).toBe(true);
     expect(handoff.executable).toBe(false);
     expect(handoff).not.toHaveProperty("execute");
+  });
+
+  it("snapshots ready Renderer concrete integration boundary finalization handoffs", () => {
+    const handoff = createRendererConcreteIntegrationBoundaryFinalizationHandoff(
+      "ready-finalization-handoff-snapshot",
+      createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+        "ready-finalization-handoff-snapshot-catalog",
+        [],
+      ),
+    );
+
+    expect(snapshotRendererConcreteIntegrationBoundaryFinalizationHandoff(handoff)).toEqual({
+      kind: "renderer.concrete.integration.boundary.finalization.handoff.snapshot",
+      handoffName: "ready-finalization-handoff-snapshot",
+      ready: true,
+      issueCount: 0,
+      finalizationSnapshotCount: 0,
+      finalized: true,
+      executable: false,
+    });
+  });
+
+  it("snapshots blocked Renderer concrete integration boundary finalization handoffs", () => {
+    const handoff = Renderer.createRendererConcreteIntegrationBoundaryFinalizationHandoff(
+      "blocked-finalization-handoff-snapshot",
+      createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+        "blocked-finalization-handoff-snapshot-catalog",
+        [{
+          kind: "renderer.concrete.integration.boundary.finalization.snapshot",
+          finalizationName: "blocked-finalization-handoff-snapshot-finalization",
+          ready: false,
+          issueCount: 33,
+          exportSnapshotCount: 1,
+          finalized: true,
+          executable: false,
+        }],
+      ),
+    );
+
+    const snapshot = Renderer.snapshotRendererConcreteIntegrationBoundaryFinalizationHandoff(
+      handoff,
+    );
+
+    expect(snapshot.ready).toBe(false);
+    expect(snapshot.issueCount).toBe(33);
+    expect(snapshot.finalizationSnapshotCount).toBe(1);
+  });
+
+  it("keeps Renderer concrete integration boundary finalization handoff snapshots compact", () => {
+    const snapshot = snapshotRendererConcreteIntegrationBoundaryFinalizationHandoff(
+      createRendererConcreteIntegrationBoundaryFinalizationHandoff(
+        "compact-finalization-handoff-snapshot",
+        createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+          "compact-finalization-handoff-snapshot-catalog",
+          [],
+        ),
+      ),
+    );
+
+    expect(snapshot.finalized).toBe(true);
+    expect(snapshot.executable).toBe(false);
+    expect(snapshot).not.toHaveProperty("catalog");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {
