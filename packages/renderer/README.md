@@ -49,6 +49,8 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumer`
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
+- `RendererMountReportConsumerDiagnosticReport`
+- `RendererMountReportConsumerDiagnosticCodes`
 - `RendererMountReportConsumerLookupRequest`
 - `RendererMountReportConsumerLookupResult`
 - `RendererMountReportConsumerOutput`
@@ -123,6 +125,7 @@ descriptive only and do not mount output yet.
 - `findRendererPlatformAdapterConflicts`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
+- `inspectRendererMountReportConsumerResult`
 - `inspectRendererMountResult`
 - `isRendererMountPlanReady`
 - `mountResolvedRendererAdapter`
@@ -367,6 +370,12 @@ Renderer mount report consumer registry conflicts now detect duplicate consumer
 names, preserve conflicting consumer references, and resolve duplicates with
 the existing first-candidate policy. Conflict detection and resolution do not
 invoke consumer handlers or add DOM, Home Assistant, Theme or platform metadata.
+
+Renderer mount report consumer diagnostics now inspect consumer results into a
+stable diagnostics shape. Successful consumption is issue-free, unconsumed
+results report a stable not-consumed code, consumer errors report a stable
+failure code, and diagnostics remain independent from DOM elements, Home
+Assistant fields, Theme fields and platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

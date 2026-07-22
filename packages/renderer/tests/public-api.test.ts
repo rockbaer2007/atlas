@@ -26,6 +26,7 @@ import type {
   RendererMountReportConsumer,
   RendererMountReportConsumerConflict,
   RendererMountReportConsumerConflictResolution,
+  RendererMountReportConsumerDiagnosticReport,
   RendererMountReportConsumerLookupRequest,
   RendererMountReportConsumerLookupResult,
   RendererMountReportConsumerOutput,
@@ -107,6 +108,7 @@ import {
   inspectRendererMountResult,
   inspectRendererMountLifecycleRecord,
   inspectRendererMountPlan,
+  inspectRendererMountReportConsumerResult,
   isRendererMountPlanReady,
   mountResolvedRendererAdapter,
   recordRendererMountLifecycleExecution,
@@ -172,9 +174,13 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererPlatformAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountPlan).toBeTypeOf("function");
+    expect(Renderer.inspectRendererMountReportConsumerResult).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountResult).toBeTypeOf("function");
     expect(Renderer.isRendererMountPlanReady).toBeTypeOf("function");
     expect(Renderer.RendererMountDiagnosticCodes.MountFailed).toBe("renderer.mount.failed");
+    expect(Renderer.RendererMountReportConsumerDiagnosticCodes.NotConsumed).toBe(
+      "renderer.mount.report.consumer.not_consumed",
+    );
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.recordRendererMountLifecycleExecution).toBeTypeOf("function");
@@ -311,6 +317,16 @@ describe("renderer public API", () => {
       consumerName: "type-consumer",
       consumed: true,
       summary: mountReportSummary,
+    };
+    const mountReportConsumerDiagnosticReport: RendererMountReportConsumerDiagnosticReport = {
+      context: {
+        component: "renderer.mount.report.consumer",
+        consumerName: mountReportConsumerResult.consumerName,
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
     };
     const mountReportConsumerOutput: RendererMountReportConsumerOutput =
       mountReportConsumerResult;
@@ -453,6 +469,7 @@ describe("renderer public API", () => {
     expect(mountReportConsumption.reports[0]).toBe(mountReport);
     expect(mountReportSummary.total).toBe(1);
     expect(mountReportConsumer.consume(mountReportConsumption)).toBe(mountReportConsumerResult);
+    expect(mountReportConsumerDiagnosticReport.result.ok).toBe(true);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -2663,6 +2680,119 @@ describe("renderer public API", () => {
     expect(conflict).not.toHaveProperty("theme");
     expect(conflict).not.toHaveProperty("homeAssistant");
     expect(conflict).not.toHaveProperty("element");
+  });
+
+  it("inspects successful Renderer mount report consumer results", () => {
+    const summary: RendererMountReportSummary = {
+      total: 0,
+      planned: 0,
+      executed: 0,
+      reported: 0,
+      mounted: 0,
+      diagnosticsOk: 0,
+      failed: 0,
+      issueCount: 0,
+    };
+
+    expect(inspectRendererMountReportConsumerResult({
+      consumerName: "diagnostic-success-consumer",
+      consumed: true,
+      summary,
+    })).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer",
+        consumerName: "diagnostic-success-consumer",
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
+    });
+  });
+
+  it("inspects unconsumed Renderer mount report consumer results", () => {
+    const summary: RendererMountReportSummary = {
+      total: 1,
+      planned: 1,
+      executed: 0,
+      reported: 0,
+      mounted: 0,
+      diagnosticsOk: 0,
+      failed: 0,
+      issueCount: 0,
+    };
+
+    expect(inspectRendererMountReportConsumerResult({
+      consumerName: "diagnostic-unconsumed-consumer",
+      consumed: false,
+      summary,
+    })).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer",
+        consumerName: "diagnostic-unconsumed-consumer",
+      },
+      result: {
+        ok: false,
+        issues: [{
+          code: "renderer.mount.report.consumer.not_consumed",
+          message: "diagnostic-unconsumed-consumer did not consume Renderer mount reports",
+          severity: "error",
+        }],
+      },
+    });
+  });
+
+  it("inspects failed Renderer mount report consumer results", () => {
+    const summary: RendererMountReportSummary = {
+      total: 1,
+      planned: 0,
+      executed: 0,
+      reported: 1,
+      mounted: 0,
+      diagnosticsOk: 0,
+      failed: 1,
+      issueCount: 1,
+    };
+
+    const report = inspectRendererMountReportConsumerResult({
+      consumerName: "diagnostic-failed-consumer",
+      consumed: false,
+      summary,
+      error: "consumer diagnostics failed",
+    });
+
+    expect(report.result.ok).toBe(false);
+    expect(report.result.issues).toEqual([{
+      code: "renderer.mount.report.consumer.not_consumed",
+      message: "diagnostic-failed-consumer did not consume Renderer mount reports",
+      severity: "error",
+    }, {
+      code: "renderer.mount.report.consumer.failed",
+      message: "consumer diagnostics failed",
+      severity: "error",
+    }]);
+  });
+
+  it("keeps Renderer mount report consumer diagnostics free of integration metadata", () => {
+    const report = inspectRendererMountReportConsumerResult({
+      consumerName: "diagnostic-boundary-consumer",
+      consumed: true,
+      summary: {
+        total: 0,
+        planned: 0,
+        executed: 0,
+        reported: 0,
+        mounted: 0,
+        diagnosticsOk: 0,
+        failed: 0,
+        issueCount: 0,
+      },
+    });
+
+    expect(report).not.toHaveProperty("platform");
+    expect(report).not.toHaveProperty("theme");
+    expect(report).not.toHaveProperty("homeAssistant");
+    expect(report).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

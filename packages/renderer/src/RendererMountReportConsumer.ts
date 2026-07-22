@@ -1,5 +1,25 @@
 import type { RendererMountReportConsumption } from "./RendererMountReporting";
 
+export const RendererMountReportConsumerDiagnosticCodes = {
+  NotConsumed: "renderer.mount.report.consumer.not_consumed",
+  ConsumerFailed: "renderer.mount.report.consumer.failed",
+} as const;
+
+export type RendererMountReportConsumerDiagnosticReport = Readonly<{
+  context: Readonly<{
+    component: string;
+    consumerName: string;
+  }>;
+  result: Readonly<{
+    ok: boolean;
+    issues: readonly Readonly<{
+      code: string;
+      message: string;
+      severity: "error";
+    }>[];
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -190,4 +210,32 @@ export async function consumeRendererMountReports(
   consumption: RendererMountReportConsumption,
 ): Promise<RendererMountReportConsumerResult> {
   return consumer.consume(consumption);
+}
+
+export function inspectRendererMountReportConsumerResult(
+  result: RendererMountReportConsumerResult,
+): RendererMountReportConsumerDiagnosticReport {
+  const issues = [
+    ...(!result.consumed ? [{
+      code: RendererMountReportConsumerDiagnosticCodes.NotConsumed,
+      message: `${result.consumerName} did not consume Renderer mount reports`,
+      severity: "error" as const,
+    }] : []),
+    ...(result.error ? [{
+      code: RendererMountReportConsumerDiagnosticCodes.ConsumerFailed,
+      message: result.error,
+      severity: "error" as const,
+    }] : []),
+  ];
+
+  return {
+    context: {
+      component: "renderer.mount.report.consumer",
+      consumerName: result.consumerName,
+    },
+    result: {
+      ok: issues.length === 0,
+      issues,
+    },
+  };
 }
