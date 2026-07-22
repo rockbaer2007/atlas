@@ -5,16 +5,15 @@ explicit contracts and long-term maintainability.
 
 Current focus:
 
-**Framework Readiness**
+**Stabilized Framework Contracts**
 
-The active workspace now includes a metadata-only `@atlas/workspace` package
-that keeps root manifests, package layers, dependency rules, quality gates and
-planned integration closures aligned before concrete framework capabilities are
-opened.
+The G2.5 sprint line is complete. ATLAS now has a stabilized foundation,
+runtime, renderer and integration-boundary contract surface with no planned
+sprints remaining in the current sprint ledger.
 
-The selected next capability is Renderer output-to-target mounting. It is owned
-by Core and Renderer and keeps Theme, Home Assistant and Devtools integrations
-closed until their activation criteria are met.
+The recommended next phase is product-facing implementation: turn the renderer
+contracts into a concrete mounted output scenario before opening Theme, Home
+Assistant or Devtools execution paths.
 
 ---
 
@@ -24,6 +23,7 @@ closed until their activation criteria are met.
 * `ROADMAP.md` - strategic roadmap
 * `SPRINTS.md` - sprint overview
 * `SNAPSHOTS.md` - release snapshot overview
+* `docs/project/STABILIZATION_REVIEW.md` - G2.5 stabilization review
 * `CONTRIBUTING.md` - contribution process
 * `SECURITY.md` - security policy
 * `docs/adr` - architecture decision records

@@ -22,7 +22,11 @@ Current Release:
 
 Current Focus:
 
-**Renderer Output Mounting Direction**
+**Post-G2.5 Stabilization**
+
+The G2.5 sprint ledger is complete. The next roadmap movement should focus on
+concrete renderer usage and product-facing integration scenarios rather than
+additional envelope-only contract expansion.
 
 ---
 

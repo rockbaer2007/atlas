@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Added a G2.5 stabilization review that records the 100% sprint close-out,
+  quality gates, current stability posture and recommended next product phase.
 * Framework readiness now has a dedicated `@atlas/workspace` package that
   verifies active package inventory, root manifests, dependency rules, quality
   gates and planned integration closures.
