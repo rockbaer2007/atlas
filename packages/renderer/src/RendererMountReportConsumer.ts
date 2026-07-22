@@ -491,6 +491,16 @@ export type RendererConcreteIntegrationBoundaryReleaseSnapshot = Readonly<{
   executable: false;
 }>;
 
+export type RendererConcreteIntegrationBoundaryReleaseSnapshotCatalog = Readonly<{
+  kind: "renderer.concrete.integration.boundary.release.snapshot.catalog";
+  name: string;
+  snapshots: readonly RendererConcreteIntegrationBoundaryReleaseSnapshot[];
+  readyCount: number;
+  blockedCount: number;
+  issueCount: number;
+  executableCount: 0;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -1388,6 +1398,24 @@ export function snapshotRendererConcreteIntegrationBoundaryRelease(
     snapshotCount: release.catalog.snapshots.length,
     released: true,
     executable: false,
+  };
+}
+
+export function createRendererConcreteIntegrationBoundaryReleaseSnapshotCatalog(
+  name: string,
+  snapshots: readonly RendererConcreteIntegrationBoundaryReleaseSnapshot[],
+): RendererConcreteIntegrationBoundaryReleaseSnapshotCatalog {
+  const copiedSnapshots = [...snapshots];
+
+  return {
+    kind: "renderer.concrete.integration.boundary.release.snapshot.catalog",
+    name,
+    snapshots: copiedSnapshots,
+    readyCount: copiedSnapshots.filter(snapshot => snapshot.ready).length,
+    blockedCount: copiedSnapshots.filter(snapshot => !snapshot.ready).length,
+    issueCount: copiedSnapshots
+      .reduce((issueCount, snapshot) => issueCount + snapshot.issueCount, 0),
+    executableCount: 0,
   };
 }
 
