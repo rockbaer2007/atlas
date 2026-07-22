@@ -24,6 +24,7 @@ import type {
   RendererConcreteIntegrationBoundaryExecutionPreparation,
   RendererConcreteIntegrationBoundaryFinalization,
   RendererConcreteIntegrationBoundaryFinalizationSnapshot,
+  RendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog,
   RendererConcreteIntegrationBoundaryDecision,
   RendererConcreteIntegrationBoundaryPlan,
   RendererConcreteIntegrationBoundaryPlanSnapshot,
@@ -105,6 +106,7 @@ import {
   createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog,
   createRendererConcreteIntegrationBoundaryExecutionExport,
   createRendererConcreteIntegrationBoundaryExecutionExportSnapshotCatalog,
+  createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog,
   createRendererAdapter,
   createRendererAdapterConflict,
   createRendererAdapterConflictResolution,
@@ -215,6 +217,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionExport).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryExecutionExportSnapshotCatalog).toBeTypeOf("function");
+    expect(Renderer.createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryDecision).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
@@ -810,6 +813,16 @@ describe("renderer public API", () => {
         finalized: true,
         executable: false,
       };
+    const concreteIntegrationBoundaryFinalizationSnapshotCatalog:
+      RendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog = {
+        kind: "renderer.concrete.integration.boundary.finalization.snapshot.catalog",
+        name: "type-concrete-integration-boundary-finalization-snapshot-catalog",
+        snapshots: [concreteIntegrationBoundaryFinalizationSnapshot],
+        readyCount: 1,
+        blockedCount: 0,
+        issueCount: 0,
+        executableCount: 0,
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -1018,6 +1031,9 @@ describe("renderer public API", () => {
     );
     expect(concreteIntegrationBoundaryFinalizationSnapshot.finalizationName).toBe(
       concreteIntegrationBoundaryFinalization.name,
+    );
+    expect(concreteIntegrationBoundaryFinalizationSnapshotCatalog.snapshots[0]).toBe(
+      concreteIntegrationBoundaryFinalizationSnapshot,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -5277,6 +5293,91 @@ describe("renderer public API", () => {
     expect(snapshot.finalized).toBe(true);
     expect(snapshot.executable).toBe(false);
     expect(snapshot).not.toHaveProperty("catalog");
+  });
+
+  it("catalogs ready Renderer concrete integration boundary finalization snapshots", () => {
+    const snapshot: RendererConcreteIntegrationBoundaryFinalizationSnapshot = {
+      kind: "renderer.concrete.integration.boundary.finalization.snapshot",
+      finalizationName: "ready-finalization-snapshot-catalog-finalization",
+      ready: true,
+      issueCount: 0,
+      exportSnapshotCount: 1,
+      finalized: true,
+      executable: false,
+    };
+
+    expect(createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+      "ready-finalization-snapshot-catalog",
+      [snapshot],
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.finalization.snapshot.catalog",
+      name: "ready-finalization-snapshot-catalog",
+      snapshots: [snapshot],
+      readyCount: 1,
+      blockedCount: 0,
+      issueCount: 0,
+      executableCount: 0,
+    });
+  });
+
+  it("catalogs blocked Renderer concrete integration boundary finalization snapshots", () => {
+    const catalog = Renderer.createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+      "blocked-finalization-snapshot-catalog",
+      [{
+        kind: "renderer.concrete.integration.boundary.finalization.snapshot",
+        finalizationName: "blocked-finalization-snapshot-catalog-finalization",
+        ready: false,
+        issueCount: 30,
+        exportSnapshotCount: 1,
+        finalized: true,
+        executable: false,
+      }],
+    );
+
+    expect(catalog.readyCount).toBe(0);
+    expect(catalog.blockedCount).toBe(1);
+    expect(catalog.issueCount).toBe(30);
+  });
+
+  it("copies Renderer concrete integration boundary finalization snapshot catalog inputs", () => {
+    const snapshots: RendererConcreteIntegrationBoundaryFinalizationSnapshot[] = [{
+      kind: "renderer.concrete.integration.boundary.finalization.snapshot",
+      finalizationName: "copy-finalization-snapshot-catalog-finalization",
+      ready: true,
+      issueCount: 0,
+      exportSnapshotCount: 1,
+      finalized: true,
+      executable: false,
+    }];
+
+    const catalog = createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+      "copy-finalization-snapshot-catalog",
+      snapshots,
+    );
+    snapshots.push({
+      kind: "renderer.concrete.integration.boundary.finalization.snapshot",
+      finalizationName: "late-finalization-snapshot-catalog-finalization",
+      ready: false,
+      issueCount: 31,
+      exportSnapshotCount: 1,
+      finalized: true,
+      executable: false,
+    });
+
+    expect(catalog.snapshots).toHaveLength(1);
+    expect(catalog.readyCount).toBe(1);
+    expect(catalog.blockedCount).toBe(0);
+  });
+
+  it("keeps Renderer concrete integration boundary finalization snapshot catalogs non-executable", () => {
+    const catalog = createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog(
+      "non-executable-finalization-snapshot-catalog",
+      [],
+    );
+
+    expect(catalog.executableCount).toBe(0);
+    expect(catalog).not.toHaveProperty("execute");
+    expect(catalog).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {
