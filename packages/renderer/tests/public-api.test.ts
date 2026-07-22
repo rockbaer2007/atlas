@@ -28,6 +28,7 @@ import type {
   RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerDiagnosticAggregation,
   RendererMountReportConsumerDiagnosticAggregationSummary,
+  RendererMountReportConsumerDiagnosticExecution,
   RendererMountReportConsumerDiagnosticPolicy,
   RendererMountReportConsumerDiagnosticPolicyEvaluation,
   RendererMountReportConsumerDiagnosticReport,
@@ -101,6 +102,7 @@ import {
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
+  consumeAndInspectRendererMountReports,
   consumeRendererMountReports,
   evaluateRendererMountReportConsumerDiagnosticPolicy,
   executeRendererMountPlan,
@@ -170,6 +172,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
+    expect(Renderer.consumeAndInspectRendererMountReports).toBeTypeOf("function");
     expect(Renderer.consumeRendererMountReports).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
@@ -375,6 +378,12 @@ describe("renderer public API", () => {
           issues: [],
         },
       };
+    const mountReportConsumerDiagnosticExecution:
+      RendererMountReportConsumerDiagnosticExecution = {
+        consumerName: mountReportConsumerResult.consumerName,
+        result: mountReportConsumerResult,
+        diagnostic: mountReportConsumerDiagnosticReport,
+      };
     const mountReportConsumerOutput: RendererMountReportConsumerOutput =
       mountReportConsumerResult;
     const mountReportConsumer: RendererMountReportConsumer = {
@@ -524,6 +533,9 @@ describe("renderer public API", () => {
     expect(mountReportConsumerDiagnosticPolicy.maxIssueCount).toBe(0);
     expect(mountReportConsumerDiagnosticPolicyEvaluation.result.summary).toBe(
       mountReportConsumerDiagnosticAggregationSummary,
+    );
+    expect(mountReportConsumerDiagnosticExecution.diagnostic).toBe(
+      mountReportConsumerDiagnosticReport,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -2258,6 +2270,154 @@ describe("renderer public API", () => {
       summary: consumption.summary,
       error: "consumer rejected report set",
     });
+  });
+
+  it("consumes and inspects Renderer mount report consumers", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "execution-consumer",
+      consume: consumed => ({
+        consumerName: "execution-consumer",
+        consumed: true,
+        summary: consumed.summary,
+      }),
+    });
+
+    await expect(consumeAndInspectRendererMountReports(
+      consumer,
+      consumption,
+    )).resolves.toEqual({
+      consumerName: "execution-consumer",
+      result: {
+        consumerName: "execution-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      },
+      diagnostic: {
+        context: {
+          component: "renderer.mount.report.consumer",
+          consumerName: "execution-consumer",
+        },
+        result: {
+          ok: true,
+          issues: [],
+        },
+      },
+    });
+  });
+
+  it("consumes and inspects asynchronous Renderer mount report consumers", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "async-execution-consumer",
+      async consume(consumed) {
+        await Promise.resolve();
+
+        return {
+          consumerName: "async-execution-consumer",
+          consumed: true,
+          summary: consumed.summary,
+        };
+      },
+    });
+
+    const execution = await Renderer.consumeAndInspectRendererMountReports(
+      consumer,
+      consumption,
+    );
+
+    expect(execution.result.summary).toBe(consumption.summary);
+    expect(execution.diagnostic.result.ok).toBe(true);
+  });
+
+  it("converts rejected Renderer mount report consumers into diagnostics", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "rejected-execution-consumer",
+      consume() {
+        throw new Error("consumer execution rejected");
+      },
+    });
+
+    await expect(consumeAndInspectRendererMountReports(
+      consumer,
+      consumption,
+    )).resolves.toEqual({
+      consumerName: "rejected-execution-consumer",
+      result: {
+        consumerName: "rejected-execution-consumer",
+        consumed: false,
+        summary: consumption.summary,
+        error: "consumer execution rejected",
+      },
+      diagnostic: {
+        context: {
+          component: "renderer.mount.report.consumer",
+          consumerName: "rejected-execution-consumer",
+        },
+        result: {
+          ok: false,
+          issues: [{
+            code: "renderer.mount.report.consumer.not_consumed",
+            message: "rejected-execution-consumer did not consume Renderer mount reports",
+            severity: "error",
+          }, {
+            code: "renderer.mount.report.consumer.failed",
+            message: "consumer execution rejected",
+            severity: "error",
+          }],
+        },
+      },
+    });
+  });
+
+  it("stringifies non-Error Renderer mount report consumer execution rejections", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "string-rejected-execution-consumer",
+      async consume() {
+        await Promise.resolve();
+
+        throw "string consumer rejection";
+      },
+    });
+
+    const execution = await consumeAndInspectRendererMountReports(
+      consumer,
+      consumption,
+    );
+
+    expect(execution.result.error).toBe("string consumer rejection");
+    expect(execution.diagnostic.result.issues[1]?.message).toBe("string consumer rejection");
+  });
+
+  it("keeps Renderer mount report consumer diagnostic executions free of integration metadata", async () => {
+    const execution = await consumeAndInspectRendererMountReports(
+      createRendererMountReportConsumer({
+        name: "boundary-execution-consumer",
+        consume: consumption => ({
+          consumerName: "boundary-execution-consumer",
+          consumed: true,
+          summary: consumption.summary,
+        }),
+      }),
+      createRendererMountReportConsumption({
+        records: [],
+      }),
+    );
+
+    expect(execution).not.toHaveProperty("platform");
+    expect(execution).not.toHaveProperty("theme");
+    expect(execution).not.toHaveProperty("homeAssistant");
+    expect(execution).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

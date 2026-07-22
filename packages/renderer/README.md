@@ -51,6 +51,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
+- `RendererMountReportConsumerDiagnosticExecution`
 - `RendererMountReportConsumerDiagnosticPolicy`
 - `RendererMountReportConsumerDiagnosticPolicyCodes`
 - `RendererMountReportConsumerDiagnosticPolicyEvaluation`
@@ -120,6 +121,7 @@ descriptive only and do not mount output yet.
 - `createRendererPlatformAdapterSelectionRequest`
 - `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
+- `consumeAndInspectRendererMountReports`
 - `consumeRendererMountReports`
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
 - `executeRendererMountPlan`
@@ -402,6 +404,12 @@ small gate result from aggregation summaries. Policies can require every
 consumer diagnostic report to be ok and can set a maximum aggregate issue
 count, producing stable policy issue codes without adding DOM elements, Home
 Assistant fields, Theme fields or platform metadata.
+
+Renderer mount report consumer diagnostic execution now runs a consumer and
+returns the consumer result with its diagnostic report. Rejected consumer
+handlers are converted into stable unconsumed failure results, preserving the
+consumption summary and keeping execution output free of DOM elements, Home
+Assistant fields, Theme fields and platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

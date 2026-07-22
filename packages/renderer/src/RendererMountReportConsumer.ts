@@ -65,6 +65,12 @@ export type RendererMountReportConsumerDiagnosticPolicyEvaluation = Readonly<{
   }>;
 }>;
 
+export type RendererMountReportConsumerDiagnosticExecution = Readonly<{
+  consumerName: string;
+  result: RendererMountReportConsumerResult;
+  diagnostic: RendererMountReportConsumerDiagnosticReport;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -255,6 +261,30 @@ export async function consumeRendererMountReports(
   consumption: RendererMountReportConsumption,
 ): Promise<RendererMountReportConsumerResult> {
   return consumer.consume(consumption);
+}
+
+export async function consumeAndInspectRendererMountReports(
+  consumer: RendererMountReportConsumer,
+  consumption: RendererMountReportConsumption,
+): Promise<RendererMountReportConsumerDiagnosticExecution> {
+  let result: RendererMountReportConsumerResult;
+
+  try {
+    result = await consumeRendererMountReports(consumer, consumption);
+  } catch (error) {
+    result = {
+      consumerName: consumer.name,
+      consumed: false,
+      summary: consumption.summary,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+
+  return {
+    consumerName: result.consumerName,
+    result,
+    diagnostic: inspectRendererMountReportConsumerResult(result),
+  };
 }
 
 export function inspectRendererMountReportConsumerResult(
