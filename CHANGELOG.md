@@ -132,6 +132,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer concrete integration boundary finalization snapshot catalogs now
   group compact finalization summaries while keeping executable counts fixed at
   zero.
+* Renderer concrete integration boundary finalization handoffs now wrap
+  finalization snapshot catalogs in finalized, non-executable handoff envelopes.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

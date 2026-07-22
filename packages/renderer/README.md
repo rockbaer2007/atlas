@@ -48,6 +48,7 @@ descriptive only and do not mount output yet.
 - `RendererConcreteIntegrationBoundaryExecutionExportSnapshotCatalog`
 - `RendererConcreteIntegrationBoundaryExecutionPreparation`
 - `RendererConcreteIntegrationBoundaryFinalization`
+- `RendererConcreteIntegrationBoundaryFinalizationHandoff`
 - `RendererConcreteIntegrationBoundaryFinalizationSnapshot`
 - `RendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog`
 - `RendererConcreteIntegrationBoundaryDecision`
@@ -125,6 +126,7 @@ descriptive only and do not mount output yet.
 - `createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog`
 - `createRendererConcreteIntegrationBoundaryExecutionExport`
 - `createRendererConcreteIntegrationBoundaryExecutionExportSnapshotCatalog`
+- `createRendererConcreteIntegrationBoundaryFinalizationHandoff`
 - `createRendererConcreteIntegrationBoundaryFinalizationSnapshotCatalog`
 - `createRendererAdapter`
 - `createRendererAdapterConflict`
@@ -633,6 +635,10 @@ counts and finalized, non-executable flags.
 Renderer concrete integration boundary finalization snapshot catalogs now group
 compact finalization snapshots with ready, blocked, issue and executable counts
 while keeping executable counts fixed at zero.
+
+Renderer concrete integration boundary finalization handoffs now wrap
+finalization snapshot catalogs in finalized, non-executable handoff envelopes
+with ready state and issue counts.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
