@@ -40,6 +40,7 @@ descriptive only and do not mount output yet.
 - `RendererConcreteIntegrationBoundaryDecision`
 - `RendererConcreteIntegrationBoundaryPlan`
 - `RendererConcreteIntegrationBoundaryPlanSnapshot`
+- `RendererConcreteIntegrationBoundaryPlanSnapshotCatalog`
 - `RendererConcreteIntegrationBoundaryReview`
 - `RendererMountRequest`
 - `RendererMountResult`
@@ -116,6 +117,7 @@ descriptive only and do not mount output yet.
 - `createRendererHostContext`
 - `createRendererConcreteIntegrationBoundaryDecision`
 - `createRendererConcreteIntegrationBoundaryPlan`
+- `createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog`
 - `createRendererIntegrationHandoff`
 - `createRendererIntegrationHandoffSnapshotCatalog`
 - `createRendererIntegrationPreparation`
@@ -547,6 +549,10 @@ and stay free of execution hooks or concrete surface bindings.
 Renderer concrete integration boundary plan snapshots now expose compact plan
 summaries with plan names, ready state, issue counts, step counts and planned
 boundary names while omitting decision payloads.
+
+Renderer concrete integration boundary plan snapshot catalogs now group compact
+plan snapshots with copied snapshot lists and ready, blocked and issue counts
+without retaining executable plan payloads.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

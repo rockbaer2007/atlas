@@ -15,6 +15,7 @@ import type {
   RendererConcreteIntegrationBoundaryDecision,
   RendererConcreteIntegrationBoundaryPlan,
   RendererConcreteIntegrationBoundaryPlanSnapshot,
+  RendererConcreteIntegrationBoundaryPlanSnapshotCatalog,
   RendererConcreteIntegrationBoundaryReview,
   RendererHostContext,
   RendererIntegrationHandoff,
@@ -118,6 +119,7 @@ import {
   createRendererHostContext,
   createRendererConcreteIntegrationBoundaryDecision,
   createRendererConcreteIntegrationBoundaryPlan,
+  createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog,
   createRendererIntegrationHandoff,
   createRendererIntegrationHandoffSnapshotCatalog,
   createRendererIntegrationPreparation,
@@ -186,6 +188,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryDecision).toBeTypeOf("function");
     expect(Renderer.createRendererConcreteIntegrationBoundaryPlan).toBeTypeOf("function");
+    expect(Renderer.createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoff).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationHandoffSnapshotCatalog).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationPreparation).toBeTypeOf("function");
@@ -641,6 +644,15 @@ describe("renderer public API", () => {
       stepCount: 3,
       plannedBoundary: "transport",
     };
+    const concreteIntegrationBoundaryPlanSnapshotCatalog:
+      RendererConcreteIntegrationBoundaryPlanSnapshotCatalog = {
+        kind: "renderer.concrete.integration.boundary.plan.snapshot.catalog",
+        name: "type-concrete-integration-boundary-plan-snapshot-catalog",
+        snapshots: [concreteIntegrationBoundaryPlanSnapshot],
+        readyCount: 1,
+        blockedCount: 0,
+        issueCount: 0,
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -811,6 +823,9 @@ describe("renderer public API", () => {
     expect(concreteIntegrationBoundaryDecision.review).toBe(concreteIntegrationBoundaryReview);
     expect(concreteIntegrationBoundaryPlan.decision).toBe(concreteIntegrationBoundaryDecision);
     expect(concreteIntegrationBoundaryPlanSnapshot.planName).toBe(concreteIntegrationBoundaryPlan.name);
+    expect(concreteIntegrationBoundaryPlanSnapshotCatalog.snapshots[0]).toBe(
+      concreteIntegrationBoundaryPlanSnapshot,
+    );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -4189,6 +4204,93 @@ describe("renderer public API", () => {
     expect(snapshot).not.toHaveProperty("decision");
     expect(snapshot).not.toHaveProperty("steps");
     expect(snapshot).not.toHaveProperty("element");
+  });
+
+  it("catalogs ready Renderer concrete integration boundary plan snapshots", () => {
+    const snapshot = snapshotRendererConcreteIntegrationBoundaryPlan(
+      createRendererConcreteIntegrationBoundaryPlan(
+        "ready-plan-snapshot-catalog-plan",
+        createRendererConcreteIntegrationBoundaryDecision(
+          "ready-plan-snapshot-catalog-decision",
+          reviewRendererConcreteIntegrationBoundary(
+            "ready-plan-snapshot-catalog-review",
+            createRendererIntegrationHandoffSnapshotCatalog(
+              "ready-plan-snapshot-catalog-source",
+              [],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+      "ready-plan-snapshot-catalog",
+      [snapshot],
+    )).toEqual({
+      kind: "renderer.concrete.integration.boundary.plan.snapshot.catalog",
+      name: "ready-plan-snapshot-catalog",
+      snapshots: [snapshot],
+      readyCount: 1,
+      blockedCount: 0,
+      issueCount: 0,
+    });
+  });
+
+  it("catalogs blocked Renderer concrete integration boundary plan snapshots", () => {
+    const snapshot: RendererConcreteIntegrationBoundaryPlanSnapshot = {
+      kind: "renderer.concrete.integration.boundary.plan.snapshot",
+      planName: "blocked-plan-snapshot-catalog-plan",
+      ready: false,
+      issueCount: 13,
+      stepCount: 3,
+    };
+
+    const catalog = Renderer.createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+      "blocked-plan-snapshot-catalog",
+      [snapshot],
+    );
+
+    expect(catalog.readyCount).toBe(0);
+    expect(catalog.blockedCount).toBe(1);
+    expect(catalog.issueCount).toBe(13);
+  });
+
+  it("copies Renderer concrete integration boundary plan snapshot catalog inputs", () => {
+    const snapshots: RendererConcreteIntegrationBoundaryPlanSnapshot[] = [{
+      kind: "renderer.concrete.integration.boundary.plan.snapshot",
+      planName: "copy-plan-snapshot-catalog-plan",
+      ready: true,
+      issueCount: 0,
+      stepCount: 3,
+      plannedBoundary: "transport",
+    }];
+
+    const catalog = createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+      "copy-plan-snapshot-catalog",
+      snapshots,
+    );
+    snapshots.push({
+      kind: "renderer.concrete.integration.boundary.plan.snapshot",
+      planName: "late-plan-snapshot-catalog-plan",
+      ready: false,
+      issueCount: 14,
+      stepCount: 3,
+    });
+
+    expect(catalog.snapshots).toHaveLength(1);
+    expect(catalog.readyCount).toBe(1);
+    expect(catalog.blockedCount).toBe(0);
+  });
+
+  it("keeps Renderer concrete integration boundary plan snapshot catalogs data-only", () => {
+    const catalog = createRendererConcreteIntegrationBoundaryPlanSnapshotCatalog(
+      "data-only-plan-snapshot-catalog",
+      [],
+    );
+
+    expect(catalog).not.toHaveProperty("plans");
+    expect(catalog).not.toHaveProperty("execute");
+    expect(catalog).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

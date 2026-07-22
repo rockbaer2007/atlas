@@ -101,6 +101,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   preparation steps without execution hooks.
 * Renderer concrete integration boundary plan snapshots now expose compact plan
   summaries without decision payloads.
+* Renderer concrete integration boundary plan snapshot catalogs now group
+  compact plan summaries with copied snapshot lists and ready, blocked and issue
+  counts.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
