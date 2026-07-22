@@ -100,6 +100,25 @@ export type RendererUnifiedMountBatchDiagnosticClosure = Readonly<{
   issueCount: number;
 }>;
 
+export type RendererUnifiedMountBatchDiagnosticSnapshot = Readonly<{
+  ready: boolean;
+  blocked: boolean;
+  totalCount: number;
+  mountedCount: number;
+  failureCount: number;
+  issueCount: number;
+  failedOutputNames: readonly string[];
+  failedTargetNames: readonly string[];
+}>;
+
+export type RendererUnifiedMountBatchDiagnosticHandoff = Readonly<{
+  closure: RendererUnifiedMountBatchDiagnosticClosure;
+  snapshot: RendererUnifiedMountBatchDiagnosticSnapshot;
+  ready: boolean;
+  blocked: boolean;
+  transferable: boolean;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -257,5 +276,34 @@ export function closeRendererTargetMountBatchDiagnostics(
     mountedCount: execution.summary.mounted,
     failureCount: failures.length,
     issueCount: execution.summary.issueCount,
+  };
+}
+
+export function snapshotRendererTargetMountBatchDiagnostics(
+  closure: RendererUnifiedMountBatchDiagnosticClosure,
+): RendererUnifiedMountBatchDiagnosticSnapshot {
+  return {
+    ready: closure.ready,
+    blocked: closure.blocked,
+    totalCount: closure.totalCount,
+    mountedCount: closure.mountedCount,
+    failureCount: closure.failureCount,
+    issueCount: closure.issueCount,
+    failedOutputNames: closure.failures.map(item => item.report.outputName),
+    failedTargetNames: closure.failures.map(item => item.report.targetName),
+  };
+}
+
+export function handoffRendererTargetMountBatchDiagnostics(
+  closure: RendererUnifiedMountBatchDiagnosticClosure,
+): RendererUnifiedMountBatchDiagnosticHandoff {
+  const snapshot = snapshotRendererTargetMountBatchDiagnostics(closure);
+
+  return {
+    closure,
+    snapshot,
+    ready: closure.ready,
+    blocked: closure.blocked,
+    transferable: closure.ready,
   };
 }

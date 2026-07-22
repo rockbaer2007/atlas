@@ -83,6 +83,8 @@ Assistant or theme execution paths.
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchDiagnosticClosure`
+- `RendererUnifiedMountBatchDiagnosticHandoff`
+- `RendererUnifiedMountBatchDiagnosticSnapshot`
 - `RendererUnifiedMountBatchExecution`
 - `RendererUnifiedMountBatchRequest`
 - `RendererUnifiedMountExecution`
@@ -260,6 +262,7 @@ Assistant or theme execution paths.
 - `findRendererMountReportConsumerConflicts`
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
+- `handoffRendererTargetMountBatchDiagnostics`
 - `inspectRendererDomMountResult`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
@@ -299,6 +302,7 @@ Assistant or theme execution paths.
 - `snapshotRendererConcreteIntegrationBoundaryPlan`
 - `snapshotRendererIntegrationHandoff`
 - `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
+- `snapshotRendererTargetMountBatchDiagnostics`
 - `summarizeRendererDomMountStore`
 - `summarizeRendererMemoryMountStore`
 - `summarizeRendererMountReports`
@@ -358,6 +362,9 @@ follow-up diagnostics.
 Batch diagnostic closures summarize routed batch execution state into a compact
 ready or blocked decision with total, mounted, failure and issue counts while
 preserving references to the original execution and failed entries.
+Batch diagnostic snapshots expose the closure decision and failed output or
+target names as compact data, and diagnostic handoffs pair that snapshot with
+the closure while marking only ready batches as transferable.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

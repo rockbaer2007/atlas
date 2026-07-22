@@ -13,8 +13,10 @@ import {
   findRendererTargetMountBatchFailures,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
+  handoffRendererTargetMountBatchDiagnostics,
   RendererDefaultMountAdapterNames,
   resolveRendererTargetMountAdapter,
+  snapshotRendererTargetMountBatchDiagnostics,
 } from "../src";
 
 describe("renderer mount adapter routing", () => {
@@ -780,5 +782,142 @@ describe("renderer mount adapter routing", () => {
       failureCount: 0,
       issueCount: 0,
     });
+  });
+
+  it("snapshots ready target mount batch diagnostics without failure names", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "snapshot-ready-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "snapshot-ready-cache",
+        }),
+      }],
+    });
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    expect(snapshotRendererTargetMountBatchDiagnostics(closure)).toEqual({
+      ready: true,
+      blocked: false,
+      totalCount: 1,
+      mountedCount: 1,
+      failureCount: 0,
+      issueCount: 0,
+      failedOutputNames: [],
+      failedTargetNames: [],
+    });
+  });
+
+  it("snapshots blocked target mount batch diagnostics with failure names", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "snapshot-blocked-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "snapshot-blocked-surface",
+        }),
+      }, {
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "snapshot-blocked-valid",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "snapshot-blocked-cache",
+        }),
+      }],
+    });
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    expect(snapshotRendererTargetMountBatchDiagnostics(closure)).toEqual({
+      ready: false,
+      blocked: true,
+      totalCount: 2,
+      mountedCount: 1,
+      failureCount: 1,
+      issueCount: 1,
+      failedOutputNames: ["snapshot-blocked-invalid"],
+      failedTargetNames: ["snapshot-blocked-surface"],
+    });
+  });
+
+  it("snapshots empty target mount batch diagnostics as blocked", async () => {
+    const execution = await executeRendererTargetMountBatch({
+      requests: [],
+    });
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    expect(snapshotRendererTargetMountBatchDiagnostics(closure)).toEqual({
+      ready: false,
+      blocked: true,
+      totalCount: 0,
+      mountedCount: 0,
+      failureCount: 0,
+      issueCount: 0,
+      failedOutputNames: [],
+      failedTargetNames: [],
+    });
+  });
+
+  it("hands off ready target mount batch diagnostics as transferable", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "handoff-ready-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "handoff-ready-cache",
+        }),
+      }],
+    });
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    const handoff = handoffRendererTargetMountBatchDiagnostics(closure);
+
+    expect(handoff.closure).toBe(closure);
+    expect(handoff.ready).toBe(true);
+    expect(handoff.blocked).toBe(false);
+    expect(handoff.transferable).toBe(true);
+    expect(handoff.snapshot.ready).toBe(true);
+  });
+
+  it("hands off blocked target mount batch diagnostics as not transferable", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "handoff-blocked-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "handoff-blocked-surface",
+        }),
+      }],
+    });
+    const closure = closeRendererTargetMountBatchDiagnostics(execution);
+
+    const handoff = handoffRendererTargetMountBatchDiagnostics(closure);
+
+    expect(handoff.closure).toBe(closure);
+    expect(handoff.ready).toBe(false);
+    expect(handoff.blocked).toBe(true);
+    expect(handoff.transferable).toBe(false);
+    expect(handoff.snapshot.failedOutputNames).toEqual(["handoff-blocked-invalid"]);
   });
 });
