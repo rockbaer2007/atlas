@@ -511,6 +511,16 @@ export type RendererConcreteIntegrationBoundaryReleaseExport = Readonly<{
   executable: false;
 }>;
 
+export type RendererConcreteIntegrationBoundaryReleaseExportSnapshot = Readonly<{
+  kind: "renderer.concrete.integration.boundary.release.export.snapshot";
+  exportName: string;
+  ready: boolean;
+  issueCount: number;
+  releaseSnapshotCount: number;
+  exported: true;
+  executable: false;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -1439,6 +1449,20 @@ export function createRendererConcreteIntegrationBoundaryReleaseExport(
     ready: catalog.blockedCount === 0,
     issueCount: catalog.issueCount,
     catalog,
+    exported: true,
+    executable: false,
+  };
+}
+
+export function snapshotRendererConcreteIntegrationBoundaryReleaseExport(
+  releaseExport: RendererConcreteIntegrationBoundaryReleaseExport,
+): RendererConcreteIntegrationBoundaryReleaseExportSnapshot {
+  return {
+    kind: "renderer.concrete.integration.boundary.release.export.snapshot",
+    exportName: releaseExport.name,
+    ready: releaseExport.ready,
+    issueCount: releaseExport.issueCount,
+    releaseSnapshotCount: releaseExport.catalog.snapshots.length,
     exported: true,
     executable: false,
   };
