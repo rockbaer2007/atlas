@@ -57,6 +57,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer diagnostic batch execution now runs ordered
   consumer sets into executions, aggregate diagnostics, summaries and optional
   policy evaluations.
+* Renderer mount report consumer diagnostic registry execution now delegates
+  ordered registry consumers through batch diagnostics without changing lookup
+  or conflict behavior.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

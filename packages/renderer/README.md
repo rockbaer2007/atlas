@@ -56,6 +56,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerDiagnosticPolicy`
 - `RendererMountReportConsumerDiagnosticPolicyCodes`
 - `RendererMountReportConsumerDiagnosticPolicyEvaluation`
+- `RendererMountReportConsumerDiagnosticRegistryExecution`
 - `RendererMountReportConsumerDiagnosticReport`
 - `RendererMountReportConsumerDiagnosticCodes`
 - `RendererMountReportConsumerLookupRequest`
@@ -122,6 +123,7 @@ descriptive only and do not mount output yet.
 - `createRendererPlatformAdapterSelectionRequest`
 - `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
+- `consumeAndInspectRendererMountReportConsumerRegistry`
 - `consumeAndInspectRendererMountReportConsumers`
 - `consumeAndInspectRendererMountReports`
 - `consumeRendererMountReports`
@@ -417,6 +419,12 @@ Renderer mount report consumer diagnostic batch execution now runs multiple
 consumers into ordered diagnostic executions, aggregates their reports,
 summarizes the aggregate and can evaluate an optional policy. Empty batches are
 successful, consumer order is preserved and batch output remains independent
+from DOM elements, Home Assistant fields, Theme fields and platform metadata.
+
+Renderer mount report consumer diagnostic registry execution now delegates a
+registry's ordered consumers through batch execution while preserving the
+registry reference. Registry execution supports optional policy evaluation,
+does not resolve conflicts or change lookup behavior, and remains independent
 from DOM elements, Home Assistant fields, Theme fields and platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer

@@ -78,6 +78,11 @@ export type RendererMountReportConsumerDiagnosticBatchExecution = Readonly<{
   policyEvaluation?: RendererMountReportConsumerDiagnosticPolicyEvaluation;
 }>;
 
+export type RendererMountReportConsumerDiagnosticRegistryExecution = Readonly<{
+  registry: RendererMountReportConsumerRegistry;
+  batch: RendererMountReportConsumerDiagnosticBatchExecution;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -317,6 +322,21 @@ export async function consumeAndInspectRendererMountReportConsumers(
     ...(policy ? {
       policyEvaluation: evaluateRendererMountReportConsumerDiagnosticPolicy(summary, policy),
     } : {}),
+  };
+}
+
+export async function consumeAndInspectRendererMountReportConsumerRegistry(
+  registry: RendererMountReportConsumerRegistry,
+  consumption: RendererMountReportConsumption,
+  policy?: RendererMountReportConsumerDiagnosticPolicy,
+): Promise<RendererMountReportConsumerDiagnosticRegistryExecution> {
+  return {
+    registry,
+    batch: await consumeAndInspectRendererMountReportConsumers(
+      registry.consumers,
+      consumption,
+      policy,
+    ),
   };
 }
 
