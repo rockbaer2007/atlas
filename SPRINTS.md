@@ -3593,23 +3593,24 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.3578 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Boundary Review | Completed | - |
 | G2.5.3579 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Contract Review | Completed | - |
 | G2.5.3580 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Gate Review | Completed | - |
-| G2.5.3581 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review | Planned | - |
+| G2.5.3581 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review | Completed | - |
+| G2.5.3582 | Renderer Concrete Integration Boundary Release Closure Export Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.3580 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Gate Review
+## G2.5.3581 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review
 
 Goal:
 
-Expose compact Renderer concrete integration boundary release closure export snapshots without catalog payloads.
+Group Renderer concrete integration boundary release closure export snapshots in non-executable catalogs.
 
 Deliverables:
 
-* Renderer concrete integration boundary release closure export snapshot type
-* Boundary release closure export snapshot helper
-* Ready, blocked and compactness tests
+* Renderer concrete integration boundary release closure export snapshot catalog type
+* Boundary release closure export snapshot catalog helper
+* Ready, blocked, copy and non-executable tests
 * Sprint documentation
 
 Status:
@@ -3620,13 +3621,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.3581 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review
+## G2.5.3582 - Renderer Concrete Integration Boundary Release Closure Export Review
 
 Suggested focus:
 
-* Decide whether release closure export snapshots need catalog grouping
-* Keep grouped release closure export snapshots non-executable
-* Preserve release closure export snapshot API boundaries
+* Decide the next release closure export boundary
+* Keep release closure export data non-executable
+* Preserve release closure export snapshot catalog API boundaries
 
 ---
 
@@ -5306,6 +5307,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.3578.md`
 * `docs/sprints/Sprint-G2.5.3579.md`
 * `docs/sprints/Sprint-G2.5.3580.md`
+* `docs/sprints/Sprint-G2.5.3581.md`
 * `docs/sprints/Sprint-G2.5.3482.md`
 * `docs/sprints/Sprint-G2.5.3483.md`
 * `docs/sprints/Sprint-G2.5.3484.md`
