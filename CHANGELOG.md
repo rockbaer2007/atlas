@@ -81,6 +81,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   group bundle snapshots with ready, blocked and issue counts.
 * Renderer mount report consumer diagnostic delivery exports now package
   snapshot catalogs into stable ready-state export envelopes.
+* Renderer integration preparation now wraps diagnostic delivery exports in
+  explicit data-only preparation state with concrete integration boundaries
+  disabled.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

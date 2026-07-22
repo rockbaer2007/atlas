@@ -170,6 +170,21 @@ export type RendererMountReportConsumerDiagnosticDeliveryExport = Readonly<{
   catalog: RendererMountReportConsumerDiagnosticDeliverySnapshotCatalog;
 }>;
 
+export type RendererIntegrationPreparation = Readonly<{
+  kind: "renderer.integration.preparation";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  deliveryExport: RendererMountReportConsumerDiagnosticDeliveryExport;
+  boundaries: Readonly<{
+    transport: false;
+    dom: false;
+    homeAssistant: false;
+    theme: false;
+    platform: false;
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -568,6 +583,26 @@ export function createRendererMountReportConsumerDiagnosticDeliveryExport(
     snapshotCount: catalog.snapshots.length,
     issueCount: catalog.issueCount,
     catalog,
+  };
+}
+
+export function createRendererIntegrationPreparation(
+  name: string,
+  deliveryExport: RendererMountReportConsumerDiagnosticDeliveryExport,
+): RendererIntegrationPreparation {
+  return {
+    kind: "renderer.integration.preparation",
+    name,
+    ready: deliveryExport.ready,
+    issueCount: deliveryExport.issueCount,
+    deliveryExport,
+    boundaries: {
+      transport: false,
+      dom: false,
+      homeAssistant: false,
+      theme: false,
+      platform: false,
+    },
   };
 }
 

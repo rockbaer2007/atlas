@@ -1593,22 +1593,72 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1578 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Diagnostics Review | Completed | - |
 | G2.5.1579 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Preparation Review | Completed | - |
 | G2.5.1580 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Handoff Review | Completed | - |
-| G2.5.1581 | Renderer Integration Preparation Review | Planned | - |
+| G2.5.1581 | Renderer Integration Preparation Review | Completed | - |
+| G2.5.1582 | Renderer Integration Preparation Contract Review | Completed | - |
+| G2.5.1583 | Renderer Integration Preparation Shape Review | Completed | - |
+| G2.5.1584 | Renderer Integration Preparation Ready Review | Completed | - |
+| G2.5.1585 | Renderer Integration Preparation Blocked Review | Completed | - |
+| G2.5.1586 | Renderer Integration Preparation Boundary Review | Completed | - |
+| G2.5.1587 | Renderer Integration Preparation Delivery Export Review | Completed | - |
+| G2.5.1588 | Renderer Integration Preparation Issue Count Review | Completed | - |
+| G2.5.1589 | Renderer Integration Preparation Name Review | Completed | - |
+| G2.5.1590 | Renderer Integration Preparation Package Root Review | Completed | - |
+| G2.5.1591 | Renderer Integration Preparation Type Surface Review | Completed | - |
+| G2.5.1592 | Renderer Integration Preparation Documentation Review | Completed | - |
+| G2.5.1593 | Renderer Integration Preparation Changelog Review | Completed | - |
+| G2.5.1594 | Renderer Integration Preparation Regression Review | Completed | - |
+| G2.5.1595 | Renderer Integration Preparation Public API Review | Completed | - |
+| G2.5.1596 | Renderer Integration Preparation README Review | Completed | - |
+| G2.5.1597 | Renderer Integration Preparation Sprint Documentation Review | Completed | - |
+| G2.5.1598 | Renderer Integration Preparation Workspace Regression Review | Completed | - |
+| G2.5.1599 | Renderer Integration Preparation Integration Closure Review | Completed | - |
+| G2.5.1600 | Renderer Integration Preparation Compatibility Review | Completed | - |
+| G2.5.1601 | Renderer Integration Preparation Transport Boundary Review | Completed | - |
+| G2.5.1602 | Renderer Integration Preparation DOM Boundary Review | Completed | - |
+| G2.5.1603 | Renderer Integration Preparation Home Assistant Boundary Review | Completed | - |
+| G2.5.1604 | Renderer Integration Preparation Theme Boundary Review | Completed | - |
+| G2.5.1605 | Renderer Integration Preparation Platform Boundary Review | Completed | - |
+| G2.5.1606 | Renderer Integration Preparation Stability Review | Completed | - |
+| G2.5.1607 | Renderer Integration Preparation Ready Stability Review | Completed | - |
+| G2.5.1608 | Renderer Integration Preparation Blocked Stability Review | Completed | - |
+| G2.5.1609 | Renderer Integration Preparation Issue Stability Review | Completed | - |
+| G2.5.1610 | Renderer Integration Preparation Context Stability Review | Completed | - |
+| G2.5.1611 | Renderer Integration Preparation Name Stability Review | Completed | - |
+| G2.5.1612 | Renderer Integration Preparation Result Boundary Review | Completed | - |
+| G2.5.1613 | Renderer Integration Preparation Export Boundary Review | Completed | - |
+| G2.5.1614 | Renderer Integration Preparation No Mutation Review | Completed | - |
+| G2.5.1615 | Renderer Integration Preparation Handler Boundary Review | Completed | - |
+| G2.5.1616 | Renderer Integration Preparation Consumption Boundary Review | Completed | - |
+| G2.5.1617 | Renderer Integration Preparation Conflict Boundary Review | Completed | - |
+| G2.5.1618 | Renderer Integration Preparation Lookup Boundary Review | Completed | - |
+| G2.5.1619 | Renderer Integration Preparation API Closure Review | Completed | - |
+| G2.5.1620 | Renderer Integration Preparation Return-To-Delivery Export Review | Completed | - |
+| G2.5.1621 | Renderer Integration Preparation Return-To-Catalog Review | Completed | - |
+| G2.5.1622 | Renderer Integration Preparation Return-To-Snapshot Review | Completed | - |
+| G2.5.1623 | Renderer Integration Preparation Return-To-Bundle Review | Completed | - |
+| G2.5.1624 | Renderer Integration Preparation Return-To-Manifest Review | Completed | - |
+| G2.5.1625 | Renderer Integration Preparation Return-To-Delivery Review | Completed | - |
+| G2.5.1626 | Renderer Integration Preparation Return-To-Diagnostics Review | Completed | - |
+| G2.5.1627 | Renderer Integration Preparation Readiness Preparation Review | Completed | - |
+| G2.5.1628 | Renderer Integration Preparation Readiness Boundary Review | Completed | - |
+| G2.5.1629 | Renderer Integration Preparation Readiness Gate Review | Completed | - |
+| G2.5.1630 | Renderer Integration Preparation Readiness Handoff Review | Completed | - |
+| G2.5.1631 | Renderer Integration Readiness Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1580 - Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Handoff Review
+## G2.5.1630 - Renderer Integration Preparation Readiness Handoff Review
 
 Goal:
 
-Package Renderer mount report consumer diagnostic snapshot catalogs into stable data-only export envelopes.
+Prepare Renderer diagnostic delivery exports for concrete integration work without enabling concrete integration behavior.
 
 Deliverables:
 
-* Consumer diagnostic delivery export type
-* Export creation helper
+* Renderer integration preparation type
+* Preparation creation helper
 * Ready, blocked and boundary tests
 * Sprint documentation
 
@@ -1620,13 +1670,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1581 - Renderer Integration Preparation Review
+## G2.5.1631 - Renderer Integration Readiness Review
 
 Suggested focus:
 
-* Prepare the transition from renderer diagnostic delivery contracts into concrete integration work
-* Keep transport, DOM and Home Assistant boundaries explicit
-* Preserve existing renderer diagnostic delivery APIs
+* Decide whether integration preparation needs a readiness review result
+* Keep readiness derived from preparation data
+* Preserve existing delivery export and preparation APIs
 
 ---
 
@@ -3217,6 +3267,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1578.md`
 * `docs/sprints/Sprint-G2.5.1579.md`
 * `docs/sprints/Sprint-G2.5.1580.md`
+* `docs/sprints/Sprint-G2.5.1581.md`
+* `docs/sprints/Sprint-G2.5.1582.md`
+* `docs/sprints/Sprint-G2.5.1583.md`
+* `docs/sprints/Sprint-G2.5.1584.md`
+* `docs/sprints/Sprint-G2.5.1585.md`
+* `docs/sprints/Sprint-G2.5.1586.md`
+* `docs/sprints/Sprint-G2.5.1587.md`
+* `docs/sprints/Sprint-G2.5.1588.md`
+* `docs/sprints/Sprint-G2.5.1589.md`
+* `docs/sprints/Sprint-G2.5.1590.md`
+* `docs/sprints/Sprint-G2.5.1591.md`
+* `docs/sprints/Sprint-G2.5.1592.md`
+* `docs/sprints/Sprint-G2.5.1593.md`
+* `docs/sprints/Sprint-G2.5.1594.md`
+* `docs/sprints/Sprint-G2.5.1595.md`
+* `docs/sprints/Sprint-G2.5.1596.md`
+* `docs/sprints/Sprint-G2.5.1597.md`
+* `docs/sprints/Sprint-G2.5.1598.md`
+* `docs/sprints/Sprint-G2.5.1599.md`
+* `docs/sprints/Sprint-G2.5.1600.md`
+* `docs/sprints/Sprint-G2.5.1601.md`
+* `docs/sprints/Sprint-G2.5.1602.md`
+* `docs/sprints/Sprint-G2.5.1603.md`
+* `docs/sprints/Sprint-G2.5.1604.md`
+* `docs/sprints/Sprint-G2.5.1605.md`
+* `docs/sprints/Sprint-G2.5.1606.md`
+* `docs/sprints/Sprint-G2.5.1607.md`
+* `docs/sprints/Sprint-G2.5.1608.md`
+* `docs/sprints/Sprint-G2.5.1609.md`
+* `docs/sprints/Sprint-G2.5.1610.md`
+* `docs/sprints/Sprint-G2.5.1611.md`
+* `docs/sprints/Sprint-G2.5.1612.md`
+* `docs/sprints/Sprint-G2.5.1613.md`
+* `docs/sprints/Sprint-G2.5.1614.md`
+* `docs/sprints/Sprint-G2.5.1615.md`
+* `docs/sprints/Sprint-G2.5.1616.md`
+* `docs/sprints/Sprint-G2.5.1617.md`
+* `docs/sprints/Sprint-G2.5.1618.md`
+* `docs/sprints/Sprint-G2.5.1619.md`
+* `docs/sprints/Sprint-G2.5.1620.md`
+* `docs/sprints/Sprint-G2.5.1621.md`
+* `docs/sprints/Sprint-G2.5.1622.md`
+* `docs/sprints/Sprint-G2.5.1623.md`
+* `docs/sprints/Sprint-G2.5.1624.md`
+* `docs/sprints/Sprint-G2.5.1625.md`
+* `docs/sprints/Sprint-G2.5.1626.md`
+* `docs/sprints/Sprint-G2.5.1627.md`
+* `docs/sprints/Sprint-G2.5.1628.md`
+* `docs/sprints/Sprint-G2.5.1629.md`
+* `docs/sprints/Sprint-G2.5.1630.md`
 
 ---
 

@@ -23,6 +23,7 @@ descriptive only and do not mount output yet.
 `@atlas/renderer` exports:
 
 - `RendererHostContext`
+- `RendererIntegrationPreparation`
 - `RendererAdapter`
 - `RendererAdapterConflict`
 - `RendererAdapterConflictResolution`
@@ -105,6 +106,7 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterSelectionRequest`
 - `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
+- `createRendererIntegrationPreparation`
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
 - `createRendererMountReport`
@@ -487,6 +489,12 @@ Renderer mount report consumer diagnostic delivery exports now package snapshot
 catalogs into stable data-only export envelopes. Exports expose a stable kind,
 caller-provided name, ready state, snapshot count, issue count and catalog
 reference without adding transport behavior or integration metadata.
+
+Renderer integration preparation now packages diagnostic delivery exports into
+explicit preparation data. Preparations preserve delivery export references,
+surface ready state and issue count, and keep transport, DOM, Home Assistant,
+Theme and platform boundaries explicitly disabled before concrete integration
+work begins.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

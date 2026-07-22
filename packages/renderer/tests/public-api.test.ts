@@ -13,6 +13,7 @@ import type {
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
   RendererHostContext,
+  RendererIntegrationPreparation,
   RendererMountDiagnosticReport,
   RendererMountLifecycleRecord,
   RendererMountLifecycleReport,
@@ -107,6 +108,7 @@ import {
   createRendererMountResult,
   createRendererOutput,
   createRendererHostContext,
+  createRendererIntegrationPreparation,
   createRendererPipeline,
   createRendererPlatformAdapter,
   createRendererPlatformAdapterConflict,
@@ -166,6 +168,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
+    expect(Renderer.createRendererIntegrationPreparation).toBeTypeOf("function");
     expect(Renderer.createDefaultRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
@@ -526,6 +529,20 @@ describe("renderer public API", () => {
         issueCount: 0,
         catalog: mountReportConsumerDiagnosticDeliverySnapshotCatalog,
       };
+    const integrationPreparation: RendererIntegrationPreparation = {
+      kind: "renderer.integration.preparation",
+      name: "type-integration-preparation",
+      ready: true,
+      issueCount: 0,
+      deliveryExport: mountReportConsumerDiagnosticDeliveryExport,
+      boundaries: {
+        transport: false,
+        dom: false,
+        homeAssistant: false,
+        theme: false,
+        platform: false,
+      },
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -687,6 +704,7 @@ describe("renderer public API", () => {
     expect(mountReportConsumerDiagnosticDeliveryExport.catalog).toBe(
       mountReportConsumerDiagnosticDeliverySnapshotCatalog,
     );
+    expect(integrationPreparation.deliveryExport).toBe(mountReportConsumerDiagnosticDeliveryExport);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3403,6 +3421,82 @@ describe("renderer public API", () => {
     expect(deliveryExport).not.toHaveProperty("theme");
     expect(deliveryExport).not.toHaveProperty("homeAssistant");
     expect(deliveryExport).not.toHaveProperty("element");
+  });
+
+  it("creates ready Renderer integration preparations from delivery exports", () => {
+    const deliveryExport = createRendererMountReportConsumerDiagnosticDeliveryExport(
+      "ready-preparation-export",
+      createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+        "ready-preparation-catalog",
+        [],
+      ),
+    );
+
+    expect(createRendererIntegrationPreparation(
+      "ready-preparation",
+      deliveryExport,
+    )).toEqual({
+      kind: "renderer.integration.preparation",
+      name: "ready-preparation",
+      ready: true,
+      issueCount: 0,
+      deliveryExport,
+      boundaries: {
+        transport: false,
+        dom: false,
+        homeAssistant: false,
+        theme: false,
+        platform: false,
+      },
+    });
+  });
+
+  it("creates blocked Renderer integration preparations from blocked delivery exports", () => {
+    const deliveryExport = createRendererMountReportConsumerDiagnosticDeliveryExport(
+      "blocked-preparation-export",
+      createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+        "blocked-preparation-catalog",
+        [{
+          kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot",
+          bundleName: "blocked-preparation-bundle",
+          ready: false,
+          manifestCount: 1,
+          issueCount: 2,
+          manifestNames: ["blocked-preparation-manifest"],
+        }],
+      ),
+    );
+
+    const preparation = Renderer.createRendererIntegrationPreparation(
+      "blocked-preparation",
+      deliveryExport,
+    );
+
+    expect(preparation.ready).toBe(false);
+    expect(preparation.issueCount).toBe(2);
+    expect(preparation.deliveryExport).toBe(deliveryExport);
+  });
+
+  it("keeps Renderer integration preparations free of concrete integration metadata", () => {
+    const preparation = createRendererIntegrationPreparation(
+      "boundary-preparation",
+      createRendererMountReportConsumerDiagnosticDeliveryExport(
+        "boundary-preparation-export",
+        createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+          "boundary-preparation-catalog",
+          [],
+        ),
+      ),
+    );
+
+    expect(preparation.boundaries).toEqual({
+      transport: false,
+      dom: false,
+      homeAssistant: false,
+      theme: false,
+      platform: false,
+    });
+    expect(preparation).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {
