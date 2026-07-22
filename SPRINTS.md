@@ -2393,23 +2393,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.2378 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Boundary Review | Completed | - |
 | G2.5.2379 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Contract Review | Completed | - |
 | G2.5.2380 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Gate Review | Completed | - |
-| G2.5.2381 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Review | Planned | - |
+| G2.5.2381 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Review | Completed | - |
+| G2.5.2382 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Contract Review | Completed | - |
+| G2.5.2383 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Shape Review | Completed | - |
+| G2.5.2384 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Ready Review | Completed | - |
+| G2.5.2385 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Blocked Review | Completed | - |
+| G2.5.2386 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Boundary Review | Completed | - |
+| G2.5.2387 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Snapshot Reference Review | Completed | - |
+| G2.5.2388 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Issue Count Review | Completed | - |
+| G2.5.2389 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Executable Count Review | Completed | - |
+| G2.5.2390 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Package Root Review | Completed | - |
+| G2.5.2391 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Type Surface Review | Completed | - |
+| G2.5.2392 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Documentation Review | Completed | - |
+| G2.5.2393 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Changelog Review | Completed | - |
+| G2.5.2394 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Regression Review | Completed | - |
+| G2.5.2395 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Public API Review | Completed | - |
+| G2.5.2396 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog README Review | Completed | - |
+| G2.5.2397 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Sprint Documentation Review | Completed | - |
+| G2.5.2398 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Workspace Regression Review | Completed | - |
+| G2.5.2399 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Integration Closure Review | Completed | - |
+| G2.5.2400 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Compatibility Review | Completed | - |
+| G2.5.2401 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Transport Catalog Review | Completed | - |
+| G2.5.2402 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog DOM Catalog Review | Completed | - |
+| G2.5.2403 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Home Assistant Catalog Review | Completed | - |
+| G2.5.2404 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Theme Catalog Review | Completed | - |
+| G2.5.2405 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Platform Catalog Review | Completed | - |
+| G2.5.2406 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Stability Review | Completed | - |
+| G2.5.2407 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Ready Stability Review | Completed | - |
+| G2.5.2408 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Blocked Stability Review | Completed | - |
+| G2.5.2409 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Issue Stability Review | Completed | - |
+| G2.5.2410 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Context Stability Review | Completed | - |
+| G2.5.2411 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Name Stability Review | Completed | - |
+| G2.5.2412 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Result Boundary Review | Completed | - |
+| G2.5.2413 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Catalog Boundary Review | Completed | - |
+| G2.5.2414 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog No Mutation Review | Completed | - |
+| G2.5.2415 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Handler Boundary Review | Completed | - |
+| G2.5.2416 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Consumption Boundary Review | Completed | - |
+| G2.5.2417 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Conflict Boundary Review | Completed | - |
+| G2.5.2418 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Lookup Boundary Review | Completed | - |
+| G2.5.2419 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog API Closure Review | Completed | - |
+| G2.5.2420 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Snapshot Review | Completed | - |
+| G2.5.2421 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Delivery Review | Completed | - |
+| G2.5.2422 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Catalog Review | Completed | - |
+| G2.5.2423 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Closure Review | Completed | - |
+| G2.5.2424 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Preparation Review | Completed | - |
+| G2.5.2425 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Plan Review | Completed | - |
+| G2.5.2426 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Return-To-Decision Review | Completed | - |
+| G2.5.2427 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Export Preparation Review | Completed | - |
+| G2.5.2428 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Export Boundary Review | Completed | - |
+| G2.5.2429 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Export Contract Review | Completed | - |
+| G2.5.2430 | Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Export Gate Review | Completed | - |
+| G2.5.2431 | Renderer Concrete Integration Boundary Execution Export Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.2380 - Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Gate Review
+## G2.5.2430 - Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Export Gate Review
 
 Goal:
 
-Snapshot Renderer concrete integration boundary execution deliveries without enabling execution.
+Catalog Renderer concrete integration boundary execution delivery snapshots without enabling execution.
 
 Deliverables:
 
-* Renderer concrete integration boundary execution delivery snapshot type
-* Execution delivery snapshot helper
-* Ready, blocked and compactness tests
+* Renderer concrete integration boundary execution delivery snapshot catalog type
+* Execution delivery snapshot catalog helper
+* Ready, blocked, copy and non-executable tests
 * Sprint documentation
 
 Status:
@@ -2420,13 +2470,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.2381 - Renderer Concrete Integration Boundary Execution Delivery Snapshot Catalog Review
+## G2.5.2431 - Renderer Concrete Integration Boundary Execution Export Review
 
 Suggested focus:
 
-* Decide whether execution delivery snapshots need catalog summaries
-* Keep delivery snapshot catalogs non-executable
-* Preserve execution delivery snapshot API boundaries
+* Decide whether delivery snapshot catalogs need export envelopes
+* Keep exports non-executable
+* Preserve delivery snapshot catalog API boundaries
 
 ---
 
@@ -4033,6 +4083,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.2231.md`
 * `docs/sprints/Sprint-G2.5.2281.md`
 * `docs/sprints/Sprint-G2.5.2331.md`
+* `docs/sprints/Sprint-G2.5.2381.md`
+* `docs/sprints/Sprint-G2.5.2382.md`
+* `docs/sprints/Sprint-G2.5.2383.md`
+* `docs/sprints/Sprint-G2.5.2384.md`
+* `docs/sprints/Sprint-G2.5.2385.md`
+* `docs/sprints/Sprint-G2.5.2386.md`
+* `docs/sprints/Sprint-G2.5.2387.md`
+* `docs/sprints/Sprint-G2.5.2388.md`
+* `docs/sprints/Sprint-G2.5.2389.md`
+* `docs/sprints/Sprint-G2.5.2390.md`
+* `docs/sprints/Sprint-G2.5.2391.md`
+* `docs/sprints/Sprint-G2.5.2392.md`
+* `docs/sprints/Sprint-G2.5.2393.md`
+* `docs/sprints/Sprint-G2.5.2394.md`
+* `docs/sprints/Sprint-G2.5.2395.md`
+* `docs/sprints/Sprint-G2.5.2396.md`
+* `docs/sprints/Sprint-G2.5.2397.md`
+* `docs/sprints/Sprint-G2.5.2398.md`
+* `docs/sprints/Sprint-G2.5.2399.md`
+* `docs/sprints/Sprint-G2.5.2400.md`
+* `docs/sprints/Sprint-G2.5.2401.md`
+* `docs/sprints/Sprint-G2.5.2402.md`
+* `docs/sprints/Sprint-G2.5.2403.md`
+* `docs/sprints/Sprint-G2.5.2404.md`
+* `docs/sprints/Sprint-G2.5.2405.md`
+* `docs/sprints/Sprint-G2.5.2406.md`
+* `docs/sprints/Sprint-G2.5.2407.md`
+* `docs/sprints/Sprint-G2.5.2408.md`
+* `docs/sprints/Sprint-G2.5.2409.md`
+* `docs/sprints/Sprint-G2.5.2410.md`
+* `docs/sprints/Sprint-G2.5.2411.md`
+* `docs/sprints/Sprint-G2.5.2412.md`
+* `docs/sprints/Sprint-G2.5.2413.md`
+* `docs/sprints/Sprint-G2.5.2414.md`
+* `docs/sprints/Sprint-G2.5.2415.md`
+* `docs/sprints/Sprint-G2.5.2416.md`
+* `docs/sprints/Sprint-G2.5.2417.md`
+* `docs/sprints/Sprint-G2.5.2418.md`
+* `docs/sprints/Sprint-G2.5.2419.md`
+* `docs/sprints/Sprint-G2.5.2420.md`
+* `docs/sprints/Sprint-G2.5.2421.md`
+* `docs/sprints/Sprint-G2.5.2422.md`
+* `docs/sprints/Sprint-G2.5.2423.md`
+* `docs/sprints/Sprint-G2.5.2424.md`
+* `docs/sprints/Sprint-G2.5.2425.md`
+* `docs/sprints/Sprint-G2.5.2426.md`
+* `docs/sprints/Sprint-G2.5.2427.md`
+* `docs/sprints/Sprint-G2.5.2428.md`
+* `docs/sprints/Sprint-G2.5.2429.md`
+* `docs/sprints/Sprint-G2.5.2430.md`
 * `docs/sprints/Sprint-G2.5.2332.md`
 * `docs/sprints/Sprint-G2.5.2333.md`
 * `docs/sprints/Sprint-G2.5.2334.md`

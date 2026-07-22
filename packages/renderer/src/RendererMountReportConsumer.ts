@@ -343,6 +343,16 @@ export type RendererConcreteIntegrationBoundaryExecutionDeliverySnapshot = Reado
   executable: false;
 }>;
 
+export type RendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog = Readonly<{
+  kind: "renderer.concrete.integration.boundary.execution.delivery.snapshot.catalog";
+  name: string;
+  snapshots: readonly RendererConcreteIntegrationBoundaryExecutionDeliverySnapshot[];
+  readyCount: number;
+  blockedCount: number;
+  issueCount: number;
+  executableCount: 0;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -1007,6 +1017,24 @@ export function snapshotRendererConcreteIntegrationBoundaryExecutionDelivery(
     issueCount: delivery.issueCount,
     closureSnapshotCount: delivery.catalog.snapshots.length,
     executable: false,
+  };
+}
+
+export function createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog(
+  name: string,
+  snapshots: readonly RendererConcreteIntegrationBoundaryExecutionDeliverySnapshot[],
+): RendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog {
+  const copiedSnapshots = [...snapshots];
+
+  return {
+    kind: "renderer.concrete.integration.boundary.execution.delivery.snapshot.catalog",
+    name,
+    snapshots: copiedSnapshots,
+    readyCount: copiedSnapshots.filter(snapshot => snapshot.ready).length,
+    blockedCount: copiedSnapshots.filter(snapshot => !snapshot.ready).length,
+    issueCount: copiedSnapshots
+      .reduce((issueCount, snapshot) => issueCount + snapshot.issueCount, 0),
+    executableCount: 0,
   };
 }
 
