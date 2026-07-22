@@ -102,6 +102,14 @@ export type RendererMountReportConsumerDiagnosticRegistryExecutionClosure = Read
   }>;
 }>;
 
+export type RendererMountReportConsumerDiagnosticDelivery = Readonly<{
+  kind: "renderer.mount.report.consumer.diagnostics.delivery";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  closure: RendererMountReportConsumerDiagnosticRegistryExecutionClosure;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -387,6 +395,19 @@ export function reviewRendererMountReportConsumerDiagnosticRegistryExecution(
       ...(policyOk === undefined ? {} : { policyOk }),
       issues,
     },
+  };
+}
+
+export function createRendererMountReportConsumerDiagnosticDelivery(
+  name: string,
+  closure: RendererMountReportConsumerDiagnosticRegistryExecutionClosure,
+): RendererMountReportConsumerDiagnosticDelivery {
+  return {
+    kind: "renderer.mount.report.consumer.diagnostics.delivery",
+    name,
+    ready: closure.result.ok,
+    issueCount: closure.result.issues.length,
+    closure,
   };
 }
 

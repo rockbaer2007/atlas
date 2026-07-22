@@ -49,6 +49,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumer`
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
+- `RendererMountReportConsumerDiagnosticDelivery`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
 - `RendererMountReportConsumerDiagnosticBatchExecution`
@@ -104,6 +105,7 @@ descriptive only and do not mount output yet.
 - `createRendererMountReportConsumer`
 - `createRendererMountReportConsumerConflict`
 - `createRendererMountReportConsumerConflictResolution`
+- `createRendererMountReportConsumerDiagnosticDelivery`
 - `createRendererMountReportConsumerLookupRequest`
 - `createRendererMountReportConsumerLookupResult`
 - `createRendererMountReportConsumerRegistry`
@@ -434,6 +436,12 @@ reviews registry executions into compact closure reports. Closure reports
 include registry and execution counts, conflict counts, diagnostics state,
 optional policy state and collected issues without resolving conflicts,
 changing lookup behavior or adding integration metadata.
+
+Renderer mount report consumer diagnostic delivery now packages registry
+execution closures into a data-only delivery envelope. Deliveries expose a
+stable kind, caller-provided name, ready state, issue count and closure
+reference without adding transport, DOM, Home Assistant, Theme or platform
+metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
