@@ -161,6 +161,15 @@ export type RendererMountReportConsumerDiagnosticDeliverySnapshotCatalog = Reado
   issueCount: number;
 }>;
 
+export type RendererMountReportConsumerDiagnosticDeliveryExport = Readonly<{
+  kind: "renderer.mount.report.consumer.diagnostics.delivery.export";
+  name: string;
+  ready: boolean;
+  snapshotCount: number;
+  issueCount: number;
+  catalog: RendererMountReportConsumerDiagnosticDeliverySnapshotCatalog;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -545,6 +554,20 @@ export function createRendererMountReportConsumerDiagnosticDeliverySnapshotCatal
     blockedCount: copiedSnapshots.filter(snapshot => !snapshot.ready).length,
     issueCount: copiedSnapshots
       .reduce((issueCount, snapshot) => issueCount + snapshot.issueCount, 0),
+  };
+}
+
+export function createRendererMountReportConsumerDiagnosticDeliveryExport(
+  name: string,
+  catalog: RendererMountReportConsumerDiagnosticDeliverySnapshotCatalog,
+): RendererMountReportConsumerDiagnosticDeliveryExport {
+  return {
+    kind: "renderer.mount.report.consumer.diagnostics.delivery.export",
+    name,
+    ready: catalog.blockedCount === 0,
+    snapshotCount: catalog.snapshots.length,
+    issueCount: catalog.issueCount,
+    catalog,
   };
 }
 

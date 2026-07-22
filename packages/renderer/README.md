@@ -52,6 +52,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerDiagnosticDeliveryBundle`
 - `RendererMountReportConsumerDiagnosticDeliveryBundleSnapshot`
 - `RendererMountReportConsumerDiagnosticDelivery`
+- `RendererMountReportConsumerDiagnosticDeliveryExport`
 - `RendererMountReportConsumerDiagnosticDeliveryManifest`
 - `RendererMountReportConsumerDiagnosticDeliveryManifestClosure`
 - `RendererMountReportConsumerDiagnosticDeliverySnapshotCatalog`
@@ -112,6 +113,7 @@ descriptive only and do not mount output yet.
 - `createRendererMountReportConsumerConflictResolution`
 - `createRendererMountReportConsumerDiagnosticDeliveryBundle`
 - `createRendererMountReportConsumerDiagnosticDelivery`
+- `createRendererMountReportConsumerDiagnosticDeliveryExport`
 - `createRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog`
 - `createRendererMountReportConsumerLookupRequest`
@@ -480,6 +482,11 @@ Renderer mount report consumer diagnostic delivery snapshot catalogs now group
 bundle snapshots into transport-neutral catalog data. Catalogs copy snapshot
 lists, preserve snapshot references, count ready and blocked snapshots and sum
 issue counts without adding DOM, Home Assistant, Theme or platform metadata.
+
+Renderer mount report consumer diagnostic delivery exports now package snapshot
+catalogs into stable data-only export envelopes. Exports expose a stable kind,
+caller-provided name, ready state, snapshot count, issue count and catalog
+reference without adding transport behavior or integration metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

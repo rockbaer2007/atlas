@@ -1543,23 +1543,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1528 | Renderer Mount Reporting Consumer Diagnostics Delivery Snapshot Catalog Return-To-Diagnostics Review | Completed | - |
 | G2.5.1529 | Renderer Mount Reporting Consumer Diagnostics Delivery Snapshot Catalog Export Preparation Review | Completed | - |
 | G2.5.1530 | Renderer Mount Reporting Consumer Diagnostics Delivery Snapshot Catalog Export Handoff Review | Completed | - |
-| G2.5.1531 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Review | Planned | - |
+| G2.5.1531 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Review | Completed | - |
+| G2.5.1532 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Contract Review | Completed | - |
+| G2.5.1533 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Shape Review | Completed | - |
+| G2.5.1534 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Ready Review | Completed | - |
+| G2.5.1535 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Blocked Review | Completed | - |
+| G2.5.1536 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Name Review | Completed | - |
+| G2.5.1537 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Snapshot Count Review | Completed | - |
+| G2.5.1538 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Issue Count Review | Completed | - |
+| G2.5.1539 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Catalog Reference Review | Completed | - |
+| G2.5.1540 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Package Root Review | Completed | - |
+| G2.5.1541 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Type Surface Review | Completed | - |
+| G2.5.1542 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Documentation Review | Completed | - |
+| G2.5.1543 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Changelog Review | Completed | - |
+| G2.5.1544 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Regression Review | Completed | - |
+| G2.5.1545 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Public API Review | Completed | - |
+| G2.5.1546 | Renderer Mount Reporting Consumer Diagnostics Delivery Export README Review | Completed | - |
+| G2.5.1547 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Sprint Documentation Review | Completed | - |
+| G2.5.1548 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Workspace Regression Review | Completed | - |
+| G2.5.1549 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Closure Review | Completed | - |
+| G2.5.1550 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Compatibility Review | Completed | - |
+| G2.5.1551 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Future DOM Boundary Review | Completed | - |
+| G2.5.1552 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Future Theme Boundary Review | Completed | - |
+| G2.5.1553 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Future Home Assistant Boundary Review | Completed | - |
+| G2.5.1554 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Future Platform Boundary Review | Completed | - |
+| G2.5.1555 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Stability Review | Completed | - |
+| G2.5.1556 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Ready Stability Review | Completed | - |
+| G2.5.1557 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Blocked Stability Review | Completed | - |
+| G2.5.1558 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Issue Stability Review | Completed | - |
+| G2.5.1559 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Context Stability Review | Completed | - |
+| G2.5.1560 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Name Stability Review | Completed | - |
+| G2.5.1561 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Result Boundary Review | Completed | - |
+| G2.5.1562 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Catalog Boundary Review | Completed | - |
+| G2.5.1563 | Renderer Mount Reporting Consumer Diagnostics Delivery Export No Mutation Review | Completed | - |
+| G2.5.1564 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Transport Boundary Review | Completed | - |
+| G2.5.1565 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Handler Boundary Review | Completed | - |
+| G2.5.1566 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Consumption Boundary Review | Completed | - |
+| G2.5.1567 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Conflict Boundary Review | Completed | - |
+| G2.5.1568 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Lookup Boundary Review | Completed | - |
+| G2.5.1569 | Renderer Mount Reporting Consumer Diagnostics Delivery Export API Closure Review | Completed | - |
+| G2.5.1570 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Catalog Review | Completed | - |
+| G2.5.1571 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Snapshot Review | Completed | - |
+| G2.5.1572 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Bundle Review | Completed | - |
+| G2.5.1573 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Manifest Closure Review | Completed | - |
+| G2.5.1574 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Manifest Review | Completed | - |
+| G2.5.1575 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Delivery Review | Completed | - |
+| G2.5.1576 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Closure Review | Completed | - |
+| G2.5.1577 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Execution Review | Completed | - |
+| G2.5.1578 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Return-To-Diagnostics Review | Completed | - |
+| G2.5.1579 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Preparation Review | Completed | - |
+| G2.5.1580 | Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Handoff Review | Completed | - |
+| G2.5.1581 | Renderer Integration Preparation Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1530 - Renderer Mount Reporting Consumer Diagnostics Delivery Snapshot Catalog Export Handoff Review
+## G2.5.1580 - Renderer Mount Reporting Consumer Diagnostics Delivery Export Integration Handoff Review
 
 Goal:
 
-Group Renderer mount report consumer diagnostic delivery bundle snapshots into transport-neutral catalogs.
+Package Renderer mount report consumer diagnostic snapshot catalogs into stable data-only export envelopes.
 
 Deliverables:
 
-* Consumer diagnostic delivery snapshot catalog type
-* Catalog creation helper
-* Empty, mixed and copy-boundary tests
+* Consumer diagnostic delivery export type
+* Export creation helper
+* Ready, blocked and boundary tests
 * Sprint documentation
 
 Status:
@@ -1570,13 +1620,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1531 - Renderer Mount Reporting Consumer Diagnostics Delivery Export Review
+## G2.5.1581 - Renderer Integration Preparation Review
 
 Suggested focus:
 
-* Decide whether snapshot catalogs need a stable export envelope
-* Keep exports data-only and transport-neutral
-* Preserve existing catalog APIs
+* Prepare the transition from renderer diagnostic delivery contracts into concrete integration work
+* Keep transport, DOM and Home Assistant boundaries explicit
+* Preserve existing renderer diagnostic delivery APIs
 
 ---
 
@@ -3117,6 +3167,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1528.md`
 * `docs/sprints/Sprint-G2.5.1529.md`
 * `docs/sprints/Sprint-G2.5.1530.md`
+* `docs/sprints/Sprint-G2.5.1531.md`
+* `docs/sprints/Sprint-G2.5.1532.md`
+* `docs/sprints/Sprint-G2.5.1533.md`
+* `docs/sprints/Sprint-G2.5.1534.md`
+* `docs/sprints/Sprint-G2.5.1535.md`
+* `docs/sprints/Sprint-G2.5.1536.md`
+* `docs/sprints/Sprint-G2.5.1537.md`
+* `docs/sprints/Sprint-G2.5.1538.md`
+* `docs/sprints/Sprint-G2.5.1539.md`
+* `docs/sprints/Sprint-G2.5.1540.md`
+* `docs/sprints/Sprint-G2.5.1541.md`
+* `docs/sprints/Sprint-G2.5.1542.md`
+* `docs/sprints/Sprint-G2.5.1543.md`
+* `docs/sprints/Sprint-G2.5.1544.md`
+* `docs/sprints/Sprint-G2.5.1545.md`
+* `docs/sprints/Sprint-G2.5.1546.md`
+* `docs/sprints/Sprint-G2.5.1547.md`
+* `docs/sprints/Sprint-G2.5.1548.md`
+* `docs/sprints/Sprint-G2.5.1549.md`
+* `docs/sprints/Sprint-G2.5.1550.md`
+* `docs/sprints/Sprint-G2.5.1551.md`
+* `docs/sprints/Sprint-G2.5.1552.md`
+* `docs/sprints/Sprint-G2.5.1553.md`
+* `docs/sprints/Sprint-G2.5.1554.md`
+* `docs/sprints/Sprint-G2.5.1555.md`
+* `docs/sprints/Sprint-G2.5.1556.md`
+* `docs/sprints/Sprint-G2.5.1557.md`
+* `docs/sprints/Sprint-G2.5.1558.md`
+* `docs/sprints/Sprint-G2.5.1559.md`
+* `docs/sprints/Sprint-G2.5.1560.md`
+* `docs/sprints/Sprint-G2.5.1561.md`
+* `docs/sprints/Sprint-G2.5.1562.md`
+* `docs/sprints/Sprint-G2.5.1563.md`
+* `docs/sprints/Sprint-G2.5.1564.md`
+* `docs/sprints/Sprint-G2.5.1565.md`
+* `docs/sprints/Sprint-G2.5.1566.md`
+* `docs/sprints/Sprint-G2.5.1567.md`
+* `docs/sprints/Sprint-G2.5.1568.md`
+* `docs/sprints/Sprint-G2.5.1569.md`
+* `docs/sprints/Sprint-G2.5.1570.md`
+* `docs/sprints/Sprint-G2.5.1571.md`
+* `docs/sprints/Sprint-G2.5.1572.md`
+* `docs/sprints/Sprint-G2.5.1573.md`
+* `docs/sprints/Sprint-G2.5.1574.md`
+* `docs/sprints/Sprint-G2.5.1575.md`
+* `docs/sprints/Sprint-G2.5.1576.md`
+* `docs/sprints/Sprint-G2.5.1577.md`
+* `docs/sprints/Sprint-G2.5.1578.md`
+* `docs/sprints/Sprint-G2.5.1579.md`
+* `docs/sprints/Sprint-G2.5.1580.md`
 
 ---
 
