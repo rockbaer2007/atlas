@@ -13,6 +13,7 @@ import type {
   RendererAdapterSelectionRequest,
   RendererAdapterSelectionResult,
   RendererHostContext,
+  RendererIntegrationHandoff,
   RendererIntegrationPreparation,
   RendererIntegrationReadiness,
   RendererMountDiagnosticReport,
@@ -109,6 +110,7 @@ import {
   createRendererMountResult,
   createRendererOutput,
   createRendererHostContext,
+  createRendererIntegrationHandoff,
   createRendererIntegrationPreparation,
   createRendererPipeline,
   createRendererPlatformAdapter,
@@ -170,6 +172,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererHostContext).toBeTypeOf("function");
+    expect(Renderer.createRendererIntegrationHandoff).toBeTypeOf("function");
     expect(Renderer.createRendererIntegrationPreparation).toBeTypeOf("function");
     expect(Renderer.createDefaultRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
@@ -558,6 +561,13 @@ describe("renderer public API", () => {
         issues: [],
       },
     };
+    const integrationHandoff: RendererIntegrationHandoff = {
+      kind: "renderer.integration.handoff",
+      name: "type-integration-handoff",
+      ready: true,
+      issueCount: 0,
+      readiness: integrationReadiness,
+    };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -721,6 +731,7 @@ describe("renderer public API", () => {
     );
     expect(integrationPreparation.deliveryExport).toBe(mountReportConsumerDiagnosticDeliveryExport);
     expect(integrationReadiness.context.preparationName).toBe(integrationPreparation.name);
+    expect(integrationHandoff.readiness).toBe(integrationReadiness);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -3594,6 +3605,79 @@ describe("renderer public API", () => {
     ]);
     expect(readiness).not.toHaveProperty("adapter");
     expect(readiness).not.toHaveProperty("element");
+  });
+
+  it("creates ready Renderer integration handoffs from readiness reviews", () => {
+    const readiness = reviewRendererIntegrationPreparationReadiness(
+      createRendererIntegrationPreparation(
+        "ready-handoff-preparation",
+        createRendererMountReportConsumerDiagnosticDeliveryExport(
+          "ready-handoff-export",
+          createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+            "ready-handoff-catalog",
+            [],
+          ),
+        ),
+      ),
+    );
+
+    expect(createRendererIntegrationHandoff("ready-handoff", readiness)).toEqual({
+      kind: "renderer.integration.handoff",
+      name: "ready-handoff",
+      ready: true,
+      issueCount: 0,
+      readiness,
+    });
+  });
+
+  it("creates blocked Renderer integration handoffs from blocked readiness reviews", () => {
+    const readiness = Renderer.reviewRendererIntegrationPreparationReadiness(
+      createRendererIntegrationPreparation(
+        "blocked-handoff-preparation",
+        createRendererMountReportConsumerDiagnosticDeliveryExport(
+          "blocked-handoff-export",
+          createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+            "blocked-handoff-catalog",
+            [{
+              kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot",
+              bundleName: "blocked-handoff-bundle",
+              ready: false,
+              manifestCount: 1,
+              issueCount: 5,
+              manifestNames: ["blocked-handoff-manifest"],
+            }],
+          ),
+        ),
+      ),
+    );
+
+    const handoff = Renderer.createRendererIntegrationHandoff("blocked-handoff", readiness);
+
+    expect(handoff.ready).toBe(false);
+    expect(handoff.issueCount).toBe(5);
+    expect(handoff.readiness).toBe(readiness);
+  });
+
+  it("keeps Renderer integration handoffs free of concrete integration metadata", () => {
+    const handoff = createRendererIntegrationHandoff(
+      "boundary-handoff",
+      reviewRendererIntegrationPreparationReadiness(
+        createRendererIntegrationPreparation(
+          "boundary-handoff-preparation",
+          createRendererMountReportConsumerDiagnosticDeliveryExport(
+            "boundary-handoff-export",
+            createRendererMountReportConsumerDiagnosticDeliverySnapshotCatalog(
+              "boundary-handoff-catalog",
+              [],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(handoff).not.toHaveProperty("transport");
+    expect(handoff).not.toHaveProperty("element");
+    expect(handoff).not.toHaveProperty("homeAssistant");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

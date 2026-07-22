@@ -23,6 +23,7 @@ descriptive only and do not mount output yet.
 `@atlas/renderer` exports:
 
 - `RendererHostContext`
+- `RendererIntegrationHandoff`
 - `RendererIntegrationPreparation`
 - `RendererIntegrationReadiness`
 - `RendererAdapter`
@@ -107,6 +108,7 @@ descriptive only and do not mount output yet.
 - `createRendererAdapterSelectionRequest`
 - `createRendererAdapterSelectionResult`
 - `createRendererHostContext`
+- `createRendererIntegrationHandoff`
 - `createRendererIntegrationPreparation`
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
@@ -502,6 +504,11 @@ Renderer integration readiness now reviews preparation data into a stable
 readiness result. Readiness keeps blocked boundary names visible, carries
 preparation issue counts forward and reports blocked preparations without
 opening transport, DOM, Home Assistant, Theme or platform behavior.
+
+Renderer integration handoffs now wrap readiness reviews in stable data-only
+handoff envelopes. Handoffs preserve readiness references and carry ready state
+and issue counts forward without adding transport, DOM, Home Assistant, Theme
+or platform execution.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

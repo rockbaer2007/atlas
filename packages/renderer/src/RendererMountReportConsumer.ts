@@ -202,6 +202,14 @@ export type RendererIntegrationReadiness = Readonly<{
   }>;
 }>;
 
+export type RendererIntegrationHandoff = Readonly<{
+  kind: "renderer.integration.handoff";
+  name: string;
+  ready: boolean;
+  issueCount: number;
+  readiness: RendererIntegrationReadiness;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -648,6 +656,19 @@ export function reviewRendererIntegrationPreparationReadiness(
       blockedBoundaries,
       issues,
     },
+  };
+}
+
+export function createRendererIntegrationHandoff(
+  name: string,
+  readiness: RendererIntegrationReadiness,
+): RendererIntegrationHandoff {
+  return {
+    kind: "renderer.integration.handoff",
+    name,
+    ready: readiness.result.ready,
+    issueCount: readiness.result.issueCount,
+    readiness,
   };
 }
 

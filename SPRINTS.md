@@ -1693,22 +1693,72 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1678 | Renderer Integration Readiness Handoff Preparation Review | Completed | - |
 | G2.5.1679 | Renderer Integration Readiness Handoff Boundary Review | Completed | - |
 | G2.5.1680 | Renderer Integration Readiness Handoff Gate Review | Completed | - |
-| G2.5.1681 | Renderer Integration Handoff Review | Planned | - |
+| G2.5.1681 | Renderer Integration Handoff Review | Completed | - |
+| G2.5.1682 | Renderer Integration Handoff Contract Review | Completed | - |
+| G2.5.1683 | Renderer Integration Handoff Shape Review | Completed | - |
+| G2.5.1684 | Renderer Integration Handoff Ready Review | Completed | - |
+| G2.5.1685 | Renderer Integration Handoff Blocked Review | Completed | - |
+| G2.5.1686 | Renderer Integration Handoff Boundary Review | Completed | - |
+| G2.5.1687 | Renderer Integration Handoff Readiness Reference Review | Completed | - |
+| G2.5.1688 | Renderer Integration Handoff Issue Count Review | Completed | - |
+| G2.5.1689 | Renderer Integration Handoff Name Review | Completed | - |
+| G2.5.1690 | Renderer Integration Handoff Package Root Review | Completed | - |
+| G2.5.1691 | Renderer Integration Handoff Type Surface Review | Completed | - |
+| G2.5.1692 | Renderer Integration Handoff Documentation Review | Completed | - |
+| G2.5.1693 | Renderer Integration Handoff Changelog Review | Completed | - |
+| G2.5.1694 | Renderer Integration Handoff Regression Review | Completed | - |
+| G2.5.1695 | Renderer Integration Handoff Public API Review | Completed | - |
+| G2.5.1696 | Renderer Integration Handoff README Review | Completed | - |
+| G2.5.1697 | Renderer Integration Handoff Sprint Documentation Review | Completed | - |
+| G2.5.1698 | Renderer Integration Handoff Workspace Regression Review | Completed | - |
+| G2.5.1699 | Renderer Integration Handoff Integration Closure Review | Completed | - |
+| G2.5.1700 | Renderer Integration Handoff Compatibility Review | Completed | - |
+| G2.5.1701 | Renderer Integration Handoff Transport Boundary Review | Completed | - |
+| G2.5.1702 | Renderer Integration Handoff DOM Boundary Review | Completed | - |
+| G2.5.1703 | Renderer Integration Handoff Home Assistant Boundary Review | Completed | - |
+| G2.5.1704 | Renderer Integration Handoff Theme Boundary Review | Completed | - |
+| G2.5.1705 | Renderer Integration Handoff Platform Boundary Review | Completed | - |
+| G2.5.1706 | Renderer Integration Handoff Stability Review | Completed | - |
+| G2.5.1707 | Renderer Integration Handoff Ready Stability Review | Completed | - |
+| G2.5.1708 | Renderer Integration Handoff Blocked Stability Review | Completed | - |
+| G2.5.1709 | Renderer Integration Handoff Issue Stability Review | Completed | - |
+| G2.5.1710 | Renderer Integration Handoff Context Stability Review | Completed | - |
+| G2.5.1711 | Renderer Integration Handoff Name Stability Review | Completed | - |
+| G2.5.1712 | Renderer Integration Handoff Result Boundary Review | Completed | - |
+| G2.5.1713 | Renderer Integration Handoff Readiness Boundary Review | Completed | - |
+| G2.5.1714 | Renderer Integration Handoff No Mutation Review | Completed | - |
+| G2.5.1715 | Renderer Integration Handoff Handler Boundary Review | Completed | - |
+| G2.5.1716 | Renderer Integration Handoff Consumption Boundary Review | Completed | - |
+| G2.5.1717 | Renderer Integration Handoff Conflict Boundary Review | Completed | - |
+| G2.5.1718 | Renderer Integration Handoff Lookup Boundary Review | Completed | - |
+| G2.5.1719 | Renderer Integration Handoff API Closure Review | Completed | - |
+| G2.5.1720 | Renderer Integration Handoff Return-To-Readiness Review | Completed | - |
+| G2.5.1721 | Renderer Integration Handoff Return-To-Preparation Review | Completed | - |
+| G2.5.1722 | Renderer Integration Handoff Return-To-Delivery Export Review | Completed | - |
+| G2.5.1723 | Renderer Integration Handoff Return-To-Catalog Review | Completed | - |
+| G2.5.1724 | Renderer Integration Handoff Return-To-Snapshot Review | Completed | - |
+| G2.5.1725 | Renderer Integration Handoff Return-To-Bundle Review | Completed | - |
+| G2.5.1726 | Renderer Integration Handoff Return-To-Manifest Review | Completed | - |
+| G2.5.1727 | Renderer Integration Handoff Return-To-Delivery Review | Completed | - |
+| G2.5.1728 | Renderer Integration Handoff Snapshot Preparation Review | Completed | - |
+| G2.5.1729 | Renderer Integration Handoff Snapshot Boundary Review | Completed | - |
+| G2.5.1730 | Renderer Integration Handoff Snapshot Gate Review | Completed | - |
+| G2.5.1731 | Renderer Integration Handoff Snapshot Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1680 - Renderer Integration Readiness Handoff Gate Review
+## G2.5.1730 - Renderer Integration Handoff Snapshot Gate Review
 
 Goal:
 
-Review Renderer integration preparation readiness without enabling concrete integration behavior.
+Wrap Renderer integration readiness results in handoff state without enabling concrete integration behavior.
 
 Deliverables:
 
-* Renderer integration readiness type
-* Preparation readiness review helper
+* Renderer integration handoff type
+* Handoff creation helper
 * Ready, blocked and boundary tests
 * Sprint documentation
 
@@ -1720,13 +1770,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1681 - Renderer Integration Handoff Review
+## G2.5.1731 - Renderer Integration Handoff Snapshot Review
 
 Suggested focus:
 
-* Decide whether readiness results need a handoff envelope
-* Keep handoff state derived from readiness data
-* Preserve preparation and readiness API boundaries
+* Decide whether handoffs need compact snapshots
+* Keep snapshots derived from handoff data
+* Preserve readiness and handoff API boundaries
 
 ---
 
@@ -3319,6 +3369,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1580.md`
 * `docs/sprints/Sprint-G2.5.1581.md`
 * `docs/sprints/Sprint-G2.5.1631.md`
+* `docs/sprints/Sprint-G2.5.1681.md`
+* `docs/sprints/Sprint-G2.5.1682.md`
+* `docs/sprints/Sprint-G2.5.1683.md`
+* `docs/sprints/Sprint-G2.5.1684.md`
+* `docs/sprints/Sprint-G2.5.1685.md`
+* `docs/sprints/Sprint-G2.5.1686.md`
+* `docs/sprints/Sprint-G2.5.1687.md`
+* `docs/sprints/Sprint-G2.5.1688.md`
+* `docs/sprints/Sprint-G2.5.1689.md`
+* `docs/sprints/Sprint-G2.5.1690.md`
+* `docs/sprints/Sprint-G2.5.1691.md`
+* `docs/sprints/Sprint-G2.5.1692.md`
+* `docs/sprints/Sprint-G2.5.1693.md`
+* `docs/sprints/Sprint-G2.5.1694.md`
+* `docs/sprints/Sprint-G2.5.1695.md`
+* `docs/sprints/Sprint-G2.5.1696.md`
+* `docs/sprints/Sprint-G2.5.1697.md`
+* `docs/sprints/Sprint-G2.5.1698.md`
+* `docs/sprints/Sprint-G2.5.1699.md`
+* `docs/sprints/Sprint-G2.5.1700.md`
+* `docs/sprints/Sprint-G2.5.1701.md`
+* `docs/sprints/Sprint-G2.5.1702.md`
+* `docs/sprints/Sprint-G2.5.1703.md`
+* `docs/sprints/Sprint-G2.5.1704.md`
+* `docs/sprints/Sprint-G2.5.1705.md`
+* `docs/sprints/Sprint-G2.5.1706.md`
+* `docs/sprints/Sprint-G2.5.1707.md`
+* `docs/sprints/Sprint-G2.5.1708.md`
+* `docs/sprints/Sprint-G2.5.1709.md`
+* `docs/sprints/Sprint-G2.5.1710.md`
+* `docs/sprints/Sprint-G2.5.1711.md`
+* `docs/sprints/Sprint-G2.5.1712.md`
+* `docs/sprints/Sprint-G2.5.1713.md`
+* `docs/sprints/Sprint-G2.5.1714.md`
+* `docs/sprints/Sprint-G2.5.1715.md`
+* `docs/sprints/Sprint-G2.5.1716.md`
+* `docs/sprints/Sprint-G2.5.1717.md`
+* `docs/sprints/Sprint-G2.5.1718.md`
+* `docs/sprints/Sprint-G2.5.1719.md`
+* `docs/sprints/Sprint-G2.5.1720.md`
+* `docs/sprints/Sprint-G2.5.1721.md`
+* `docs/sprints/Sprint-G2.5.1722.md`
+* `docs/sprints/Sprint-G2.5.1723.md`
+* `docs/sprints/Sprint-G2.5.1724.md`
+* `docs/sprints/Sprint-G2.5.1725.md`
+* `docs/sprints/Sprint-G2.5.1726.md`
+* `docs/sprints/Sprint-G2.5.1727.md`
+* `docs/sprints/Sprint-G2.5.1728.md`
+* `docs/sprints/Sprint-G2.5.1729.md`
+* `docs/sprints/Sprint-G2.5.1730.md`
 * `docs/sprints/Sprint-G2.5.1632.md`
 * `docs/sprints/Sprint-G2.5.1633.md`
 * `docs/sprints/Sprint-G2.5.1634.md`
