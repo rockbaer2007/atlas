@@ -1443,23 +1443,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1428 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Return-To-Diagnostics Review | Completed | - |
 | G2.5.1429 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Preparation Review | Completed | - |
 | G2.5.1430 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Handoff Review | Completed | - |
-| G2.5.1431 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Review | Planned | - |
+| G2.5.1431 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Review | Completed | - |
+| G2.5.1432 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Contract Review | Completed | - |
+| G2.5.1433 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Shape Review | Completed | - |
+| G2.5.1434 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Ready Review | Completed | - |
+| G2.5.1435 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Blocked Review | Completed | - |
+| G2.5.1436 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Manifest Name Review | Completed | - |
+| G2.5.1437 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Manifest Count Review | Completed | - |
+| G2.5.1438 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Issue Count Review | Completed | - |
+| G2.5.1439 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Payload Boundary Review | Completed | - |
+| G2.5.1440 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Package Root Review | Completed | - |
+| G2.5.1441 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Type Surface Review | Completed | - |
+| G2.5.1442 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Documentation Review | Completed | - |
+| G2.5.1443 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Changelog Review | Completed | - |
+| G2.5.1444 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Regression Review | Completed | - |
+| G2.5.1445 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Public API Review | Completed | - |
+| G2.5.1446 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot README Review | Completed | - |
+| G2.5.1447 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Sprint Documentation Review | Completed | - |
+| G2.5.1448 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Workspace Regression Review | Completed | - |
+| G2.5.1449 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Integration Closure Review | Completed | - |
+| G2.5.1450 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Compatibility Review | Completed | - |
+| G2.5.1451 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Future DOM Boundary Review | Completed | - |
+| G2.5.1452 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Future Theme Boundary Review | Completed | - |
+| G2.5.1453 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Future Home Assistant Boundary Review | Completed | - |
+| G2.5.1454 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Future Platform Boundary Review | Completed | - |
+| G2.5.1455 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Stability Review | Completed | - |
+| G2.5.1456 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Ready Stability Review | Completed | - |
+| G2.5.1457 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Blocked Stability Review | Completed | - |
+| G2.5.1458 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Issue Stability Review | Completed | - |
+| G2.5.1459 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Context Stability Review | Completed | - |
+| G2.5.1460 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Name Stability Review | Completed | - |
+| G2.5.1461 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Result Boundary Review | Completed | - |
+| G2.5.1462 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Closure Boundary Review | Completed | - |
+| G2.5.1463 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot No Mutation Review | Completed | - |
+| G2.5.1464 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Transport Boundary Review | Completed | - |
+| G2.5.1465 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Handler Boundary Review | Completed | - |
+| G2.5.1466 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Consumption Boundary Review | Completed | - |
+| G2.5.1467 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Conflict Boundary Review | Completed | - |
+| G2.5.1468 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Lookup Boundary Review | Completed | - |
+| G2.5.1469 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot API Closure Review | Completed | - |
+| G2.5.1470 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Bundle Review | Completed | - |
+| G2.5.1471 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Manifest Closure Review | Completed | - |
+| G2.5.1472 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Manifest Review | Completed | - |
+| G2.5.1473 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Delivery Review | Completed | - |
+| G2.5.1474 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Closure Review | Completed | - |
+| G2.5.1475 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Registry Execution Review | Completed | - |
+| G2.5.1476 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Batch Review | Completed | - |
+| G2.5.1477 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Execution Review | Completed | - |
+| G2.5.1478 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Return-To-Diagnostics Review | Completed | - |
+| G2.5.1479 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Catalog Preparation Review | Completed | - |
+| G2.5.1480 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Catalog Handoff Review | Completed | - |
+| G2.5.1481 | Renderer Mount Reporting Consumer Diagnostics Delivery Snapshot Catalog Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1430 - Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Handoff Review
+## G2.5.1480 - Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Catalog Handoff Review
 
 Goal:
 
-Package Renderer mount report consumer diagnostic manifest closures into data-only bundles.
+Snapshot Renderer mount report consumer diagnostic delivery bundles into compact summaries.
 
 Deliverables:
 
-* Consumer diagnostic delivery bundle type
-* Bundle creation helper
-* Ready, blocked and copy-boundary tests
+* Consumer diagnostic delivery bundle snapshot type
+* Bundle snapshot helper
+* Ready, blocked and boundary tests
 * Sprint documentation
 
 Status:
@@ -1470,13 +1520,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1431 - Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Snapshot Review
+## G2.5.1481 - Renderer Mount Reporting Consumer Diagnostics Delivery Snapshot Catalog Review
 
 Suggested focus:
 
-* Decide whether bundles need immutable snapshot summaries
-* Keep snapshots data-only and transport-neutral
-* Preserve existing bundle APIs
+* Decide whether bundle snapshots should be grouped into catalogs
+* Keep catalogs data-only and transport-neutral
+* Preserve existing snapshot APIs
 
 ---
 
@@ -2917,6 +2967,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1428.md`
 * `docs/sprints/Sprint-G2.5.1429.md`
 * `docs/sprints/Sprint-G2.5.1430.md`
+* `docs/sprints/Sprint-G2.5.1431.md`
+* `docs/sprints/Sprint-G2.5.1432.md`
+* `docs/sprints/Sprint-G2.5.1433.md`
+* `docs/sprints/Sprint-G2.5.1434.md`
+* `docs/sprints/Sprint-G2.5.1435.md`
+* `docs/sprints/Sprint-G2.5.1436.md`
+* `docs/sprints/Sprint-G2.5.1437.md`
+* `docs/sprints/Sprint-G2.5.1438.md`
+* `docs/sprints/Sprint-G2.5.1439.md`
+* `docs/sprints/Sprint-G2.5.1440.md`
+* `docs/sprints/Sprint-G2.5.1441.md`
+* `docs/sprints/Sprint-G2.5.1442.md`
+* `docs/sprints/Sprint-G2.5.1443.md`
+* `docs/sprints/Sprint-G2.5.1444.md`
+* `docs/sprints/Sprint-G2.5.1445.md`
+* `docs/sprints/Sprint-G2.5.1446.md`
+* `docs/sprints/Sprint-G2.5.1447.md`
+* `docs/sprints/Sprint-G2.5.1448.md`
+* `docs/sprints/Sprint-G2.5.1449.md`
+* `docs/sprints/Sprint-G2.5.1450.md`
+* `docs/sprints/Sprint-G2.5.1451.md`
+* `docs/sprints/Sprint-G2.5.1452.md`
+* `docs/sprints/Sprint-G2.5.1453.md`
+* `docs/sprints/Sprint-G2.5.1454.md`
+* `docs/sprints/Sprint-G2.5.1455.md`
+* `docs/sprints/Sprint-G2.5.1456.md`
+* `docs/sprints/Sprint-G2.5.1457.md`
+* `docs/sprints/Sprint-G2.5.1458.md`
+* `docs/sprints/Sprint-G2.5.1459.md`
+* `docs/sprints/Sprint-G2.5.1460.md`
+* `docs/sprints/Sprint-G2.5.1461.md`
+* `docs/sprints/Sprint-G2.5.1462.md`
+* `docs/sprints/Sprint-G2.5.1463.md`
+* `docs/sprints/Sprint-G2.5.1464.md`
+* `docs/sprints/Sprint-G2.5.1465.md`
+* `docs/sprints/Sprint-G2.5.1466.md`
+* `docs/sprints/Sprint-G2.5.1467.md`
+* `docs/sprints/Sprint-G2.5.1468.md`
+* `docs/sprints/Sprint-G2.5.1469.md`
+* `docs/sprints/Sprint-G2.5.1470.md`
+* `docs/sprints/Sprint-G2.5.1471.md`
+* `docs/sprints/Sprint-G2.5.1472.md`
+* `docs/sprints/Sprint-G2.5.1473.md`
+* `docs/sprints/Sprint-G2.5.1474.md`
+* `docs/sprints/Sprint-G2.5.1475.md`
+* `docs/sprints/Sprint-G2.5.1476.md`
+* `docs/sprints/Sprint-G2.5.1477.md`
+* `docs/sprints/Sprint-G2.5.1478.md`
+* `docs/sprints/Sprint-G2.5.1479.md`
+* `docs/sprints/Sprint-G2.5.1480.md`
 
 ---
 

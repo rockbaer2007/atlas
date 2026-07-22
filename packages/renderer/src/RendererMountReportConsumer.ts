@@ -143,6 +143,15 @@ export type RendererMountReportConsumerDiagnosticDeliveryBundle = Readonly<{
   closures: readonly RendererMountReportConsumerDiagnosticDeliveryManifestClosure[];
 }>;
 
+export type RendererMountReportConsumerDiagnosticDeliveryBundleSnapshot = Readonly<{
+  kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot";
+  bundleName: string;
+  ready: boolean;
+  manifestCount: number;
+  issueCount: number;
+  manifestNames: readonly string[];
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -497,6 +506,19 @@ export function createRendererMountReportConsumerDiagnosticDeliveryBundle(
     issueCount: copiedClosures
       .reduce((issueCount, closure) => issueCount + closure.result.issueCount, 0),
     closures: copiedClosures,
+  };
+}
+
+export function snapshotRendererMountReportConsumerDiagnosticDeliveryBundle(
+  bundle: RendererMountReportConsumerDiagnosticDeliveryBundle,
+): RendererMountReportConsumerDiagnosticDeliveryBundleSnapshot {
+  return {
+    kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot",
+    bundleName: bundle.name,
+    ready: bundle.ready,
+    manifestCount: bundle.manifestCount,
+    issueCount: bundle.issueCount,
+    manifestNames: bundle.closures.map(closure => closure.context.manifestName),
   };
 }
 

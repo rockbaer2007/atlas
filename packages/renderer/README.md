@@ -50,6 +50,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflict`
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticDeliveryBundle`
+- `RendererMountReportConsumerDiagnosticDeliveryBundleSnapshot`
 - `RendererMountReportConsumerDiagnosticDelivery`
 - `RendererMountReportConsumerDiagnosticDeliveryManifest`
 - `RendererMountReportConsumerDiagnosticDeliveryManifestClosure`
@@ -164,6 +165,7 @@ descriptive only and do not mount output yet.
 - `selectFirstRendererAdapterCandidate`
 - `selectFirstRendererMountReportConsumerCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
+- `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
 - `summarizeRendererMountReports`
 - `summarizeRendererMountReportConsumerDiagnosticAggregation`
 
@@ -466,6 +468,11 @@ closures into data-only bundle state. Bundles expose a stable kind,
 caller-provided name, ready state, manifest count, issue count and copied
 closure references without adding transport, DOM, Home Assistant, Theme or
 platform metadata.
+
+Renderer mount report consumer diagnostic delivery bundle snapshots now expose
+compact data-only summaries of delivery bundles. Snapshots preserve bundle
+name, ready state, manifest count, issue count and manifest names without
+including closure payloads or integration metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

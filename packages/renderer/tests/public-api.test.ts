@@ -28,6 +28,7 @@ import type {
   RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerDiagnosticDelivery,
   RendererMountReportConsumerDiagnosticDeliveryBundle,
+  RendererMountReportConsumerDiagnosticDeliveryBundleSnapshot,
   RendererMountReportConsumerDiagnosticDeliveryManifest,
   RendererMountReportConsumerDiagnosticDeliveryManifestClosure,
   RendererMountReportConsumerDiagnosticAggregation,
@@ -145,6 +146,7 @@ import {
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
   selectFirstRendererPlatformAdapterCandidate,
+  snapshotRendererMountReportConsumerDiagnosticDeliveryBundle,
   summarizeRendererMountReports,
   summarizeRendererMountReportConsumerDiagnosticAggregation,
 } from "../src";
@@ -231,6 +233,7 @@ describe("renderer public API", () => {
     expect(Renderer.selectFirstRendererAdapterCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererMountReportConsumerCandidate).toBeTypeOf("function");
     expect(Renderer.selectFirstRendererPlatformAdapterCandidate).toBeTypeOf("function");
+    expect(Renderer.snapshotRendererMountReportConsumerDiagnosticDeliveryBundle).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMountReports).toBeTypeOf("function");
   });
 
@@ -490,6 +493,15 @@ describe("renderer public API", () => {
         issueCount: 0,
         closures: [mountReportConsumerDiagnosticDeliveryManifestClosure],
       };
+    const mountReportConsumerDiagnosticDeliveryBundleSnapshot:
+      RendererMountReportConsumerDiagnosticDeliveryBundleSnapshot = {
+        kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot",
+        bundleName: mountReportConsumerDiagnosticDeliveryBundle.name,
+        ready: true,
+        manifestCount: 1,
+        issueCount: 0,
+        manifestNames: [mountReportConsumerDiagnosticDeliveryManifest.name],
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -641,6 +653,9 @@ describe("renderer public API", () => {
     expect(mountReportConsumerDiagnosticDeliveryManifestClosure.result.deliveryCount).toBe(1);
     expect(mountReportConsumerDiagnosticDeliveryBundle.closures[0]).toBe(
       mountReportConsumerDiagnosticDeliveryManifestClosure,
+    );
+    expect(mountReportConsumerDiagnosticDeliveryBundleSnapshot.bundleName).toBe(
+      mountReportConsumerDiagnosticDeliveryBundle.name,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -3168,6 +3183,67 @@ describe("renderer public API", () => {
     expect(bundle).not.toHaveProperty("theme");
     expect(bundle).not.toHaveProperty("homeAssistant");
     expect(bundle).not.toHaveProperty("element");
+  });
+
+  it("snapshots Renderer mount report consumer diagnostic delivery bundles", () => {
+    const closure = reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
+      createRendererMountReportConsumerDiagnosticDeliveryManifest("snapshot-manifest", []),
+    );
+
+    expect(snapshotRendererMountReportConsumerDiagnosticDeliveryBundle(
+      createRendererMountReportConsumerDiagnosticDeliveryBundle("snapshot-bundle", [closure]),
+    )).toEqual({
+      kind: "renderer.mount.report.consumer.diagnostics.delivery.bundle.snapshot",
+      bundleName: "snapshot-bundle",
+      ready: true,
+      manifestCount: 1,
+      issueCount: 0,
+      manifestNames: ["snapshot-manifest"],
+    });
+  });
+
+  it("snapshots blocked Renderer mount report consumer diagnostic delivery bundles", async () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "snapshot-blocked-consumer",
+      consume: consumption => ({
+        consumerName: "snapshot-blocked-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const closure = reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
+      createRendererMountReportConsumerDiagnosticDeliveryManifest("blocked-snapshot-manifest", [
+        createRendererMountReportConsumerDiagnosticDelivery(
+          "blocked-snapshot-delivery",
+          reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+            await consumeAndInspectRendererMountReportConsumerRegistry(
+              createRendererMountReportConsumerRegistry([consumer]),
+              createRendererMountReportConsumption({
+                records: [],
+              }),
+            ),
+          ),
+        ),
+      ]),
+    );
+
+    const snapshot = Renderer.snapshotRendererMountReportConsumerDiagnosticDeliveryBundle(
+      createRendererMountReportConsumerDiagnosticDeliveryBundle("blocked-snapshot-bundle", [closure]),
+    );
+
+    expect(snapshot.ready).toBe(false);
+    expect(snapshot.issueCount).toBe(1);
+  });
+
+  it("keeps Renderer mount report consumer diagnostic delivery bundle snapshots free of integration metadata", () => {
+    const snapshot = snapshotRendererMountReportConsumerDiagnosticDeliveryBundle(
+      createRendererMountReportConsumerDiagnosticDeliveryBundle("boundary-snapshot-bundle", []),
+    );
+
+    expect(snapshot).not.toHaveProperty("platform");
+    expect(snapshot).not.toHaveProperty("theme");
+    expect(snapshot).not.toHaveProperty("homeAssistant");
+    expect(snapshot).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

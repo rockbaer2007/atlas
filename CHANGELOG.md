@@ -74,6 +74,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer diagnostic delivery bundles now package
   manifest closures into data-only bundle state with ready, manifest and issue
   counts.
+* Renderer mount report consumer diagnostic delivery bundle snapshots now
+  expose compact bundle summaries without closure payloads or integration
+  metadata.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
