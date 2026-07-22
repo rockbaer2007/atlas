@@ -1743,22 +1743,72 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1728 | Renderer Integration Handoff Snapshot Preparation Review | Completed | - |
 | G2.5.1729 | Renderer Integration Handoff Snapshot Boundary Review | Completed | - |
 | G2.5.1730 | Renderer Integration Handoff Snapshot Gate Review | Completed | - |
-| G2.5.1731 | Renderer Integration Handoff Snapshot Review | Planned | - |
+| G2.5.1731 | Renderer Integration Handoff Snapshot Review | Completed | - |
+| G2.5.1732 | Renderer Integration Handoff Snapshot Contract Review | Completed | - |
+| G2.5.1733 | Renderer Integration Handoff Snapshot Shape Review | Completed | - |
+| G2.5.1734 | Renderer Integration Handoff Snapshot Ready Review | Completed | - |
+| G2.5.1735 | Renderer Integration Handoff Snapshot Blocked Review | Completed | - |
+| G2.5.1736 | Renderer Integration Handoff Snapshot Boundary Review | Completed | - |
+| G2.5.1737 | Renderer Integration Handoff Snapshot Handoff Reference Review | Completed | - |
+| G2.5.1738 | Renderer Integration Handoff Snapshot Issue Count Review | Completed | - |
+| G2.5.1739 | Renderer Integration Handoff Snapshot Name Review | Completed | - |
+| G2.5.1740 | Renderer Integration Handoff Snapshot Package Root Review | Completed | - |
+| G2.5.1741 | Renderer Integration Handoff Snapshot Type Surface Review | Completed | - |
+| G2.5.1742 | Renderer Integration Handoff Snapshot Documentation Review | Completed | - |
+| G2.5.1743 | Renderer Integration Handoff Snapshot Changelog Review | Completed | - |
+| G2.5.1744 | Renderer Integration Handoff Snapshot Regression Review | Completed | - |
+| G2.5.1745 | Renderer Integration Handoff Snapshot Public API Review | Completed | - |
+| G2.5.1746 | Renderer Integration Handoff Snapshot README Review | Completed | - |
+| G2.5.1747 | Renderer Integration Handoff Snapshot Sprint Documentation Review | Completed | - |
+| G2.5.1748 | Renderer Integration Handoff Snapshot Workspace Regression Review | Completed | - |
+| G2.5.1749 | Renderer Integration Handoff Snapshot Integration Closure Review | Completed | - |
+| G2.5.1750 | Renderer Integration Handoff Snapshot Compatibility Review | Completed | - |
+| G2.5.1751 | Renderer Integration Handoff Snapshot Transport Boundary Review | Completed | - |
+| G2.5.1752 | Renderer Integration Handoff Snapshot DOM Boundary Review | Completed | - |
+| G2.5.1753 | Renderer Integration Handoff Snapshot Home Assistant Boundary Review | Completed | - |
+| G2.5.1754 | Renderer Integration Handoff Snapshot Theme Boundary Review | Completed | - |
+| G2.5.1755 | Renderer Integration Handoff Snapshot Platform Boundary Review | Completed | - |
+| G2.5.1756 | Renderer Integration Handoff Snapshot Stability Review | Completed | - |
+| G2.5.1757 | Renderer Integration Handoff Snapshot Ready Stability Review | Completed | - |
+| G2.5.1758 | Renderer Integration Handoff Snapshot Blocked Stability Review | Completed | - |
+| G2.5.1759 | Renderer Integration Handoff Snapshot Issue Stability Review | Completed | - |
+| G2.5.1760 | Renderer Integration Handoff Snapshot Context Stability Review | Completed | - |
+| G2.5.1761 | Renderer Integration Handoff Snapshot Name Stability Review | Completed | - |
+| G2.5.1762 | Renderer Integration Handoff Snapshot Result Boundary Review | Completed | - |
+| G2.5.1763 | Renderer Integration Handoff Snapshot Handoff Boundary Review | Completed | - |
+| G2.5.1764 | Renderer Integration Handoff Snapshot No Mutation Review | Completed | - |
+| G2.5.1765 | Renderer Integration Handoff Snapshot Handler Boundary Review | Completed | - |
+| G2.5.1766 | Renderer Integration Handoff Snapshot Consumption Boundary Review | Completed | - |
+| G2.5.1767 | Renderer Integration Handoff Snapshot Conflict Boundary Review | Completed | - |
+| G2.5.1768 | Renderer Integration Handoff Snapshot Lookup Boundary Review | Completed | - |
+| G2.5.1769 | Renderer Integration Handoff Snapshot API Closure Review | Completed | - |
+| G2.5.1770 | Renderer Integration Handoff Snapshot Return-To-Handoff Review | Completed | - |
+| G2.5.1771 | Renderer Integration Handoff Snapshot Return-To-Readiness Review | Completed | - |
+| G2.5.1772 | Renderer Integration Handoff Snapshot Return-To-Preparation Review | Completed | - |
+| G2.5.1773 | Renderer Integration Handoff Snapshot Return-To-Delivery Export Review | Completed | - |
+| G2.5.1774 | Renderer Integration Handoff Snapshot Return-To-Catalog Review | Completed | - |
+| G2.5.1775 | Renderer Integration Handoff Snapshot Return-To-Snapshot Review | Completed | - |
+| G2.5.1776 | Renderer Integration Handoff Snapshot Return-To-Bundle Review | Completed | - |
+| G2.5.1777 | Renderer Integration Handoff Snapshot Return-To-Manifest Review | Completed | - |
+| G2.5.1778 | Renderer Integration Handoff Snapshot Catalog Preparation Review | Completed | - |
+| G2.5.1779 | Renderer Integration Handoff Snapshot Catalog Boundary Review | Completed | - |
+| G2.5.1780 | Renderer Integration Handoff Snapshot Catalog Gate Review | Completed | - |
+| G2.5.1781 | Renderer Integration Handoff Snapshot Catalog Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1730 - Renderer Integration Handoff Snapshot Gate Review
+## G2.5.1780 - Renderer Integration Handoff Snapshot Catalog Gate Review
 
 Goal:
 
-Wrap Renderer integration readiness results in handoff state without enabling concrete integration behavior.
+Snapshot Renderer integration handoffs without enabling concrete integration behavior.
 
 Deliverables:
 
-* Renderer integration handoff type
-* Handoff creation helper
+* Renderer integration handoff snapshot type
+* Handoff snapshot helper
 * Ready, blocked and boundary tests
 * Sprint documentation
 
@@ -1770,13 +1820,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1731 - Renderer Integration Handoff Snapshot Review
+## G2.5.1781 - Renderer Integration Handoff Snapshot Catalog Review
 
 Suggested focus:
 
-* Decide whether handoffs need compact snapshots
-* Keep snapshots derived from handoff data
-* Preserve readiness and handoff API boundaries
+* Decide whether handoff snapshots need catalog summaries
+* Keep catalog state derived from snapshot data
+* Preserve handoff and snapshot API boundaries
 
 ---
 
@@ -3370,6 +3420,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1581.md`
 * `docs/sprints/Sprint-G2.5.1631.md`
 * `docs/sprints/Sprint-G2.5.1681.md`
+* `docs/sprints/Sprint-G2.5.1731.md`
+* `docs/sprints/Sprint-G2.5.1732.md`
+* `docs/sprints/Sprint-G2.5.1733.md`
+* `docs/sprints/Sprint-G2.5.1734.md`
+* `docs/sprints/Sprint-G2.5.1735.md`
+* `docs/sprints/Sprint-G2.5.1736.md`
+* `docs/sprints/Sprint-G2.5.1737.md`
+* `docs/sprints/Sprint-G2.5.1738.md`
+* `docs/sprints/Sprint-G2.5.1739.md`
+* `docs/sprints/Sprint-G2.5.1740.md`
+* `docs/sprints/Sprint-G2.5.1741.md`
+* `docs/sprints/Sprint-G2.5.1742.md`
+* `docs/sprints/Sprint-G2.5.1743.md`
+* `docs/sprints/Sprint-G2.5.1744.md`
+* `docs/sprints/Sprint-G2.5.1745.md`
+* `docs/sprints/Sprint-G2.5.1746.md`
+* `docs/sprints/Sprint-G2.5.1747.md`
+* `docs/sprints/Sprint-G2.5.1748.md`
+* `docs/sprints/Sprint-G2.5.1749.md`
+* `docs/sprints/Sprint-G2.5.1750.md`
+* `docs/sprints/Sprint-G2.5.1751.md`
+* `docs/sprints/Sprint-G2.5.1752.md`
+* `docs/sprints/Sprint-G2.5.1753.md`
+* `docs/sprints/Sprint-G2.5.1754.md`
+* `docs/sprints/Sprint-G2.5.1755.md`
+* `docs/sprints/Sprint-G2.5.1756.md`
+* `docs/sprints/Sprint-G2.5.1757.md`
+* `docs/sprints/Sprint-G2.5.1758.md`
+* `docs/sprints/Sprint-G2.5.1759.md`
+* `docs/sprints/Sprint-G2.5.1760.md`
+* `docs/sprints/Sprint-G2.5.1761.md`
+* `docs/sprints/Sprint-G2.5.1762.md`
+* `docs/sprints/Sprint-G2.5.1763.md`
+* `docs/sprints/Sprint-G2.5.1764.md`
+* `docs/sprints/Sprint-G2.5.1765.md`
+* `docs/sprints/Sprint-G2.5.1766.md`
+* `docs/sprints/Sprint-G2.5.1767.md`
+* `docs/sprints/Sprint-G2.5.1768.md`
+* `docs/sprints/Sprint-G2.5.1769.md`
+* `docs/sprints/Sprint-G2.5.1770.md`
+* `docs/sprints/Sprint-G2.5.1771.md`
+* `docs/sprints/Sprint-G2.5.1772.md`
+* `docs/sprints/Sprint-G2.5.1773.md`
+* `docs/sprints/Sprint-G2.5.1774.md`
+* `docs/sprints/Sprint-G2.5.1775.md`
+* `docs/sprints/Sprint-G2.5.1776.md`
+* `docs/sprints/Sprint-G2.5.1777.md`
+* `docs/sprints/Sprint-G2.5.1778.md`
+* `docs/sprints/Sprint-G2.5.1779.md`
+* `docs/sprints/Sprint-G2.5.1780.md`
 * `docs/sprints/Sprint-G2.5.1682.md`
 * `docs/sprints/Sprint-G2.5.1683.md`
 * `docs/sprints/Sprint-G2.5.1684.md`

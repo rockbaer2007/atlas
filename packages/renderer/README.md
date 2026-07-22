@@ -24,6 +24,7 @@ descriptive only and do not mount output yet.
 
 - `RendererHostContext`
 - `RendererIntegrationHandoff`
+- `RendererIntegrationHandoffSnapshot`
 - `RendererIntegrationPreparation`
 - `RendererIntegrationReadiness`
 - `RendererAdapter`
@@ -175,6 +176,7 @@ descriptive only and do not mount output yet.
 - `selectFirstRendererAdapterCandidate`
 - `selectFirstRendererMountReportConsumerCandidate`
 - `selectFirstRendererPlatformAdapterCandidate`
+- `snapshotRendererIntegrationHandoff`
 - `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
 - `summarizeRendererMountReports`
 - `summarizeRendererMountReportConsumerDiagnosticAggregation`
@@ -509,6 +511,10 @@ Renderer integration handoffs now wrap readiness reviews in stable data-only
 handoff envelopes. Handoffs preserve readiness references and carry ready state
 and issue counts forward without adding transport, DOM, Home Assistant, Theme
 or platform execution.
+
+Renderer integration handoff snapshots now expose compact handoff summaries.
+Snapshots preserve handoff names, ready state, issue counts and preparation
+names while omitting readiness payloads and concrete integration metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

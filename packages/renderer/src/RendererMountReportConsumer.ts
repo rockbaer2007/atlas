@@ -210,6 +210,14 @@ export type RendererIntegrationHandoff = Readonly<{
   readiness: RendererIntegrationReadiness;
 }>;
 
+export type RendererIntegrationHandoffSnapshot = Readonly<{
+  kind: "renderer.integration.handoff.snapshot";
+  handoffName: string;
+  ready: boolean;
+  issueCount: number;
+  preparationName: string;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -669,6 +677,18 @@ export function createRendererIntegrationHandoff(
     ready: readiness.result.ready,
     issueCount: readiness.result.issueCount,
     readiness,
+  };
+}
+
+export function snapshotRendererIntegrationHandoff(
+  handoff: RendererIntegrationHandoff,
+): RendererIntegrationHandoffSnapshot {
+  return {
+    kind: "renderer.integration.handoff.snapshot",
+    handoffName: handoff.name,
+    ready: handoff.ready,
+    issueCount: handoff.issueCount,
+    preparationName: handoff.readiness.context.preparationName,
   };
 }
 

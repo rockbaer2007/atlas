@@ -88,6 +88,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
   readiness results with blocked boundary names and preparation issues.
 * Renderer integration handoffs now wrap readiness reviews in data-only handoff
   envelopes with ready state, issue counts and readiness references.
+* Renderer integration handoff snapshots now expose compact handoff summaries
+  with preparation names while omitting readiness payloads.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.
