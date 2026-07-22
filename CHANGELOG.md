@@ -54,6 +54,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumer diagnostic execution now runs consumers and
   returns stable result-plus-diagnostic output, including rejected handler
   failures.
+* Renderer mount report consumer diagnostic batch execution now runs ordered
+  consumer sets into executions, aggregate diagnostics, summaries and optional
+  policy evaluations.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

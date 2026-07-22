@@ -71,6 +71,13 @@ export type RendererMountReportConsumerDiagnosticExecution = Readonly<{
   diagnostic: RendererMountReportConsumerDiagnosticReport;
 }>;
 
+export type RendererMountReportConsumerDiagnosticBatchExecution = Readonly<{
+  executions: readonly RendererMountReportConsumerDiagnosticExecution[];
+  aggregation: RendererMountReportConsumerDiagnosticAggregation;
+  summary: RendererMountReportConsumerDiagnosticAggregationSummary;
+  policyEvaluation?: RendererMountReportConsumerDiagnosticPolicyEvaluation;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -284,6 +291,32 @@ export async function consumeAndInspectRendererMountReports(
     consumerName: result.consumerName,
     result,
     diagnostic: inspectRendererMountReportConsumerResult(result),
+  };
+}
+
+export async function consumeAndInspectRendererMountReportConsumers(
+  consumers: readonly RendererMountReportConsumer[],
+  consumption: RendererMountReportConsumption,
+  policy?: RendererMountReportConsumerDiagnosticPolicy,
+): Promise<RendererMountReportConsumerDiagnosticBatchExecution> {
+  const executions: RendererMountReportConsumerDiagnosticExecution[] = [];
+
+  for (const consumer of consumers) {
+    executions.push(await consumeAndInspectRendererMountReports(consumer, consumption));
+  }
+
+  const aggregation = aggregateRendererMountReportConsumerDiagnostics(
+    executions.map(execution => execution.diagnostic),
+  );
+  const summary = summarizeRendererMountReportConsumerDiagnosticAggregation(aggregation);
+
+  return {
+    executions,
+    aggregation,
+    summary,
+    ...(policy ? {
+      policyEvaluation: evaluateRendererMountReportConsumerDiagnosticPolicy(summary, policy),
+    } : {}),
   };
 }
 

@@ -28,6 +28,7 @@ import type {
   RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerDiagnosticAggregation,
   RendererMountReportConsumerDiagnosticAggregationSummary,
+  RendererMountReportConsumerDiagnosticBatchExecution,
   RendererMountReportConsumerDiagnosticExecution,
   RendererMountReportConsumerDiagnosticPolicy,
   RendererMountReportConsumerDiagnosticPolicyEvaluation,
@@ -102,6 +103,7 @@ import {
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
+  consumeAndInspectRendererMountReportConsumers,
   consumeAndInspectRendererMountReports,
   consumeRendererMountReports,
   evaluateRendererMountReportConsumerDiagnosticPolicy,
@@ -172,6 +174,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
+    expect(Renderer.consumeAndInspectRendererMountReportConsumers).toBeTypeOf("function");
     expect(Renderer.consumeAndInspectRendererMountReports).toBeTypeOf("function");
     expect(Renderer.consumeRendererMountReports).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
@@ -384,6 +387,13 @@ describe("renderer public API", () => {
         result: mountReportConsumerResult,
         diagnostic: mountReportConsumerDiagnosticReport,
       };
+    const mountReportConsumerDiagnosticBatchExecution:
+      RendererMountReportConsumerDiagnosticBatchExecution = {
+        executions: [mountReportConsumerDiagnosticExecution],
+        aggregation: mountReportConsumerDiagnosticAggregation,
+        summary: mountReportConsumerDiagnosticAggregationSummary,
+        policyEvaluation: mountReportConsumerDiagnosticPolicyEvaluation,
+      };
     const mountReportConsumerOutput: RendererMountReportConsumerOutput =
       mountReportConsumerResult;
     const mountReportConsumer: RendererMountReportConsumer = {
@@ -536,6 +546,9 @@ describe("renderer public API", () => {
     );
     expect(mountReportConsumerDiagnosticExecution.diagnostic).toBe(
       mountReportConsumerDiagnosticReport,
+    );
+    expect(mountReportConsumerDiagnosticBatchExecution.executions[0]).toBe(
+      mountReportConsumerDiagnosticExecution,
     );
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
@@ -2418,6 +2431,124 @@ describe("renderer public API", () => {
     expect(execution).not.toHaveProperty("theme");
     expect(execution).not.toHaveProperty("homeAssistant");
     expect(execution).not.toHaveProperty("element");
+  });
+
+  it("batch consumes and inspects Renderer mount report consumers", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const first = createRendererMountReportConsumer({
+      name: "first-batch-consumer",
+      consume: consumed => ({
+        consumerName: "first-batch-consumer",
+        consumed: true,
+        summary: consumed.summary,
+      }),
+    });
+    const second = createRendererMountReportConsumer({
+      name: "second-batch-consumer",
+      consume: consumed => ({
+        consumerName: "second-batch-consumer",
+        consumed: false,
+        summary: consumed.summary,
+      }),
+    });
+
+    const batch = await consumeAndInspectRendererMountReportConsumers(
+      [first, second],
+      consumption,
+    );
+
+    expect(batch.executions.map(execution => execution.consumerName)).toEqual([
+      "first-batch-consumer",
+      "second-batch-consumer",
+    ]);
+    expect(batch.aggregation.context.consumerNames).toEqual([
+      "first-batch-consumer",
+      "second-batch-consumer",
+    ]);
+    expect(batch.summary).toEqual({
+      ok: false,
+      consumerCount: 2,
+      okConsumerCount: 1,
+      failedConsumerCount: 1,
+      issueCount: 1,
+    });
+    expect(batch).not.toHaveProperty("policyEvaluation");
+  });
+
+  it("batch evaluates Renderer mount report consumer diagnostic policies", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "policy-batch-consumer",
+      consume: consumed => ({
+        consumerName: "policy-batch-consumer",
+        consumed: false,
+        summary: consumed.summary,
+        error: "batch policy failed",
+      }),
+    });
+
+    const batch = await Renderer.consumeAndInspectRendererMountReportConsumers(
+      [consumer],
+      consumption,
+      {
+        maxIssueCount: 1,
+      },
+    );
+
+    expect(batch.policyEvaluation?.result).toEqual({
+      ok: false,
+      summary: batch.summary,
+      issues: [{
+        code: "renderer.mount.report.consumer.diagnostics.policy.consumer_failed",
+        message: "1 Renderer mount report consumers failed diagnostics",
+        severity: "error",
+      }, {
+        code: "renderer.mount.report.consumer.diagnostics.policy.issue_limit_exceeded",
+        message: "Renderer mount report consumer diagnostics reported 2 issues, exceeding 1",
+        severity: "error",
+      }],
+    });
+  });
+
+  it("reports empty Renderer mount report consumer diagnostic batches as ok", async () => {
+    const batch = await consumeAndInspectRendererMountReportConsumers(
+      [],
+      createRendererMountReportConsumption({
+        records: [],
+      }),
+      {
+        maxIssueCount: 0,
+      },
+    );
+
+    expect(batch.executions).toEqual([]);
+    expect(batch.aggregation.result.ok).toBe(true);
+    expect(batch.summary).toEqual({
+      ok: true,
+      consumerCount: 0,
+      okConsumerCount: 0,
+      failedConsumerCount: 0,
+      issueCount: 0,
+    });
+    expect(batch.policyEvaluation?.result.ok).toBe(true);
+  });
+
+  it("keeps Renderer mount report consumer diagnostic batches free of integration metadata", async () => {
+    const batch = await consumeAndInspectRendererMountReportConsumers(
+      [],
+      createRendererMountReportConsumption({
+        records: [],
+      }),
+    );
+
+    expect(batch).not.toHaveProperty("platform");
+    expect(batch).not.toHaveProperty("theme");
+    expect(batch).not.toHaveProperty("homeAssistant");
+    expect(batch).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

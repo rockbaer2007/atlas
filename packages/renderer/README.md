@@ -51,6 +51,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
+- `RendererMountReportConsumerDiagnosticBatchExecution`
 - `RendererMountReportConsumerDiagnosticExecution`
 - `RendererMountReportConsumerDiagnosticPolicy`
 - `RendererMountReportConsumerDiagnosticPolicyCodes`
@@ -121,6 +122,7 @@ descriptive only and do not mount output yet.
 - `createRendererPlatformAdapterSelectionRequest`
 - `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
+- `consumeAndInspectRendererMountReportConsumers`
 - `consumeAndInspectRendererMountReports`
 - `consumeRendererMountReports`
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
@@ -410,6 +412,12 @@ returns the consumer result with its diagnostic report. Rejected consumer
 handlers are converted into stable unconsumed failure results, preserving the
 consumption summary and keeping execution output free of DOM elements, Home
 Assistant fields, Theme fields and platform metadata.
+
+Renderer mount report consumer diagnostic batch execution now runs multiple
+consumers into ordered diagnostic executions, aggregates their reports,
+summarizes the aggregate and can evaluate an optional policy. Empty batches are
+successful, consumer order is preserved and batch output remains independent
+from DOM elements, Home Assistant fields, Theme fields and platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

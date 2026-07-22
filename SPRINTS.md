@@ -1093,23 +1093,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1078 | Renderer Mount Reporting Consumer Diagnostics Execution Batch Aggregation Review | Completed | - |
 | G2.5.1079 | Renderer Mount Reporting Consumer Diagnostics Execution Batch Policy Review | Completed | - |
 | G2.5.1080 | Renderer Mount Reporting Consumer Diagnostics Execution Batch Handoff Review | Completed | - |
-| G2.5.1081 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Review | Planned | - |
+| G2.5.1081 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Review | Completed | - |
+| G2.5.1082 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Contract Review | Completed | - |
+| G2.5.1083 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Shape Review | Completed | - |
+| G2.5.1084 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Empty Review | Completed | - |
+| G2.5.1085 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Order Review | Completed | - |
+| G2.5.1086 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Aggregation Review | Completed | - |
+| G2.5.1087 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Summary Review | Completed | - |
+| G2.5.1088 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Policy Review | Completed | - |
+| G2.5.1089 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Rejection Review | Completed | - |
+| G2.5.1090 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Package Root Review | Completed | - |
+| G2.5.1091 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Type Surface Review | Completed | - |
+| G2.5.1092 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Documentation Review | Completed | - |
+| G2.5.1093 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Changelog Review | Completed | - |
+| G2.5.1094 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Regression Review | Completed | - |
+| G2.5.1095 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Public API Review | Completed | - |
+| G2.5.1096 | Renderer Mount Reporting Consumer Diagnostics Batch Execution README Review | Completed | - |
+| G2.5.1097 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Sprint Documentation Review | Completed | - |
+| G2.5.1098 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Workspace Regression Review | Completed | - |
+| G2.5.1099 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Integration Closure Review | Completed | - |
+| G2.5.1100 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Compatibility Review | Completed | - |
+| G2.5.1101 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Future DOM Boundary Review | Completed | - |
+| G2.5.1102 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Future Theme Boundary Review | Completed | - |
+| G2.5.1103 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Future Home Assistant Boundary Review | Completed | - |
+| G2.5.1104 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Future Platform Boundary Review | Completed | - |
+| G2.5.1105 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Stability Review | Completed | - |
+| G2.5.1106 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Success Stability Review | Completed | - |
+| G2.5.1107 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Failure Stability Review | Completed | - |
+| G2.5.1108 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Issue Stability Review | Completed | - |
+| G2.5.1109 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Context Stability Review | Completed | - |
+| G2.5.1110 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Consumer Order Stability Review | Completed | - |
+| G2.5.1111 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Result Boundary Review | Completed | - |
+| G2.5.1112 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Diagnostic Boundary Review | Completed | - |
+| G2.5.1113 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Policy Boundary Review | Completed | - |
+| G2.5.1114 | Renderer Mount Reporting Consumer Diagnostics Batch Execution No Mutation Review | Completed | - |
+| G2.5.1115 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Handler Boundary Review | Completed | - |
+| G2.5.1116 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Consumption Boundary Review | Completed | - |
+| G2.5.1117 | Renderer Mount Reporting Consumer Diagnostics Batch Execution API Closure Review | Completed | - |
+| G2.5.1118 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Execution Review | Completed | - |
+| G2.5.1119 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Policy Review | Completed | - |
+| G2.5.1120 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Summary Review | Completed | - |
+| G2.5.1121 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Aggregation Review | Completed | - |
+| G2.5.1122 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Diagnostics Review | Completed | - |
+| G2.5.1123 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Consumer Review | Completed | - |
+| G2.5.1124 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Registry Review | Completed | - |
+| G2.5.1125 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Return-To-Renderer Review | Completed | - |
+| G2.5.1126 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Registry Preparation Review | Completed | - |
+| G2.5.1127 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Registry Boundary Review | Completed | - |
+| G2.5.1128 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Registry Policy Review | Completed | - |
+| G2.5.1129 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Registry Summary Review | Completed | - |
+| G2.5.1130 | Renderer Mount Reporting Consumer Diagnostics Batch Execution Registry Handoff Review | Completed | - |
+| G2.5.1131 | Renderer Mount Reporting Consumer Diagnostics Registry Execution Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1080 - Renderer Mount Reporting Consumer Diagnostics Execution Batch Handoff Review
+## G2.5.1130 - Renderer Mount Reporting Consumer Diagnostics Batch Execution Registry Handoff Review
 
 Goal:
 
-Run Renderer mount report consumers and produce stable diagnostic execution output.
+Run multiple Renderer mount report consumers into aggregate diagnostic batch output.
 
 Deliverables:
 
-* Consumer diagnostic execution type
-* Result-plus-diagnostic execution helper
-* Rejected consumer stabilization
+* Consumer diagnostic batch execution type
+* Ordered multi-consumer execution helper
+* Aggregation, summary and optional policy output
 * Sprint documentation
 
 Status:
@@ -1120,13 +1170,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1081 - Renderer Mount Reporting Consumer Diagnostics Batch Execution Review
+## G2.5.1131 - Renderer Mount Reporting Consumer Diagnostics Registry Execution Review
 
 Suggested focus:
 
-* Decide whether registries should execute multiple consumers into diagnostic executions
-* Keep batch execution composable with aggregation, summary and policy helpers
-* Preserve existing consumer, registry and conflict contracts
+* Decide whether consumer registries should execute directly through the batch helper
+* Keep registry execution free of conflict resolution side effects
+* Preserve existing consumer, batch, aggregation, summary and policy contracts
 
 ---
 
@@ -2217,6 +2267,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1078.md`
 * `docs/sprints/Sprint-G2.5.1079.md`
 * `docs/sprints/Sprint-G2.5.1080.md`
+* `docs/sprints/Sprint-G2.5.1081.md`
+* `docs/sprints/Sprint-G2.5.1082.md`
+* `docs/sprints/Sprint-G2.5.1083.md`
+* `docs/sprints/Sprint-G2.5.1084.md`
+* `docs/sprints/Sprint-G2.5.1085.md`
+* `docs/sprints/Sprint-G2.5.1086.md`
+* `docs/sprints/Sprint-G2.5.1087.md`
+* `docs/sprints/Sprint-G2.5.1088.md`
+* `docs/sprints/Sprint-G2.5.1089.md`
+* `docs/sprints/Sprint-G2.5.1090.md`
+* `docs/sprints/Sprint-G2.5.1091.md`
+* `docs/sprints/Sprint-G2.5.1092.md`
+* `docs/sprints/Sprint-G2.5.1093.md`
+* `docs/sprints/Sprint-G2.5.1094.md`
+* `docs/sprints/Sprint-G2.5.1095.md`
+* `docs/sprints/Sprint-G2.5.1096.md`
+* `docs/sprints/Sprint-G2.5.1097.md`
+* `docs/sprints/Sprint-G2.5.1098.md`
+* `docs/sprints/Sprint-G2.5.1099.md`
+* `docs/sprints/Sprint-G2.5.1100.md`
+* `docs/sprints/Sprint-G2.5.1101.md`
+* `docs/sprints/Sprint-G2.5.1102.md`
+* `docs/sprints/Sprint-G2.5.1103.md`
+* `docs/sprints/Sprint-G2.5.1104.md`
+* `docs/sprints/Sprint-G2.5.1105.md`
+* `docs/sprints/Sprint-G2.5.1106.md`
+* `docs/sprints/Sprint-G2.5.1107.md`
+* `docs/sprints/Sprint-G2.5.1108.md`
+* `docs/sprints/Sprint-G2.5.1109.md`
+* `docs/sprints/Sprint-G2.5.1110.md`
+* `docs/sprints/Sprint-G2.5.1111.md`
+* `docs/sprints/Sprint-G2.5.1112.md`
+* `docs/sprints/Sprint-G2.5.1113.md`
+* `docs/sprints/Sprint-G2.5.1114.md`
+* `docs/sprints/Sprint-G2.5.1115.md`
+* `docs/sprints/Sprint-G2.5.1116.md`
+* `docs/sprints/Sprint-G2.5.1117.md`
+* `docs/sprints/Sprint-G2.5.1118.md`
+* `docs/sprints/Sprint-G2.5.1119.md`
+* `docs/sprints/Sprint-G2.5.1120.md`
+* `docs/sprints/Sprint-G2.5.1121.md`
+* `docs/sprints/Sprint-G2.5.1122.md`
+* `docs/sprints/Sprint-G2.5.1123.md`
+* `docs/sprints/Sprint-G2.5.1124.md`
+* `docs/sprints/Sprint-G2.5.1125.md`
+* `docs/sprints/Sprint-G2.5.1126.md`
+* `docs/sprints/Sprint-G2.5.1127.md`
+* `docs/sprints/Sprint-G2.5.1128.md`
+* `docs/sprints/Sprint-G2.5.1129.md`
+* `docs/sprints/Sprint-G2.5.1130.md`
 
 ---
 
