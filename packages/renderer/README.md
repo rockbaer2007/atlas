@@ -46,6 +46,9 @@ descriptive only and do not mount output yet.
 - `RendererMountPlanStatus`
 - `RendererMountPlanStrategy`
 - `RendererMountReport`
+- `RendererMountReportConsumer`
+- `RendererMountReportConsumerOutput`
+- `RendererMountReportConsumerResult`
 - `RendererMountReportConsumption`
 - `RendererMountReportConsumptionRequest`
 - `RendererMountReportFilter`
@@ -79,6 +82,7 @@ descriptive only and do not mount output yet.
 - `createDefaultRendererMountPlan`
 - `createRendererMountPlan`
 - `createRendererMountReport`
+- `createRendererMountReportConsumer`
 - `createRendererMountReportConsumption`
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
@@ -94,6 +98,7 @@ descriptive only and do not mount output yet.
 - `createRendererPlatformAdapterSelectionRequest`
 - `createRendererPlatformAdapterSelectionResult`
 - `createRendererTarget`
+- `consumeRendererMountReports`
 - `executeRendererMountPlan`
 - `executeRendererPipeline`
 - `findRendererAdapter`
@@ -326,6 +331,12 @@ lifecycle records. Consumption can filter by lifecycle state, mounted state and
 diagnostics status, returns reports with a matching summary, and keeps source
 arrays, DOM elements, Home Assistant fields, Theme fields and platform metadata
 outside the reporting boundary.
+
+Renderer mount report consumers now define a generic consumer integration point
+for filtered consumption views. Consumers can synchronously or asynchronously
+return consumed, failed and summary-bearing results, receive the consumption
+view by reference, and remain independent from DOM elements, Home Assistant
+fields, Theme fields and platform metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or

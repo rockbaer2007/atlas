@@ -30,6 +30,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer mount report consumption now filters lifecycle-backed reports by
   state, mounted status and diagnostics status while returning matching summary
   counts without adding integration metadata.
+* Renderer mount report consumers now provide a generic sync or async consumer
+  integration point for consumption views while preserving summary references
+  and integration-free boundaries.
 * Theme and Devtools integration reviews now protect package-root closure,
   required-layer ordering, activation gate copies, dependency boundary ordering
   and pre-activation dependency independence.

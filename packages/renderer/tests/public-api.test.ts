@@ -23,6 +23,9 @@ import type {
   RendererMountPlanReport,
   RendererMountPlanStatus,
   RendererMountPlanStrategy,
+  RendererMountReportConsumer,
+  RendererMountReportConsumerOutput,
+  RendererMountReportConsumerResult,
   RendererMountReport,
   RendererMountReportConsumption,
   RendererMountReportConsumptionRequest,
@@ -61,6 +64,7 @@ import {
   createRendererMountRequest,
   createRendererMountLifecycleRecord,
   createRendererMountReport,
+  createRendererMountReportConsumer,
   createRendererMountReportConsumption,
   createDefaultRendererMountPlan,
   createRendererMountPlan,
@@ -77,6 +81,7 @@ import {
   createRendererPlatformAdapterSelectionRequest,
   createRendererPlatformAdapterSelectionResult,
   createRendererTarget,
+  consumeRendererMountReports,
   executeRendererMountPlan,
   executeRendererPipeline,
   findRendererAdapter,
@@ -115,6 +120,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.createRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMountReport).toBeTypeOf("function");
+    expect(Renderer.createRendererMountReportConsumer).toBeTypeOf("function");
     expect(Renderer.createRendererMountReportConsumption).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
@@ -129,6 +135,7 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererPlatformAdapterSelectionRequest).toBeTypeOf("function");
     expect(Renderer.createRendererPlatformAdapterSelectionResult).toBeTypeOf("function");
     expect(Renderer.createRendererTarget).toBeTypeOf("function");
+    expect(Renderer.consumeRendererMountReports).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
@@ -269,6 +276,17 @@ describe("renderer public API", () => {
       reports: [mountReport],
       summary: mountReportSummary,
     };
+    const mountReportConsumerResult: RendererMountReportConsumerResult = {
+      consumerName: "type-consumer",
+      consumed: true,
+      summary: mountReportSummary,
+    };
+    const mountReportConsumerOutput: RendererMountReportConsumerOutput =
+      mountReportConsumerResult;
+    const mountReportConsumer: RendererMountReportConsumer = {
+      name: "type-consumer",
+      consume: () => mountReportConsumerOutput,
+    };
     const mountResult: RendererMountResult = {
       mounted: false,
       output,
@@ -376,6 +394,7 @@ describe("renderer public API", () => {
     expect(mountReportConsumptionRequest.filter).toBe(mountReportFilter);
     expect(mountReportConsumption.reports[0]).toBe(mountReport);
     expect(mountReportSummary.total).toBe(1);
+    expect(mountReportConsumer.consume(mountReportConsumption)).toBe(mountReportConsumerResult);
     expect(mountResult.mounted).toBe(false);
     expect(mountDiagnosticReport.result.ok).toBe(true);
     expect(adapter.mount(mountRequest)).toBe(adapterResult);
@@ -1959,6 +1978,165 @@ describe("renderer public API", () => {
     expect(consumption).not.toHaveProperty("theme");
     expect(consumption).not.toHaveProperty("homeAssistant");
     expect(consumption).not.toHaveProperty("element");
+  });
+
+  it("creates Renderer mount report consumers", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "report-consumer",
+      consume: consumption => ({
+        consumerName: "report-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(consumer.name).toBe("report-consumer");
+    expect(consumer.consume).toBeTypeOf("function");
+  });
+
+  it("creates Renderer mount report consumers as immutable copies", () => {
+    const source: RendererMountReportConsumer = {
+      name: "copy-consumer",
+      consume: consumption => ({
+        consumerName: "copy-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    };
+
+    const consumer = createRendererMountReportConsumer(source);
+
+    expect(consumer).toEqual(source);
+    expect(consumer).not.toBe(source);
+    expect(consumer.consume).toBe(source.consume);
+  });
+
+  it("consumes Renderer mount report consumption views", async () => {
+    const request = createRendererMountRequest({
+      output: createRendererOutput({
+        kind: "fragment",
+        name: "consumer-output",
+      }),
+      target: createRendererTarget({
+        kind: "memory",
+        name: "consumer-target",
+      }),
+    });
+    const consumption = createRendererMountReportConsumption({
+      records: [
+        createRendererMountLifecycleRecord(
+          createDefaultRendererMountPlan(request),
+        ),
+      ],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "summary-consumer",
+      consume: consumed => ({
+        consumerName: "summary-consumer",
+        consumed: consumed.summary.total === 1,
+        summary: consumed.summary,
+      }),
+    });
+
+    await expect(consumeRendererMountReports(
+      consumer,
+      consumption,
+    )).resolves.toEqual({
+      consumerName: "summary-consumer",
+      consumed: true,
+      summary: consumption.summary,
+    });
+  });
+
+  it("supports asynchronous Renderer mount report consumers", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "async-consumer",
+      async consume(consumed) {
+        await Promise.resolve();
+
+        return {
+          consumerName: "async-consumer",
+          consumed: true,
+          summary: consumed.summary,
+        };
+      },
+    });
+
+    await expect(consumeRendererMountReports(
+      consumer,
+      consumption,
+    )).resolves.toEqual({
+      consumerName: "async-consumer",
+      consumed: true,
+      summary: consumption.summary,
+    });
+  });
+
+  it("passes Renderer mount report consumption views to consumers by reference", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    let seen: RendererMountReportConsumption | undefined;
+    const consumer = createRendererMountReportConsumer({
+      name: "reference-consumer",
+      consume(consumed) {
+        seen = consumed;
+
+        return {
+          consumerName: "reference-consumer",
+          consumed: consumed === consumption,
+          summary: consumed.summary,
+        };
+      },
+    });
+
+    await consumeRendererMountReports(consumer, consumption);
+
+    expect(seen).toBe(consumption);
+  });
+
+  it("preserves Renderer mount report consumer failure results", async () => {
+    const consumption = createRendererMountReportConsumption({
+      records: [],
+    });
+    const consumer = createRendererMountReportConsumer({
+      name: "failure-consumer",
+      consume: consumed => ({
+        consumerName: "failure-consumer",
+        consumed: false,
+        summary: consumed.summary,
+        error: "consumer rejected report set",
+      }),
+    });
+
+    await expect(consumeRendererMountReports(
+      consumer,
+      consumption,
+    )).resolves.toEqual({
+      consumerName: "failure-consumer",
+      consumed: false,
+      summary: consumption.summary,
+      error: "consumer rejected report set",
+    });
+  });
+
+  it("keeps Renderer mount report consumers free of integration metadata", () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "boundary-consumer",
+      consume: consumption => ({
+        consumerName: "boundary-consumer",
+        consumed: true,
+        summary: consumption.summary,
+      }),
+    });
+
+    expect(consumer).not.toHaveProperty("platform");
+    expect(consumer).not.toHaveProperty("theme");
+    expect(consumer).not.toHaveProperty("homeAssistant");
+    expect(consumer).not.toHaveProperty("element");
   });
 
   it("creates Renderer mount results without platform adapters", () => {

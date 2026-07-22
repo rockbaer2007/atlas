@@ -693,23 +693,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.678 | Renderer Mount Reporting Consumption Report Stability Review | Completed | - |
 | G2.5.679 | Renderer Mount Reporting Consumption API Closure Review | Completed | - |
 | G2.5.680 | Renderer Mount Reporting Consumption Return-To-Renderer Review | Completed | - |
-| G2.5.681 | Renderer Mount Reporting Consumer Integration Review | Planned | - |
+| G2.5.681 | Renderer Mount Reporting Consumer Integration Review | Completed | - |
+| G2.5.682 | Renderer Mount Reporting Consumer Contract Review | Completed | - |
+| G2.5.683 | Renderer Mount Reporting Consumer Shape Review | Completed | - |
+| G2.5.684 | Renderer Mount Reporting Consumer Result Review | Completed | - |
+| G2.5.685 | Renderer Mount Reporting Consumer Output Review | Completed | - |
+| G2.5.686 | Renderer Mount Reporting Consumer Factory Review | Completed | - |
+| G2.5.687 | Renderer Mount Reporting Consumer Execution Review | Completed | - |
+| G2.5.688 | Renderer Mount Reporting Consumer Async Review | Completed | - |
+| G2.5.689 | Renderer Mount Reporting Consumer Failure Result Review | Completed | - |
+| G2.5.690 | Renderer Mount Reporting Consumer Summary Reference Review | Completed | - |
+| G2.5.691 | Renderer Mount Reporting Consumer Consumption Reference Review | Completed | - |
+| G2.5.692 | Renderer Mount Reporting Consumer Empty Consumption Review | Completed | - |
+| G2.5.693 | Renderer Mount Reporting Consumer Planned Consumption Review | Completed | - |
+| G2.5.694 | Renderer Mount Reporting Consumer Executed Consumption Review | Completed | - |
+| G2.5.695 | Renderer Mount Reporting Consumer Reported Consumption Review | Completed | - |
+| G2.5.696 | Renderer Mount Reporting Consumer Filtered Consumption Review | Completed | - |
+| G2.5.697 | Renderer Mount Reporting Consumer Issue Consumption Review | Completed | - |
+| G2.5.698 | Renderer Mount Reporting Consumer Result Boundary Review | Completed | - |
+| G2.5.699 | Renderer Mount Reporting Consumer Source Copy Review | Completed | - |
+| G2.5.700 | Renderer Mount Reporting Consumer No-DOM Review | Completed | - |
+| G2.5.701 | Renderer Mount Reporting Consumer No-Theme Review | Completed | - |
+| G2.5.702 | Renderer Mount Reporting Consumer No-Home-Assistant Review | Completed | - |
+| G2.5.703 | Renderer Mount Reporting Consumer No-Platform-Metadata Review | Completed | - |
+| G2.5.704 | Renderer Mount Reporting Consumer Package Root Review | Completed | - |
+| G2.5.705 | Renderer Mount Reporting Consumer Type Surface Review | Completed | - |
+| G2.5.706 | Renderer Mount Reporting Consumer Documentation Review | Completed | - |
+| G2.5.707 | Renderer Mount Reporting Consumer Changelog Review | Completed | - |
+| G2.5.708 | Renderer Mount Reporting Consumer Regression Review | Completed | - |
+| G2.5.709 | Renderer Mount Reporting Consumer Public API Review | Completed | - |
+| G2.5.710 | Renderer Mount Reporting Consumer README Review | Completed | - |
+| G2.5.711 | Renderer Mount Reporting Consumer Sprint Documentation Review | Completed | - |
+| G2.5.712 | Renderer Mount Reporting Consumer Workspace Regression Review | Completed | - |
+| G2.5.713 | Renderer Mount Reporting Consumer Integration Closure Review | Completed | - |
+| G2.5.714 | Renderer Mount Reporting Consumer Compatibility Review | Completed | - |
+| G2.5.715 | Renderer Mount Reporting Consumer Future DOM Boundary Review | Completed | - |
+| G2.5.716 | Renderer Mount Reporting Consumer Future Theme Boundary Review | Completed | - |
+| G2.5.717 | Renderer Mount Reporting Consumer Future Home Assistant Boundary Review | Completed | - |
+| G2.5.718 | Renderer Mount Reporting Consumer Future Platform Boundary Review | Completed | - |
+| G2.5.719 | Renderer Mount Reporting Consumer Sync Compatibility Review | Completed | - |
+| G2.5.720 | Renderer Mount Reporting Consumer Async Compatibility Review | Completed | - |
+| G2.5.721 | Renderer Mount Reporting Consumer Error Shape Review | Completed | - |
+| G2.5.722 | Renderer Mount Reporting Consumer Result Stability Review | Completed | - |
+| G2.5.723 | Renderer Mount Reporting Consumer Summary Stability Review | Completed | - |
+| G2.5.724 | Renderer Mount Reporting Consumer Report Stability Review | Completed | - |
+| G2.5.725 | Renderer Mount Reporting Consumer Lifecycle Stability Review | Completed | - |
+| G2.5.726 | Renderer Mount Reporting Consumer Diagnostics Stability Review | Completed | - |
+| G2.5.727 | Renderer Mount Reporting Consumer Consumption Closure Review | Completed | - |
+| G2.5.728 | Renderer Mount Reporting Consumer API Closure Review | Completed | - |
+| G2.5.729 | Renderer Mount Reporting Consumer Return-To-Consumption Review | Completed | - |
+| G2.5.730 | Renderer Mount Reporting Consumer Return-To-Renderer Review | Completed | - |
+| G2.5.731 | Renderer Mount Reporting Consumer Registry Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.680 - Renderer Mount Reporting Consumption Return-To-Renderer Review
+## G2.5.730 - Renderer Mount Reporting Consumer Return-To-Renderer Review
 
 Goal:
 
-Define Renderer mount report consumption views across lifecycle-backed reports, filters and summaries.
+Define Renderer mount report consumers as a generic integration point for filtered consumption views.
 
 Deliverables:
 
-* Renderer mount report consumption requests
-* State, mounted and diagnostics filters
-* Filtered report summaries
+* Renderer mount report consumer contracts
+* Sync and async consumer execution
+* Summary-preserving consumer results
 * Sprint documentation
 
 Status:
@@ -720,13 +770,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.681 - Renderer Mount Reporting Consumer Integration Review
+## G2.5.731 - Renderer Mount Reporting Consumer Registry Review
 
 Suggested focus:
 
-* Decide whether consumption views should feed a broader Renderer reporting consumer
-* Keep consumer integration generic and diagnostics-compatible
-* Preserve existing report consumption and lifecycle contracts
+* Decide whether report consumers need a registry or selection surface
+* Keep consumer registration generic and diagnostics-compatible
+* Preserve existing consumer, consumption and report contracts
 
 ---
 
@@ -1417,6 +1467,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.678.md`
 * `docs/sprints/Sprint-G2.5.679.md`
 * `docs/sprints/Sprint-G2.5.680.md`
+* `docs/sprints/Sprint-G2.5.681.md`
+* `docs/sprints/Sprint-G2.5.682.md`
+* `docs/sprints/Sprint-G2.5.683.md`
+* `docs/sprints/Sprint-G2.5.684.md`
+* `docs/sprints/Sprint-G2.5.685.md`
+* `docs/sprints/Sprint-G2.5.686.md`
+* `docs/sprints/Sprint-G2.5.687.md`
+* `docs/sprints/Sprint-G2.5.688.md`
+* `docs/sprints/Sprint-G2.5.689.md`
+* `docs/sprints/Sprint-G2.5.690.md`
+* `docs/sprints/Sprint-G2.5.691.md`
+* `docs/sprints/Sprint-G2.5.692.md`
+* `docs/sprints/Sprint-G2.5.693.md`
+* `docs/sprints/Sprint-G2.5.694.md`
+* `docs/sprints/Sprint-G2.5.695.md`
+* `docs/sprints/Sprint-G2.5.696.md`
+* `docs/sprints/Sprint-G2.5.697.md`
+* `docs/sprints/Sprint-G2.5.698.md`
+* `docs/sprints/Sprint-G2.5.699.md`
+* `docs/sprints/Sprint-G2.5.700.md`
+* `docs/sprints/Sprint-G2.5.701.md`
+* `docs/sprints/Sprint-G2.5.702.md`
+* `docs/sprints/Sprint-G2.5.703.md`
+* `docs/sprints/Sprint-G2.5.704.md`
+* `docs/sprints/Sprint-G2.5.705.md`
+* `docs/sprints/Sprint-G2.5.706.md`
+* `docs/sprints/Sprint-G2.5.707.md`
+* `docs/sprints/Sprint-G2.5.708.md`
+* `docs/sprints/Sprint-G2.5.709.md`
+* `docs/sprints/Sprint-G2.5.710.md`
+* `docs/sprints/Sprint-G2.5.711.md`
+* `docs/sprints/Sprint-G2.5.712.md`
+* `docs/sprints/Sprint-G2.5.713.md`
+* `docs/sprints/Sprint-G2.5.714.md`
+* `docs/sprints/Sprint-G2.5.715.md`
+* `docs/sprints/Sprint-G2.5.716.md`
+* `docs/sprints/Sprint-G2.5.717.md`
+* `docs/sprints/Sprint-G2.5.718.md`
+* `docs/sprints/Sprint-G2.5.719.md`
+* `docs/sprints/Sprint-G2.5.720.md`
+* `docs/sprints/Sprint-G2.5.721.md`
+* `docs/sprints/Sprint-G2.5.722.md`
+* `docs/sprints/Sprint-G2.5.723.md`
+* `docs/sprints/Sprint-G2.5.724.md`
+* `docs/sprints/Sprint-G2.5.725.md`
+* `docs/sprints/Sprint-G2.5.726.md`
+* `docs/sprints/Sprint-G2.5.727.md`
+* `docs/sprints/Sprint-G2.5.728.md`
+* `docs/sprints/Sprint-G2.5.729.md`
+* `docs/sprints/Sprint-G2.5.730.md`
 
 ---
 

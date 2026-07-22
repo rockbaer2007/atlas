@@ -14,6 +14,7 @@ export * from "./RendererMountDiagnostics";
 export * from "./RendererMountLifecycle";
 export * from "./RendererMountPlan";
 export * from "./RendererMountPlanExecution";
+export * from "./RendererMountReportConsumer";
 export * from "./RendererMountReporting";
 export * from "./RendererOutput";
 export * from "./RendererPipeline";
