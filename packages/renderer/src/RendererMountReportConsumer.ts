@@ -119,6 +119,21 @@ export type RendererMountReportConsumerDiagnosticDeliveryManifest = Readonly<{
   issueCount: number;
 }>;
 
+export type RendererMountReportConsumerDiagnosticDeliveryManifestClosure = Readonly<{
+  context: Readonly<{
+    component: string;
+    manifestName: string;
+  }>;
+  result: Readonly<{
+    ok: boolean;
+    deliveryCount: number;
+    readyCount: number;
+    blockedCount: number;
+    issueCount: number;
+    issues: readonly RendererMountReportConsumerDiagnosticRegistryExecutionClosure["result"]["issues"][number][];
+  }>;
+}>;
+
 export type RendererMountReportConsumerResult = Readonly<{
   consumerName: string;
   consumed: boolean;
@@ -434,6 +449,28 @@ export function createRendererMountReportConsumerDiagnosticDeliveryManifest(
     blockedCount: copiedDeliveries.filter(delivery => !delivery.ready).length,
     issueCount: copiedDeliveries
       .reduce((issueCount, delivery) => issueCount + delivery.issueCount, 0),
+  };
+}
+
+export function reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
+  manifest: RendererMountReportConsumerDiagnosticDeliveryManifest,
+): RendererMountReportConsumerDiagnosticDeliveryManifestClosure {
+  const issues = manifest.deliveries
+    .flatMap(delivery => delivery.closure.result.issues);
+
+  return {
+    context: {
+      component: "renderer.mount.report.consumer.diagnostics.delivery.manifest.closure",
+      manifestName: manifest.name,
+    },
+    result: {
+      ok: manifest.blockedCount === 0 && issues.length === 0,
+      deliveryCount: manifest.deliveries.length,
+      readyCount: manifest.readyCount,
+      blockedCount: manifest.blockedCount,
+      issueCount: issues.length,
+      issues,
+    },
   };
 }
 

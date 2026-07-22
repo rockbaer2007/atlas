@@ -1343,23 +1343,73 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.1328 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Return-To-Diagnostics Review | Completed | - |
 | G2.5.1329 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Return-To-Renderer Review | Completed | - |
 | G2.5.1330 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Handoff Review | Completed | - |
-| G2.5.1331 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Review | Planned | - |
+| G2.5.1331 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Review | Completed | - |
+| G2.5.1332 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Contract Review | Completed | - |
+| G2.5.1333 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Shape Review | Completed | - |
+| G2.5.1334 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Success Review | Completed | - |
+| G2.5.1335 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Blocked Review | Completed | - |
+| G2.5.1336 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Issue Collection Review | Completed | - |
+| G2.5.1337 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Count Review | Completed | - |
+| G2.5.1338 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Manifest Name Review | Completed | - |
+| G2.5.1339 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Boundary Review | Completed | - |
+| G2.5.1340 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Package Root Review | Completed | - |
+| G2.5.1341 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Type Surface Review | Completed | - |
+| G2.5.1342 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Documentation Review | Completed | - |
+| G2.5.1343 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Changelog Review | Completed | - |
+| G2.5.1344 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Regression Review | Completed | - |
+| G2.5.1345 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Public API Review | Completed | - |
+| G2.5.1346 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure README Review | Completed | - |
+| G2.5.1347 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Sprint Documentation Review | Completed | - |
+| G2.5.1348 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Workspace Regression Review | Completed | - |
+| G2.5.1349 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Integration Closure Review | Completed | - |
+| G2.5.1350 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Compatibility Review | Completed | - |
+| G2.5.1351 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Future DOM Boundary Review | Completed | - |
+| G2.5.1352 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Future Theme Boundary Review | Completed | - |
+| G2.5.1353 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Future Home Assistant Boundary Review | Completed | - |
+| G2.5.1354 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Future Platform Boundary Review | Completed | - |
+| G2.5.1355 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Stability Review | Completed | - |
+| G2.5.1356 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Ready Stability Review | Completed | - |
+| G2.5.1357 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Blocked Stability Review | Completed | - |
+| G2.5.1358 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Issue Stability Review | Completed | - |
+| G2.5.1359 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Context Stability Review | Completed | - |
+| G2.5.1360 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Name Stability Review | Completed | - |
+| G2.5.1361 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Result Boundary Review | Completed | - |
+| G2.5.1362 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Delivery Boundary Review | Completed | - |
+| G2.5.1363 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure No Mutation Review | Completed | - |
+| G2.5.1364 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Transport Boundary Review | Completed | - |
+| G2.5.1365 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Handler Boundary Review | Completed | - |
+| G2.5.1366 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Consumption Boundary Review | Completed | - |
+| G2.5.1367 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Conflict Boundary Review | Completed | - |
+| G2.5.1368 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Lookup Boundary Review | Completed | - |
+| G2.5.1369 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure API Closure Review | Completed | - |
+| G2.5.1370 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Manifest Review | Completed | - |
+| G2.5.1371 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Delivery Review | Completed | - |
+| G2.5.1372 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Closure Review | Completed | - |
+| G2.5.1373 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Registry Execution Review | Completed | - |
+| G2.5.1374 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Batch Review | Completed | - |
+| G2.5.1375 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Execution Review | Completed | - |
+| G2.5.1376 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Policy Review | Completed | - |
+| G2.5.1377 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Summary Review | Completed | - |
+| G2.5.1378 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Return-To-Diagnostics Review | Completed | - |
+| G2.5.1379 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Bundle Preparation Review | Completed | - |
+| G2.5.1380 | Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Bundle Handoff Review | Completed | - |
+| G2.5.1381 | Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Review | Planned | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.1330 - Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Handoff Review
+## G2.5.1380 - Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Bundle Handoff Review
 
 Goal:
 
-Group Renderer mount report consumer diagnostic deliveries into transport-neutral manifests.
+Review Renderer mount report consumer diagnostic delivery manifests into compact closure reports.
 
 Deliverables:
 
-* Consumer diagnostic delivery manifest type
-* Manifest creation helper
-* Ready, blocked, issue-count and copy-boundary tests
+* Delivery manifest closure type
+* Manifest closure review helper
+* Ready, blocked and boundary tests
 * Sprint documentation
 
 Status:
@@ -1370,13 +1420,13 @@ Completed.
 
 # Next Sprint
 
-## G2.5.1331 - Renderer Mount Reporting Consumer Diagnostics Delivery Manifest Closure Review
+## G2.5.1381 - Renderer Mount Reporting Consumer Diagnostics Delivery Bundle Review
 
 Suggested focus:
 
-* Review delivery manifest closure before moving into concrete integration handoff
-* Keep manifests transport-neutral and data-only
-* Preserve existing consumer diagnostic delivery APIs
+* Decide whether manifest closures should be packaged into data-only bundles
+* Keep bundles transport-neutral and explicit
+* Preserve existing manifest closure APIs
 
 ---
 
@@ -2717,6 +2767,56 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.1328.md`
 * `docs/sprints/Sprint-G2.5.1329.md`
 * `docs/sprints/Sprint-G2.5.1330.md`
+* `docs/sprints/Sprint-G2.5.1331.md`
+* `docs/sprints/Sprint-G2.5.1332.md`
+* `docs/sprints/Sprint-G2.5.1333.md`
+* `docs/sprints/Sprint-G2.5.1334.md`
+* `docs/sprints/Sprint-G2.5.1335.md`
+* `docs/sprints/Sprint-G2.5.1336.md`
+* `docs/sprints/Sprint-G2.5.1337.md`
+* `docs/sprints/Sprint-G2.5.1338.md`
+* `docs/sprints/Sprint-G2.5.1339.md`
+* `docs/sprints/Sprint-G2.5.1340.md`
+* `docs/sprints/Sprint-G2.5.1341.md`
+* `docs/sprints/Sprint-G2.5.1342.md`
+* `docs/sprints/Sprint-G2.5.1343.md`
+* `docs/sprints/Sprint-G2.5.1344.md`
+* `docs/sprints/Sprint-G2.5.1345.md`
+* `docs/sprints/Sprint-G2.5.1346.md`
+* `docs/sprints/Sprint-G2.5.1347.md`
+* `docs/sprints/Sprint-G2.5.1348.md`
+* `docs/sprints/Sprint-G2.5.1349.md`
+* `docs/sprints/Sprint-G2.5.1350.md`
+* `docs/sprints/Sprint-G2.5.1351.md`
+* `docs/sprints/Sprint-G2.5.1352.md`
+* `docs/sprints/Sprint-G2.5.1353.md`
+* `docs/sprints/Sprint-G2.5.1354.md`
+* `docs/sprints/Sprint-G2.5.1355.md`
+* `docs/sprints/Sprint-G2.5.1356.md`
+* `docs/sprints/Sprint-G2.5.1357.md`
+* `docs/sprints/Sprint-G2.5.1358.md`
+* `docs/sprints/Sprint-G2.5.1359.md`
+* `docs/sprints/Sprint-G2.5.1360.md`
+* `docs/sprints/Sprint-G2.5.1361.md`
+* `docs/sprints/Sprint-G2.5.1362.md`
+* `docs/sprints/Sprint-G2.5.1363.md`
+* `docs/sprints/Sprint-G2.5.1364.md`
+* `docs/sprints/Sprint-G2.5.1365.md`
+* `docs/sprints/Sprint-G2.5.1366.md`
+* `docs/sprints/Sprint-G2.5.1367.md`
+* `docs/sprints/Sprint-G2.5.1368.md`
+* `docs/sprints/Sprint-G2.5.1369.md`
+* `docs/sprints/Sprint-G2.5.1370.md`
+* `docs/sprints/Sprint-G2.5.1371.md`
+* `docs/sprints/Sprint-G2.5.1372.md`
+* `docs/sprints/Sprint-G2.5.1373.md`
+* `docs/sprints/Sprint-G2.5.1374.md`
+* `docs/sprints/Sprint-G2.5.1375.md`
+* `docs/sprints/Sprint-G2.5.1376.md`
+* `docs/sprints/Sprint-G2.5.1377.md`
+* `docs/sprints/Sprint-G2.5.1378.md`
+* `docs/sprints/Sprint-G2.5.1379.md`
+* `docs/sprints/Sprint-G2.5.1380.md`
 
 ---
 

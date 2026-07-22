@@ -28,6 +28,7 @@ import type {
   RendererMountReportConsumerConflictResolution,
   RendererMountReportConsumerDiagnosticDelivery,
   RendererMountReportConsumerDiagnosticDeliveryManifest,
+  RendererMountReportConsumerDiagnosticDeliveryManifestClosure,
   RendererMountReportConsumerDiagnosticAggregation,
   RendererMountReportConsumerDiagnosticAggregationSummary,
   RendererMountReportConsumerDiagnosticBatchExecution,
@@ -137,6 +138,7 @@ import {
   resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate,
   resolveRendererPlatformAdapterConflictWithFirstCandidate,
   resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate,
+  reviewRendererMountReportConsumerDiagnosticDeliveryManifest,
   reviewRendererMountReportConsumerDiagnosticRegistryExecution,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
@@ -219,6 +221,7 @@ describe("renderer public API", () => {
     expect(Renderer.resolveRendererAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererMountReportConsumerConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
+    expect(Renderer.reviewRendererMountReportConsumerDiagnosticDeliveryManifest).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
@@ -460,6 +463,21 @@ describe("renderer public API", () => {
         blockedCount: 0,
         issueCount: 0,
       };
+    const mountReportConsumerDiagnosticDeliveryManifestClosure:
+      RendererMountReportConsumerDiagnosticDeliveryManifestClosure = {
+        context: {
+          component: "renderer.mount.report.consumer.diagnostics.delivery.manifest.closure",
+          manifestName: mountReportConsumerDiagnosticDeliveryManifest.name,
+        },
+        result: {
+          ok: true,
+          deliveryCount: 1,
+          readyCount: 1,
+          blockedCount: 0,
+          issueCount: 0,
+          issues: [],
+        },
+      };
     const mountReportConsumerLookupRequest: RendererMountReportConsumerLookupRequest = {
       name: mountReportConsumer.name,
     };
@@ -608,6 +626,7 @@ describe("renderer public API", () => {
     expect(mountReportConsumerDiagnosticDeliveryManifest.deliveries[0]).toBe(
       mountReportConsumerDiagnosticDelivery,
     );
+    expect(mountReportConsumerDiagnosticDeliveryManifestClosure.result.deliveryCount).toBe(1);
     expect(mountReportConsumerConflict.consumers[0]).toBe(mountReportConsumer);
     expect(mountReportConsumerConflictResolution.consumer).toBe(mountReportConsumer);
     expect(mountReportConsumerRegistry.consumers[0]).toBe(mountReportConsumer);
@@ -2997,6 +3016,67 @@ describe("renderer public API", () => {
     expect(manifest).not.toHaveProperty("theme");
     expect(manifest).not.toHaveProperty("homeAssistant");
     expect(manifest).not.toHaveProperty("element");
+  });
+
+  it("reviews successful Renderer mount report consumer diagnostic delivery manifests", () => {
+    expect(reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
+      createRendererMountReportConsumerDiagnosticDeliveryManifest("ready-manifest", []),
+    )).toEqual({
+      context: {
+        component: "renderer.mount.report.consumer.diagnostics.delivery.manifest.closure",
+        manifestName: "ready-manifest",
+      },
+      result: {
+        ok: true,
+        deliveryCount: 0,
+        readyCount: 0,
+        blockedCount: 0,
+        issueCount: 0,
+        issues: [],
+      },
+    });
+  });
+
+  it("reviews blocked Renderer mount report consumer diagnostic delivery manifests", async () => {
+    const consumer = createRendererMountReportConsumer({
+      name: "blocked-manifest-closure-consumer",
+      consume: consumption => ({
+        consumerName: "blocked-manifest-closure-consumer",
+        consumed: false,
+        summary: consumption.summary,
+      }),
+    });
+    const delivery = createRendererMountReportConsumerDiagnosticDelivery(
+      "blocked-manifest-closure-delivery",
+      reviewRendererMountReportConsumerDiagnosticRegistryExecution(
+        await consumeAndInspectRendererMountReportConsumerRegistry(
+          createRendererMountReportConsumerRegistry([consumer]),
+          createRendererMountReportConsumption({
+            records: [],
+          }),
+        ),
+      ),
+    );
+
+    const closure = Renderer.reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
+      createRendererMountReportConsumerDiagnosticDeliveryManifest("blocked-manifest", [delivery]),
+    );
+
+    expect(closure.result.ok).toBe(false);
+    expect(closure.result.deliveryCount).toBe(1);
+    expect(closure.result.blockedCount).toBe(1);
+    expect(closure.result.issues).toEqual(delivery.closure.result.issues);
+  });
+
+  it("keeps Renderer mount report consumer diagnostic delivery manifest closures free of integration metadata", () => {
+    const closure = reviewRendererMountReportConsumerDiagnosticDeliveryManifest(
+      createRendererMountReportConsumerDiagnosticDeliveryManifest("boundary-manifest-closure", []),
+    );
+
+    expect(closure).not.toHaveProperty("platform");
+    expect(closure).not.toHaveProperty("theme");
+    expect(closure).not.toHaveProperty("homeAssistant");
+    expect(closure).not.toHaveProperty("element");
   });
 
   it("keeps Renderer mount report consumers free of integration metadata", () => {

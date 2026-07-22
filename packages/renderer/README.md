@@ -51,6 +51,7 @@ descriptive only and do not mount output yet.
 - `RendererMountReportConsumerConflictResolution`
 - `RendererMountReportConsumerDiagnosticDelivery`
 - `RendererMountReportConsumerDiagnosticDeliveryManifest`
+- `RendererMountReportConsumerDiagnosticDeliveryManifestClosure`
 - `RendererMountReportConsumerDiagnosticAggregation`
 - `RendererMountReportConsumerDiagnosticAggregationSummary`
 - `RendererMountReportConsumerDiagnosticBatchExecution`
@@ -154,6 +155,7 @@ descriptive only and do not mount output yet.
 - `resolveRendererAdapterRegistryConflictsWithFirstCandidate`
 - `resolveRendererMountReportConsumerConflictWithFirstCandidate`
 - `resolveRendererMountReportConsumerRegistryConflictsWithFirstCandidate`
+- `reviewRendererMountReportConsumerDiagnosticDeliveryManifest`
 - `reviewRendererMountReportConsumerDiagnosticRegistryExecution`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
@@ -450,6 +452,12 @@ multiple delivery envelopes into transport-neutral manifest data. Manifests
 copy delivery lists, preserve delivery references, count ready and blocked
 deliveries and total issue counts without adding DOM, Home Assistant, Theme or
 platform metadata.
+
+Renderer mount report consumer diagnostic delivery manifest closure now reviews
+delivery manifests into compact closure reports. Manifest closures preserve the
+manifest name, report delivery, ready, blocked and issue counts, collect issues
+from delivery closures and remain data-only without transport or platform
+metadata.
 
 Renderer host contexts remain thin references to Core Runtime hosts. Renderer
 does not clone, wrap or reclassify Runtime state, diagnostics, events or
