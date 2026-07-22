@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer DOM mounting now provides a controlled surface-target usage path that
+  records output HTML by target identifier while rejecting memory targets and
+  missing identifiers without browser, Theme or Home Assistant bindings.
 * Renderer memory mounting now provides the first concrete renderer usage path
   by mounting output content into memory targets while rejecting non-memory
   targets without DOM, Theme or Home Assistant bindings.

@@ -243,6 +243,7 @@ describe("renderer public API", () => {
   it("exports the Renderer package value surface from the package root", () => {
     expect(Renderer.closeRendererConcreteIntegrationBoundaryExecution).toBeTypeOf("function");
     expect(Renderer.closeRendererConcreteIntegrationBoundaryRelease).toBeTypeOf("function");
+    expect(Renderer.clearRendererDomMountStore).toBeTypeOf("function");
     expect(Renderer.clearRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.createRendererAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterConflict).toBeTypeOf("function");
@@ -297,6 +298,10 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererMountReportConsumption).toBeTypeOf("function");
     expect(Renderer.createRendererMountRequest).toBeTypeOf("function");
     expect(Renderer.createRendererMountResult).toBeTypeOf("function");
+    expect(Renderer.createRendererDomMountAdapter).toBeTypeOf("function");
+    expect(Renderer.createRendererDomMountPlan).toBeTypeOf("function");
+    expect(Renderer.createRendererDomMountRecord).toBeTypeOf("function");
+    expect(Renderer.createRendererDomMountStore).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountRecord).toBeTypeOf("function");
@@ -316,18 +321,22 @@ describe("renderer public API", () => {
     expect(Renderer.consumeAndInspectRendererMountReportConsumers).toBeTypeOf("function");
     expect(Renderer.consumeAndInspectRendererMountReports).toBeTypeOf("function");
     expect(Renderer.consumeRendererMountReports).toBeTypeOf("function");
+    expect(Renderer.executeRendererDomMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererPipeline).toBeTypeOf("function");
     expect(Renderer.finalizeRendererConcreteIntegrationBoundary).toBeTypeOf("function");
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.findLatestRendererDomMountRecord).toBeTypeOf("function");
     expect(Renderer.findLatestRendererMemoryMountRecord).toBeTypeOf("function");
+    expect(Renderer.findRendererDomMountRecords).toBeTypeOf("function");
     expect(Renderer.findRendererMemoryMountRecords).toBeTypeOf("function");
     expect(Renderer.findRendererMountReportConsumer).toBeTypeOf("function");
     expect(Renderer.findRendererMountReportConsumerConflicts).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererPlatformAdapterConflicts).toBeTypeOf("function");
+    expect(Renderer.inspectRendererDomMountResult).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountLifecycleRecord).toBeTypeOf("function");
     expect(Renderer.inspectRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.inspectRendererMemoryMountResult).toBeTypeOf("function");
@@ -343,6 +352,7 @@ describe("renderer public API", () => {
     );
     expect(Renderer.aggregateRendererMountReportConsumerDiagnostics).toBeTypeOf("function");
     expect(Renderer.evaluateRendererMountReportConsumerDiagnosticPolicy).toBeTypeOf("function");
+    expect(Renderer.summarizeRendererDomMountStore).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMountReportConsumerDiagnosticAggregation).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");

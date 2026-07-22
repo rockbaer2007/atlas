@@ -14,7 +14,7 @@ small package-root API for creating a renderer host context from a Core Runtime
 host, defining ordered renderer pipeline stages and executing those stages
 sequentially. It also defines a first output shape without binding output to a
 target, DOM, Home Assistant surface or theme model yet. Renderer targets can now
-be exercised through a concrete memory adapter without opening DOM, Home
+be exercised through concrete memory and DOM-like adapters without opening Home
 Assistant or theme execution paths.
 
 ---
@@ -79,6 +79,12 @@ Assistant or theme execution paths.
 - `RendererMountResult`
 - `RendererMountDiagnosticCodes`
 - `RendererMountDiagnosticReport`
+- `RendererDomMountAdapter`
+- `RendererDomMountDiagnostic`
+- `RendererDomMountLookupRequest`
+- `RendererDomMountRecord`
+- `RendererDomMountStore`
+- `RendererDomMountSummary`
 - `RendererMountLifecycleRecord`
 - `RendererMountLifecycleReport`
 - `RendererMountLifecycleState`
@@ -144,6 +150,7 @@ Assistant or theme execution paths.
 - `aggregateRendererMountReportConsumerDiagnostics`
 - `closeRendererConcreteIntegrationBoundaryExecution`
 - `closeRendererConcreteIntegrationBoundaryRelease`
+- `clearRendererDomMountStore`
 - `clearRendererMemoryMountStore`
 - `createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog`
 - `createRendererConcreteIntegrationBoundaryExecutionDelivery`
@@ -198,6 +205,10 @@ Assistant or theme execution paths.
 - `createRendererMountRequest`
 - `createRendererMountLifecycleRecord`
 - `createRendererMountResult`
+- `createRendererDomMountAdapter`
+- `createRendererDomMountPlan`
+- `createRendererDomMountRecord`
+- `createRendererDomMountStore`
 - `createRendererMemoryMountAdapter`
 - `createRendererMemoryMountPlan`
 - `createRendererMemoryMountRecord`
@@ -218,18 +229,22 @@ Assistant or theme execution paths.
 - `consumeAndInspectRendererMountReports`
 - `consumeRendererMountReports`
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
+- `executeRendererDomMountPlan`
 - `executeRendererMountPlan`
 - `executeRendererPipeline`
 - `executeRendererMemoryMountPlan`
 - `finalizeRendererConcreteIntegrationBoundary`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `findLatestRendererDomMountRecord`
 - `findLatestRendererMemoryMountRecord`
+- `findRendererDomMountRecords`
 - `findRendererMemoryMountRecords`
 - `findRendererMountReportConsumer`
 - `findRendererMountReportConsumerConflicts`
 - `findRendererPlatformAdapter`
 - `findRendererPlatformAdapterConflicts`
+- `inspectRendererDomMountResult`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
 - `inspectRendererMemoryMountResult`
@@ -267,6 +282,7 @@ Assistant or theme execution paths.
 - `snapshotRendererConcreteIntegrationBoundaryPlan`
 - `snapshotRendererIntegrationHandoff`
 - `snapshotRendererMountReportConsumerDiagnosticDeliveryBundle`
+- `summarizeRendererDomMountStore`
 - `summarizeRendererMemoryMountStore`
 - `summarizeRendererMountReports`
 - `summarizeRendererMountReportConsumerDiagnosticAggregation`
@@ -303,6 +319,10 @@ executed through the shared renderer mount-plan executor with adapter strategy
 semantics. Memory mount stores can be cleared in place, latest matching records
 can be resolved for diagnostics, and mount results can be inspected alongside
 store state for complete output-to-record scenario checks.
+The DOM-like mount adapter records output HTML against `surface` target
+identifiers, rejects memory targets, rejects surface targets without
+identifiers and exposes lookup, latest-record, summary, clear, diagnostics and
+plan-execution helpers without touching browser globals or Home Assistant APIs.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains
