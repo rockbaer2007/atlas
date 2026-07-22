@@ -114,6 +114,8 @@ import type {
   RendererPlatformAdapterSelectionResult,
   RendererPipelineStage,
   RendererPipelineStageResult,
+  RendererTargetMountIntegrationReadiness,
+  RendererTargetMountIntegrationReadinessIssue,
   RendererTargetMountAdapterResolution,
   RendererTarget,
   RendererTargetKind,
@@ -244,6 +246,7 @@ import {
   reviewRendererMountReportConsumerDiagnosticRegistryExecution,
   reviewRendererConcreteIntegrationBoundary,
   reviewRendererIntegrationPreparationReadiness,
+  reviewRendererTargetMountIntegrationReadiness,
   RendererDefaultMountAdapterNames,
   selectFirstRendererAdapterCandidate,
   selectFirstRendererMountReportConsumerCandidate,
@@ -427,6 +430,10 @@ describe("renderer public API", () => {
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
     expect(Renderer.reviewRendererConcreteIntegrationBoundary).toBeTypeOf("function");
     expect(Renderer.reviewRendererIntegrationPreparationReadiness).toBeTypeOf("function");
+    expect(Renderer.reviewRendererTargetMountIntegrationReadiness).toBeTypeOf("function");
+    expect(reviewRendererTargetMountIntegrationReadiness).toBe(
+      Renderer.reviewRendererTargetMountIntegrationReadiness,
+    );
     expect(Renderer.handoffRendererTargetMountBatchDiagnostics).toBeTypeOf("function");
     expect(handoffRendererTargetMountBatchDiagnostics).toBe(
       Renderer.handoffRendererTargetMountBatchDiagnostics,
@@ -1327,6 +1334,23 @@ describe("renderer public API", () => {
         ready: true,
         exportable: true,
       };
+    const targetMountIntegrationReadinessIssue:
+      RendererTargetMountIntegrationReadinessIssue = {
+        code: "renderer.target.mount.integration.type",
+        message: "type issue",
+        severity: "error",
+      };
+    const targetMountIntegrationReadiness: RendererTargetMountIntegrationReadiness = {
+      export: unifiedMountBatchDiagnosticCatalogExport,
+      ready: false,
+      blocked: true,
+      exportable: false,
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+      issues: [targetMountIntegrationReadinessIssue],
+    };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1375,6 +1399,12 @@ describe("renderer public API", () => {
     );
     expect(unifiedMountBatchDiagnosticCatalogExport.snapshot).toBe(
       unifiedMountBatchDiagnosticCatalogSnapshot,
+    );
+    expect(targetMountIntegrationReadiness.export).toBe(
+      unifiedMountBatchDiagnosticCatalogExport,
+    );
+    expect(targetMountIntegrationReadiness.issues[0]).toBe(
+      targetMountIntegrationReadinessIssue,
     );
     expect(adapterSelectionRequest.candidates[0]).toBe(adapter);
     expect(adapterSelectionResult.adapter).toBe(adapter);

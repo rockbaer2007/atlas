@@ -18,6 +18,7 @@ import {
   handoffRendererTargetMountBatchDiagnostics,
   RendererDefaultMountAdapterNames,
   resolveRendererTargetMountAdapter,
+  reviewRendererTargetMountIntegrationReadiness,
   snapshotRendererTargetMountBatchDiagnosticCatalog,
   snapshotRendererTargetMountBatchDiagnostics,
 } from "../src";
@@ -1186,5 +1187,111 @@ describe("renderer mount adapter routing", () => {
     expect(exported.ready).toBe(false);
     expect(exported.exportable).toBe(false);
     expect(exported.snapshot.blocked).toBe(true);
+  });
+
+  it("reviews ready target mount integration exports as ready", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "readiness-ready-memory",
+        }),
+        target: createRendererTarget({
+          kind: "memory",
+          name: "readiness-ready-cache",
+        }),
+      }],
+    });
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([
+      handoffRendererTargetMountBatchDiagnostics(
+        closeRendererTargetMountBatchDiagnostics(execution),
+      ),
+    ]);
+
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(catalog),
+    );
+
+    expect(readiness).toEqual({
+      export: expect.any(Object),
+      ready: true,
+      blocked: false,
+      exportable: true,
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+      issues: [],
+    });
+  });
+
+  it("reviews blocked target mount integration exports as blocked", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const execution = await executeRendererTargetMountBatch({
+      registry: routing.registry,
+      requests: [{
+        output: createRendererOutput({
+          kind: "fragment",
+          name: "readiness-blocked-invalid",
+        }),
+        target: createRendererTarget({
+          kind: "surface",
+          name: "readiness-blocked-surface",
+        }),
+      }],
+    });
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([
+      handoffRendererTargetMountBatchDiagnostics(
+        closeRendererTargetMountBatchDiagnostics(execution),
+      ),
+    ]);
+
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(catalog),
+    );
+
+    expect(readiness.ready).toBe(false);
+    expect(readiness.blocked).toBe(true);
+    expect(readiness.exportable).toBe(false);
+    expect(readiness.blockedCount).toBe(1);
+    expect(readiness.issues).toEqual([{
+      code: "renderer.target.mount.integration.blocked",
+      message: "Renderer target mount integration has blocked diagnostic handoffs.",
+      severity: "error",
+    }, {
+      code: "renderer.target.mount.integration.not_exportable",
+      message: "Renderer target mount integration export is not exportable.",
+      severity: "error",
+    }]);
+  });
+
+  it("reviews empty target mount integration exports as blocked", () => {
+    const catalog = createRendererTargetMountBatchDiagnosticCatalog([]);
+
+    const readiness = reviewRendererTargetMountIntegrationReadiness(
+      exportRendererTargetMountBatchDiagnosticCatalog(catalog),
+    );
+
+    expect(readiness).toEqual({
+      export: expect.any(Object),
+      ready: false,
+      blocked: true,
+      exportable: false,
+      handoffCount: 0,
+      readyCount: 0,
+      blockedCount: 0,
+      transferableCount: 0,
+      issues: [{
+        code: "renderer.target.mount.integration.empty",
+        message: "Renderer target mount integration has no diagnostic handoffs.",
+        severity: "error",
+      }, {
+        code: "renderer.target.mount.integration.not_exportable",
+        message: "Renderer target mount integration export is not exportable.",
+        severity: "error",
+      }],
+    });
   });
 });

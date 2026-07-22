@@ -80,6 +80,8 @@ Assistant or theme execution paths.
 - `RendererMountDiagnosticCodes`
 - `RendererMountDiagnosticReport`
 - `RendererDefaultMountAdapterRegistry`
+- `RendererTargetMountIntegrationReadiness`
+- `RendererTargetMountIntegrationReadinessIssue`
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchDiagnosticCatalog`
@@ -290,6 +292,7 @@ Assistant or theme execution paths.
 - `reviewRendererMountReportConsumerDiagnosticRegistryExecution`
 - `reviewRendererConcreteIntegrationBoundary`
 - `reviewRendererIntegrationPreparationReadiness`
+- `reviewRendererTargetMountIntegrationReadiness`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -378,6 +381,9 @@ handoff, ready, blocked and transferable counts for later integration layers.
 Catalog snapshots compact those counts into ready or blocked catalog state, and
 catalog exports preserve the catalog reference with an exportable signal only
 when every collected handoff is ready.
+Target mount integration readiness reviews exported catalogs into a clear
+ready or blocked gate, carrying exportable state, handoff counts and stable
+issues for empty, blocked or non-exportable exports.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

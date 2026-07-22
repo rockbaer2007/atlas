@@ -147,6 +147,24 @@ export type RendererUnifiedMountBatchDiagnosticCatalogExport = Readonly<{
   exportable: boolean;
 }>;
 
+export type RendererTargetMountIntegrationReadinessIssue = Readonly<{
+  code: string;
+  message: string;
+  severity: "error";
+}>;
+
+export type RendererTargetMountIntegrationReadiness = Readonly<{
+  export: RendererUnifiedMountBatchDiagnosticCatalogExport;
+  ready: boolean;
+  blocked: boolean;
+  exportable: boolean;
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+  issues: readonly RendererTargetMountIntegrationReadinessIssue[];
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -372,5 +390,49 @@ export function exportRendererTargetMountBatchDiagnosticCatalog(
     snapshot,
     ready: snapshot.ready,
     exportable: snapshot.ready,
+  };
+}
+
+export function reviewRendererTargetMountIntegrationReadiness(
+  exported: RendererUnifiedMountBatchDiagnosticCatalogExport,
+): RendererTargetMountIntegrationReadiness {
+  const issues: RendererTargetMountIntegrationReadinessIssue[] = [];
+
+  if (exported.snapshot.handoffCount === 0) {
+    issues.push({
+      code: "renderer.target.mount.integration.empty",
+      message: "Renderer target mount integration has no diagnostic handoffs.",
+      severity: "error",
+    });
+  }
+
+  if (exported.snapshot.blockedCount > 0) {
+    issues.push({
+      code: "renderer.target.mount.integration.blocked",
+      message: "Renderer target mount integration has blocked diagnostic handoffs.",
+      severity: "error",
+    });
+  }
+
+  if (!exported.exportable) {
+    issues.push({
+      code: "renderer.target.mount.integration.not_exportable",
+      message: "Renderer target mount integration export is not exportable.",
+      severity: "error",
+    });
+  }
+
+  const ready = exported.exportable && issues.length === 0;
+
+  return {
+    export: exported,
+    ready,
+    blocked: !ready,
+    exportable: exported.exportable,
+    handoffCount: exported.snapshot.handoffCount,
+    readyCount: exported.snapshot.readyCount,
+    blockedCount: exported.snapshot.blockedCount,
+    transferableCount: exported.snapshot.transferableCount,
+    issues,
   };
 }
