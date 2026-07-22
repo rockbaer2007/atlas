@@ -3597,7 +3597,7 @@ quality validation and the delivered results.
 | G2.5.3579 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Contract Review | Completed | - |
 | G2.5.3580 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Gate Review | Completed | - |
 | G2.5.3581 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review | Completed | - |
-| G2.5.3582 | Renderer Concrete Integration Boundary Release Closure Export Review | Planned | - |
+| G2.5.3582 | Renderer Concrete Integration Boundary Release Closure Delivery Review | Completed | - |
 
 ---
 
@@ -11094,6 +11094,7 @@ Planned deliverables
 - [G2.5.3579 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Contract Review](Sprint-G2.5.3579.md)
 - [G2.5.3580 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Gate Review](Sprint-G2.5.3580.md)
 - [G2.5.3581 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review](Sprint-G2.5.3581.md)
+- [G2.5.3582 - Renderer Concrete Integration Boundary Release Closure Delivery Review](Sprint-G2.5.3582.md)
 - [G2.5.3482 - Renderer Concrete Integration Boundary Release Closure Export Contract Review](Sprint-G2.5.3482.md)
 - [G2.5.3483 - Renderer Concrete Integration Boundary Release Closure Export Shape Review](Sprint-G2.5.3483.md)
 - [G2.5.3484 - Renderer Concrete Integration Boundary Release Closure Export Ready Review](Sprint-G2.5.3484.md)

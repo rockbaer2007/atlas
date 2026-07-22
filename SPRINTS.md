@@ -3594,23 +3594,23 @@ Detailed sprint documentation is maintained in `docs/sprints`.
 | G2.5.3579 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Contract Review | Completed | - |
 | G2.5.3580 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Gate Review | Completed | - |
 | G2.5.3581 | Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review | Completed | - |
-| G2.5.3582 | Renderer Concrete Integration Boundary Release Closure Export Review | Planned | - |
+| G2.5.3582 | Renderer Concrete Integration Boundary Release Closure Delivery Review | Completed | - |
 
 ---
 
 # Latest Sprint
 
-## G2.5.3581 - Renderer Concrete Integration Boundary Release Closure Export Snapshot Catalog Review
+## G2.5.3582 - Renderer Concrete Integration Boundary Release Closure Delivery Review
 
 Goal:
 
-Group Renderer concrete integration boundary release closure export snapshots in non-executable catalogs.
+Wrap Renderer concrete integration boundary release closure export snapshot catalogs in non-executable delivery envelopes.
 
 Deliverables:
 
-* Renderer concrete integration boundary release closure export snapshot catalog type
-* Boundary release closure export snapshot catalog helper
-* Ready, blocked, copy and non-executable tests
+* Renderer concrete integration boundary release closure delivery type
+* Boundary release closure delivery helper
+* Ready, blocked and non-executable tests
 * Sprint documentation
 
 Status:
@@ -3621,13 +3621,7 @@ Completed.
 
 # Next Sprint
 
-## G2.5.3582 - Renderer Concrete Integration Boundary Release Closure Export Review
-
-Suggested focus:
-
-* Decide the next release closure export boundary
-* Keep release closure export data non-executable
-* Preserve release closure export snapshot catalog API boundaries
+No sprint is currently planned.
 
 ---
 
@@ -5308,6 +5302,7 @@ Detailed records:
 * `docs/sprints/Sprint-G2.5.3579.md`
 * `docs/sprints/Sprint-G2.5.3580.md`
 * `docs/sprints/Sprint-G2.5.3581.md`
+* `docs/sprints/Sprint-G2.5.3582.md`
 * `docs/sprints/Sprint-G2.5.3482.md`
 * `docs/sprints/Sprint-G2.5.3483.md`
 * `docs/sprints/Sprint-G2.5.3484.md`
