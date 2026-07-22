@@ -40,8 +40,18 @@ export type RendererMemoryMountSummary = Readonly<{
   emptyContentCount: number;
 }>;
 
+export type RendererMemoryMountDiagnostic = Readonly<{
+  mounted: boolean;
+  outputName: string;
+  targetName: string;
+  recordCount: number;
+  latestRecord?: RendererMemoryMountRecord;
+  error?: string;
+}>;
+
 export type RendererMemoryMountAdapter = RendererAdapter & Readonly<{
   store: RendererMemoryMountStore;
+  clear(): void;
 }>;
 
 export function createRendererMemoryMountStore(): RendererMemoryMountStore {
@@ -78,6 +88,22 @@ export function findRendererMemoryMountRecords(
   ));
 }
 
+export function findLatestRendererMemoryMountRecord(
+  store: RendererMemoryMountStore,
+  request: RendererMemoryMountLookupRequest,
+): RendererMemoryMountRecord | undefined {
+  return findRendererMemoryMountRecords(store, request).at(-1);
+}
+
+export function clearRendererMemoryMountStore(
+  store: RendererMemoryMountStore,
+): RendererMemoryMountStore {
+  const records = store.records as RendererMemoryMountRecord[];
+  records.splice(0, records.length);
+
+  return store;
+}
+
 export function summarizeRendererMemoryMountStore(
   store: RendererMemoryMountStore,
 ): RendererMemoryMountSummary {
@@ -86,6 +112,28 @@ export function summarizeRendererMemoryMountStore(
     outputCount: new Set(store.records.map(record => record.outputName)).size,
     targetCount: new Set(store.records.map(record => record.targetName)).size,
     emptyContentCount: store.records.filter(record => record.content === "").length,
+  };
+}
+
+export function inspectRendererMemoryMountResult(
+  store: RendererMemoryMountStore,
+  result: RendererMountResult,
+): RendererMemoryMountDiagnostic {
+  const latestRecord = findLatestRendererMemoryMountRecord(store, {
+    outputName: result.output.name,
+    targetName: result.target.name,
+    ...(result.target.identifier !== undefined
+      ? { targetIdentifier: result.target.identifier }
+      : {}),
+  });
+
+  return {
+    mounted: result.mounted,
+    outputName: result.output.name,
+    targetName: result.target.name,
+    recordCount: store.records.length,
+    ...(latestRecord ? { latestRecord } : {}),
+    ...(result.error ? { error: result.error } : {}),
   };
 }
 
@@ -130,6 +178,9 @@ export function createRendererMemoryMountAdapter(
   return {
     name,
     store: mountedStore,
+    clear(): void {
+      clearRendererMemoryMountStore(mountedStore);
+    },
     mount(request: RendererMountRequest): RendererMountResult {
       if (request.target.kind !== "memory") {
         return {

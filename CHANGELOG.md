@@ -14,6 +14,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 * Renderer memory mounting now supports record lookup, store summaries,
   adapter-based memory mount plans and execution through the shared mount-plan
   executor.
+* Renderer memory mounting now supports in-place store clearing, latest-record
+  lookup, mount result diagnostics and full output-to-record scenario coverage.
 * Added a G2.5 stabilization review that records the 100% sprint close-out,
   quality gates, current stability posture and recommended next product phase.
 * Framework readiness now has a dedicated `@atlas/workspace` package that

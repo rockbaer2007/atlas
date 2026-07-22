@@ -144,6 +144,7 @@ Assistant or theme execution paths.
 - `aggregateRendererMountReportConsumerDiagnostics`
 - `closeRendererConcreteIntegrationBoundaryExecution`
 - `closeRendererConcreteIntegrationBoundaryRelease`
+- `clearRendererMemoryMountStore`
 - `createRendererConcreteIntegrationBoundaryExecutionClosureSnapshotCatalog`
 - `createRendererConcreteIntegrationBoundaryExecutionDelivery`
 - `createRendererConcreteIntegrationBoundaryExecutionDeliverySnapshotCatalog`
@@ -223,6 +224,7 @@ Assistant or theme execution paths.
 - `finalizeRendererConcreteIntegrationBoundary`
 - `findRendererAdapter`
 - `findRendererAdapterConflicts`
+- `findLatestRendererMemoryMountRecord`
 - `findRendererMemoryMountRecords`
 - `findRendererMountReportConsumer`
 - `findRendererMountReportConsumerConflicts`
@@ -230,6 +232,7 @@ Assistant or theme execution paths.
 - `findRendererPlatformAdapterConflicts`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
+- `inspectRendererMemoryMountResult`
 - `inspectRendererMountReportConsumerResult`
 - `inspectRendererMountResult`
 - `isRendererMountPlanReady`
@@ -297,7 +300,9 @@ memory targets while rejecting non-memory targets without mutating its store.
 Memory mount records can be looked up by output and target metadata, memory
 stores can be summarized for scenario assertions, and memory mount plans can be
 executed through the shared renderer mount-plan executor with adapter strategy
-semantics.
+semantics. Memory mount stores can be cleared in place, latest matching records
+can be resolved for diagnostics, and mount results can be inspected alongside
+store state for complete output-to-record scenario checks.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains
