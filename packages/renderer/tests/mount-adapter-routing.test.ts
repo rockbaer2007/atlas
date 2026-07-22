@@ -6,6 +6,7 @@ import {
   createRendererOutput,
   createRendererTarget,
   executeRendererTargetMount,
+  executeRendererTargetMountWithReport,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
   RendererDefaultMountAdapterNames,
@@ -192,6 +193,153 @@ describe("renderer mount adapter routing", () => {
       output,
       target,
       error: "Renderer surface targets require identifiers before adapter routing.",
+    });
+    expect(routing.memoryAdapter.store.records).toEqual([]);
+    expect(routing.domAdapter.store.records).toEqual([]);
+  });
+
+  it("reports successful memory mounts through lifecycle records", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "reported-memory-fragment",
+      content: "reported content",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "reported-memory-cache",
+    });
+
+    const execution = await executeRendererTargetMountWithReport({
+      output,
+      target,
+      registry: routing.registry,
+    });
+
+    expect(execution.result.mounted).toBe(true);
+    expect(execution.lifecycleRecord.state).toBe("reported");
+    expect(execution.lifecycleRecord.result).toBe(execution.result);
+    expect(execution.lifecycleRecord.report).toBe(execution.diagnosticReport);
+    expect(execution.diagnosticReport).toEqual({
+      context: {
+        component: "renderer.mount",
+      },
+      result: {
+        ok: true,
+        issues: [],
+      },
+    });
+    expect(execution.report).toEqual({
+      state: "reported",
+      planName: "target:reported-memory-fragment->reported-memory-cache",
+      strategy: "adapter",
+      outputName: output.name,
+      targetName: target.name,
+      qualityGates: ["request", "output", "target", "diagnostics"],
+      planned: false,
+      executed: false,
+      reported: true,
+      issueCount: 0,
+      issues: [],
+      mounted: true,
+      diagnosticsOk: true,
+    });
+  });
+
+  it("reports successful DOM mounts through lifecycle records", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const output = createRendererOutput({
+      kind: "document",
+      name: "reported-dom-document",
+      content: "<section>Reported DOM</section>",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "reported-dom-surface",
+      identifier: "reported-dom-root",
+    });
+
+    const execution = await executeRendererTargetMountWithReport({
+      output,
+      target,
+      registry: routing.registry,
+    });
+
+    expect(execution.result).toEqual({
+      mounted: true,
+      output,
+      target,
+    });
+    expect(execution.report.mounted).toBe(true);
+    expect(execution.report.diagnosticsOk).toBe(true);
+    expect(execution.report.planName).toBe(
+      "target:reported-dom-document->reported-dom-surface",
+    );
+    expect(findLatestRendererDomMountRecord(routing.domAdapter.store, {
+      outputName: output.name,
+      targetName: target.name,
+      elementId: target.identifier,
+    })?.html).toBe(output.content);
+  });
+
+  it("reports missing adapter failures through diagnostics", async () => {
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "missing-adapter-fragment",
+    });
+    const target = createRendererTarget({
+      kind: "memory",
+      name: "missing-adapter-cache",
+    });
+
+    const execution = await executeRendererTargetMountWithReport({
+      output,
+      target,
+      registry: createRendererAdapterRegistry([]),
+    });
+
+    expect(execution.result.mounted).toBe(false);
+    expect(execution.diagnosticReport.result).toEqual({
+      ok: false,
+      issues: [{
+        code: "renderer.mount.failed",
+        message: "Renderer mount adapter renderer.memory was not found.",
+        severity: "error",
+      }],
+    });
+    expect(execution.report).toMatchObject({
+      state: "reported",
+      mounted: false,
+      diagnosticsOk: false,
+      issueCount: 1,
+    });
+  });
+
+  it("reports invalid surface targets through diagnostics without store mutation", async () => {
+    const routing = createDefaultRendererMountAdapterRegistry();
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "reported-invalid-surface-fragment",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "reported-invalid-surface",
+    });
+
+    const execution = await executeRendererTargetMountWithReport({
+      output,
+      target,
+      registry: routing.registry,
+    });
+
+    expect(execution.result.error).toBe(
+      "Renderer surface targets require identifiers before adapter routing.",
+    );
+    expect(execution.report).toMatchObject({
+      state: "reported",
+      mounted: false,
+      diagnosticsOk: false,
+      issueCount: 1,
     });
     expect(routing.memoryAdapter.store.records).toEqual([]);
     expect(routing.domAdapter.store.records).toEqual([]);

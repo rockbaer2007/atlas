@@ -81,6 +81,7 @@ Assistant or theme execution paths.
 - `RendererMountDiagnosticReport`
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountAdapterResolution`
+- `RendererUnifiedMountExecution`
 - `RendererUnifiedMountRequest`
 - `RendererDomMountAdapter`
 - `RendererDomMountDiagnostic`
@@ -237,6 +238,7 @@ Assistant or theme execution paths.
 - `executeRendererDomMountPlan`
 - `executeRendererMountPlan`
 - `executeRendererTargetMount`
+- `executeRendererTargetMountWithReport`
 - `executeRendererPipeline`
 - `executeRendererMemoryMountPlan`
 - `finalizeRendererConcreteIntegrationBoundary`
@@ -335,6 +337,9 @@ single registry, resolves `memory` targets to the Memory adapter, resolves
 `surface` targets to the DOM adapter and executes output-to-target mounts
 through one helper. Missing adapter entries and surface targets without
 identifiers return stable unmounted results instead of mutating adapter stores.
+Unified target mount executions can also be reported in one step, producing the
+mount result, reported lifecycle record, diagnostic report and mount report from
+the same Memory or DOM routing path.
 Renderer adapters currently
 describe a named mount contract that can return a mount result synchronously or
 asynchronously. Adapter creation preserves mount handler references and remains

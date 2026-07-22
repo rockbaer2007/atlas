@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+* Renderer unified target mounts can now emit result, lifecycle, diagnostic and
+  report data from the same Memory/DOM adapter routing path.
 * Renderer mount adapter routing now provides a default Memory/DOM registry,
   target-kind adapter resolution and unified execution with missing-adapter and
   invalid-surface failure results.

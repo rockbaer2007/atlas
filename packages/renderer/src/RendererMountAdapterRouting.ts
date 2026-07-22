@@ -17,6 +17,15 @@ import {
   createRendererMountResult,
   type RendererMountResult,
 } from "./RendererMount";
+import { inspectRendererMountResult, type RendererMountDiagnosticReport } from "./RendererMountDiagnostics";
+import {
+  createRendererMountLifecycleRecord,
+  recordRendererMountLifecycleExecution,
+  recordRendererMountLifecycleReport,
+  type RendererMountLifecycleRecord,
+} from "./RendererMountLifecycle";
+import { createRendererMountPlan } from "./RendererMountPlan";
+import { createRendererMountReport, type RendererMountReport } from "./RendererMountReporting";
 import type { RendererOutput } from "./RendererOutput";
 import type { RendererTarget, RendererTargetKind } from "./RendererTarget";
 
@@ -42,6 +51,13 @@ export type RendererUnifiedMountRequest = Readonly<{
   output: RendererOutput;
   target: RendererTarget;
   registry?: RendererAdapterRegistry;
+}>;
+
+export type RendererUnifiedMountExecution = Readonly<{
+  result: RendererMountResult;
+  lifecycleRecord: RendererMountLifecycleRecord;
+  diagnosticReport: RendererMountDiagnosticReport;
+  report: RendererMountReport;
 }>;
 
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
@@ -117,4 +133,32 @@ export async function executeRendererTargetMount(
     output: request.output,
     target: request.target,
   }));
+}
+
+export async function executeRendererTargetMountWithReport(
+  request: RendererUnifiedMountRequest,
+): Promise<RendererUnifiedMountExecution> {
+  const mountRequest = createRendererMountRequest({
+    output: request.output,
+    target: request.target,
+  });
+  const plan = createRendererMountPlan({
+    name: `target:${request.output.name}->${request.target.name}`,
+    status: "planned",
+    strategy: "adapter",
+    request: mountRequest,
+    qualityGates: ["request", "output", "target", "diagnostics"],
+  });
+  const plannedRecord = createRendererMountLifecycleRecord(plan);
+  const result = await executeRendererTargetMount(request);
+  const executedRecord = recordRendererMountLifecycleExecution(plannedRecord, result);
+  const diagnosticReport = inspectRendererMountResult(result);
+  const lifecycleRecord = recordRendererMountLifecycleReport(executedRecord, diagnosticReport);
+
+  return {
+    result,
+    lifecycleRecord,
+    diagnosticReport,
+    report: createRendererMountReport(lifecycleRecord),
+  };
 }
