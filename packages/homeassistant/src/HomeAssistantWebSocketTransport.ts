@@ -5,6 +5,10 @@ import {
   parseHomeAssistantWebSocketMessage,
   type HomeAssistantWebSocketLifecycle,
 } from "./HomeAssistantWebSocketProtocol";
+import {
+  createHomeAssistantServiceCommand,
+  type HomeAssistantServiceCommand,
+} from "./HomeAssistantServiceCommand";
 
 export type HomeAssistantWebSocket = Readonly<{
   send(data: string): void;
@@ -17,7 +21,14 @@ export type HomeAssistantWebSocketClient = Readonly<{
   transport: HomeAssistantEntityStatePublisher;
   getLifecycle(): HomeAssistantWebSocketLifecycle;
   subscribeLifecycle(listener: (lifecycle: HomeAssistantWebSocketLifecycle) => void): () => void;
+  callService(command: HomeAssistantServiceCommand): HomeAssistantServiceCallResult;
   disconnect(): void;
+}>;
+
+export type HomeAssistantServiceCallResult = Readonly<{
+  accepted: boolean;
+  requestId?: number;
+  reason?: string;
 }>;
 
 export function createHomeAssistantWebSocketClient(
@@ -26,6 +37,7 @@ export function createHomeAssistantWebSocketClient(
 ): HomeAssistantWebSocketClient {
   const transport = createInMemoryHomeAssistantEntityStateTransport();
   let lifecycle: HomeAssistantWebSocketLifecycle = { state: "connecting" };
+  let nextRequestId = 2;
   const lifecycleListeners = new Set<(lifecycle: HomeAssistantWebSocketLifecycle) => void>();
   const updateLifecycle = (nextLifecycle: HomeAssistantWebSocketLifecycle): void => {
     lifecycle = nextLifecycle;
@@ -85,6 +97,33 @@ export function createHomeAssistantWebSocketClient(
       lifecycleListeners.add(listener);
       listener(lifecycle);
       return () => lifecycleListeners.delete(listener);
+    },
+    callService(command): HomeAssistantServiceCallResult {
+      if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {
+        return {
+          accepted: false,
+          reason: "Home Assistant event subscription is not active.",
+        };
+      }
+
+      const validatedCommand = createHomeAssistantServiceCommand(command.entityId, command.service);
+      if (!validatedCommand || validatedCommand.domain !== command.domain) {
+        return {
+          accepted: false,
+          reason: "Only light and switch turn_on or turn_off commands are allowed.",
+        };
+      }
+
+      const requestId = nextRequestId;
+      nextRequestId += 1;
+      socket.send(JSON.stringify({
+        id: requestId,
+        type: "call_service",
+        domain: validatedCommand.domain,
+        service: validatedCommand.service,
+        target: { entity_id: validatedCommand.entityId },
+      }));
+      return { accepted: true, requestId };
     },
     disconnect(): void {
       removeMessageListener();

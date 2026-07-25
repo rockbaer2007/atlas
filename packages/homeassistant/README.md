@@ -32,6 +32,10 @@ close reasons and subscribable lifecycle states. The browser adapter can open a
 connection when explicitly used by a host application; it never persists access
 tokens.
 
+The client can send explicit `turn_on` and `turn_off` requests only for `light`
+and `switch` entities after a successful event subscription. Hosts remain
+responsible for requiring a user confirmation before invoking these commands.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

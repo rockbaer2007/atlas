@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant now provides validated, subscription-gated light and switch
+  commands; the demo requires an explicit confirmation before sending one.
 - Home Assistant entity events now retain display names, raw values and units;
   the local demo can observe a comma-separated multi-entity list.
 - Home Assistant status panels now support selected live entities and recognize

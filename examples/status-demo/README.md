@@ -21,3 +21,7 @@ subscription is active, the primary entity drives the status panel and the list
 shows updates for all selected entities. Numeric and other available sensor
 values render as ready; `off` remains pending, while unavailable or unknown
 entities render as blocked.
+
+For a live `light` or `switch` entity, its card offers a single confirmed
+turn-on or turn-off action. Commands are unavailable until the subscription is
+active and are not available for other entity domains.

@@ -7,6 +7,7 @@ import {
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
+  createHomeAssistantServiceCommand,
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
   deriveHomeAssistantWebSocketUrl,
@@ -107,8 +108,28 @@ function renderEntityList() {
     value.textContent = entity?.value ?? entity?.state ?? "Waiting";
     detail.textContent = entity?.unit ?? entityId;
     card.append(name, value, detail);
+    if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
+      const action = document.createElement("button");
+      const service = entity.state === "on" ? "turn_off" : "turn_on";
+      action.type = "button";
+      action.textContent = service === "turn_on" ? "Turn on" : "Turn off";
+      action.addEventListener("click", () => requestEntityService(entityId, service));
+      card.append(action);
+    }
     entityList.append(card);
   }
+}
+
+function requestEntityService(entityId, service) {
+  const command = createHomeAssistantServiceCommand(entityId, service);
+  if (!command || !window.confirm(`Send ${service} to ${entityId}?`)) {
+    return;
+  }
+
+  const result = connection?.getClient()?.callService(command);
+  statusMessage.textContent = result?.accepted
+    ? `Command sent for ${entityId}.`
+    : result?.reason ?? "No active Home Assistant connection.";
 }
 
 function bindSelectedEntity(nextTransport) {

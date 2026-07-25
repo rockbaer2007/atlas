@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createHomeAssistantWebSocketClient,
+  createHomeAssistantServiceCommand,
   mapHomeAssistantStateChangedEvent,
   parseHomeAssistantWebSocketMessage,
   type HomeAssistantWebSocket,
@@ -156,5 +157,23 @@ describe("Home Assistant WebSocket transport", () => {
 
     socket.emitClose("server restart");
     expect(client.getLifecycle()).toEqual({ state: "closed", reason: "server restart" });
+  });
+
+  it("sends only validated light and switch commands after subscription is active", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+    const lightCommand = createHomeAssistantServiceCommand("light.atlas_lamp", "turn_on");
+
+    expect(lightCommand).toBeDefined();
+    expect(client.callService(lightCommand!)).toEqual({
+      accepted: false,
+      reason: "Home Assistant event subscription is not active.",
+    });
+
+    await socket.emitMessage('{"type":"auth_ok"}');
+    await socket.emitMessage('{"id":1,"type":"result","success":true}');
+    expect(client.callService(lightCommand!)).toEqual({ accepted: true, requestId: 2 });
+    expect(socket.sent[1]).toBe('{"id":2,"type":"call_service","domain":"light","service":"turn_on","target":{"entity_id":"light.atlas_lamp"}}');
+    expect(createHomeAssistantServiceCommand("sensor.atlas_temperature", "turn_on")).toBeUndefined();
   });
 });

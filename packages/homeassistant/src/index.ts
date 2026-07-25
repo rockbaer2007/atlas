@@ -10,6 +10,7 @@ export * from "./HomeAssistantConnectionConfiguration";
 export * from "./HomeAssistantEntityStateTransport";
 export * from "./HomeAssistantEntityStatusPanelBinding";
 export * from "./HomeAssistantWebSocketProtocol";
+export * from "./HomeAssistantServiceCommand";
 export * from "./HomeAssistantWebSocketTransport";
 export * from "./HomeAssistantBrowserWebSocket";
 export * from "./HomeAssistantRuntimeConnection";
