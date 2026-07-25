@@ -5,8 +5,9 @@ import {
   createHomeAssistantStatusPanel,
   createHomeAssistantEntityState,
   createHomeAssistantStatusPanelRegistry,
+  createInMemoryHomeAssistantEntityStateTransport,
   findHomeAssistantStatusPanel,
-  renderHomeAssistantEntityStatusPanel,
+  bindHomeAssistantEntityStatusPanel,
 } from "@atlas/homeassistant";
 
 const statusRoot = document.querySelector("#atlas-status-root");
@@ -26,6 +27,7 @@ const panel = createHomeAssistantStatusPanel({
   targetIdentifier: "atlas-status-root",
 });
 const panelRegistry = createHomeAssistantStatusPanelRegistry([panel]);
+const transport = createInMemoryHomeAssistantEntityStateTransport();
 
 async function renderEntityState(state) {
   const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
@@ -34,25 +36,33 @@ async function renderEntityState(state) {
     return;
   }
 
-  const execution = await renderHomeAssistantEntityStatusPanel({
+  await transport.publish(createHomeAssistantEntityState({
+    entityId: "binary_sensor.atlas_status",
+    state,
+  }));
+}
+
+const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
+if (!registeredPanel) {
+  statusMessage.textContent = "Status panel is not registered.";
+} else {
+  bindHomeAssistantEntityStatusPanel({
+    transport,
     panel: registeredPanel,
-    entity: createHomeAssistantEntityState({
-      entityId: "binary_sensor.atlas_status",
-      state,
-    }),
+    entityId: "binary_sensor.atlas_status",
     element: statusRoot,
     tokens,
   });
+  transport.subscribe(entity => {
+    if (entity.entityId !== "binary_sensor.atlas_status") {
+      return;
+    }
 
-  if (!execution.result.mounted) {
-    statusMessage.textContent = execution.result.error ?? "Status could not be mounted.";
-    return;
-  }
-
-  for (const button of buttons) {
-    button.setAttribute("aria-pressed", String(button.dataset.entityState === state));
-  }
-  statusMessage.textContent = `Entity state updated: ${state}.`;
+    for (const button of buttons) {
+      button.setAttribute("aria-pressed", String(button.dataset.entityState === entity.state));
+    }
+    statusMessage.textContent = `Entity state updated: ${entity.state}.`;
+  });
 }
 
 for (const button of buttons) {

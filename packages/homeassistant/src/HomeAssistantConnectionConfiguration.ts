@@ -31,3 +31,24 @@ export function inspectHomeAssistantConnectionReadiness(
     reason: "Home Assistant connection requires an HTTP or HTTPS URL.",
   };
 }
+
+export function deriveHomeAssistantWebSocketUrl(
+  configuration: HomeAssistantConnectionConfiguration,
+): string | undefined {
+  try {
+    const source = new URL(configuration.url);
+
+    if (source.protocol !== "http:" && source.protocol !== "https:") {
+      return undefined;
+    }
+
+    source.protocol = source.protocol === "https:" ? "wss:" : "ws:";
+    source.pathname = "/api/websocket";
+    source.search = "";
+    source.hash = "";
+
+    return source.toString();
+  } catch {
+    return undefined;
+  }
+}

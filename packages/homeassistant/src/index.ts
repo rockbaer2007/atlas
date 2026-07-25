@@ -7,3 +7,5 @@ export * from "./HomeAssistantStatusPanel";
 export * from "./HomeAssistantEntityState";
 export * from "./HomeAssistantStatusPanelRegistry";
 export * from "./HomeAssistantConnectionConfiguration";
+export * from "./HomeAssistantEntityStateTransport";
+export * from "./HomeAssistantEntityStatusPanelBinding";

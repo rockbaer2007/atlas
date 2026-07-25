@@ -3,12 +3,15 @@ import { describe, expect, it } from "vitest";
 import {
   createHomeAssistantConnectionConfiguration,
   createHomeAssistantEntityState,
+  createInMemoryHomeAssistantEntityStateTransport,
   createHomeAssistantStatusPanel,
   createHomeAssistantStatusPanelRegistry,
   findHomeAssistantStatusPanel,
   inspectHomeAssistantConnectionReadiness,
+  deriveHomeAssistantWebSocketUrl,
   mapHomeAssistantEntityStateToStatus,
   renderHomeAssistantEntityStatusPanel,
+  bindHomeAssistantEntityStatusPanel,
 } from "../src";
 import { createThemeTokens } from "@atlas/theme";
 
@@ -76,5 +79,50 @@ describe("Home Assistant entity status panels", () => {
       ready: false,
       reason: "Home Assistant connection requires an HTTP or HTTPS URL.",
     });
+    expect(deriveHomeAssistantWebSocketUrl(
+      createHomeAssistantConnectionConfiguration({ url: "https://home.example.test/lovelace?tab=1" }),
+    )).toBe("wss://home.example.test/api/websocket");
+    expect(deriveHomeAssistantWebSocketUrl(
+      createHomeAssistantConnectionConfiguration({ url: "invalid" }),
+    )).toBeUndefined();
+  });
+
+  it("publishes local entity updates into bound status panels", async () => {
+    const transport = createInMemoryHomeAssistantEntityStateTransport();
+    const element = {
+      innerHTML: "",
+      style: { setProperty: () => undefined },
+    };
+    const panel = createHomeAssistantStatusPanel({
+      id: "atlas-bound-entity",
+      title: "ATLAS bound entity",
+      targetIdentifier: "atlas-bound-entity-root",
+    });
+    const binding = bindHomeAssistantEntityStatusPanel({
+      transport,
+      panel,
+      entityId: "binary_sensor.atlas",
+      element,
+      tokens: createThemeTokens(),
+    });
+
+    await transport.publish(createHomeAssistantEntityState({
+      entityId: "binary_sensor.atlas",
+      state: "on",
+    }));
+
+    expect(transport.getLatest("binary_sensor.atlas")).toEqual({
+      entityId: "binary_sensor.atlas",
+      state: "on",
+    });
+    expect(element.innerHTML).toContain('data-status="ready"');
+
+    binding.dispose();
+    await transport.publish(createHomeAssistantEntityState({
+      entityId: "binary_sensor.atlas",
+      state: "unavailable",
+    }));
+
+    expect(element.innerHTML).toContain('data-status="ready"');
   });
 });
