@@ -24,6 +24,9 @@ describe("Home Assistant entity status panels", () => {
       createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "off" }),
     )).toBe("pending");
     expect(mapHomeAssistantEntityStateToStatus(
+      createHomeAssistantEntityState({ entityId: "sensor.atlas_temperature", state: "available" }),
+    )).toBe("ready");
+    expect(mapHomeAssistantEntityStateToStatus(
       createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "unavailable" }),
     )).toBe("blocked");
     expect(mapHomeAssistantEntityStateToStatus(

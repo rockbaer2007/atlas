@@ -15,3 +15,8 @@ The Home Assistant controls validate a connection target, show the derived
 WebSocket endpoint and can connect to an instance. The supplied access token is
 cleared from the form immediately after starting the connection and is not
 stored or logged by the demo.
+
+Set an Entity ID before connecting. Once the event subscription is active, the
+panel listens only to that live entity. Numeric and other available sensor
+values render as ready; `off` remains pending, while unavailable or unknown
+entities render as blocked.

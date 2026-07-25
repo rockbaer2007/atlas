@@ -1,6 +1,6 @@
 import type { ThemeRendererStatus } from "@atlas/theme";
 
-export type HomeAssistantEntityStateValue = "on" | "off" | "unavailable" | "unknown";
+export type HomeAssistantEntityStateValue = "on" | "off" | "available" | "unavailable" | "unknown";
 
 export type HomeAssistantEntityState = Readonly<{
   entityId: string;
@@ -16,7 +16,7 @@ export function createHomeAssistantEntityState(
 export function mapHomeAssistantEntityStateToStatus(
   entity: HomeAssistantEntityState,
 ): ThemeRendererStatus {
-  if (entity.state === "on") {
+  if (entity.state === "on" || entity.state === "available") {
     return "ready";
   }
 

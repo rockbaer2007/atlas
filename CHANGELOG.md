@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant status panels now support selected live entities and recognize
+  available non-binary sensor values alongside binary device states.
 - Home Assistant now exposes subscribable runtime lifecycle updates, and the
   browser demo provides explicit temporary-token connect and disconnect controls.
 - Home Assistant now confirms event subscriptions, reports subscription

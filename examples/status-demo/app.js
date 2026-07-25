@@ -24,8 +24,12 @@ const connectionState = document.querySelector("#connection-state");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
+const homeAssistantEntity = document.querySelector("#home-assistant-entity");
+const selectedEntity = document.querySelector("#selected-entity");
 let connection;
 let removeLifecycleListener;
+let panelBinding;
+let activeTransport;
 
 const tokens = createThemeTokens({
   colorBackground: "#f5f7fb",
@@ -50,7 +54,7 @@ async function renderEntityState(state) {
   }
 
   await transport.publish(createHomeAssistantEntityState({
-    entityId: "binary_sensor.atlas_status",
+    entityId: homeAssistantEntity.value.trim() || "binary_sensor.atlas_status",
     state,
   }));
 }
@@ -71,6 +75,42 @@ function renderConnectionLifecycle(lifecycle) {
     : `Connection: ${lifecycle.state}${subscription}`;
   connectButton.disabled = lifecycle.state === "connecting" || lifecycle.state === "authenticating" || lifecycle.state === "connected";
   disconnectButton.disabled = lifecycle.state === "closed" || lifecycle.state === "failed";
+
+  if (lifecycle.state === "connected" && lifecycle.subscription === "active") {
+    bindSelectedEntity(connection?.getClient()?.transport);
+  } else if (lifecycle.state === "closed" || lifecycle.state === "failed") {
+    bindSelectedEntity(transport);
+  }
+}
+
+function currentEntityId() {
+  return homeAssistantEntity.value.trim() || "binary_sensor.atlas_status";
+}
+
+function bindSelectedEntity(nextTransport) {
+  if (!registeredPanel || !nextTransport) {
+    return;
+  }
+
+  panelBinding?.dispose();
+  activeTransport = nextTransport;
+  panelBinding = bindHomeAssistantEntityStatusPanel({
+    transport: activeTransport,
+    panel: registeredPanel,
+    entityId: currentEntityId(),
+    element: statusRoot,
+    tokens,
+  });
+  const usingLiveTransport = activeTransport !== transport;
+  for (const button of buttons) {
+    button.disabled = usingLiveTransport;
+  }
+  selectedEntity.textContent = usingLiveTransport
+    ? `Live entity: ${currentEntityId()}`
+    : `Demo entity: ${currentEntityId()}`;
+  statusMessage.textContent = usingLiveTransport
+    ? `Waiting for updates from ${currentEntityId()}.`
+    : `Demo controls target ${currentEntityId()}.`;
 }
 
 function connectHomeAssistant() {
@@ -102,15 +142,9 @@ const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
 if (!registeredPanel) {
   statusMessage.textContent = "Status panel is not registered.";
 } else {
-  bindHomeAssistantEntityStatusPanel({
-    transport,
-    panel: registeredPanel,
-    entityId: "binary_sensor.atlas_status",
-    element: statusRoot,
-    tokens,
-  });
+  bindSelectedEntity(transport);
   transport.subscribe(entity => {
-    if (entity.entityId !== "binary_sensor.atlas_status") {
+    if (entity.entityId !== currentEntityId()) {
       return;
     }
 
@@ -128,6 +162,12 @@ for (const button of buttons) {
 }
 
 homeAssistantUrl.addEventListener("input", renderConnectionReadiness);
+homeAssistantEntity.addEventListener("input", () => {
+  bindSelectedEntity(activeTransport ?? transport);
+  if (activeTransport === transport) {
+    void renderEntityState("on");
+  }
+});
 connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
 

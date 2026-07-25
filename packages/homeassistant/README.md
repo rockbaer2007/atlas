@@ -16,9 +16,10 @@ The package root exports the status panel contract and renderer-backed panel
 execution only. Its dependency direction runs through Theme rather than a direct
 Renderer dependency.
 
-Local entity state contracts map `on`, `off`, `unavailable` and `unknown` into
-the panel states. Status panels can be collected in a registry, and connection
-configuration is validated without opening a network connection.
+Local entity state contracts map `on`, `off`, available non-binary values,
+`unavailable` and `unknown` into panel states. Status panels can be collected
+in a registry, and connection configuration is validated without opening a
+network connection.
 
 An in-memory entity transport supports local publishing and panel subscriptions.
 The same contract will be implemented by a future authenticated WebSocket

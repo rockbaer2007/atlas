@@ -119,6 +119,10 @@ export function mapHomeAssistantStateChangedEvent(
 
   return createHomeAssistantEntityState({
     entityId: message.event.data.entity_id,
-    state: state === "on" || state === "off" || state === "unavailable" ? state : "unknown",
+    state: state === "on" || state === "off" || state === "unavailable" || state === "unknown"
+      ? state
+      : state
+        ? "available"
+        : "unknown",
   });
 }

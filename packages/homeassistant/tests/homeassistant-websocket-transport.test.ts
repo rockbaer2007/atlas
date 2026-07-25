@@ -71,6 +71,21 @@ describe("Home Assistant WebSocket transport", () => {
       entityId: "binary_sensor.atlas",
       state: "on",
     });
+
+    const sensorEvent = parseHomeAssistantWebSocketMessage(JSON.stringify({
+      type: "event",
+      event: {
+        event_type: "state_changed",
+        data: {
+          entity_id: "sensor.atlas_temperature",
+          new_state: { state: "21.5" },
+        },
+      },
+    }));
+    expect(mapHomeAssistantStateChangedEvent(sensorEvent as Extract<typeof sensorEvent, { type: "event" }>)).toEqual({
+      entityId: "sensor.atlas_temperature",
+      state: "available",
+    });
   });
 
   it("authenticates, subscribes and publishes state events through the local transport", async () => {
