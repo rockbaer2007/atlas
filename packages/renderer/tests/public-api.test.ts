@@ -124,6 +124,9 @@ import type {
   RendererTargetMountIntegrationReadinessIssue,
   RendererTargetMountIntegrationReadinessSnapshot,
   RendererTargetMountIntegrationStatus,
+  RendererTargetMountIntegrationStatusHistory,
+  RendererTargetMountIntegrationStatusHistoryExport,
+  RendererTargetMountIntegrationStatusHistorySnapshot,
   RendererTargetMountAdapterResolution,
   RendererTarget,
   RendererTargetKind,
@@ -211,6 +214,7 @@ import {
   createRendererPlatformAdapterSelectionResult,
   createRendererTargetMountBatchDiagnosticCatalog,
   createRendererTargetMountIntegrationReadinessCatalog,
+  createRendererTargetMountIntegrationStatusHistory,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
@@ -225,9 +229,11 @@ import {
   executeRendererTargetMountWithReport,
   exportRendererTargetMountBatchDiagnosticCatalog,
   exportRendererTargetMountIntegrationReadinessCatalog,
+  exportRendererTargetMountIntegrationStatusHistory,
   executeRendererPipeline,
   findRendererTargetMountBatchFailures,
   findRendererTargetMountIntegrationReadinessHandoffs,
+  findRendererTargetMountIntegrationStatusHistoryEntries,
   findRendererAdapter,
   findRendererAdapterConflicts,
   findRendererMountReportConsumer,
@@ -237,6 +243,7 @@ import {
   finalizeRendererConcreteIntegrationBoundary,
   handoffRendererTargetMountBatchDiagnostics,
   handoffRendererTargetMountIntegrationReadiness,
+  appendRendererTargetMountIntegrationStatusHistory,
   inspectRendererMountResult,
   inspectRendererMountLifecycleRecord,
   inspectRendererMountPlan,
@@ -280,6 +287,7 @@ import {
   snapshotRendererTargetMountBatchDiagnostics,
   snapshotRendererTargetMountIntegrationReadiness,
   snapshotRendererTargetMountIntegrationReadinessCatalog,
+  snapshotRendererTargetMountIntegrationStatusHistory,
   summarizeRendererMountReports,
   summarizeRendererMountReportConsumerDiagnosticAggregation,
   summarizeRendererTargetMountIntegrationStatus,
@@ -299,6 +307,10 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererTargetMountIntegrationReadinessCatalog).toBeTypeOf("function");
     expect(createRendererTargetMountIntegrationReadinessCatalog).toBe(
       Renderer.createRendererTargetMountIntegrationReadinessCatalog,
+    );
+    expect(Renderer.createRendererTargetMountIntegrationStatusHistory).toBeTypeOf("function");
+    expect(createRendererTargetMountIntegrationStatusHistory).toBe(
+      Renderer.createRendererTargetMountIntegrationStatusHistory,
     );
     expect(Renderer.createRendererAdapterConflict).toBeTypeOf("function");
     expect(Renderer.createRendererAdapterConflictResolution).toBeTypeOf("function");
@@ -449,6 +461,10 @@ describe("renderer public API", () => {
     expect(findRendererTargetMountIntegrationReadinessHandoffs).toBe(
       Renderer.findRendererTargetMountIntegrationReadinessHandoffs,
     );
+    expect(Renderer.findRendererTargetMountIntegrationStatusHistoryEntries).toBeTypeOf("function");
+    expect(findRendererTargetMountIntegrationStatusHistoryEntries).toBe(
+      Renderer.findRendererTargetMountIntegrationStatusHistoryEntries,
+    );
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticDeliveryManifest).toBeTypeOf("function");
     expect(Renderer.reviewRendererMountReportConsumerDiagnosticRegistryExecution).toBeTypeOf("function");
     expect(Renderer.reviewRendererConcreteIntegrationBoundary).toBeTypeOf("function");
@@ -464,6 +480,10 @@ describe("renderer public API", () => {
     expect(Renderer.handoffRendererTargetMountIntegrationReadiness).toBeTypeOf("function");
     expect(handoffRendererTargetMountIntegrationReadiness).toBe(
       Renderer.handoffRendererTargetMountIntegrationReadiness,
+    );
+    expect(Renderer.appendRendererTargetMountIntegrationStatusHistory).toBeTypeOf("function");
+    expect(appendRendererTargetMountIntegrationStatusHistory).toBe(
+      Renderer.appendRendererTargetMountIntegrationStatusHistory,
     );
     expect(Renderer.resolveRendererPlatformAdapterConflictWithFirstCandidate).toBeTypeOf("function");
     expect(Renderer.resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate).toBeTypeOf("function");
@@ -504,6 +524,14 @@ describe("renderer public API", () => {
     expect(Renderer.exportRendererTargetMountIntegrationReadinessCatalog).toBeTypeOf("function");
     expect(exportRendererTargetMountIntegrationReadinessCatalog).toBe(
       Renderer.exportRendererTargetMountIntegrationReadinessCatalog,
+    );
+    expect(Renderer.exportRendererTargetMountIntegrationStatusHistory).toBeTypeOf("function");
+    expect(exportRendererTargetMountIntegrationStatusHistory).toBe(
+      Renderer.exportRendererTargetMountIntegrationStatusHistory,
+    );
+    expect(Renderer.snapshotRendererTargetMountIntegrationStatusHistory).toBeTypeOf("function");
+    expect(snapshotRendererTargetMountIntegrationStatusHistory).toBe(
+      Renderer.snapshotRendererTargetMountIntegrationStatusHistory,
     );
     expect(Renderer.summarizeRendererTargetMountIntegrationStatus).toBeTypeOf("function");
     expect(summarizeRendererTargetMountIntegrationStatus).toBe(
@@ -1449,6 +1477,23 @@ describe("renderer public API", () => {
       ...targetMountIntegrationReadinessCatalogSnapshot,
       exportable: false,
     };
+    const targetMountIntegrationStatusHistory: RendererTargetMountIntegrationStatusHistory = {
+      entries: [targetMountIntegrationStatus],
+    };
+    const targetMountIntegrationStatusHistorySnapshot:
+      RendererTargetMountIntegrationStatusHistorySnapshot = {
+        entryCount: 1,
+        readyCount: 0,
+        blockedCount: 1,
+        emptyCount: 0,
+        latestState: "blocked",
+      };
+    const targetMountIntegrationStatusHistoryExport:
+      RendererTargetMountIntegrationStatusHistoryExport = {
+        history: targetMountIntegrationStatusHistory,
+        snapshot: targetMountIntegrationStatusHistorySnapshot,
+        exportable: true,
+      };
     const adapterSelectionRequest: RendererAdapterSelectionRequest = {
       name: adapter.name,
       candidates: [adapter],
@@ -1520,6 +1565,13 @@ describe("renderer public API", () => {
       targetMountIntegrationReadinessIssue.code,
     );
     expect(targetMountIntegrationStatus.state).toBe("blocked");
+    expect(targetMountIntegrationStatusHistory.entries[0]).toBe(targetMountIntegrationStatus);
+    expect(targetMountIntegrationStatusHistoryExport.history).toBe(
+      targetMountIntegrationStatusHistory,
+    );
+    expect(targetMountIntegrationStatusHistoryExport.snapshot).toBe(
+      targetMountIntegrationStatusHistorySnapshot,
+    );
     expect(targetMountIntegrationReadinessHandoff.readiness).toBe(
       targetMountIntegrationReadiness,
     );

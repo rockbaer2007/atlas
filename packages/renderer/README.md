@@ -90,6 +90,9 @@ Assistant or theme execution paths.
 - `RendererTargetMountIntegrationReadinessIssue`
 - `RendererTargetMountIntegrationReadinessSnapshot`
 - `RendererTargetMountIntegrationStatus`
+- `RendererTargetMountIntegrationStatusHistory`
+- `RendererTargetMountIntegrationStatusHistoryExport`
+- `RendererTargetMountIntegrationStatusHistorySnapshot`
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchDiagnosticCatalog`
@@ -281,6 +284,7 @@ Assistant or theme execution paths.
 - `handoffRendererTargetMountBatchDiagnostics`
 - `handoffRendererTargetMountIntegrationReadiness`
 - `createRendererTargetMountIntegrationReadinessCatalog`
+- `createRendererTargetMountIntegrationStatusHistory`
 - `inspectRendererDomMountResult`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
@@ -304,6 +308,7 @@ Assistant or theme execution paths.
 - `reviewRendererIntegrationPreparationReadiness`
 - `reviewRendererTargetMountIntegrationReadiness`
 - `findRendererTargetMountIntegrationReadinessHandoffs`
+- `findRendererTargetMountIntegrationStatusHistoryEntries`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -326,8 +331,11 @@ Assistant or theme execution paths.
 - `snapshotRendererTargetMountBatchDiagnostics`
 - `snapshotRendererTargetMountIntegrationReadiness`
 - `snapshotRendererTargetMountIntegrationReadinessCatalog`
+- `snapshotRendererTargetMountIntegrationStatusHistory`
 - `exportRendererTargetMountIntegrationReadinessCatalog`
+- `exportRendererTargetMountIntegrationStatusHistory`
 - `summarizeRendererTargetMountIntegrationStatus`
+- `appendRendererTargetMountIntegrationStatusHistory`
 - `summarizeRendererDomMountStore`
 - `summarizeRendererMemoryMountStore`
 - `summarizeRendererMountReports`

@@ -234,6 +234,24 @@ export type RendererTargetMountIntegrationStatus = Readonly<{
   exportable: boolean;
 }>;
 
+export type RendererTargetMountIntegrationStatusHistory = Readonly<{
+  entries: readonly RendererTargetMountIntegrationStatus[];
+}>;
+
+export type RendererTargetMountIntegrationStatusHistorySnapshot = Readonly<{
+  entryCount: number;
+  readyCount: number;
+  blockedCount: number;
+  emptyCount: number;
+  latestState: RendererTargetMountIntegrationStatus["state"] | undefined;
+}>;
+
+export type RendererTargetMountIntegrationStatusHistoryExport = Readonly<{
+  history: RendererTargetMountIntegrationStatusHistory;
+  snapshot: RendererTargetMountIntegrationStatusHistorySnapshot;
+  exportable: boolean;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -611,4 +629,50 @@ export function summarizeRendererTargetMountIntegrationStatus(
     blocked: exported.snapshot.blocked,
     exportable: exported.exportable,
   };
+}
+
+export function createRendererTargetMountIntegrationStatusHistory(
+  entries: readonly RendererTargetMountIntegrationStatus[] = [],
+): RendererTargetMountIntegrationStatusHistory {
+  return {
+    entries: [...entries],
+  };
+}
+
+export function appendRendererTargetMountIntegrationStatusHistory(
+  history: RendererTargetMountIntegrationStatusHistory,
+  entry: RendererTargetMountIntegrationStatus,
+): RendererTargetMountIntegrationStatusHistory {
+  return createRendererTargetMountIntegrationStatusHistory([...history.entries, entry]);
+}
+
+export function snapshotRendererTargetMountIntegrationStatusHistory(
+  history: RendererTargetMountIntegrationStatusHistory,
+): RendererTargetMountIntegrationStatusHistorySnapshot {
+  return {
+    entryCount: history.entries.length,
+    readyCount: history.entries.filter(entry => entry.state === "ready").length,
+    blockedCount: history.entries.filter(entry => entry.state === "blocked").length,
+    emptyCount: history.entries.filter(entry => entry.state === "empty").length,
+    latestState: history.entries[history.entries.length - 1]?.state,
+  };
+}
+
+export function exportRendererTargetMountIntegrationStatusHistory(
+  history: RendererTargetMountIntegrationStatusHistory,
+): RendererTargetMountIntegrationStatusHistoryExport {
+  const snapshot = snapshotRendererTargetMountIntegrationStatusHistory(history);
+
+  return {
+    history,
+    snapshot,
+    exportable: snapshot.entryCount > 0,
+  };
+}
+
+export function findRendererTargetMountIntegrationStatusHistoryEntries(
+  history: RendererTargetMountIntegrationStatusHistory,
+  state: RendererTargetMountIntegrationStatus["state"],
+): readonly RendererTargetMountIntegrationStatus[] {
+  return history.entries.filter(entry => entry.state === state);
 }

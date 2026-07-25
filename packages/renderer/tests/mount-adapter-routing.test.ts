@@ -5,6 +5,7 @@ import {
   createRendererAdapterRegistry,
   createRendererOutput,
   createRendererTargetMountIntegrationReadinessCatalog,
+  createRendererTargetMountIntegrationStatusHistory,
   createRendererTargetMountBatchDiagnosticCatalog,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
@@ -14,12 +15,15 @@ import {
   executeRendererTargetMountWithReport,
   exportRendererTargetMountBatchDiagnosticCatalog,
   exportRendererTargetMountIntegrationReadinessCatalog,
+  exportRendererTargetMountIntegrationStatusHistory,
   findRendererTargetMountBatchFailures,
   findRendererTargetMountIntegrationReadinessHandoffs,
+  findRendererTargetMountIntegrationStatusHistoryEntries,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
   handoffRendererTargetMountBatchDiagnostics,
   handoffRendererTargetMountIntegrationReadiness,
+  appendRendererTargetMountIntegrationStatusHistory,
   RendererDefaultMountAdapterNames,
   resolveRendererTargetMountAdapter,
   reviewRendererTargetMountIntegrationReadiness,
@@ -27,6 +31,7 @@ import {
   snapshotRendererTargetMountBatchDiagnostics,
   snapshotRendererTargetMountIntegrationReadiness,
   snapshotRendererTargetMountIntegrationReadinessCatalog,
+  snapshotRendererTargetMountIntegrationStatusHistory,
   summarizeRendererTargetMountIntegrationStatus,
 } from "../src";
 
@@ -1499,5 +1504,92 @@ describe("renderer mount adapter routing", () => {
       blocked: true,
       exportable: false,
     });
+  });
+
+  it("records target mount integration status histories without mutating source arrays", () => {
+    const entries = [{
+      state: "empty" as const,
+      handoffCount: 0,
+      readyCount: 0,
+      blockedCount: 0,
+      transferableCount: 0,
+      issueCount: 0,
+      ready: false,
+      blocked: true,
+      exportable: false,
+    }];
+    const history = createRendererTargetMountIntegrationStatusHistory(entries);
+
+    expect(history.entries[0]).toBe(entries[0]);
+
+    entries.pop();
+
+    expect(history.entries).toHaveLength(1);
+  });
+
+  it("appends target mount integration statuses persistently", () => {
+    const history = createRendererTargetMountIntegrationStatusHistory();
+    const entry = {
+      state: "ready" as const,
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+      issueCount: 0,
+      ready: true,
+      blocked: false,
+      exportable: true,
+    };
+
+    const nextHistory = appendRendererTargetMountIntegrationStatusHistory(history, entry);
+
+    expect(history.entries).toEqual([]);
+    expect(nextHistory.entries).toEqual([entry]);
+    expect(nextHistory.entries[0]).toBe(entry);
+  });
+
+  it("snapshots and exports target mount integration status histories", () => {
+    const history = createRendererTargetMountIntegrationStatusHistory([{
+      state: "blocked",
+      handoffCount: 1,
+      readyCount: 0,
+      blockedCount: 1,
+      transferableCount: 0,
+      issueCount: 2,
+      ready: false,
+      blocked: true,
+      exportable: false,
+    }]);
+
+    expect(snapshotRendererTargetMountIntegrationStatusHistory(history)).toEqual({
+      entryCount: 1,
+      readyCount: 0,
+      blockedCount: 1,
+      emptyCount: 0,
+      latestState: "blocked",
+    });
+    expect(exportRendererTargetMountIntegrationStatusHistory(history)).toEqual({
+      history,
+      snapshot: expect.any(Object),
+      exportable: true,
+    });
+  });
+
+  it("filters target mount integration status history entries by state", () => {
+    const ready = {
+      state: "ready" as const,
+      handoffCount: 1,
+      readyCount: 1,
+      blockedCount: 0,
+      transferableCount: 1,
+      issueCount: 0,
+      ready: true,
+      blocked: false,
+      exportable: true,
+    };
+    const history = createRendererTargetMountIntegrationStatusHistory([ready]);
+
+    expect(findRendererTargetMountIntegrationStatusHistoryEntries(history, "ready")).toEqual([ready]);
+    expect(findRendererTargetMountIntegrationStatusHistoryEntries(history, "blocked")).toEqual([]);
   });
 });
