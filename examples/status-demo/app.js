@@ -192,8 +192,14 @@ function renderEntityList() {
     card.className = "atlas-entity-card";
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     card.dataset.category = presentation?.category ?? "status";
+    if (presentation?.category === "battery" && entity?.value) {
+      const batteryPercent = Number(entity.value);
+      card.dataset.batteryLevel = batteryPercent <= 20 ? "low" : batteryPercent <= 50 ? "medium" : "normal";
+    }
     name.textContent = presentation?.label ?? entityId;
-    value.textContent = entity?.value ?? entity?.state ?? "Waiting";
+    value.textContent = entity?.value && presentation?.category === "battery" && !entity.unit
+      ? `${entity.value}%`
+      : entity?.value ?? entity?.state ?? "Waiting";
     detail.textContent = entity?.updatedAt
       ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${formatRelativeTime(entity.updatedAt)}`
       : presentation?.detail ?? entityId.split(".", 1)[0];
