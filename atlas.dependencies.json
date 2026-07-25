@@ -41,7 +41,9 @@
     },
     {
       "package": "homeassistant",
-      "allowed": []
+      "allowed": [
+        "theme"
+      ]
     },
     {
       "package": "devtools",

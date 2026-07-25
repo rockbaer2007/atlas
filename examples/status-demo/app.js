@@ -1,8 +1,10 @@
 import {
-  createThemeRendererStatusOutput,
   createThemeTokens,
-  executeThemedRendererDomSurfaceScenario,
-} from "/packages/theme/dist/index.js";
+} from "@atlas/theme";
+import {
+  createHomeAssistantStatusPanel,
+  renderHomeAssistantStatusPanel,
+} from "@atlas/homeassistant";
 
 const statusRoot = document.querySelector("#atlas-status-root");
 const statusMessage = document.querySelector("#status-message");
@@ -15,15 +17,16 @@ const tokens = createThemeTokens({
   colorAccent: "#0f766e",
   spacing: "20px",
 });
+const panel = createHomeAssistantStatusPanel({
+  id: "atlas-status-demo",
+  title: "ATLAS status",
+  targetIdentifier: "atlas-status-root",
+});
 
 async function renderStatus(status) {
-  const execution = await executeThemedRendererDomSurfaceScenario({
-    output: createThemeRendererStatusOutput(status),
-    target: {
-      kind: "surface",
-      name: "atlas-status-demo",
-      identifier: "atlas-status-root",
-    },
+  const execution = await renderHomeAssistantStatusPanel({
+    panel,
+    status,
     element: statusRoot,
     tokens,
   });

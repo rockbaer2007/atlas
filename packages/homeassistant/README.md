@@ -1,33 +1,27 @@
 # @atlas/homeassistant
 
-Home Assistant integration package for future dashboard, card and service
-integration support.
+Home Assistant status panel integration for the ATLAS Framework.
 
 ---
 
 # Status
 
-Planned integration package.
+Active status panel integration package.
 
-Home Assistant support is deferred until the runtime, renderer and theme layers
-provide stable extension points. This package remains an integration
-placeholder and must not define public APIs before its activation sprint.
+The package provides a first themed status panel through the active Renderer and
+Theme surface path. It intentionally excludes websocket clients, entity access,
+service calls and general card infrastructure.
 
-The package now carries internal readiness checks for the future integration
-boundary. These checks define the required Atlas layers, keep concrete Home
-Assistant behavior above Renderer, and verify that the package root remains
-closed before activation.
+The package root exports the status panel contract and renderer-backed panel
+execution only. Its dependency direction runs through Theme rather than a direct
+Renderer dependency.
 
-The integration boundary remains planned and metadata-only. Required layers are
-kept in runtime, renderer and theme order, activation gate reports copy missing
-layer lists away from source boundary objects, and dependency boundary reports
-preserve forbidden dependency order while staying independent from caller-owned
-arrays. The package root intentionally exports no concrete card, websocket,
-dashboard, service or activation helpers before activation.
+The integration boundary remains intentionally narrow: status panels can mount
+to a configured DOM-compatible surface, while all runtime and Home Assistant
+transport concerns remain outside the package.
 
-Concrete Home Assistant dependencies, websocket clients, card mounting and
-theme binding remain outside this package until the activation gate is opened
-in a later sprint.
+Concrete Home Assistant websocket clients, entity abstraction, service calls and
+general card infrastructure remain planned future work.
 
 ---
 

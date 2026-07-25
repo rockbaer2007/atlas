@@ -1,8 +1,8 @@
 export type HomeAssistantIntegrationLayer = "runtime" | "renderer" | "theme";
 
-export type HomeAssistantIntegrationStatus = "planned";
+export type HomeAssistantIntegrationStatus = "active";
 
-export type HomeAssistantPublicApiState = "closed";
+export type HomeAssistantPublicApiState = "open";
 
 export interface HomeAssistantIntegrationBoundary {
   readonly packageName: "@atlas/homeassistant";
@@ -14,8 +14,8 @@ export interface HomeAssistantIntegrationBoundary {
     readonly reason: string;
   };
   readonly rendererBoundary: {
-    readonly platformMetadataOnly: true;
-    readonly concreteMountingEnabled: false;
+    readonly platformMetadataOnly: false;
+    readonly concreteMountingEnabled: true;
   };
 }
 
@@ -23,15 +23,15 @@ export function createHomeAssistantIntegrationBoundary(): HomeAssistantIntegrati
   return {
     packageName: "@atlas/homeassistant",
     integration: "home-assistant",
-    status: "planned",
+    status: "active",
     requiredLayers: ["runtime", "renderer", "theme"],
     publicApi: {
-      state: "closed",
-      reason: "Home Assistant activation waits for stable runtime, renderer and theme extension points.",
+      state: "open",
+      reason: "Home Assistant provides a themed status panel on the active Renderer surface path.",
     },
     rendererBoundary: {
-      platformMetadataOnly: true,
-      concreteMountingEnabled: false,
+      platformMetadataOnly: false,
+      concreteMountingEnabled: true,
     },
   };
 }
@@ -39,5 +39,5 @@ export function createHomeAssistantIntegrationBoundary(): HomeAssistantIntegrati
 export function isHomeAssistantPublicApiClosed(
   boundary: HomeAssistantIntegrationBoundary,
 ): boolean {
-  return boundary.publicApi.state === "closed";
+  return false;
 }

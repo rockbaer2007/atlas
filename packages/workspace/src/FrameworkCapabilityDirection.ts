@@ -8,16 +8,16 @@ import {
   ATLAS_WORKSPACE_QUALITY_GATES,
 } from "./FrameworkReadiness";
 
-export type AtlasFrameworkCapabilityId = "theme-tokens";
+export type AtlasFrameworkCapabilityId = "homeassistant-status-panel";
 
-export type AtlasFrameworkCapabilityPhase = "0.5-theme";
+export type AtlasFrameworkCapabilityPhase = "0.6-homeassistant";
 
 export type AtlasFrameworkCapabilityStatus = "selected";
 
 export type AtlasFrameworkCapabilityRisk =
   | "integration-api-drift"
   | "renderer-side-effects"
-  | "theme-style-safety";
+  | "homeassistant-transport-coupling";
 
 export interface AtlasFrameworkCapabilityDirection {
   readonly id: AtlasFrameworkCapabilityId;
@@ -26,7 +26,7 @@ export interface AtlasFrameworkCapabilityDirection {
   readonly goal: string;
   readonly ownerPackages: readonly Extract<
     AtlasWorkspacePackageName,
-    "@atlas/renderer" | "@atlas/theme"
+    "@atlas/theme" | "@atlas/homeassistant"
   >[];
   readonly protectedIntegrationClosures: readonly AtlasPlannedIntegrationClosure[];
   readonly requiredQualityGates: readonly AtlasWorkspaceQualityGate[];
@@ -44,12 +44,12 @@ export interface AtlasFrameworkCapabilityDirectionReport {
 
 export const ATLAS_NEXT_FRAMEWORK_CAPABILITY_DIRECTION: AtlasFrameworkCapabilityDirection =
   {
-    id: "theme-tokens",
-    phase: "0.5-theme",
+    id: "homeassistant-status-panel",
+    phase: "0.6-homeassistant",
     status: "selected",
     goal:
-      "Apply stable Theme tokens to the concrete Renderer output path while keeping higher integration packages closed.",
-    ownerPackages: ["@atlas/renderer", "@atlas/theme"],
+      "Provide a themed Home Assistant status panel on the active Renderer surface path without transport coupling.",
+    ownerPackages: ["@atlas/theme", "@atlas/homeassistant"],
     protectedIntegrationClosures: ATLAS_PLANNED_INTEGRATION_CLOSURES.map(
       (closure) => ({ ...closure }),
     ),
@@ -57,7 +57,7 @@ export const ATLAS_NEXT_FRAMEWORK_CAPABILITY_DIRECTION: AtlasFrameworkCapability
     risks: [
       "integration-api-drift",
       "renderer-side-effects",
-      "theme-style-safety",
+      "homeassistant-transport-coupling",
     ],
   };
 

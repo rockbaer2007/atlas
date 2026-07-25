@@ -9,12 +9,12 @@ import {
 } from "../src";
 
 describe("Atlas framework capability direction", () => {
-  it("selects Theme tokens as the next capability", () => {
+  it("selects the Home Assistant status panel as the next capability", () => {
     expect(ATLAS_NEXT_FRAMEWORK_CAPABILITY_DIRECTION).toMatchObject({
-      id: "theme-tokens",
-      phase: "0.5-theme",
+      id: "homeassistant-status-panel",
+      phase: "0.6-homeassistant",
       status: "selected",
-      ownerPackages: ["@atlas/renderer", "@atlas/theme"],
+      ownerPackages: ["@atlas/theme", "@atlas/homeassistant"],
     });
   });
 
@@ -38,9 +38,9 @@ describe("Atlas framework capability direction", () => {
   it("reports selected capability direction details", () => {
     expect(inspectAtlasFrameworkCapabilityDirection()).toEqual({
       selected: true,
-      id: "theme-tokens",
-      ownerPackages: ["@atlas/renderer", "@atlas/theme"],
-      protectedIntegrations: ["@atlas/homeassistant", "@atlas/devtools"],
+      id: "homeassistant-status-panel",
+      ownerPackages: ["@atlas/theme", "@atlas/homeassistant"],
+      protectedIntegrations: ["@atlas/devtools"],
       requiredQualityGates: [
         "check",
         "build",
@@ -51,7 +51,7 @@ describe("Atlas framework capability direction", () => {
       risks: [
         "integration-api-drift",
         "renderer-side-effects",
-        "theme-style-safety",
+        "homeassistant-transport-coupling",
       ],
     });
   });
@@ -121,7 +121,7 @@ describe("Atlas framework capability direction", () => {
     mutableDirection.requiredQualityGates.push("check");
     mutableDirection.risks.push("renderer-side-effects");
 
-    expect(report.ownerPackages).toEqual(["@atlas/renderer", "@atlas/theme"]);
+    expect(report.ownerPackages).toEqual(["@atlas/theme", "@atlas/homeassistant"]);
     expect(report.requiredQualityGates).toEqual([
       "check",
       "build",
@@ -132,7 +132,7 @@ describe("Atlas framework capability direction", () => {
     expect(report.risks).toEqual([
       "integration-api-drift",
       "renderer-side-effects",
-      "theme-style-safety",
+      "homeassistant-transport-coupling",
     ]);
   });
 });

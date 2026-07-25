@@ -28,7 +28,11 @@ importers:
 
   packages/foundation: {}
 
-  packages/homeassistant: {}
+  packages/homeassistant:
+    dependencies:
+      '@atlas/theme':
+        specifier: workspace:*
+        version: link:../theme
 
   packages/kernel:
     dependencies:

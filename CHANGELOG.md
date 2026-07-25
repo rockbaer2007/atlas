@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant now exposes a first themed ATLAS status panel that mounts
+  through the active Renderer surface path without websocket or entity coupling.
 - A local browser demo now shows the active Renderer and Theme status surface
   with visible pending, ready and blocked updates.
 - Theme can now mount and style ATLAS status output through the active Renderer
