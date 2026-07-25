@@ -50,6 +50,7 @@ let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
 const entitySnapshots = new Map();
+let pendingImport;
 let panelGroups = [
   createHomeAssistantPanelGroup({ id: "overview", title: "Overview", entityIds: ["binary_sensor.atlas_status", "sensor.atlas_temperature"] }),
   createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
@@ -435,9 +436,11 @@ importHomeAssistantConfig.addEventListener("change", async () => {
   try {
     const imported = JSON.parse(await file.text());
     if (imported.version !== 1 || typeof imported.url !== "string" || typeof imported.entities !== "string" || !Array.isArray(imported.groups)) throw new Error();
-    homeAssistantUrl.value = imported.url;
-    homeAssistantEntity.value = imported.entities;
-    panelGroups = imported.groups.map(createHomeAssistantPanelGroup);
+    pendingImport = imported;
+    if (!window.confirm(`Import ${imported.groups.length} groups and ${imported.entities.split(",").filter(Boolean).length} entities?`)) return;
+    homeAssistantUrl.value = pendingImport.url;
+    homeAssistantEntity.value = pendingImport.entities;
+    panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
     renderGroupOptions("custom");
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
