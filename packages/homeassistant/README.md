@@ -16,6 +16,10 @@ The package root exports the status panel contract and renderer-backed panel
 execution only. Its dependency direction runs through Theme rather than a direct
 Renderer dependency.
 
+Local entity state contracts map `on`, `off`, `unavailable` and `unknown` into
+the panel states. Status panels can be collected in a registry, and connection
+configuration is validated without opening a network connection.
+
 The integration boundary remains intentionally narrow: status panels can mount
 to a configured DOM-compatible surface, while all runtime and Home Assistant
 transport concerns remain outside the package.

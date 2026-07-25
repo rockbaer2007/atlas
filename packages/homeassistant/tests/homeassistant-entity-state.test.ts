@@ -1,0 +1,80 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  createHomeAssistantConnectionConfiguration,
+  createHomeAssistantEntityState,
+  createHomeAssistantStatusPanel,
+  createHomeAssistantStatusPanelRegistry,
+  findHomeAssistantStatusPanel,
+  inspectHomeAssistantConnectionReadiness,
+  mapHomeAssistantEntityStateToStatus,
+  renderHomeAssistantEntityStatusPanel,
+} from "../src";
+import { createThemeTokens } from "@atlas/theme";
+
+describe("Home Assistant entity status panels", () => {
+  it("maps Home Assistant entity states onto ATLAS panel statuses", () => {
+    expect(mapHomeAssistantEntityStateToStatus(
+      createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "on" }),
+    )).toBe("ready");
+    expect(mapHomeAssistantEntityStateToStatus(
+      createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "off" }),
+    )).toBe("pending");
+    expect(mapHomeAssistantEntityStateToStatus(
+      createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "unavailable" }),
+    )).toBe("blocked");
+    expect(mapHomeAssistantEntityStateToStatus(
+      createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "unknown" }),
+    )).toBe("blocked");
+  });
+
+  it("registers and finds Home Assistant status panels without source-array mutation", () => {
+    const panel = createHomeAssistantStatusPanel({
+      id: "atlas-health",
+      title: "ATLAS health",
+      targetIdentifier: "atlas-health-root",
+    });
+    const panels = [panel];
+    const registry = createHomeAssistantStatusPanelRegistry(panels);
+
+    panels.pop();
+
+    expect(findHomeAssistantStatusPanel(registry, "atlas-health")).toBe(panel);
+    expect(findHomeAssistantStatusPanel(registry, "missing")).toBeUndefined();
+    expect(registry.panels).toEqual([panel]);
+  });
+
+  it("renders entity updates through the status panel", async () => {
+    const element = {
+      innerHTML: "",
+      style: { setProperty: () => undefined },
+    };
+    const panel = createHomeAssistantStatusPanel({
+      id: "atlas-entity",
+      title: "ATLAS entity",
+      targetIdentifier: "atlas-entity-root",
+    });
+
+    const execution = await renderHomeAssistantEntityStatusPanel({
+      panel,
+      entity: createHomeAssistantEntityState({ entityId: "binary_sensor.atlas", state: "off" }),
+      element,
+      tokens: createThemeTokens(),
+    });
+
+    expect(execution.result.mounted).toBe(true);
+    expect(element.innerHTML).toContain('data-status="pending"');
+  });
+
+  it("checks connection configuration without opening a Home Assistant connection", () => {
+    expect(inspectHomeAssistantConnectionReadiness(
+      createHomeAssistantConnectionConfiguration({ url: "https://home.example.test" }),
+    )).toEqual({ ready: true });
+    expect(inspectHomeAssistantConnectionReadiness(
+      createHomeAssistantConnectionConfiguration({ url: "ws://home.example.test" }),
+    )).toEqual({
+      ready: false,
+      reason: "Home Assistant connection requires an HTTP or HTTPS URL.",
+    });
+  });
+});

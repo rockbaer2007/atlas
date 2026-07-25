@@ -5,6 +5,10 @@ import {
   type ThemeRendererSurfaceElement,
   type ThemeTokens,
 } from "@atlas/theme";
+import {
+  mapHomeAssistantEntityStateToStatus,
+  type HomeAssistantEntityState,
+} from "./HomeAssistantEntityState";
 
 export type HomeAssistantStatusPanel = Readonly<{
   id: string;
@@ -15,6 +19,13 @@ export type HomeAssistantStatusPanel = Readonly<{
 export type HomeAssistantStatusPanelScenario = Readonly<{
   panel: HomeAssistantStatusPanel;
   status: ThemeRendererStatus;
+  element: ThemeRendererSurfaceElement;
+  tokens: ThemeTokens;
+}>;
+
+export type HomeAssistantEntityStatusPanelScenario = Readonly<{
+  panel: HomeAssistantStatusPanel;
+  entity: HomeAssistantEntityState;
   element: ThemeRendererSurfaceElement;
   tokens: ThemeTokens;
 }>;
@@ -35,6 +46,17 @@ export async function renderHomeAssistantStatusPanel(
       name: scenario.panel.id,
       identifier: scenario.panel.targetIdentifier,
     },
+    element: scenario.element,
+    tokens: scenario.tokens,
+  });
+}
+
+export async function renderHomeAssistantEntityStatusPanel(
+  scenario: HomeAssistantEntityStatusPanelScenario,
+): ReturnType<typeof renderHomeAssistantStatusPanel> {
+  return renderHomeAssistantStatusPanel({
+    panel: scenario.panel,
+    status: mapHomeAssistantEntityStateToStatus(scenario.entity),
     element: scenario.element,
     tokens: scenario.tokens,
   });

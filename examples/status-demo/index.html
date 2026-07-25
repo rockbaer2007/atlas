@@ -120,11 +120,11 @@
   <body>
     <main>
       <h1>ATLAS Status Surface</h1>
-      <p>Renderer and Theme running together in the browser.</p>
-      <div class="status-controls" role="group" aria-label="Status">
-        <button type="button" data-status="pending" aria-pressed="false">Pending</button>
-        <button type="button" data-status="ready" aria-pressed="true">Ready</button>
-        <button type="button" data-status="blocked" aria-pressed="false">Blocked</button>
+      <p>Renderer, Theme and a simulated Home Assistant entity running together.</p>
+      <div class="status-controls" role="group" aria-label="Entity state">
+        <button type="button" data-entity-state="off" aria-pressed="false">Off</button>
+        <button type="button" data-entity-state="on" aria-pressed="true">On</button>
+        <button type="button" data-entity-state="unavailable" aria-pressed="false">Unavailable</button>
       </div>
       <div id="atlas-status-root" aria-live="polite"></div>
       <div id="status-message" role="status"></div>

@@ -4,3 +4,6 @@
  */
 
 export * from "./HomeAssistantStatusPanel";
+export * from "./HomeAssistantEntityState";
+export * from "./HomeAssistantStatusPanelRegistry";
+export * from "./HomeAssistantConnectionConfiguration";

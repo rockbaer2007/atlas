@@ -3,12 +3,15 @@ import {
 } from "@atlas/theme";
 import {
   createHomeAssistantStatusPanel,
-  renderHomeAssistantStatusPanel,
+  createHomeAssistantEntityState,
+  createHomeAssistantStatusPanelRegistry,
+  findHomeAssistantStatusPanel,
+  renderHomeAssistantEntityStatusPanel,
 } from "@atlas/homeassistant";
 
 const statusRoot = document.querySelector("#atlas-status-root");
 const statusMessage = document.querySelector("#status-message");
-const buttons = Array.from(document.querySelectorAll("[data-status]"));
+const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
 
 const tokens = createThemeTokens({
   colorBackground: "#f5f7fb",
@@ -22,11 +25,21 @@ const panel = createHomeAssistantStatusPanel({
   title: "ATLAS status",
   targetIdentifier: "atlas-status-root",
 });
+const panelRegistry = createHomeAssistantStatusPanelRegistry([panel]);
 
-async function renderStatus(status) {
-  const execution = await renderHomeAssistantStatusPanel({
-    panel,
-    status,
+async function renderEntityState(state) {
+  const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
+  if (!registeredPanel) {
+    statusMessage.textContent = "Status panel is not registered.";
+    return;
+  }
+
+  const execution = await renderHomeAssistantEntityStatusPanel({
+    panel: registeredPanel,
+    entity: createHomeAssistantEntityState({
+      entityId: "binary_sensor.atlas_status",
+      state,
+    }),
     element: statusRoot,
     tokens,
   });
@@ -37,15 +50,15 @@ async function renderStatus(status) {
   }
 
   for (const button of buttons) {
-    button.setAttribute("aria-pressed", String(button.dataset.status === status));
+    button.setAttribute("aria-pressed", String(button.dataset.entityState === state));
   }
-  statusMessage.textContent = `Status updated: ${status}.`;
+  statusMessage.textContent = `Entity state updated: ${state}.`;
 }
 
 for (const button of buttons) {
   button.addEventListener("click", () => {
-    void renderStatus(button.dataset.status);
+    void renderEntityState(button.dataset.entityState);
   });
 }
 
-void renderStatus("ready");
+void renderEntityState("on");
