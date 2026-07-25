@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Renderer now mounts output into concrete DOM-compatible surface elements for
+  product-facing output-to-target scenarios.
 - Renderer target mount integration status histories now retain dashboard status
   entries with persistent appends, snapshots, exports and state filters.
 - Renderer target mount integration readiness catalogs now provide snapshots,

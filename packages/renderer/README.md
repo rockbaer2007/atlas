@@ -112,6 +112,11 @@ Assistant or theme execution paths.
 - `RendererDomMountRecord`
 - `RendererDomMountStore`
 - `RendererDomMountSummary`
+- `RendererDomSurface`
+- `RendererDomSurfaceElement`
+- `RendererDomSurfaceLookup`
+- `RendererDomSurfaceRegistry`
+- `RendererDomSurfaceScenario`
 - `RendererMountLifecycleRecord`
 - `RendererMountLifecycleReport`
 - `RendererMountLifecycleState`
@@ -239,6 +244,7 @@ Assistant or theme execution paths.
 - `createRendererDomMountPlan`
 - `createRendererDomMountRecord`
 - `createRendererDomMountStore`
+- `createRendererDomSurfaceRegistry`
 - `createRendererMemoryMountAdapter`
 - `createRendererMemoryMountPlan`
 - `createRendererMemoryMountRecord`
@@ -262,6 +268,7 @@ Assistant or theme execution paths.
 - `consumeRendererMountReports`
 - `evaluateRendererMountReportConsumerDiagnosticPolicy`
 - `executeRendererDomMountPlan`
+- `executeRendererDomSurfaceScenario`
 - `executeRendererMountPlan`
 - `executeRendererTargetMountBatch`
 - `executeRendererTargetMount`
@@ -276,6 +283,7 @@ Assistant or theme execution paths.
 - `findLatestRendererDomMountRecord`
 - `findLatestRendererMemoryMountRecord`
 - `findRendererDomMountRecords`
+- `findRendererDomSurface`
 - `findRendererMemoryMountRecords`
 - `findRendererMountReportConsumer`
 - `findRendererMountReportConsumerConflicts`
@@ -293,6 +301,7 @@ Assistant or theme execution paths.
 - `inspectRendererMountResult`
 - `isRendererMountPlanReady`
 - `mountResolvedRendererAdapter`
+- `mountRendererOutputToDomSurface`
 - `mountResolvedRendererPlatformAdapter`
 - `prepareRendererConcreteIntegrationBoundaryExecution`
 - `recordRendererMountLifecycleExecution`

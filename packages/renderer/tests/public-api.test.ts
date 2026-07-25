@@ -56,6 +56,11 @@ import type {
   RendererIntegrationPreparation,
   RendererIntegrationReadiness,
   RendererDefaultMountAdapterRegistry,
+  RendererDomSurface,
+  RendererDomSurfaceElement,
+  RendererDomSurfaceLookup,
+  RendererDomSurfaceRegistry,
+  RendererDomSurfaceScenario,
   RendererMountDiagnosticReport,
   RendererMountLifecycleRecord,
   RendererMountLifecycleReport,
@@ -215,6 +220,7 @@ import {
   createRendererTargetMountBatchDiagnosticCatalog,
   createRendererTargetMountIntegrationReadinessCatalog,
   createRendererTargetMountIntegrationStatusHistory,
+  createRendererDomSurfaceRegistry,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
@@ -227,6 +233,7 @@ import {
   executeRendererTargetMountBatch,
   executeRendererTargetMount,
   executeRendererTargetMountWithReport,
+  executeRendererDomSurfaceScenario,
   exportRendererTargetMountBatchDiagnosticCatalog,
   exportRendererTargetMountIntegrationReadinessCatalog,
   exportRendererTargetMountIntegrationStatusHistory,
@@ -234,6 +241,7 @@ import {
   findRendererTargetMountBatchFailures,
   findRendererTargetMountIntegrationReadinessHandoffs,
   findRendererTargetMountIntegrationStatusHistoryEntries,
+  findRendererDomSurface,
   findRendererAdapter,
   findRendererAdapterConflicts,
   findRendererMountReportConsumer,
@@ -250,6 +258,7 @@ import {
   inspectRendererMountReportConsumerResult,
   isRendererMountPlanReady,
   mountResolvedRendererAdapter,
+  mountRendererOutputToDomSurface,
   recordRendererMountLifecycleExecution,
   recordRendererMountLifecycleReport,
   mountResolvedRendererPlatformAdapter,
@@ -369,6 +378,8 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererDomMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererDomMountRecord).toBeTypeOf("function");
     expect(Renderer.createRendererDomMountStore).toBeTypeOf("function");
+    expect(Renderer.createRendererDomSurfaceRegistry).toBeTypeOf("function");
+    expect(createRendererDomSurfaceRegistry).toBe(Renderer.createRendererDomSurfaceRegistry);
     expect(Renderer.createRendererMemoryMountAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountRecord).toBeTypeOf("function");
@@ -397,6 +408,8 @@ describe("renderer public API", () => {
     expect(Renderer.consumeAndInspectRendererMountReports).toBeTypeOf("function");
     expect(Renderer.consumeRendererMountReports).toBeTypeOf("function");
     expect(Renderer.executeRendererDomMountPlan).toBeTypeOf("function");
+    expect(Renderer.executeRendererDomSurfaceScenario).toBeTypeOf("function");
+    expect(executeRendererDomSurfaceScenario).toBe(Renderer.executeRendererDomSurfaceScenario);
     expect(Renderer.executeRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererMountPlan).toBeTypeOf("function");
     expect(Renderer.executeRendererTargetMountBatch).toBeTypeOf("function");
@@ -420,6 +433,8 @@ describe("renderer public API", () => {
     expect(Renderer.findRendererAdapter).toBeTypeOf("function");
     expect(Renderer.findRendererAdapterConflicts).toBeTypeOf("function");
     expect(Renderer.findLatestRendererDomMountRecord).toBeTypeOf("function");
+    expect(Renderer.findRendererDomSurface).toBeTypeOf("function");
+    expect(findRendererDomSurface).toBe(Renderer.findRendererDomSurface);
     expect(Renderer.findLatestRendererMemoryMountRecord).toBeTypeOf("function");
     expect(Renderer.findRendererDomMountRecords).toBeTypeOf("function");
     expect(Renderer.findRendererMemoryMountRecords).toBeTypeOf("function");
@@ -447,6 +462,8 @@ describe("renderer public API", () => {
     expect(Renderer.summarizeRendererMemoryMountStore).toBeTypeOf("function");
     expect(Renderer.summarizeRendererMountReportConsumerDiagnosticAggregation).toBeTypeOf("function");
     expect(Renderer.mountResolvedRendererAdapter).toBeTypeOf("function");
+    expect(Renderer.mountRendererOutputToDomSurface).toBeTypeOf("function");
+    expect(mountRendererOutputToDomSurface).toBe(Renderer.mountRendererOutputToDomSurface);
     expect(Renderer.mountResolvedRendererPlatformAdapter).toBeTypeOf("function");
     expect(Renderer.prepareRendererConcreteIntegrationBoundaryExecution).toBeTypeOf("function");
     expect(Renderer.recordRendererMountLifecycleExecution).toBeTypeOf("function");
@@ -578,6 +595,27 @@ describe("renderer public API", () => {
     const target: RendererTarget = {
       kind: targetKind,
       name: "type-target",
+    };
+    const domSurfaceElement: RendererDomSurfaceElement = { innerHTML: "" };
+    const domSurface: RendererDomSurface = {
+      identifier: "type-root",
+      element: domSurfaceElement,
+    };
+    const domSurfaceRegistry: RendererDomSurfaceRegistry = {
+      surfaces: [domSurface],
+    };
+    const domSurfaceLookup: RendererDomSurfaceLookup = {
+      identifier: domSurface.identifier,
+      surface: domSurface,
+    };
+    const domSurfaceScenario: RendererDomSurfaceScenario = {
+      output,
+      target: {
+        kind: "surface",
+        name: "type-surface",
+        identifier: domSurface.identifier,
+      },
+      registry: domSurfaceRegistry,
     };
     const mountRequest: RendererMountRequest = {
       output,
@@ -1511,6 +1549,8 @@ describe("renderer public API", () => {
     };
 
     expect(adapter.name).toBe("type-adapter");
+    expect(domSurfaceLookup.surface).toBe(domSurface);
+    expect(domSurfaceScenario.registry).toBe(domSurfaceRegistry);
     expect(adapterConflict.adapters[0]).toBe(adapter);
     expect(adapterConflictResolution.conflict).toBe(adapterConflict);
     expect(adapterRegistry.adapters[0]).toBe(adapter);
