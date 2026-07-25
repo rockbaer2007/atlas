@@ -34,6 +34,7 @@ const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-grou
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
+const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
@@ -435,6 +436,19 @@ exportHomeAssistantConfig.addEventListener("click", () => {
   link.href = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
   const exportName = homeAssistantGroup.value === "custom" ? "atlas-custom-panel" : `atlas-${homeAssistantGroup.value}-panel`;
   link.download = `${exportName.replace(/[^a-z0-9-]+/gi, "-")}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+exportHaCardConfig.addEventListener("click", () => {
+  const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
+  const card = {
+    type: "entities",
+    title: group?.title ?? "ATLAS panel",
+    entities: trackedEntityIds().map(entity => ({ entity })),
+  };
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(card, null, 2)], { type: "application/json" }));
+  link.download = `atlas-${homeAssistantGroup.value === "custom" ? "custom" : homeAssistantGroup.value}-ha-card.json`;
   link.click();
   URL.revokeObjectURL(link.href);
 });
