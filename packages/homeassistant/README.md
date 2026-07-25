@@ -26,12 +26,13 @@ transport; configuration can already derive its eventual `/api/websocket` URL.
 
 The current WebSocket client is fully testable through an injected socket. It
 models authentication, subscription confirmation or rejection, state changes,
-close reasons and lifecycle states, but it does not open a network connection
-or persist access tokens.
+close reasons and subscribable lifecycle states. The browser adapter can open a
+connection when explicitly used by a host application; it never persists access
+tokens.
 
-A browser-compatible socket adapter and runtime connection controller are ready
-for a future instance. Tokens are supplied per connect or reconnect call and
-are not retained by the controller.
+A browser-compatible socket adapter and runtime connection controller are
+available for an instance. Tokens are supplied per connect or reconnect call
+and are not retained by the controller.
 
 The integration boundary remains intentionally narrow: status panels can mount
 to a configured DOM-compatible surface, while all runtime and Home Assistant

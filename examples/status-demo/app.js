@@ -5,6 +5,8 @@ import {
   createHomeAssistantStatusPanel,
   createHomeAssistantEntityState,
   createHomeAssistantConnectionConfiguration,
+  createBrowserHomeAssistantWebSocket,
+  createHomeAssistantRuntimeConnection,
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
   deriveHomeAssistantWebSocketUrl,
@@ -18,6 +20,12 @@ const statusMessage = document.querySelector("#status-message");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
+const connectionState = document.querySelector("#connection-state");
+const homeAssistantToken = document.querySelector("#home-assistant-token");
+const connectButton = document.querySelector("#connect-home-assistant");
+const disconnectButton = document.querySelector("#disconnect-home-assistant");
+let connection;
+let removeLifecycleListener;
 
 const tokens = createThemeTokens({
   colorBackground: "#f5f7fb",
@@ -55,6 +63,41 @@ function renderConnectionReadiness() {
     : readiness.reason;
 }
 
+function renderConnectionLifecycle(lifecycle) {
+  const subscription = lifecycle.subscription ? `, subscription ${lifecycle.subscription}` : "";
+  connectionState.dataset.state = lifecycle.state;
+  connectionState.textContent = lifecycle.reason
+    ? `Connection: ${lifecycle.state} (${lifecycle.reason})`
+    : `Connection: ${lifecycle.state}${subscription}`;
+  connectButton.disabled = lifecycle.state === "connecting" || lifecycle.state === "authenticating" || lifecycle.state === "connected";
+  disconnectButton.disabled = lifecycle.state === "closed" || lifecycle.state === "failed";
+}
+
+function connectHomeAssistant() {
+  const configuration = createHomeAssistantConnectionConfiguration({ url: homeAssistantUrl.value });
+  const readiness = inspectHomeAssistantConnectionReadiness(configuration);
+  if (!readiness.ready) {
+    renderConnectionLifecycle({ state: "failed", reason: readiness.reason });
+    return;
+  }
+
+  if (!homeAssistantToken.value) {
+    renderConnectionLifecycle({ state: "failed", reason: "An access token is required to connect." });
+    return;
+  }
+
+  removeLifecycleListener?.();
+  connection?.disconnect();
+  connection = createHomeAssistantRuntimeConnection(configuration, createBrowserHomeAssistantWebSocket);
+  removeLifecycleListener = connection.subscribeLifecycle(renderConnectionLifecycle);
+  connection.connect(homeAssistantToken.value);
+  homeAssistantToken.value = "";
+}
+
+function disconnectHomeAssistant() {
+  connection?.disconnect();
+}
+
 const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
 if (!registeredPanel) {
   statusMessage.textContent = "Status panel is not registered.";
@@ -85,6 +128,8 @@ for (const button of buttons) {
 }
 
 homeAssistantUrl.addEventListener("input", renderConnectionReadiness);
+connectButton.addEventListener("click", connectHomeAssistant);
+disconnectButton.addEventListener("click", disconnectHomeAssistant);
 
 void renderEntityState("on");
 renderConnectionReadiness();

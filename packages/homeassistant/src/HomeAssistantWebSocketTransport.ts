@@ -16,6 +16,7 @@ export type HomeAssistantWebSocket = Readonly<{
 export type HomeAssistantWebSocketClient = Readonly<{
   transport: HomeAssistantEntityStatePublisher;
   getLifecycle(): HomeAssistantWebSocketLifecycle;
+  subscribeLifecycle(listener: (lifecycle: HomeAssistantWebSocketLifecycle) => void): () => void;
   disconnect(): void;
 }>;
 
@@ -25,6 +26,13 @@ export function createHomeAssistantWebSocketClient(
 ): HomeAssistantWebSocketClient {
   const transport = createInMemoryHomeAssistantEntityStateTransport();
   let lifecycle: HomeAssistantWebSocketLifecycle = { state: "connecting" };
+  const lifecycleListeners = new Set<(lifecycle: HomeAssistantWebSocketLifecycle) => void>();
+  const updateLifecycle = (nextLifecycle: HomeAssistantWebSocketLifecycle): void => {
+    lifecycle = nextLifecycle;
+    for (const listener of lifecycleListeners) {
+      listener(lifecycle);
+    }
+  };
   const removeMessageListener = socket.onMessage(async data => {
     const message = parseHomeAssistantWebSocketMessage(data);
     if (!message) {
@@ -32,19 +40,19 @@ export function createHomeAssistantWebSocketClient(
     }
 
     if (message.type === "auth_required") {
-      lifecycle = { state: "authenticating" };
+      updateLifecycle({ state: "authenticating" });
       socket.send(JSON.stringify({ type: "auth", access_token: accessToken }));
       return;
     }
 
     if (message.type === "auth_ok") {
-      lifecycle = { state: "connected", subscription: "pending" };
+      updateLifecycle({ state: "connected", subscription: "pending" });
       socket.send(JSON.stringify({ id: 1, type: "subscribe_events", event_type: "state_changed" }));
       return;
     }
 
     if (message.type === "auth_invalid") {
-      lifecycle = { state: "failed", reason: message.message };
+      updateLifecycle({ state: "failed", reason: message.message });
       return;
     }
 
@@ -53,19 +61,19 @@ export function createHomeAssistantWebSocketClient(
         return;
       }
 
-      lifecycle = message.success
+      updateLifecycle(message.success
         ? { state: "connected", subscription: "active" }
         : {
           state: "failed",
           reason: message.message ?? "Home Assistant event subscription failed.",
-        };
+        });
       return;
     }
 
     await transport.publish(mapHomeAssistantStateChangedEvent(message));
   });
   const removeCloseListener = socket.onClose(reason => {
-    lifecycle = { state: "closed", ...(reason ? { reason } : {}) };
+    updateLifecycle({ state: "closed", ...(reason ? { reason } : {}) });
   });
 
   return {
@@ -73,11 +81,16 @@ export function createHomeAssistantWebSocketClient(
     getLifecycle(): HomeAssistantWebSocketLifecycle {
       return lifecycle;
     },
+    subscribeLifecycle(listener): () => void {
+      lifecycleListeners.add(listener);
+      listener(lifecycle);
+      return () => lifecycleListeners.delete(listener);
+    },
     disconnect(): void {
       removeMessageListener();
       removeCloseListener();
       socket.close();
-      lifecycle = { state: "closed" };
+      updateLifecycle({ state: "closed" });
     },
   };
 }

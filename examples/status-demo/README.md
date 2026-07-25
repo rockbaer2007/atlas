@@ -11,6 +11,7 @@ node examples/status-demo/server.mjs
 Open `http://127.0.0.1:4173/` and use the status controls to verify that each
 selection replaces the current surface output while retaining the theme tokens.
 
-The Home Assistant URL field validates a local connection target and shows the
-derived WebSocket endpoint. It does not connect to an instance or request,
-store or transmit an access token.
+The Home Assistant controls validate a connection target, show the derived
+WebSocket endpoint and can connect to an instance. The supplied access token is
+cleared from the form immediately after starting the connection and is not
+stored or logged by the demo.

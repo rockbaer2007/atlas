@@ -69,6 +69,8 @@ describe("Home Assistant runtime connection", () => {
         return socket;
       },
     );
+    const lifecycleStates: string[] = [];
+    connection.subscribeLifecycle(lifecycle => lifecycleStates.push(lifecycle.state));
 
     expect(connection.connect("first-token")).toEqual({ state: "connecting" });
     await sockets[0].emitMessage('{"type":"auth_required"}');
@@ -82,6 +84,7 @@ describe("Home Assistant runtime connection", () => {
       "wss://home.example.test/api/websocket",
       "wss://home.example.test/api/websocket",
     ]);
+    expect(lifecycleStates).toEqual(["closed", "connecting", "authenticating", "connecting", "authenticating"]);
   });
 
   it("reports invalid configuration without creating a socket", () => {
@@ -97,5 +100,17 @@ describe("Home Assistant runtime connection", () => {
     expect(mapHomeAssistantConnectionLifecycleToStatus({ state: "authenticating" })).toBe("pending");
     expect(mapHomeAssistantConnectionLifecycleToStatus({ state: "connected" })).toBe("ready");
     expect(mapHomeAssistantConnectionLifecycleToStatus({ state: "failed" })).toBe("blocked");
+  });
+
+  it("reports a socket creation failure without throwing to the host", () => {
+    const connection = createHomeAssistantRuntimeConnection(
+      createHomeAssistantConnectionConfiguration({ url: "https://home.example.test" }),
+      () => { throw new Error("WebSocket is unavailable."); },
+    );
+
+    expect(connection.connect("test-token")).toEqual({
+      state: "failed",
+      reason: "WebSocket is unavailable.",
+    });
   });
 });

@@ -76,6 +76,8 @@ describe("Home Assistant WebSocket transport", () => {
   it("authenticates, subscribes and publishes state events through the local transport", async () => {
     const socket = createTestSocket();
     const client = createHomeAssistantWebSocketClient(socket, "test-token");
+    const lifecycleStates: string[] = [];
+    client.subscribeLifecycle(lifecycle => lifecycleStates.push(lifecycle.state));
 
     expect(client.getLifecycle()).toEqual({ state: "connecting" });
     await socket.emitMessage('{"type":"auth_required"}');
@@ -104,6 +106,7 @@ describe("Home Assistant WebSocket transport", () => {
       entityId: "binary_sensor.atlas",
       state: "off",
     });
+    expect(lifecycleStates).toEqual(["connecting", "authenticating", "connected", "connected"]);
   });
 
   it("reports authentication failures and closes cleanly", async () => {
