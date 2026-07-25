@@ -41,7 +41,7 @@ describe("Home Assistant runtime connection", () => {
     let browserSocket: HomeAssistantBrowserWebSocketLike | undefined;
     const socket = createBrowserHomeAssistantWebSocket("ws://home.example.test/api/websocket", class {
       onmessage: ((event: { data: string }) => void) | null = null;
-      onclose: (() => void) | null = null;
+      onclose: ((event: { code?: number; reason?: string }) => void) | null = null;
       send(): void {}
       close(): void {}
 

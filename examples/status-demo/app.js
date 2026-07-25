@@ -4,15 +4,20 @@ import {
 import {
   createHomeAssistantStatusPanel,
   createHomeAssistantEntityState,
+  createHomeAssistantConnectionConfiguration,
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
+  deriveHomeAssistantWebSocketUrl,
   findHomeAssistantStatusPanel,
+  inspectHomeAssistantConnectionReadiness,
   bindHomeAssistantEntityStatusPanel,
 } from "@atlas/homeassistant";
 
 const statusRoot = document.querySelector("#atlas-status-root");
 const statusMessage = document.querySelector("#status-message");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
+const homeAssistantUrl = document.querySelector("#home-assistant-url");
+const connectionReadiness = document.querySelector("#connection-readiness");
 
 const tokens = createThemeTokens({
   colorBackground: "#f5f7fb",
@@ -40,6 +45,14 @@ async function renderEntityState(state) {
     entityId: "binary_sensor.atlas_status",
     state,
   }));
+}
+
+function renderConnectionReadiness() {
+  const configuration = createHomeAssistantConnectionConfiguration({ url: homeAssistantUrl.value });
+  const readiness = inspectHomeAssistantConnectionReadiness(configuration);
+  connectionReadiness.textContent = readiness.ready
+    ? `Connection URL ready: ${deriveHomeAssistantWebSocketUrl(configuration)}`
+    : readiness.reason;
 }
 
 const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
@@ -71,4 +84,7 @@ for (const button of buttons) {
   });
 }
 
+homeAssistantUrl.addEventListener("input", renderConnectionReadiness);
+
 void renderEntityState("on");
+renderConnectionReadiness();

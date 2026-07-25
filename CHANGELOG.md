@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant now confirms event subscriptions, reports subscription
+  failures and preserves remote WebSocket close reasons for runtime diagnostics.
+- The local status demo now validates a Home Assistant URL and displays the
+  derived WebSocket endpoint without accepting or storing credentials.
 - Home Assistant now provides a browser WebSocket adapter and runtime connection
   controller with non-persistent connect and reconnect credentials.
 - Home Assistant now models its WebSocket authentication, state-event protocol

@@ -25,8 +25,9 @@ The same contract will be implemented by a future authenticated WebSocket
 transport; configuration can already derive its eventual `/api/websocket` URL.
 
 The current WebSocket client is fully testable through an injected socket. It
-models authentication, event subscription, state changes and lifecycle states,
-but it does not open a network connection or persist access tokens.
+models authentication, subscription confirmation or rejection, state changes,
+close reasons and lifecycle states, but it does not open a network connection
+or persist access tokens.
 
 A browser-compatible socket adapter and runtime connection controller are ready
 for a future instance. Tokens are supplied per connect or reconnect call and

@@ -12,6 +12,7 @@ export type HomeAssistantWebSocketLifecycleState =
 
 export type HomeAssistantWebSocketLifecycle = Readonly<{
   state: HomeAssistantWebSocketLifecycleState;
+  subscription?: "pending" | "active";
   reason?: string;
 }>;
 
@@ -19,6 +20,12 @@ export type HomeAssistantWebSocketProtocolMessage =
   | Readonly<{ type: "auth_required" }>
   | Readonly<{ type: "auth_ok" }>
   | Readonly<{ type: "auth_invalid"; message: string }>
+  | Readonly<{
+    type: "result";
+    id: number;
+    success: boolean;
+    message?: string;
+  }>
   | Readonly<{
     type: "event";
     event: Readonly<{
@@ -50,6 +57,18 @@ export function parseHomeAssistantWebSocketMessage(
 
     if (message.type === "auth_invalid" && typeof message.message === "string") {
       return { type: "auth_invalid", message: message.message };
+    }
+
+    if (message.type === "result" && typeof message.id === "number" && typeof message.success === "boolean") {
+      const error = isRecord(message.error) ? message.error : undefined;
+      const errorMessage = error && typeof error.message === "string" ? error.message : undefined;
+
+      return {
+        type: "result",
+        id: message.id,
+        success: message.success,
+        ...(errorMessage ? { message: errorMessage } : {}),
+      };
     }
 
     if (message.type !== "event" || !isRecord(message.event)) {

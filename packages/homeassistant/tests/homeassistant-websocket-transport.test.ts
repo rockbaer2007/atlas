@@ -10,11 +10,11 @@ import {
 function createTestSocket(): HomeAssistantWebSocket & {
   readonly sent: string[];
   readonly emitMessage: (data: string) => Promise<void>;
-  readonly emitClose: () => void;
+  readonly emitClose: (reason?: string) => void;
   readonly closed: () => boolean;
 } {
   const messageListeners = new Set<(data: string) => void | Promise<void>>();
-  const closeListeners = new Set<() => void>();
+  const closeListeners = new Set<(reason?: string) => void>();
   const sent: string[] = [];
   let isClosed = false;
 
@@ -39,9 +39,9 @@ function createTestSocket(): HomeAssistantWebSocket & {
         await listener(data);
       }
     },
-    emitClose(): void {
+    emitClose(reason?: string): void {
       for (const listener of closeListeners) {
-        listener();
+        listener(reason);
       }
     },
     closed: (): boolean => isClosed,
@@ -83,8 +83,11 @@ describe("Home Assistant WebSocket transport", () => {
     expect(socket.sent).toEqual(['{"type":"auth","access_token":"test-token"}']);
 
     await socket.emitMessage('{"type":"auth_ok"}');
-    expect(client.getLifecycle()).toEqual({ state: "connected" });
+    expect(client.getLifecycle()).toEqual({ state: "connected", subscription: "pending" });
     expect(socket.sent[1]).toBe('{"id":1,"type":"subscribe_events","event_type":"state_changed"}');
+
+    await socket.emitMessage('{"id":1,"type":"result","success":true,"result":null}');
+    expect(client.getLifecycle()).toEqual({ state: "connected", subscription: "active" });
 
     await socket.emitMessage(JSON.stringify({
       type: "event",
@@ -113,5 +116,16 @@ describe("Home Assistant WebSocket transport", () => {
     client.disconnect();
     expect(socket.closed()).toBe(true);
     expect(client.getLifecycle()).toEqual({ state: "closed" });
+  });
+
+  it("reports rejected event subscriptions and remote close reasons", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    await socket.emitMessage('{"id":1,"type":"result","success":false,"error":{"message":"not authorized"}}');
+    expect(client.getLifecycle()).toEqual({ state: "failed", reason: "not authorized" });
+
+    socket.emitClose("server restart");
+    expect(client.getLifecycle()).toEqual({ state: "closed", reason: "server restart" });
   });
 });

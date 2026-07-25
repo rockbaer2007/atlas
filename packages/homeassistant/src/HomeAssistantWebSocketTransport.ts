@@ -10,7 +10,7 @@ export type HomeAssistantWebSocket = Readonly<{
   send(data: string): void;
   close(): void;
   onMessage(listener: (data: string) => void | Promise<void>): () => void;
-  onClose(listener: () => void): () => void;
+  onClose(listener: (reason?: string) => void): () => void;
 }>;
 
 export type HomeAssistantWebSocketClient = Readonly<{
@@ -38,7 +38,7 @@ export function createHomeAssistantWebSocketClient(
     }
 
     if (message.type === "auth_ok") {
-      lifecycle = { state: "connected" };
+      lifecycle = { state: "connected", subscription: "pending" };
       socket.send(JSON.stringify({ id: 1, type: "subscribe_events", event_type: "state_changed" }));
       return;
     }
@@ -48,10 +48,24 @@ export function createHomeAssistantWebSocketClient(
       return;
     }
 
+    if (message.type === "result") {
+      if (message.id !== 1) {
+        return;
+      }
+
+      lifecycle = message.success
+        ? { state: "connected", subscription: "active" }
+        : {
+          state: "failed",
+          reason: message.message ?? "Home Assistant event subscription failed.",
+        };
+      return;
+    }
+
     await transport.publish(mapHomeAssistantStateChangedEvent(message));
   });
-  const removeCloseListener = socket.onClose(() => {
-    lifecycle = { state: "closed" };
+  const removeCloseListener = socket.onClose(reason => {
+    lifecycle = { state: "closed", ...(reason ? { reason } : {}) };
   });
 
   return {
