@@ -32,6 +32,7 @@ const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
+const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const selectedEntity = document.querySelector("#selected-entity");
@@ -357,6 +358,20 @@ deleteHomeAssistantGroup.addEventListener("click", () => {
   persistConfiguration();
   statusMessage.textContent = "Group deleted.";
 });
+duplicateHomeAssistantGroup.addEventListener("click", () => {
+  const source = panelGroups.find(group => group.id === homeAssistantGroup.value);
+  if (!source) {
+    statusMessage.textContent = "Select a group to duplicate.";
+    return;
+  }
+  const title = `${source.title} copy`;
+  const id = `group-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+  panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds: source.entityIds })];
+  homeAssistantGroupName.value = title;
+  renderGroupOptions(id);
+  persistConfiguration();
+  statusMessage.textContent = `Group ${title} created.`;
+});
 exportHomeAssistantConfig.addEventListener("click", () => {
   const payload = JSON.stringify({ version: 1, url: homeAssistantUrl.value, entities: homeAssistantEntity.value, groups: panelGroups }, null, 2);
   const link = document.createElement("a");
@@ -370,7 +385,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
   if (!file) return;
   try {
     const imported = JSON.parse(await file.text());
-    if (typeof imported.url !== "string" || typeof imported.entities !== "string" || !Array.isArray(imported.groups)) throw new Error();
+    if (imported.version !== 1 || typeof imported.url !== "string" || typeof imported.entities !== "string" || !Array.isArray(imported.groups)) throw new Error();
     homeAssistantUrl.value = imported.url;
     homeAssistantEntity.value = imported.entities;
     panelGroups = imported.groups.map(createHomeAssistantPanelGroup);
@@ -378,7 +393,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
     renderConnectionReadiness();
-    statusMessage.textContent = "Configuration imported.";
+    statusMessage.textContent = `Configuration imported: ${panelGroups.length} groups and ${trackedEntityIds().length} entities.`;
   } catch {
     statusMessage.textContent = "Import failed: invalid configuration.";
   } finally {
