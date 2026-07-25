@@ -37,6 +37,7 @@ const exportHomeAssistantConfig = document.querySelector("#export-home-assistant
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
+const groupSummary = document.querySelector("#group-summary");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 let connection;
 let removeLifecycleListener;
@@ -177,6 +178,9 @@ function trackedEntityIds() {
 
 function renderEntityList() {
   entityList.replaceChildren();
+  let ready = 0;
+  let pending = 0;
+  let blocked = 0;
   for (const entityId of trackedEntityIds()) {
     const entity = entitySnapshots.get(entityId);
     const card = document.createElement("article");
@@ -188,8 +192,11 @@ function renderEntityList() {
     name.textContent = presentation?.label ?? entityId;
     value.textContent = entity?.value ?? entity?.state ?? "Waiting";
     detail.textContent = entity?.updatedAt
-      ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${new Date(entity.updatedAt).toLocaleTimeString()}`
+      ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${formatRelativeTime(entity.updatedAt)}`
       : presentation?.detail ?? entityId.split(".", 1)[0];
+    if (entity?.state === "on" || entity?.state === "available") ready += 1;
+    else if (entity?.state === "off") pending += 1;
+    else if (entity) blocked += 1;
     card.append(name, value, detail);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
@@ -201,6 +208,14 @@ function renderEntityList() {
     }
     entityList.append(card);
   }
+  groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
+}
+
+function formatRelativeTime(timestamp) {
+  const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+  if (seconds < 60) return "just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+  return `${Math.floor(seconds / 3600)} h ago`;
 }
 
 function requestEntityService(entityId, service) {
