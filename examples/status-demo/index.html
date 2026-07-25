@@ -111,6 +111,23 @@
         color: #172033;
       }
 
+      .connection-actions .import-button {
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #172033;
+        padding: 8px 12px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .connection-actions .import-button:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 1px;
+      }
+
       .connection-actions button:disabled {
         cursor: not-allowed;
         opacity: 0.55;
@@ -277,7 +294,7 @@
           <button id="save-home-assistant-group" type="button">Save group</button>
           <button id="delete-home-assistant-group" type="button">Delete group</button>
           <button id="export-home-assistant-config" type="button">Export</button>
-          <label for="import-home-assistant-config">Import</label>
+          <label class="import-button" for="import-home-assistant-config">Import</label>
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
         </div>
         <label for="home-assistant-entity">Entity IDs</label>
