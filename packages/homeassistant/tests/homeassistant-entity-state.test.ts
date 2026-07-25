@@ -70,6 +70,22 @@ describe("Home Assistant entity status panels", () => {
 
     expect(execution.result.mounted).toBe(true);
     expect(element.innerHTML).toContain('data-status="pending"');
+
+    const sensorExecution = await renderHomeAssistantEntityStatusPanel({
+      panel,
+      entity: createHomeAssistantEntityState({
+        entityId: "sensor.atlas_temperature",
+        state: "available",
+        value: "21.5",
+        name: "Office temperature",
+        unit: "°C",
+      }),
+      element,
+      tokens: createThemeTokens(),
+    });
+    expect(sensorExecution.result.mounted).toBe(true);
+    expect(element.innerHTML).toContain("Office temperature");
+    expect(element.innerHTML).toContain("21.5 °C");
   });
 
   it("checks connection configuration without opening a Home Assistant connection", () => {

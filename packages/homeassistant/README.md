@@ -18,8 +18,9 @@ Renderer dependency.
 
 Local entity state contracts map `on`, `off`, available non-binary values,
 `unavailable` and `unknown` into panel states. Status panels can be collected
-in a registry, and connection configuration is validated without opening a
-network connection.
+in a registry. Entity updates preserve their display name, original value and
+unit where Home Assistant provides them, and connection configuration is
+validated without opening a network connection.
 
 An in-memory entity transport supports local publishing and panel subscriptions.
 The same contract will be implemented by a future authenticated WebSocket

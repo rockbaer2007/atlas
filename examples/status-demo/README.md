@@ -16,7 +16,8 @@ WebSocket endpoint and can connect to an instance. The supplied access token is
 cleared from the form immediately after starting the connection and is not
 stored or logged by the demo.
 
-Set an Entity ID before connecting. Once the event subscription is active, the
-panel listens only to that live entity. Numeric and other available sensor
+Enter one or more comma-separated Entity IDs before connecting. Once the event
+subscription is active, the primary entity drives the status panel and the list
+shows updates for all selected entities. Numeric and other available sensor
 values render as ready; `off` remains pending, while unavailable or unknown
 entities render as blocked.

@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant entity events now retain display names, raw values and units;
+  the local demo can observe a comma-separated multi-entity list.
 - Home Assistant status panels now support selected live entities and recognize
   available non-binary sensor values alongside binary device states.
 - Home Assistant now exposes subscribable runtime lifecycle updates, and the

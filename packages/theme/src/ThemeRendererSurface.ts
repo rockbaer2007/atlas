@@ -11,6 +11,11 @@ import { applyThemeTokens, type ThemeStyleTarget, type ThemeTokens } from "./The
 
 export type ThemeRendererStatus = "ready" | "blocked" | "pending";
 
+export type ThemeRendererStatusOutputOptions = Readonly<{
+  title?: string;
+  detail?: string;
+}>;
+
 export type ThemeRendererSurfaceElement = ThemeStyleTarget & Readonly<{
   innerHTML: string;
 }>;
@@ -24,6 +29,7 @@ export type ThemedRendererDomSurfaceScenario = Readonly<{
 
 export function createThemeRendererStatusOutput(
   status: ThemeRendererStatus,
+  options: ThemeRendererStatusOutputOptions = {},
 ): RendererOutput {
   const label = status === "ready"
     ? "Ready"
@@ -36,8 +42,19 @@ export function createThemeRendererStatusOutput(
     name: `atlas-status-${status}`,
     content:
       `<section class="atlas-status" data-status="${status}">`
-      + `<strong>ATLAS</strong><span>${label}</span></section>`,
+      + `<strong>${escapeHtml(options.title ?? "ATLAS")}</strong>`
+      + `<span>${label}</span>${options.detail ? `<small>${escapeHtml(options.detail)}</small>` : ""}</section>`,
   });
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>'"]/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "'": "&#39;",
+    "\"": "&quot;",
+  })[character] ?? character);
 }
 
 export async function executeThemedRendererDomSurfaceScenario(

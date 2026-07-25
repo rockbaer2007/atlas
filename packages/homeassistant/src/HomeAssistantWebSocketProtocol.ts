@@ -32,7 +32,13 @@ export type HomeAssistantWebSocketProtocolMessage =
       event_type: "state_changed";
       data: Readonly<{
         entity_id: string;
-        new_state: Readonly<{ state: string }> | null;
+        new_state: Readonly<{
+          state: string;
+          attributes?: Readonly<{
+            friendly_name?: string;
+            unit_of_measurement?: string;
+          }>;
+        }> | null;
       }>;
     }>;
   }>;
@@ -87,6 +93,7 @@ export function parseHomeAssistantWebSocketMessage(
     }
 
     let newStateValue: string | null;
+    let attributes: Readonly<{ friendly_name?: string; unit_of_measurement?: string }> | undefined;
     if (newState === null) {
       newStateValue = null;
     } else {
@@ -95,6 +102,16 @@ export function parseHomeAssistantWebSocketMessage(
       }
 
       newStateValue = newState.state;
+      if (isRecord(newState.attributes)) {
+        attributes = {
+          ...(typeof newState.attributes.friendly_name === "string"
+            ? { friendly_name: newState.attributes.friendly_name }
+            : {}),
+          ...(typeof newState.attributes.unit_of_measurement === "string"
+            ? { unit_of_measurement: newState.attributes.unit_of_measurement }
+            : {}),
+        };
+      }
     }
 
     return {
@@ -103,7 +120,9 @@ export function parseHomeAssistantWebSocketMessage(
         event_type: "state_changed",
         data: {
           entity_id: eventData.entity_id,
-          new_state: newStateValue === null ? null : { state: newStateValue },
+          new_state: newStateValue === null
+            ? null
+            : { state: newStateValue, ...(attributes ? { attributes } : {}) },
         },
       },
     };
@@ -116,6 +135,7 @@ export function mapHomeAssistantStateChangedEvent(
   message: Extract<HomeAssistantWebSocketProtocolMessage, { type: "event" }>,
 ): HomeAssistantEntityState {
   const state = message.event.data.new_state?.state;
+  const attributes = message.event.data.new_state?.attributes;
 
   return createHomeAssistantEntityState({
     entityId: message.event.data.entity_id,
@@ -124,5 +144,8 @@ export function mapHomeAssistantStateChangedEvent(
       : state
         ? "available"
         : "unknown",
+    ...(state ? { value: state } : {}),
+    ...(attributes?.friendly_name ? { name: attributes.friendly_name } : {}),
+    ...(attributes?.unit_of_measurement ? { unit: attributes.unit_of_measurement } : {}),
   });
 }

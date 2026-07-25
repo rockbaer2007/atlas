@@ -22,6 +22,8 @@ export type HomeAssistantStatusPanelScenario = Readonly<{
   status: ThemeRendererStatus;
   element: ThemeRendererSurfaceElement;
   tokens: ThemeTokens;
+  title?: string;
+  detail?: string;
 }>;
 
 export type HomeAssistantEntityStatusPanelScenario = Readonly<{
@@ -41,7 +43,10 @@ export async function renderHomeAssistantStatusPanel(
   scenario: HomeAssistantStatusPanelScenario,
 ): ReturnType<typeof executeThemedRendererDomSurfaceScenario> {
   return executeThemedRendererDomSurfaceScenario({
-    output: createThemeRendererStatusOutput(scenario.status),
+    output: createThemeRendererStatusOutput(scenario.status, {
+      title: scenario.title,
+      detail: scenario.detail,
+    }),
     target: {
       kind: "surface",
       name: scenario.panel.id,
@@ -60,7 +65,17 @@ export async function renderHomeAssistantEntityStatusPanel(
     status: mapHomeAssistantEntityStateToStatus(scenario.entity),
     element: scenario.element,
     tokens: scenario.tokens,
+    title: scenario.entity.name ?? scenario.entity.entityId,
+    detail: formatHomeAssistantEntityDetail(scenario.entity),
   });
+}
+
+function formatHomeAssistantEntityDetail(entity: HomeAssistantEntityState): string | undefined {
+  if (!entity.value) {
+    return undefined;
+  }
+
+  return entity.unit ? `${entity.value} ${entity.unit}` : entity.value;
 }
 
 export function mapHomeAssistantConnectionLifecycleToStatus(

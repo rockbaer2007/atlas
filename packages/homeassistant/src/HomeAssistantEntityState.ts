@@ -5,6 +5,9 @@ export type HomeAssistantEntityStateValue = "on" | "off" | "available" | "unavai
 export type HomeAssistantEntityState = Readonly<{
   entityId: string;
   state: HomeAssistantEntityStateValue;
+  value?: string;
+  name?: string;
+  unit?: string;
 }>;
 
 export function createHomeAssistantEntityState(

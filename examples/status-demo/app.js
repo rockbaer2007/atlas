@@ -26,10 +26,13 @@ const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const selectedEntity = document.querySelector("#selected-entity");
+const entityList = document.querySelector("#atlas-entity-list");
 let connection;
 let removeLifecycleListener;
 let panelBinding;
 let activeTransport;
+let removeEntityListListener;
+const entitySnapshots = new Map();
 
 const tokens = createThemeTokens({
   colorBackground: "#f5f7fb",
@@ -54,7 +57,7 @@ async function renderEntityState(state) {
   }
 
   await transport.publish(createHomeAssistantEntityState({
-    entityId: homeAssistantEntity.value.trim() || "binary_sensor.atlas_status",
+    entityId: currentEntityId(),
     state,
   }));
 }
@@ -84,7 +87,28 @@ function renderConnectionLifecycle(lifecycle) {
 }
 
 function currentEntityId() {
-  return homeAssistantEntity.value.trim() || "binary_sensor.atlas_status";
+  return trackedEntityIds()[0] ?? "binary_sensor.atlas_status";
+}
+
+function trackedEntityIds() {
+  return [...new Set(homeAssistantEntity.value.split(",").map(entityId => entityId.trim()).filter(Boolean))];
+}
+
+function renderEntityList() {
+  entityList.replaceChildren();
+  for (const entityId of trackedEntityIds()) {
+    const entity = entitySnapshots.get(entityId);
+    const card = document.createElement("article");
+    const name = document.createElement("strong");
+    const value = document.createElement("span");
+    const detail = document.createElement("small");
+    card.className = "atlas-entity-card";
+    name.textContent = entity?.name ?? entityId;
+    value.textContent = entity?.value ?? entity?.state ?? "Waiting";
+    detail.textContent = entity?.unit ?? entityId;
+    card.append(name, value, detail);
+    entityList.append(card);
+  }
 }
 
 function bindSelectedEntity(nextTransport) {
@@ -93,13 +117,23 @@ function bindSelectedEntity(nextTransport) {
   }
 
   panelBinding?.dispose();
+  removeEntityListListener?.();
   activeTransport = nextTransport;
+  entitySnapshots.clear();
   panelBinding = bindHomeAssistantEntityStatusPanel({
     transport: activeTransport,
     panel: registeredPanel,
     entityId: currentEntityId(),
     element: statusRoot,
     tokens,
+  });
+  removeEntityListListener = activeTransport.subscribe(entity => {
+    if (!trackedEntityIds().includes(entity.entityId)) {
+      return;
+    }
+
+    entitySnapshots.set(entity.entityId, entity);
+    renderEntityList();
   });
   const usingLiveTransport = activeTransport !== transport;
   for (const button of buttons) {
@@ -111,6 +145,7 @@ function bindSelectedEntity(nextTransport) {
   statusMessage.textContent = usingLiveTransport
     ? `Waiting for updates from ${currentEntityId()}.`
     : `Demo controls target ${currentEntityId()}.`;
+  renderEntityList();
 }
 
 function connectHomeAssistant() {

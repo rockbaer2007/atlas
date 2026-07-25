@@ -70,6 +70,7 @@ describe("Home Assistant WebSocket transport", () => {
     expect(mapHomeAssistantStateChangedEvent(event as Extract<typeof event, { type: "event" }>)).toEqual({
       entityId: "binary_sensor.atlas",
       state: "on",
+      value: "on",
     });
 
     const sensorEvent = parseHomeAssistantWebSocketMessage(JSON.stringify({
@@ -78,13 +79,22 @@ describe("Home Assistant WebSocket transport", () => {
         event_type: "state_changed",
         data: {
           entity_id: "sensor.atlas_temperature",
-          new_state: { state: "21.5" },
+          new_state: {
+            state: "21.5",
+            attributes: {
+              friendly_name: "Office temperature",
+              unit_of_measurement: "°C",
+            },
+          },
         },
       },
     }));
     expect(mapHomeAssistantStateChangedEvent(sensorEvent as Extract<typeof sensorEvent, { type: "event" }>)).toEqual({
       entityId: "sensor.atlas_temperature",
       state: "available",
+      value: "21.5",
+      name: "Office temperature",
+      unit: "°C",
     });
   });
 
@@ -120,6 +130,7 @@ describe("Home Assistant WebSocket transport", () => {
     expect(client.transport.getLatest("binary_sensor.atlas")).toEqual({
       entityId: "binary_sensor.atlas",
       state: "off",
+      value: "off",
     });
     expect(lifecycleStates).toEqual(["connecting", "authenticating", "connected", "connected"]);
   });
