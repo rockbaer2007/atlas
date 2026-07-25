@@ -9,6 +9,12 @@ import {
   type RendererDomMountAdapter,
 } from "./RendererDomMount";
 import {
+  createRendererDomSurfaceAdapter,
+  createRendererDomSurfaceRegistry,
+  type RendererDomSurface,
+  type RendererDomSurfaceAdapter,
+} from "./RendererDomSurface";
+import {
   createRendererMemoryMountAdapter,
   type RendererMemoryMountAdapter,
 } from "./RendererMemoryMount";
@@ -49,6 +55,12 @@ export type RendererDefaultMountAdapterRegistry = Readonly<{
   registry: RendererAdapterRegistry;
   memoryAdapter: RendererMemoryMountAdapter;
   domAdapter: RendererDomMountAdapter;
+}>;
+
+export type RendererDomSurfaceMountAdapterRegistry = Readonly<{
+  registry: RendererAdapterRegistry;
+  memoryAdapter: RendererMemoryMountAdapter;
+  domSurfaceAdapter: RendererDomSurfaceAdapter;
 }>;
 
 export type RendererTargetMountAdapterResolution = Readonly<{
@@ -270,6 +282,24 @@ export function createDefaultRendererMountAdapterRegistry(
     memoryAdapter,
     domAdapter,
     registry: createRendererAdapterRegistry([memoryAdapter, domAdapter]),
+  };
+}
+
+export function createRendererDomSurfaceMountAdapterRegistry(
+  surfaces: readonly RendererDomSurface[],
+  memoryAdapter: RendererMemoryMountAdapter = createRendererMemoryMountAdapter(
+    RendererDefaultMountAdapterNames.Memory,
+  ),
+): RendererDomSurfaceMountAdapterRegistry {
+  const domSurfaceAdapter = createRendererDomSurfaceAdapter(
+    RendererDefaultMountAdapterNames.Dom,
+    createRendererDomSurfaceRegistry(surfaces),
+  );
+
+  return {
+    memoryAdapter,
+    domSurfaceAdapter,
+    registry: createRendererAdapterRegistry([memoryAdapter, domSurfaceAdapter]),
   };
 }
 

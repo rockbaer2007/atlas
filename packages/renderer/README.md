@@ -113,10 +113,12 @@ Assistant or theme execution paths.
 - `RendererDomMountStore`
 - `RendererDomMountSummary`
 - `RendererDomSurface`
+- `RendererDomSurfaceAdapter`
 - `RendererDomSurfaceElement`
 - `RendererDomSurfaceLookup`
 - `RendererDomSurfaceRegistry`
 - `RendererDomSurfaceScenario`
+- `RendererDomSurfaceMountAdapterRegistry`
 - `RendererMountLifecycleRecord`
 - `RendererMountLifecycleReport`
 - `RendererMountLifecycleState`
@@ -245,6 +247,8 @@ Assistant or theme execution paths.
 - `createRendererDomMountRecord`
 - `createRendererDomMountStore`
 - `createRendererDomSurfaceRegistry`
+- `createRendererDomSurfaceAdapter`
+- `createRendererDomSurfaceMountAdapterRegistry`
 - `createRendererMemoryMountAdapter`
 - `createRendererMemoryMountPlan`
 - `createRendererMemoryMountRecord`

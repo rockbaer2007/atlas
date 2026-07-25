@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Renderer target routing can now mount directly into registered DOM surfaces
+  while preserving standard mount reports.
 - Renderer now mounts output into concrete DOM-compatible surface elements for
   product-facing output-to-target scenarios.
 - Renderer target mount integration status histories now retain dashboard status

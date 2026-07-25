@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import {
   createRendererDomSurfaceRegistry,
+  createRendererDomSurfaceMountAdapterRegistry,
   createRendererOutput,
   createRendererTarget,
   executeRendererDomSurfaceScenario,
+  executeRendererTargetMountWithReport,
   findRendererDomSurface,
   mountRendererOutputToDomSurface,
 } from "../src";
@@ -92,5 +94,34 @@ describe("renderer DOM surfaces", () => {
       registry: createRendererDomSurfaceRegistry([{ identifier: "scenario-root", element }]),
     })).toMatchObject({ mounted: true, output, target });
     expect(element.innerHTML).toBe("<aside>Scenario</aside>");
+  });
+
+  it("routes renderer target mount reports into registered DOM surfaces", async () => {
+    const element = { innerHTML: "" };
+    const routing = createRendererDomSurfaceMountAdapterRegistry([{
+      identifier: "routed-root",
+      element,
+    }]);
+    const output = createRendererOutput({
+      kind: "fragment",
+      name: "routed-status",
+      content: "<p>Mounted by ATLAS</p>",
+    });
+    const target = createRendererTarget({
+      kind: "surface",
+      name: "routed-status-panel",
+      identifier: "routed-root",
+    });
+
+    const execution = await executeRendererTargetMountWithReport({
+      output,
+      target,
+      registry: routing.registry,
+    });
+
+    expect(execution.result).toEqual({ mounted: true, output, target });
+    expect(execution.report.mounted).toBe(true);
+    expect(element.innerHTML).toBe("<p>Mounted by ATLAS</p>");
+    expect(routing.memoryAdapter.store.records).toEqual([]);
   });
 });

@@ -56,7 +56,9 @@ import type {
   RendererIntegrationPreparation,
   RendererIntegrationReadiness,
   RendererDefaultMountAdapterRegistry,
+  RendererDomSurfaceMountAdapterRegistry,
   RendererDomSurface,
+  RendererDomSurfaceAdapter,
   RendererDomSurfaceElement,
   RendererDomSurfaceLookup,
   RendererDomSurfaceRegistry,
@@ -221,6 +223,8 @@ import {
   createRendererTargetMountIntegrationReadinessCatalog,
   createRendererTargetMountIntegrationStatusHistory,
   createRendererDomSurfaceRegistry,
+  createRendererDomSurfaceAdapter,
+  createRendererDomSurfaceMountAdapterRegistry,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
   consumeRendererTargetMountBatchReports,
@@ -380,6 +384,12 @@ describe("renderer public API", () => {
     expect(Renderer.createRendererDomMountStore).toBeTypeOf("function");
     expect(Renderer.createRendererDomSurfaceRegistry).toBeTypeOf("function");
     expect(createRendererDomSurfaceRegistry).toBe(Renderer.createRendererDomSurfaceRegistry);
+    expect(Renderer.createRendererDomSurfaceAdapter).toBeTypeOf("function");
+    expect(createRendererDomSurfaceAdapter).toBe(Renderer.createRendererDomSurfaceAdapter);
+    expect(Renderer.createRendererDomSurfaceMountAdapterRegistry).toBeTypeOf("function");
+    expect(createRendererDomSurfaceMountAdapterRegistry).toBe(
+      Renderer.createRendererDomSurfaceMountAdapterRegistry,
+    );
     expect(Renderer.createRendererMemoryMountAdapter).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountPlan).toBeTypeOf("function");
     expect(Renderer.createRendererMemoryMountRecord).toBeTypeOf("function");
@@ -1356,6 +1366,17 @@ describe("renderer public API", () => {
     };
     const defaultMountAdapterRegistry: RendererDefaultMountAdapterRegistry =
       createDefaultRendererMountAdapterRegistry();
+    const domSurfaceAdapter: RendererDomSurfaceAdapter = createRendererDomSurfaceAdapter(
+      RendererDefaultMountAdapterNames.Dom,
+      domSurfaceRegistry,
+    );
+    const domSurfaceMountAdapterRegistry: RendererDomSurfaceMountAdapterRegistry = {
+      registry: {
+        adapters: [defaultMountAdapterRegistry.memoryAdapter, domSurfaceAdapter],
+      },
+      memoryAdapter: defaultMountAdapterRegistry.memoryAdapter,
+      domSurfaceAdapter,
+    };
     const targetMountAdapterResolution: RendererTargetMountAdapterResolution = {
       target,
       adapterName: RendererDefaultMountAdapterNames.Memory,
@@ -1558,6 +1579,7 @@ describe("renderer public API", () => {
       RendererDefaultMountAdapterNames.Memory,
     );
     expect(defaultMountAdapterRegistry.domAdapter.name).toBe(RendererDefaultMountAdapterNames.Dom);
+    expect(domSurfaceMountAdapterRegistry.domSurfaceAdapter).toBe(domSurfaceAdapter);
     expect(targetMountAdapterResolution.adapter).toBe(defaultMountAdapterRegistry.memoryAdapter);
     expect(unifiedMountRequest.registry).toBe(defaultMountAdapterRegistry.registry);
     expect(unifiedMountBatchRequest.requests[0]).toBe(unifiedMountRequest);

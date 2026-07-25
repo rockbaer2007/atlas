@@ -1,3 +1,4 @@
+import type { RendererAdapter } from "./RendererAdapter";
 import type { RendererMountRequest, RendererMountResult } from "./RendererMount";
 import type { RendererOutput } from "./RendererOutput";
 import type { RendererTarget } from "./RendererTarget";
@@ -23,6 +24,10 @@ export type RendererDomSurfaceLookup = Readonly<{
 export type RendererDomSurfaceScenario = Readonly<{
   output: RendererOutput;
   target: RendererTarget;
+  registry: RendererDomSurfaceRegistry;
+}>;
+
+export type RendererDomSurfaceAdapter = RendererAdapter & Readonly<{
   registry: RendererDomSurfaceRegistry;
 }>;
 
@@ -83,6 +88,19 @@ export function mountRendererOutputToDomSurface(
     mounted: true,
     output: request.output,
     target: request.target,
+  };
+}
+
+export function createRendererDomSurfaceAdapter(
+  name: string,
+  registry: RendererDomSurfaceRegistry,
+): RendererDomSurfaceAdapter {
+  return {
+    name,
+    registry,
+    mount(request: RendererMountRequest): RendererMountResult {
+      return mountRendererOutputToDomSurface(request, registry);
+    },
   };
 }
 
