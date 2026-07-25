@@ -100,7 +100,7 @@ describe("Atlas framework readiness", () => {
       activePackages: ATLAS_WORKSPACE_PACKAGE_INVENTORY.map(
         (workspacePackage) => workspacePackage.name,
       ),
-      closedIntegrations: ["@atlas/theme", "@atlas/homeassistant", "@atlas/devtools"],
+      closedIntegrations: ["@atlas/homeassistant", "@atlas/devtools"],
       requiredQualityGates: [
         "check",
         "build",

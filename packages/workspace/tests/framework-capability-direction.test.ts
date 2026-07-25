@@ -9,12 +9,12 @@ import {
 } from "../src";
 
 describe("Atlas framework capability direction", () => {
-  it("selects Renderer output-to-target mounting as the next capability", () => {
+  it("selects Theme tokens as the next capability", () => {
     expect(ATLAS_NEXT_FRAMEWORK_CAPABILITY_DIRECTION).toMatchObject({
-      id: "renderer-output-mounting",
-      phase: "0.4-rendering",
+      id: "theme-tokens",
+      phase: "0.5-theme",
       status: "selected",
-      ownerPackages: ["@atlas/core", "@atlas/renderer"],
+      ownerPackages: ["@atlas/renderer", "@atlas/theme"],
     });
   });
 
@@ -38,9 +38,9 @@ describe("Atlas framework capability direction", () => {
   it("reports selected capability direction details", () => {
     expect(inspectAtlasFrameworkCapabilityDirection()).toEqual({
       selected: true,
-      id: "renderer-output-mounting",
-      ownerPackages: ["@atlas/core", "@atlas/renderer"],
-      protectedIntegrations: ["@atlas/theme", "@atlas/homeassistant", "@atlas/devtools"],
+      id: "theme-tokens",
+      ownerPackages: ["@atlas/renderer", "@atlas/theme"],
+      protectedIntegrations: ["@atlas/homeassistant", "@atlas/devtools"],
       requiredQualityGates: [
         "check",
         "build",
@@ -51,7 +51,7 @@ describe("Atlas framework capability direction", () => {
       risks: [
         "integration-api-drift",
         "renderer-side-effects",
-        "premature-theme-binding",
+        "theme-style-safety",
       ],
     });
   });
@@ -121,7 +121,7 @@ describe("Atlas framework capability direction", () => {
     mutableDirection.requiredQualityGates.push("check");
     mutableDirection.risks.push("renderer-side-effects");
 
-    expect(report.ownerPackages).toEqual(["@atlas/core", "@atlas/renderer"]);
+    expect(report.ownerPackages).toEqual(["@atlas/renderer", "@atlas/theme"]);
     expect(report.requiredQualityGates).toEqual([
       "check",
       "build",
@@ -132,7 +132,7 @@ describe("Atlas framework capability direction", () => {
     expect(report.risks).toEqual([
       "integration-api-drift",
       "renderer-side-effects",
-      "premature-theme-binding",
+      "theme-style-safety",
     ]);
   });
 });

@@ -51,7 +51,11 @@ importers:
         specifier: workspace:*
         version: link:../kernel
 
-  packages/theme: {}
+  packages/theme:
+    dependencies:
+      '@atlas/renderer':
+        specifier: workspace:*
+        version: link:../renderer
 
   packages/workspace: {}
 

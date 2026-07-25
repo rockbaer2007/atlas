@@ -10,6 +10,7 @@ above Core.
 The following integration packages are active:
 
 - `@atlas/renderer`
+- `@atlas/theme`
 
 Active integration packages must expose public APIs through the package root
 and must not be imported by Foundation, Kernel, Runtime or Core.
@@ -20,7 +21,6 @@ and must not be imported by Foundation, Kernel, Runtime or Core.
 
 The following packages remain planned and intentionally empty:
 
-- `@atlas/theme`
 - `@atlas/homeassistant`
 - `@atlas/devtools`
 
@@ -37,8 +37,7 @@ activated.
 Allowed future direction:
 
 - `@atlas/renderer` depends on `@atlas/core`.
-- `@atlas/theme` may depend on `@atlas/core` and later rendering contracts once
-  those contracts exist.
+- `@atlas/theme` depends on Renderer for the active rendering path.
 - `@atlas/homeassistant` may depend on `@atlas/core` and later renderer/theme
   contracts once those contracts exist.
 - `@atlas/devtools` may depend on `@atlas/core` and active diagnostic

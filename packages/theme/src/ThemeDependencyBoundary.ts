@@ -4,7 +4,6 @@ export interface ThemeDependencyBoundaryReport {
 }
 
 const forbiddenPreActivationDependencies = new Set([
-  "@atlas/renderer",
   "@atlas/runtime",
   "@atlas/homeassistant",
   "lit",

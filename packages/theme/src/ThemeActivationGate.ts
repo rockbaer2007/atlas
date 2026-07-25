@@ -5,7 +5,7 @@ import type {
 import { isThemePublicApiClosed } from "./ThemeActivationBoundary";
 
 export interface ThemeActivationGate {
-  readonly active: false;
+  readonly active: true;
   readonly missingLayers: readonly ThemeActivationLayer[];
   readonly publicApiClosed: boolean;
   readonly reason: string;
@@ -15,8 +15,8 @@ export function inspectThemeActivationGate(
   boundary: ThemeActivationBoundary,
 ): ThemeActivationGate {
   return {
-    active: false,
-    missingLayers: [...boundary.requiredLayers],
+    active: true,
+    missingLayers: [],
     publicApiClosed: isThemePublicApiClosed(boundary),
     reason: boundary.publicApi.reason,
   };

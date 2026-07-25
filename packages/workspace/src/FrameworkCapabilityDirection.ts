@@ -8,16 +8,16 @@ import {
   ATLAS_WORKSPACE_QUALITY_GATES,
 } from "./FrameworkReadiness";
 
-export type AtlasFrameworkCapabilityId = "renderer-output-mounting";
+export type AtlasFrameworkCapabilityId = "theme-tokens";
 
-export type AtlasFrameworkCapabilityPhase = "0.4-rendering";
+export type AtlasFrameworkCapabilityPhase = "0.5-theme";
 
 export type AtlasFrameworkCapabilityStatus = "selected";
 
 export type AtlasFrameworkCapabilityRisk =
   | "integration-api-drift"
   | "renderer-side-effects"
-  | "premature-theme-binding";
+  | "theme-style-safety";
 
 export interface AtlasFrameworkCapabilityDirection {
   readonly id: AtlasFrameworkCapabilityId;
@@ -26,7 +26,7 @@ export interface AtlasFrameworkCapabilityDirection {
   readonly goal: string;
   readonly ownerPackages: readonly Extract<
     AtlasWorkspacePackageName,
-    "@atlas/core" | "@atlas/renderer"
+    "@atlas/renderer" | "@atlas/theme"
   >[];
   readonly protectedIntegrationClosures: readonly AtlasPlannedIntegrationClosure[];
   readonly requiredQualityGates: readonly AtlasWorkspaceQualityGate[];
@@ -44,12 +44,12 @@ export interface AtlasFrameworkCapabilityDirectionReport {
 
 export const ATLAS_NEXT_FRAMEWORK_CAPABILITY_DIRECTION: AtlasFrameworkCapabilityDirection =
   {
-    id: "renderer-output-mounting",
-    phase: "0.4-rendering",
+    id: "theme-tokens",
+    phase: "0.5-theme",
     status: "selected",
     goal:
-      "Define the next concrete Renderer output-to-target mounting capability without opening planned integration package APIs.",
-    ownerPackages: ["@atlas/core", "@atlas/renderer"],
+      "Apply stable Theme tokens to the concrete Renderer output path while keeping higher integration packages closed.",
+    ownerPackages: ["@atlas/renderer", "@atlas/theme"],
     protectedIntegrationClosures: ATLAS_PLANNED_INTEGRATION_CLOSURES.map(
       (closure) => ({ ...closure }),
     ),
@@ -57,7 +57,7 @@ export const ATLAS_NEXT_FRAMEWORK_CAPABILITY_DIRECTION: AtlasFrameworkCapability
     risks: [
       "integration-api-drift",
       "renderer-side-effects",
-      "premature-theme-binding",
+      "theme-style-safety",
     ],
   };
 

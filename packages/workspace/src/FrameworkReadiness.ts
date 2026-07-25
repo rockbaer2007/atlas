@@ -45,11 +45,11 @@ export interface AtlasWorkspacePackageDescriptor {
 export interface AtlasPlannedIntegrationClosure {
   readonly name: Extract<
     AtlasWorkspacePackageName,
-    "@atlas/theme" | "@atlas/homeassistant" | "@atlas/devtools"
+    "@atlas/homeassistant" | "@atlas/devtools"
   >;
   readonly directory: Extract<
     AtlasWorkspacePackageDirectory,
-    "theme" | "homeassistant" | "devtools"
+    "homeassistant" | "devtools"
   >;
   readonly status: AtlasIntegrationClosureStatus;
   readonly publicApi: AtlasIntegrationPublicApiState;
@@ -129,8 +129,8 @@ export const ATLAS_WORKSPACE_PACKAGE_INVENTORY: readonly AtlasWorkspacePackageDe
       directory: "theme",
       layer: 5,
       status: "active",
-      publicApi: "closed",
-      allowedDependencies: [],
+      publicApi: "open",
+      allowedDependencies: ["renderer"],
     },
     {
       name: "@atlas/homeassistant",
@@ -155,13 +155,6 @@ export const ATLAS_WORKSPACE_QUALITY_GATES: readonly AtlasWorkspaceQualityGate[]
 
 export const ATLAS_PLANNED_INTEGRATION_CLOSURES: readonly AtlasPlannedIntegrationClosure[] =
   [
-    {
-      name: "@atlas/theme",
-      directory: "theme",
-      status: "planned",
-      publicApi: "closed",
-      reason: "Theme activation waits for stable Core and Renderer extension points.",
-    },
     {
       name: "@atlas/homeassistant",
       directory: "homeassistant",

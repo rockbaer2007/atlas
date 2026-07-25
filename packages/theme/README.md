@@ -7,27 +7,21 @@ integration.
 
 # Status
 
-Planned theme package.
+Active theme package.
 
-Theme work is intentionally deferred until the rendering model is defined. When
-activated, Theme is expected to depend upward on Core and later rendering
-contracts rather than being consumed by lower layers.
+Theme provides the first stable design layer for Renderer output: token values,
+CSS variable generation, selector-scoped stylesheets and browser-compatible
+application to element style targets.
 
-The package now carries internal activation-readiness checks for the future
-theme model. These checks define the required Core and Renderer layers, keep
-theme data token-only before activation, and verify that the package root
-remains closed.
+Theme is activated above Renderer and exposes its public API only through the
+package root. It may depend on Renderer but remains unavailable to lower Atlas
+layers.
 
-The activation boundary remains planned and token-only. Required layers are kept
-in Core and Renderer order, activation gate reports copy missing layer lists away
-from source boundary objects, and dependency boundary reports preserve forbidden
-dependency order while staying independent from caller-owned arrays. The package
-root intentionally exports no concrete token creation, style injection or Home
-Assistant theme binding helpers before activation.
+The activation boundary keeps its Core and Renderer order. Home Assistant theme
+binding and third-party styling dependencies remain outside this package.
 
-Concrete style injection, Renderer coupling, Home Assistant theme bridging and
-third-party styling dependencies remain outside this package until the
-activation gate is opened in a later sprint.
+Home Assistant remains a planned integration and is not activated by this Theme
+package.
 
 ---
 

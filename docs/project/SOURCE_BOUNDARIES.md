@@ -15,7 +15,7 @@ not a future package layout.
 | `@atlas/core` | Active | Root exports for the Core Runtime host entry point, diagnostics, lifecycle and event helpers. |
 | `@atlas/runtime` | Active | Root exports for runtime lifecycle host, configuration, diagnostics and events. |
 | `@atlas/renderer` | Active | Root exports for the Renderer host context, output, target and pipeline boundaries. |
-| `@atlas/theme` | Planned | Empty entry point; no public API yet. |
+| `@atlas/theme` | Active | Public theme tokens and renderer-facing CSS variable helpers. |
 | `@atlas/homeassistant` | Planned | Empty entry point; no public API yet. |
 | `@atlas/devtools` | Planned | Empty entry point; no public API yet. |
 

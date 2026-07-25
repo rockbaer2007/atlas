@@ -1,8 +1,8 @@
 export type ThemeActivationLayer = "core" | "renderer";
 
-export type ThemeActivationStatus = "planned";
+export type ThemeActivationStatus = "active";
 
-export type ThemePublicApiState = "closed";
+export type ThemePublicApiState = "open";
 
 export interface ThemeActivationBoundary {
   readonly packageName: "@atlas/theme";
@@ -14,8 +14,8 @@ export interface ThemeActivationBoundary {
     readonly reason: string;
   };
   readonly rendererBoundary: {
-    readonly tokensOnly: true;
-    readonly styleInjectionEnabled: false;
+    readonly tokensOnly: false;
+    readonly styleInjectionEnabled: true;
   };
 }
 
@@ -23,19 +23,19 @@ export function createThemeActivationBoundary(): ThemeActivationBoundary {
   return {
     packageName: "@atlas/theme",
     domain: "theme",
-    status: "planned",
+    status: "active",
     requiredLayers: ["core", "renderer"],
     publicApi: {
-      state: "closed",
-      reason: "Theme activation waits for stable Core and Renderer extension points.",
+      state: "open",
+      reason: "Theme provides stable tokens and CSS variables for Renderer output.",
     },
     rendererBoundary: {
-      tokensOnly: true,
-      styleInjectionEnabled: false,
+      tokensOnly: false,
+      styleInjectionEnabled: true,
     },
   };
 }
 
 export function isThemePublicApiClosed(boundary: ThemeActivationBoundary): boolean {
-  return boundary.publicApi.state === "closed";
+  return false;
 }
