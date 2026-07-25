@@ -185,6 +185,55 @@ export type RendererTargetMountIntegrationReadinessHandoff = Readonly<{
   transferable: boolean;
 }>;
 
+export type RendererTargetMountIntegrationReadinessCatalogSummary = Readonly<{
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+  issueCount: number;
+}>;
+
+export type RendererTargetMountIntegrationReadinessCatalog = Readonly<{
+  handoffs: readonly RendererTargetMountIntegrationReadinessHandoff[];
+  summary: RendererTargetMountIntegrationReadinessCatalogSummary;
+}>;
+
+export type RendererTargetMountIntegrationReadinessCatalogSnapshot = Readonly<{
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+  issueCount: number;
+  ready: boolean;
+  blocked: boolean;
+}>;
+
+export type RendererTargetMountIntegrationReadinessCatalogExport = Readonly<{
+  catalog: RendererTargetMountIntegrationReadinessCatalog;
+  snapshot: RendererTargetMountIntegrationReadinessCatalogSnapshot;
+  ready: boolean;
+  exportable: boolean;
+}>;
+
+export type RendererTargetMountIntegrationReadinessHandoffFilter = Readonly<{
+  ready?: boolean;
+  blocked?: boolean;
+  transferable?: boolean;
+  issueCode?: string;
+}>;
+
+export type RendererTargetMountIntegrationStatus = Readonly<{
+  state: "empty" | "ready" | "blocked";
+  handoffCount: number;
+  readyCount: number;
+  blockedCount: number;
+  transferableCount: number;
+  issueCount: number;
+  ready: boolean;
+  blocked: boolean;
+  exportable: boolean;
+}>;
+
 function getRendererMountAdapterName(targetKind: RendererTargetKind): string {
   return targetKind === "memory"
     ? RendererDefaultMountAdapterNames.Memory
@@ -484,5 +533,82 @@ export function handoffRendererTargetMountIntegrationReadiness(
     ready: readiness.ready,
     blocked: readiness.blocked,
     transferable: readiness.ready,
+  };
+}
+
+export function createRendererTargetMountIntegrationReadinessCatalog(
+  handoffs: readonly RendererTargetMountIntegrationReadinessHandoff[],
+): RendererTargetMountIntegrationReadinessCatalog {
+  const catalogHandoffs = [...handoffs];
+
+  return {
+    handoffs: catalogHandoffs,
+    summary: {
+      handoffCount: catalogHandoffs.length,
+      readyCount: catalogHandoffs.filter(handoff => handoff.ready).length,
+      blockedCount: catalogHandoffs.filter(handoff => handoff.blocked).length,
+      transferableCount: catalogHandoffs.filter(handoff => handoff.transferable).length,
+      issueCount: catalogHandoffs.reduce(
+        (total, handoff) => total + handoff.snapshot.issueCount,
+        0,
+      ),
+    },
+  };
+}
+
+export function snapshotRendererTargetMountIntegrationReadinessCatalog(
+  catalog: RendererTargetMountIntegrationReadinessCatalog,
+): RendererTargetMountIntegrationReadinessCatalogSnapshot {
+  const ready = catalog.summary.handoffCount > 0 && catalog.summary.blockedCount === 0;
+
+  return {
+    ...catalog.summary,
+    ready,
+    blocked: !ready,
+  };
+}
+
+export function exportRendererTargetMountIntegrationReadinessCatalog(
+  catalog: RendererTargetMountIntegrationReadinessCatalog,
+): RendererTargetMountIntegrationReadinessCatalogExport {
+  const snapshot = snapshotRendererTargetMountIntegrationReadinessCatalog(catalog);
+
+  return {
+    catalog,
+    snapshot,
+    ready: snapshot.ready,
+    exportable: snapshot.ready,
+  };
+}
+
+export function findRendererTargetMountIntegrationReadinessHandoffs(
+  catalog: RendererTargetMountIntegrationReadinessCatalog,
+  filter: RendererTargetMountIntegrationReadinessHandoffFilter = {},
+): readonly RendererTargetMountIntegrationReadinessHandoff[] {
+  return catalog.handoffs.filter(handoff =>
+    (filter.ready === undefined || handoff.ready === filter.ready)
+    && (filter.blocked === undefined || handoff.blocked === filter.blocked)
+    && (filter.transferable === undefined || handoff.transferable === filter.transferable)
+    && (filter.issueCode === undefined || handoff.snapshot.issueCodes.includes(filter.issueCode)),
+  );
+}
+
+export function summarizeRendererTargetMountIntegrationStatus(
+  exported: RendererTargetMountIntegrationReadinessCatalogExport,
+): RendererTargetMountIntegrationStatus {
+  return {
+    state: exported.snapshot.handoffCount === 0
+      ? "empty"
+      : exported.snapshot.blocked
+        ? "blocked"
+        : "ready",
+    handoffCount: exported.snapshot.handoffCount,
+    readyCount: exported.snapshot.readyCount,
+    blockedCount: exported.snapshot.blockedCount,
+    transferableCount: exported.snapshot.transferableCount,
+    issueCount: exported.snapshot.issueCount,
+    ready: exported.ready,
+    blocked: exported.snapshot.blocked,
+    exportable: exported.exportable,
   };
 }

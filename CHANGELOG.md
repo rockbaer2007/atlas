@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Renderer target mount integration readiness catalogs now provide snapshots,
+  exports, focused handoff filters and a compact dashboard status summary.
 * Renderer target mount integration readiness now provides compact snapshots
   and data-only handoffs for later integration transfer.
 * Renderer target mount integration readiness now reviews diagnostic catalog

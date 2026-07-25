@@ -4,6 +4,7 @@ import {
   createDefaultRendererMountAdapterRegistry,
   createRendererAdapterRegistry,
   createRendererOutput,
+  createRendererTargetMountIntegrationReadinessCatalog,
   createRendererTargetMountBatchDiagnosticCatalog,
   createRendererTarget,
   closeRendererTargetMountBatchDiagnostics,
@@ -12,7 +13,9 @@ import {
   executeRendererTargetMountBatch,
   executeRendererTargetMountWithReport,
   exportRendererTargetMountBatchDiagnosticCatalog,
+  exportRendererTargetMountIntegrationReadinessCatalog,
   findRendererTargetMountBatchFailures,
+  findRendererTargetMountIntegrationReadinessHandoffs,
   findLatestRendererDomMountRecord,
   findLatestRendererMemoryMountRecord,
   handoffRendererTargetMountBatchDiagnostics,
@@ -23,6 +26,8 @@ import {
   snapshotRendererTargetMountBatchDiagnosticCatalog,
   snapshotRendererTargetMountBatchDiagnostics,
   snapshotRendererTargetMountIntegrationReadiness,
+  snapshotRendererTargetMountIntegrationReadinessCatalog,
+  summarizeRendererTargetMountIntegrationStatus,
 } from "../src";
 
 describe("renderer mount adapter routing", () => {
@@ -1406,5 +1411,93 @@ describe("renderer mount adapter routing", () => {
     expect(handoff.blocked).toBe(true);
     expect(handoff.transferable).toBe(false);
     expect(handoff.snapshot.issueCount).toBe(2);
+  });
+
+  it("catalogs target mount integration readiness handoffs", () => {
+    const blocked = handoffRendererTargetMountIntegrationReadiness(
+      reviewRendererTargetMountIntegrationReadiness(
+        exportRendererTargetMountBatchDiagnosticCatalog(
+          createRendererTargetMountBatchDiagnosticCatalog([]),
+        ),
+      ),
+    );
+    const ready = {
+      ...blocked,
+      snapshot: { ...blocked.snapshot, ready: true, blocked: false, issueCount: 0, issueCodes: [] },
+      ready: true,
+      blocked: false,
+      transferable: true,
+    };
+    const handoffs = [ready, blocked];
+    const catalog = createRendererTargetMountIntegrationReadinessCatalog(handoffs);
+
+    handoffs.pop();
+
+    expect(catalog.handoffs).toEqual([ready, blocked]);
+    expect(catalog.handoffs[0]).toBe(ready);
+    expect(catalog.summary).toEqual({
+      handoffCount: 2,
+      readyCount: 1,
+      blockedCount: 1,
+      transferableCount: 1,
+      issueCount: 2,
+    });
+  });
+
+  it("snapshots and exports target mount integration readiness catalogs", () => {
+    const catalog = createRendererTargetMountIntegrationReadinessCatalog([]);
+
+    expect(snapshotRendererTargetMountIntegrationReadinessCatalog(catalog)).toEqual({
+      handoffCount: 0,
+      readyCount: 0,
+      blockedCount: 0,
+      transferableCount: 0,
+      issueCount: 0,
+      ready: false,
+      blocked: true,
+    });
+
+    const exported = exportRendererTargetMountIntegrationReadinessCatalog(catalog);
+
+    expect(exported.catalog).toBe(catalog);
+    expect(exported.exportable).toBe(false);
+    expect(exported.snapshot.blocked).toBe(true);
+  });
+
+  it("filters target mount integration readiness handoffs", () => {
+    const blocked = handoffRendererTargetMountIntegrationReadiness(
+      reviewRendererTargetMountIntegrationReadiness(
+        exportRendererTargetMountBatchDiagnosticCatalog(
+          createRendererTargetMountBatchDiagnosticCatalog([]),
+        ),
+      ),
+    );
+    const catalog = createRendererTargetMountIntegrationReadinessCatalog([blocked]);
+
+    expect(findRendererTargetMountIntegrationReadinessHandoffs(catalog, {
+      blocked: true,
+      issueCode: "renderer.target.mount.integration.empty",
+    })).toEqual([blocked]);
+    expect(findRendererTargetMountIntegrationReadinessHandoffs(catalog, {
+      ready: true,
+    })).toEqual([]);
+  });
+
+  it("summarizes target mount integration readiness for dashboard status", () => {
+    const emptyCatalog = createRendererTargetMountIntegrationReadinessCatalog([]);
+
+    expect(summarizeRendererTargetMountIntegrationStatus(
+      exportRendererTargetMountIntegrationReadinessCatalog(emptyCatalog),
+    )).toEqual({
+      state: "empty",
+      handoffCount: 0,
+      readyCount: 0,
+      blockedCount: 0,
+      transferableCount: 0,
+      issueCount: 0,
+      ready: false,
+      blocked: true,
+      exportable: false,
+    });
   });
 });

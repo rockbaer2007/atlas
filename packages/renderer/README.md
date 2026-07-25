@@ -81,9 +81,15 @@ Assistant or theme execution paths.
 - `RendererMountDiagnosticReport`
 - `RendererDefaultMountAdapterRegistry`
 - `RendererTargetMountIntegrationReadiness`
+- `RendererTargetMountIntegrationReadinessCatalog`
+- `RendererTargetMountIntegrationReadinessCatalogExport`
+- `RendererTargetMountIntegrationReadinessCatalogSnapshot`
+- `RendererTargetMountIntegrationReadinessCatalogSummary`
 - `RendererTargetMountIntegrationReadinessHandoff`
+- `RendererTargetMountIntegrationReadinessHandoffFilter`
 - `RendererTargetMountIntegrationReadinessIssue`
 - `RendererTargetMountIntegrationReadinessSnapshot`
+- `RendererTargetMountIntegrationStatus`
 - `RendererTargetMountAdapterResolution`
 - `RendererUnifiedMountBatchConsumptionRequest`
 - `RendererUnifiedMountBatchDiagnosticCatalog`
@@ -274,6 +280,7 @@ Assistant or theme execution paths.
 - `findRendererPlatformAdapterConflicts`
 - `handoffRendererTargetMountBatchDiagnostics`
 - `handoffRendererTargetMountIntegrationReadiness`
+- `createRendererTargetMountIntegrationReadinessCatalog`
 - `inspectRendererDomMountResult`
 - `inspectRendererMountLifecycleRecord`
 - `inspectRendererMountPlan`
@@ -296,6 +303,7 @@ Assistant or theme execution paths.
 - `reviewRendererConcreteIntegrationBoundary`
 - `reviewRendererIntegrationPreparationReadiness`
 - `reviewRendererTargetMountIntegrationReadiness`
+- `findRendererTargetMountIntegrationReadinessHandoffs`
 - `resolveRendererPlatformAdapterConflictWithFirstCandidate`
 - `resolveRendererPlatformAdapterRegistryConflictsWithFirstCandidate`
 - `selectFirstRendererAdapterCandidate`
@@ -317,6 +325,9 @@ Assistant or theme execution paths.
 - `snapshotRendererTargetMountBatchDiagnosticCatalog`
 - `snapshotRendererTargetMountBatchDiagnostics`
 - `snapshotRendererTargetMountIntegrationReadiness`
+- `snapshotRendererTargetMountIntegrationReadinessCatalog`
+- `exportRendererTargetMountIntegrationReadinessCatalog`
+- `summarizeRendererTargetMountIntegrationStatus`
 - `summarizeRendererDomMountStore`
 - `summarizeRendererMemoryMountStore`
 - `summarizeRendererMountReports`
