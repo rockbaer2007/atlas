@@ -172,8 +172,17 @@ describe("Home Assistant WebSocket transport", () => {
 
     await socket.emitMessage('{"type":"auth_ok"}');
     await socket.emitMessage('{"id":1,"type":"result","success":true}');
+    const serviceResults: Array<{ success: boolean; reason?: string }> = [];
+    client.subscribeServiceResult(result => serviceResults.push(result));
     expect(client.callService(lightCommand!)).toEqual({ accepted: true, requestId: 2 });
     expect(socket.sent[1]).toBe('{"id":2,"type":"call_service","domain":"light","service":"turn_on","target":{"entity_id":"light.atlas_lamp"}}');
+    await socket.emitMessage('{"id":2,"type":"result","success":false,"error":{"message":"device unavailable"}}');
+    expect(serviceResults).toMatchObject([{
+      requestId: 2,
+      command: lightCommand,
+      success: false,
+      reason: "device unavailable",
+    }]);
     expect(createHomeAssistantServiceCommand("sensor.atlas_temperature", "turn_on")).toBeUndefined();
   });
 });

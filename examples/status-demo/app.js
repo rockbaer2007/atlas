@@ -28,12 +28,29 @@ const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
+const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 let connection;
 let removeLifecycleListener;
+let removeServiceResultListener;
 let panelBinding;
 let activeTransport;
 let removeEntityListListener;
+let reconnectToken;
+let reconnectTimer;
+let reconnectAttempts = 0;
 const entitySnapshots = new Map();
+
+try {
+  const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
+  if (typeof savedConfiguration?.url === "string") {
+    homeAssistantUrl.value = savedConfiguration.url;
+  }
+  if (typeof savedConfiguration?.entities === "string") {
+    homeAssistantEntity.value = savedConfiguration.entities;
+  }
+} catch {
+  // The demo remains usable when browser storage is unavailable or malformed.
+}
 
 const tokens = createThemeTokens({
   colorBackground: "#f5f7fb",
@@ -81,9 +98,39 @@ function renderConnectionLifecycle(lifecycle) {
   disconnectButton.disabled = lifecycle.state === "closed" || lifecycle.state === "failed";
 
   if (lifecycle.state === "connected" && lifecycle.subscription === "active") {
+    reconnectAttempts = 0;
+    clearTimeout(reconnectTimer);
     bindSelectedEntity(connection?.getClient()?.transport);
   } else if (lifecycle.state === "closed" || lifecycle.state === "failed") {
     bindSelectedEntity(transport);
+    if (lifecycle.state === "closed") {
+      scheduleReconnect();
+    }
+  }
+}
+
+function scheduleReconnect() {
+  if (!connection || !reconnectToken || reconnectTimer || reconnectAttempts >= 3) {
+    return;
+  }
+
+  reconnectAttempts += 1;
+  const delay = reconnectAttempts * 1000;
+  statusMessage.textContent = `Reconnecting in ${delay / 1000}s (${reconnectAttempts}/3).`;
+  reconnectTimer = window.setTimeout(() => {
+    reconnectTimer = undefined;
+    connection?.reconnect(reconnectToken);
+  }, delay);
+}
+
+function persistConfiguration() {
+  try {
+    localStorage.setItem(configurationStorageKey, JSON.stringify({
+      url: homeAssistantUrl.value,
+      entities: homeAssistantEntity.value,
+    }));
+  } catch {
+    // Connection configuration remains session-only when storage is unavailable.
   }
 }
 
@@ -106,7 +153,7 @@ function renderEntityList() {
     card.className = "atlas-entity-card";
     name.textContent = entity?.name ?? entityId;
     value.textContent = entity?.value ?? entity?.state ?? "Waiting";
-    detail.textContent = entity?.unit ?? entityId;
+    detail.textContent = entity?.unit ?? entityId.split(".", 1)[0];
     card.append(name, value, detail);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
@@ -139,6 +186,7 @@ function bindSelectedEntity(nextTransport) {
 
   panelBinding?.dispose();
   removeEntityListListener?.();
+  removeServiceResultListener?.();
   activeTransport = nextTransport;
   entitySnapshots.clear();
   panelBinding = bindHomeAssistantEntityStatusPanel({
@@ -157,6 +205,13 @@ function bindSelectedEntity(nextTransport) {
     renderEntityList();
   });
   const usingLiveTransport = activeTransport !== transport;
+  if (usingLiveTransport) {
+    removeServiceResultListener = connection?.getClient()?.subscribeServiceResult(result => {
+      statusMessage.textContent = result.success
+        ? `Command completed for ${result.command.entityId}.`
+        : `Command failed for ${result.command.entityId}: ${result.reason ?? "Unknown error."}`;
+    });
+  }
   for (const button of buttons) {
     button.disabled = usingLiveTransport;
   }
@@ -183,14 +238,22 @@ function connectHomeAssistant() {
   }
 
   removeLifecycleListener?.();
+  clearTimeout(reconnectTimer);
+  reconnectTimer = undefined;
+  reconnectAttempts = 0;
   connection?.disconnect();
   connection = createHomeAssistantRuntimeConnection(configuration, createBrowserHomeAssistantWebSocket);
   removeLifecycleListener = connection.subscribeLifecycle(renderConnectionLifecycle);
-  connection.connect(homeAssistantToken.value);
+  reconnectToken = homeAssistantToken.value;
+  connection.connect(reconnectToken);
   homeAssistantToken.value = "";
 }
 
 function disconnectHomeAssistant() {
+  reconnectToken = undefined;
+  reconnectAttempts = 0;
+  clearTimeout(reconnectTimer);
+  reconnectTimer = undefined;
   connection?.disconnect();
 }
 
@@ -217,8 +280,12 @@ for (const button of buttons) {
   });
 }
 
-homeAssistantUrl.addEventListener("input", renderConnectionReadiness);
+homeAssistantUrl.addEventListener("input", () => {
+  renderConnectionReadiness();
+  persistConfiguration();
+});
 homeAssistantEntity.addEventListener("input", () => {
+  persistConfiguration();
   bindSelectedEntity(activeTransport ?? transport);
   if (activeTransport === transport) {
     void renderEntityState("on");

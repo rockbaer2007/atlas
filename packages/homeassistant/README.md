@@ -35,6 +35,8 @@ tokens.
 The client can send explicit `turn_on` and `turn_off` requests only for `light`
 and `switch` entities after a successful event subscription. Hosts remain
 responsible for requiring a user confirmation before invoking these commands.
+Service results are exposed to the host so a command can be reported as
+completed or failed.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

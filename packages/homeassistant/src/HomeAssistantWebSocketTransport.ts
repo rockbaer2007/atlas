@@ -22,12 +22,20 @@ export type HomeAssistantWebSocketClient = Readonly<{
   getLifecycle(): HomeAssistantWebSocketLifecycle;
   subscribeLifecycle(listener: (lifecycle: HomeAssistantWebSocketLifecycle) => void): () => void;
   callService(command: HomeAssistantServiceCommand): HomeAssistantServiceCallResult;
+  subscribeServiceResult(listener: (result: HomeAssistantServiceResult) => void): () => void;
   disconnect(): void;
 }>;
 
 export type HomeAssistantServiceCallResult = Readonly<{
   accepted: boolean;
   requestId?: number;
+  reason?: string;
+}>;
+
+export type HomeAssistantServiceResult = Readonly<{
+  requestId: number;
+  command: HomeAssistantServiceCommand;
+  success: boolean;
   reason?: string;
 }>;
 
@@ -39,6 +47,8 @@ export function createHomeAssistantWebSocketClient(
   let lifecycle: HomeAssistantWebSocketLifecycle = { state: "connecting" };
   let nextRequestId = 2;
   const lifecycleListeners = new Set<(lifecycle: HomeAssistantWebSocketLifecycle) => void>();
+  const serviceResultListeners = new Set<(result: HomeAssistantServiceResult) => void>();
+  const pendingServiceCommands = new Map<number, HomeAssistantServiceCommand>();
   const updateLifecycle = (nextLifecycle: HomeAssistantWebSocketLifecycle): void => {
     lifecycle = nextLifecycle;
     for (const listener of lifecycleListeners) {
@@ -69,16 +79,31 @@ export function createHomeAssistantWebSocketClient(
     }
 
     if (message.type === "result") {
-      if (message.id !== 1) {
+      if (message.id === 1) {
+        updateLifecycle(message.success
+          ? { state: "connected", subscription: "active" }
+          : {
+            state: "failed",
+            reason: message.message ?? "Home Assistant event subscription failed.",
+          });
         return;
       }
 
-      updateLifecycle(message.success
-        ? { state: "connected", subscription: "active" }
-        : {
-          state: "failed",
-          reason: message.message ?? "Home Assistant event subscription failed.",
-        });
+      const command = pendingServiceCommands.get(message.id);
+      if (!command) {
+        return;
+      }
+
+      pendingServiceCommands.delete(message.id);
+      const result: HomeAssistantServiceResult = {
+        requestId: message.id,
+        command,
+        success: message.success,
+        ...(message.message ? { reason: message.message } : {}),
+      };
+      for (const listener of serviceResultListeners) {
+        listener(result);
+      }
       return;
     }
 
@@ -123,7 +148,12 @@ export function createHomeAssistantWebSocketClient(
         service: validatedCommand.service,
         target: { entity_id: validatedCommand.entityId },
       }));
+      pendingServiceCommands.set(requestId, validatedCommand);
       return { accepted: true, requestId };
+    },
+    subscribeServiceResult(listener): () => void {
+      serviceResultListeners.add(listener);
+      return () => serviceResultListeners.delete(listener);
     },
     disconnect(): void {
       removeMessageListener();

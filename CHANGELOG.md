@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant service calls now report completion or failure, and the demo
+  retains only non-secret configuration while retrying unexpected disconnects.
 - Home Assistant now provides validated, subscription-gated light and switch
   commands; the demo requires an explicit confirmation before sending one.
 - Home Assistant entity events now retain display names, raw values and units;

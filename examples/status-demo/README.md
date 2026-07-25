@@ -25,3 +25,7 @@ entities render as blocked.
 For a live `light` or `switch` entity, its card offers a single confirmed
 turn-on or turn-off action. Commands are unavailable until the subscription is
 active and are not available for other entity domains.
+
+The URL and selected entities are stored only in this browser. Access tokens are
+never stored. After an unexpected socket close, the open page retries up to
+three times with its in-memory token; a manual disconnect stops retries.
