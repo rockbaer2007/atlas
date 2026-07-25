@@ -29,6 +29,9 @@ const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
+const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
+const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
+const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
@@ -42,7 +45,7 @@ let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
 const entitySnapshots = new Map();
-const panelGroups = [
+let panelGroups = [
   createHomeAssistantPanelGroup({ id: "overview", title: "Overview", entityIds: ["binary_sensor.atlas_status", "sensor.atlas_temperature"] }),
   createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
   createHomeAssistantPanelGroup({ id: "safety", title: "Safety", entityIds: ["binary_sensor.atlas_status", "binary_sensor.atlas_door"] }),
@@ -55,6 +58,9 @@ try {
   }
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
+  }
+  if (Array.isArray(savedConfiguration?.groups)) {
+    panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
   }
 } catch {
   // The demo remains usable when browser storage is unavailable or malformed.
@@ -136,10 +142,26 @@ function persistConfiguration() {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
       url: homeAssistantUrl.value,
       entities: homeAssistantEntity.value,
+      groups: panelGroups,
     }));
   } catch {
     // Connection configuration remains session-only when storage is unavailable.
   }
+}
+
+function renderGroupOptions(selectedId = homeAssistantGroup.value) {
+  homeAssistantGroup.replaceChildren();
+  for (const group of panelGroups) {
+    const option = document.createElement("option");
+    option.value = group.id;
+    option.textContent = group.title;
+    homeAssistantGroup.append(option);
+  }
+  const custom = document.createElement("option");
+  custom.value = "custom";
+  custom.textContent = "Custom";
+  homeAssistantGroup.append(custom);
+  homeAssistantGroup.value = selectedId;
 }
 
 function currentEntityId() {
@@ -307,8 +329,33 @@ homeAssistantGroup.addEventListener("change", () => {
   }
   homeAssistantEntity.dispatchEvent(new Event("input"));
 });
+saveHomeAssistantGroup.addEventListener("click", () => {
+  const title = homeAssistantGroupName.value.trim();
+  const entityIds = trackedEntityIds();
+  if (!title || entityIds.length === 0) {
+    statusMessage.textContent = "A group name and at least one entity are required.";
+    return;
+  }
+  const id = `group-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+  panelGroups = [...panelGroups.filter(group => group.id !== id), createHomeAssistantPanelGroup({ id, title, entityIds })];
+  renderGroupOptions(id);
+  persistConfiguration();
+  statusMessage.textContent = `Group ${title} saved.`;
+});
+deleteHomeAssistantGroup.addEventListener("click", () => {
+  const id = homeAssistantGroup.value;
+  if (!id.startsWith("group-")) {
+    statusMessage.textContent = "Built-in groups cannot be deleted.";
+    return;
+  }
+  panelGroups = panelGroups.filter(group => group.id !== id);
+  renderGroupOptions("custom");
+  persistConfiguration();
+  statusMessage.textContent = "Group deleted.";
+});
 connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
 
 void renderEntityState("on");
+renderGroupOptions();
 renderConnectionReadiness();
