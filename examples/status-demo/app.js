@@ -198,6 +198,18 @@ function renderEntityList() {
     else if (entity?.state === "off") pending += 1;
     else if (entity) blocked += 1;
     card.append(name, value, detail);
+    const position = trackedEntityIds().indexOf(entityId);
+    const moveUp = document.createElement("button");
+    const moveDown = document.createElement("button");
+    moveUp.type = "button";
+    moveDown.type = "button";
+    moveUp.textContent = "Up";
+    moveDown.textContent = "Down";
+    moveUp.disabled = position === 0;
+    moveDown.disabled = position === trackedEntityIds().length - 1;
+    moveUp.addEventListener("click", () => moveEntity(entityId, -1));
+    moveDown.addEventListener("click", () => moveEntity(entityId, 1));
+    card.append(moveUp, moveDown);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
       const service = entity.state === "on" ? "turn_off" : "turn_on";
@@ -209,6 +221,16 @@ function renderEntityList() {
     entityList.append(card);
   }
   groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
+}
+
+function moveEntity(entityId, direction) {
+  const entityIds = trackedEntityIds();
+  const index = entityIds.indexOf(entityId);
+  const destination = index + direction;
+  if (destination < 0 || destination >= entityIds.length) return;
+  [entityIds[index], entityIds[destination]] = [entityIds[destination], entityIds[index]];
+  homeAssistantEntity.value = entityIds.join(", ");
+  homeAssistantEntity.dispatchEvent(new Event("input"));
 }
 
 function formatRelativeTime(timestamp) {
