@@ -433,7 +433,8 @@ exportHomeAssistantConfig.addEventListener("click", () => {
   }, null, 2);
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
-  link.download = "atlas-homeassistant-panel.json";
+  const exportName = homeAssistantGroup.value === "custom" ? "atlas-custom-panel" : `atlas-${homeAssistantGroup.value}-panel`;
+  link.download = `${exportName.replace(/[^a-z0-9-]+/gi, "-")}.json`;
   link.click();
   URL.revokeObjectURL(link.href);
 });
