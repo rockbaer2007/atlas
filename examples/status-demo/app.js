@@ -205,11 +205,10 @@ function renderEntityList() {
     moveDown.type = "button";
     moveUp.textContent = "Up";
     moveDown.textContent = "Down";
-    moveUp.disabled = position === 0;
-    moveDown.disabled = position === trackedEntityIds().length - 1;
     moveUp.addEventListener("click", () => moveEntity(entityId, -1));
     moveDown.addEventListener("click", () => moveEntity(entityId, 1));
-    card.append(moveUp, moveDown);
+    if (position > 0) card.append(moveUp);
+    if (position < trackedEntityIds().length - 1) card.append(moveDown);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
       const service = entity.state === "on" ? "turn_off" : "turn_on";
