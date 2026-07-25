@@ -32,6 +32,8 @@ const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
+const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
+const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
@@ -184,7 +186,9 @@ function renderEntityList() {
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     name.textContent = presentation?.label ?? entityId;
     value.textContent = entity?.value ?? entity?.state ?? "Waiting";
-    detail.textContent = presentation?.detail ?? entityId.split(".", 1)[0];
+    detail.textContent = entity?.updatedAt
+      ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${new Date(entity.updatedAt).toLocaleTimeString()}`
+      : presentation?.detail ?? entityId.split(".", 1)[0];
     card.append(name, value, detail);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
@@ -232,7 +236,7 @@ function bindSelectedEntity(nextTransport) {
       return;
     }
 
-    entitySnapshots.set(entity.entityId, entity);
+    entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now() });
     renderEntityList();
   });
   const usingLiveTransport = activeTransport !== transport;
@@ -352,6 +356,34 @@ deleteHomeAssistantGroup.addEventListener("click", () => {
   renderGroupOptions("custom");
   persistConfiguration();
   statusMessage.textContent = "Group deleted.";
+});
+exportHomeAssistantConfig.addEventListener("click", () => {
+  const payload = JSON.stringify({ version: 1, url: homeAssistantUrl.value, entities: homeAssistantEntity.value, groups: panelGroups }, null, 2);
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
+  link.download = "atlas-homeassistant-panel.json";
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+importHomeAssistantConfig.addEventListener("change", async () => {
+  const file = importHomeAssistantConfig.files?.[0];
+  if (!file) return;
+  try {
+    const imported = JSON.parse(await file.text());
+    if (typeof imported.url !== "string" || typeof imported.entities !== "string" || !Array.isArray(imported.groups)) throw new Error();
+    homeAssistantUrl.value = imported.url;
+    homeAssistantEntity.value = imported.entities;
+    panelGroups = imported.groups.map(createHomeAssistantPanelGroup);
+    renderGroupOptions("custom");
+    persistConfiguration();
+    homeAssistantEntity.dispatchEvent(new Event("input"));
+    renderConnectionReadiness();
+    statusMessage.textContent = "Configuration imported.";
+  } catch {
+    statusMessage.textContent = "Import failed: invalid configuration.";
+  } finally {
+    importHomeAssistantConfig.value = "";
+  }
 });
 connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
