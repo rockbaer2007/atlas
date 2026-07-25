@@ -190,6 +190,12 @@
         color: #536079;
       }
 
+      .atlas-entity-card[data-category="temperature"] { border-left: 4px solid #dc2626; }
+      .atlas-entity-card[data-category="power"] { border-left: 4px solid #d97706; }
+      .atlas-entity-card[data-category="battery"] { border-left: 4px solid #65a30d; }
+      .atlas-entity-card[data-category="light"] { border-left: 4px solid #ca8a04; }
+      .atlas-entity-card[data-category="switch"] { border-left: 4px solid #0f766e; }
+
       .atlas-entity-card button {
         justify-self: start;
         border: 1px solid #0f766e;
@@ -304,6 +310,7 @@
       </div>
       <div id="atlas-status-root" aria-live="polite"></div>
       <output id="group-summary" aria-live="polite"></output>
+      <output id="group-issues" aria-live="polite"></output>
       <div id="atlas-entity-list" aria-live="polite"></div>
       <div id="status-message" role="status"></div>
     </main>

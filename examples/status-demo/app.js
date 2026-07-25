@@ -38,6 +38,7 @@ const importHomeAssistantConfig = document.querySelector("#import-home-assistant
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const groupSummary = document.querySelector("#group-summary");
+const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 let connection;
 let removeLifecycleListener;
@@ -181,6 +182,7 @@ function renderEntityList() {
   let ready = 0;
   let pending = 0;
   let blocked = 0;
+  const blockedEntities = [];
   for (const entityId of trackedEntityIds()) {
     const entity = entitySnapshots.get(entityId);
     const card = document.createElement("article");
@@ -189,6 +191,7 @@ function renderEntityList() {
     const detail = document.createElement("small");
     card.className = "atlas-entity-card";
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
+    card.dataset.category = presentation?.category ?? "status";
     name.textContent = presentation?.label ?? entityId;
     value.textContent = entity?.value ?? entity?.state ?? "Waiting";
     detail.textContent = entity?.updatedAt
@@ -196,7 +199,10 @@ function renderEntityList() {
       : presentation?.detail ?? entityId.split(".", 1)[0];
     if (entity?.state === "on" || entity?.state === "available") ready += 1;
     else if (entity?.state === "off") pending += 1;
-    else if (entity) blocked += 1;
+    else if (entity) {
+      blocked += 1;
+      blockedEntities.push(presentation?.label ?? entityId);
+    }
     card.append(name, value, detail);
     const position = trackedEntityIds().indexOf(entityId);
     const moveUp = document.createElement("button");
@@ -220,6 +226,7 @@ function renderEntityList() {
     entityList.append(card);
   }
   groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
+  groupIssues.textContent = blockedEntities.length ? `Needs attention: ${blockedEntities.join(", ")}.` : "";
 }
 
 function moveEntity(entityId, direction) {
