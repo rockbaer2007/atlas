@@ -9,3 +9,5 @@ export * from "./HomeAssistantStatusPanelRegistry";
 export * from "./HomeAssistantConnectionConfiguration";
 export * from "./HomeAssistantEntityStateTransport";
 export * from "./HomeAssistantEntityStatusPanelBinding";
+export * from "./HomeAssistantWebSocketProtocol";
+export * from "./HomeAssistantWebSocketTransport";

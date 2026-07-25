@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant now models its WebSocket authentication, state-event protocol
+  and lifecycle through an injected, network-free transport client.
 - Home Assistant now provides an in-memory entity transport, automatic panel
   bindings and WebSocket URL derivation for a future authenticated connection.
 - Home Assistant status panels now map local entity states, support panel

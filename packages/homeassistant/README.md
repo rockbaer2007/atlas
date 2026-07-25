@@ -24,6 +24,10 @@ An in-memory entity transport supports local publishing and panel subscriptions.
 The same contract will be implemented by a future authenticated WebSocket
 transport; configuration can already derive its eventual `/api/websocket` URL.
 
+The current WebSocket client is fully testable through an injected socket. It
+models authentication, event subscription, state changes and lifecycle states,
+but it does not open a network connection or persist access tokens.
+
 The integration boundary remains intentionally narrow: status panels can mount
 to a configured DOM-compatible surface, while all runtime and Home Assistant
 transport concerns remain outside the package.

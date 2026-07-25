@@ -1,0 +1,117 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  createHomeAssistantWebSocketClient,
+  mapHomeAssistantStateChangedEvent,
+  parseHomeAssistantWebSocketMessage,
+  type HomeAssistantWebSocket,
+} from "../src";
+
+function createTestSocket(): HomeAssistantWebSocket & {
+  readonly sent: string[];
+  readonly emitMessage: (data: string) => Promise<void>;
+  readonly emitClose: () => void;
+  readonly closed: () => boolean;
+} {
+  const messageListeners = new Set<(data: string) => void | Promise<void>>();
+  const closeListeners = new Set<() => void>();
+  const sent: string[] = [];
+  let isClosed = false;
+
+  return {
+    sent,
+    send(data: string): void {
+      sent.push(data);
+    },
+    close(): void {
+      isClosed = true;
+    },
+    onMessage(listener): () => void {
+      messageListeners.add(listener);
+      return () => messageListeners.delete(listener);
+    },
+    onClose(listener): () => void {
+      closeListeners.add(listener);
+      return () => closeListeners.delete(listener);
+    },
+    async emitMessage(data: string): Promise<void> {
+      for (const listener of messageListeners) {
+        await listener(data);
+      }
+    },
+    emitClose(): void {
+      for (const listener of closeListeners) {
+        listener();
+      }
+    },
+    closed: (): boolean => isClosed,
+  };
+}
+
+describe("Home Assistant WebSocket transport", () => {
+  it("parses authentication and state change protocol messages safely", () => {
+    expect(parseHomeAssistantWebSocketMessage('{"type":"auth_required"}')).toEqual({
+      type: "auth_required",
+    });
+    expect(parseHomeAssistantWebSocketMessage("not-json")).toBeUndefined();
+
+    const event = parseHomeAssistantWebSocketMessage(JSON.stringify({
+      type: "event",
+      event: {
+        event_type: "state_changed",
+        data: {
+          entity_id: "binary_sensor.atlas",
+          new_state: { state: "on" },
+        },
+      },
+    }));
+
+    expect(event).toMatchObject({ type: "event" });
+    expect(mapHomeAssistantStateChangedEvent(event as Extract<typeof event, { type: "event" }>)).toEqual({
+      entityId: "binary_sensor.atlas",
+      state: "on",
+    });
+  });
+
+  it("authenticates, subscribes and publishes state events through the local transport", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    expect(client.getLifecycle()).toEqual({ state: "connecting" });
+    await socket.emitMessage('{"type":"auth_required"}');
+    expect(client.getLifecycle()).toEqual({ state: "authenticating" });
+    expect(socket.sent).toEqual(['{"type":"auth","access_token":"test-token"}']);
+
+    await socket.emitMessage('{"type":"auth_ok"}');
+    expect(client.getLifecycle()).toEqual({ state: "connected" });
+    expect(socket.sent[1]).toBe('{"id":1,"type":"subscribe_events","event_type":"state_changed"}');
+
+    await socket.emitMessage(JSON.stringify({
+      type: "event",
+      event: {
+        event_type: "state_changed",
+        data: {
+          entity_id: "binary_sensor.atlas",
+          new_state: { state: "off" },
+        },
+      },
+    }));
+
+    expect(client.transport.getLatest("binary_sensor.atlas")).toEqual({
+      entityId: "binary_sensor.atlas",
+      state: "off",
+    });
+  });
+
+  it("reports authentication failures and closes cleanly", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    await socket.emitMessage('{"type":"auth_invalid","message":"invalid token"}');
+    expect(client.getLifecycle()).toEqual({ state: "failed", reason: "invalid token" });
+
+    client.disconnect();
+    expect(socket.closed()).toBe(true);
+    expect(client.getLifecycle()).toEqual({ state: "closed" });
+  });
+});
