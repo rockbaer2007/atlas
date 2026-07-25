@@ -423,7 +423,14 @@ duplicateHomeAssistantGroup.addEventListener("click", () => {
   statusMessage.textContent = `Group ${title} created.`;
 });
 exportHomeAssistantConfig.addEventListener("click", () => {
-  const payload = JSON.stringify({ version: 1, url: homeAssistantUrl.value, entities: homeAssistantEntity.value, groups: panelGroups }, null, 2);
+  const payload = JSON.stringify({
+    version: 1,
+    name: homeAssistantGroup.value === "custom" ? "ATLAS custom panel" : homeAssistantGroup.value,
+    createdAt: new Date().toISOString(),
+    url: homeAssistantUrl.value,
+    entities: homeAssistantEntity.value,
+    groups: panelGroups,
+  }, null, 2);
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([payload], { type: "application/json" }));
   link.download = "atlas-homeassistant-panel.json";
@@ -437,7 +444,8 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     const imported = JSON.parse(await file.text());
     if (imported.version !== 1 || typeof imported.url !== "string" || typeof imported.entities !== "string" || !Array.isArray(imported.groups)) throw new Error();
     pendingImport = imported;
-    if (!window.confirm(`Import ${imported.groups.length} groups and ${imported.entities.split(",").filter(Boolean).length} entities?`)) return;
+    const importedName = typeof imported.name === "string" ? imported.name : "Unnamed configuration";
+    if (!window.confirm(`Import ${importedName}: ${imported.groups.length} groups and ${imported.entities.split(",").filter(Boolean).length} entities?`)) return;
     homeAssistantUrl.value = pendingImport.url;
     homeAssistantEntity.value = pendingImport.entities;
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
