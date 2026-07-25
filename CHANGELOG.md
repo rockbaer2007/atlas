@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- A local browser demo now shows the active Renderer and Theme status surface
+  with visible pending, ready and blocked updates.
 - Theme can now mount and style ATLAS status output through the active Renderer
   DOM-surface route, including safe status replacement on later updates.
 - The active Theme package now exposes ATLAS design tokens, CSS variable and

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ATLAS Status Surface</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, sans-serif;
+        background: #f5f7fb;
+        color: #172033;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        box-sizing: border-box;
+      }
+
+      main {
+        width: min(100%, 560px);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0 0 20px;
+        color: #536079;
+      }
+
+      .status-controls {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .status-controls button {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #172033;
+        padding: 8px 12px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .status-controls button[aria-pressed="true"] {
+        border-color: #0f766e;
+        background: #e6fffb;
+        color: #115e59;
+      }
+
+      #atlas-status-root {
+        min-height: 104px;
+      }
+
+      .atlas-status {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        box-sizing: border-box;
+        min-height: 104px;
+        padding: var(--atlas-spacing);
+        border: 1px solid color-mix(in srgb, var(--atlas-color-accent) 45%, #cbd5e1);
+        border-radius: 6px;
+        background: var(--atlas-color-surface);
+        color: var(--atlas-color-text);
+        font-family: var(--atlas-font-family);
+      }
+
+      .atlas-status strong {
+        font-size: 18px;
+        letter-spacing: 0;
+      }
+
+      .atlas-status span {
+        color: var(--atlas-color-accent);
+        font-weight: 700;
+      }
+
+      .atlas-status[data-status="blocked"] {
+        border-color: #dc2626;
+      }
+
+      .atlas-status[data-status="blocked"] span {
+        color: #b91c1c;
+      }
+
+      .atlas-status[data-status="pending"] span {
+        color: #a16207;
+      }
+
+      #status-message {
+        min-height: 24px;
+        margin-top: 12px;
+        color: #536079;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "@atlas/core": "/packages/core/dist/index.js",
+          "@atlas/renderer": "/packages/renderer/dist/index.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main>
+      <h1>ATLAS Status Surface</h1>
+      <p>Renderer and Theme running together in the browser.</p>
+      <div class="status-controls" role="group" aria-label="Status">
+        <button type="button" data-status="pending" aria-pressed="false">Pending</button>
+        <button type="button" data-status="ready" aria-pressed="true">Ready</button>
+        <button type="button" data-status="blocked" aria-pressed="false">Blocked</button>
+      </div>
+      <div id="atlas-status-root" aria-live="polite"></div>
+      <div id="status-message" role="status"></div>
+    </main>
+    <script type="module" src="/examples/status-demo/app.js"></script>
+  </body>
+</html>
