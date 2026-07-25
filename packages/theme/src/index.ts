@@ -4,3 +4,4 @@
  */
 
 export * from "./ThemeTokens";
+export * from "./ThemeRendererSurface";

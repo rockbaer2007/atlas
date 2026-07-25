@@ -34,6 +34,8 @@ describe("theme activation boundary", () => {
     expect(Theme.createThemeCssVariables).toBeTypeOf("function");
     expect(Theme.createThemeStylesheet).toBeTypeOf("function");
     expect(Theme.applyThemeTokens).toBeTypeOf("function");
+    expect(Theme.createThemeRendererStatusOutput).toBeTypeOf("function");
+    expect(Theme.executeThemedRendererDomSurfaceScenario).toBeTypeOf("function");
   });
 
   it("reports the Theme activation gate as active", () => {
