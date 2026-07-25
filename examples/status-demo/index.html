@@ -249,6 +249,13 @@
         <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
       </div>
       <div class="connection-config">
+        <label for="home-assistant-group">Panel group</label>
+        <select id="home-assistant-group">
+          <option value="overview">Overview</option>
+          <option value="energy">Energy</option>
+          <option value="safety">Safety</option>
+          <option value="custom">Custom</option>
+        </select>
         <label for="home-assistant-entity">Entity IDs</label>
         <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
         <output id="selected-entity" aria-live="polite"></output>

@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   createHomeAssistantConnectionConfiguration,
+  createHomeAssistantEntityPresentation,
   createHomeAssistantEntityState,
+  createHomeAssistantPanelGroup,
   createInMemoryHomeAssistantEntityStateTransport,
   createHomeAssistantStatusPanel,
   createHomeAssistantStatusPanelRegistry,
   findHomeAssistantStatusPanel,
+  findHomeAssistantPanelGroup,
   inspectHomeAssistantConnectionReadiness,
   deriveHomeAssistantWebSocketUrl,
   mapHomeAssistantEntityStateToStatus,
@@ -48,6 +51,21 @@ describe("Home Assistant entity status panels", () => {
     expect(findHomeAssistantStatusPanel(registry, "atlas-health")).toBe(panel);
     expect(findHomeAssistantStatusPanel(registry, "missing")).toBeUndefined();
     expect(registry.panels).toEqual([panel]);
+  });
+
+  it("creates reusable groups and entity-specific presentations", () => {
+    const group = createHomeAssistantPanelGroup({
+      id: "energy",
+      title: "Energy",
+      entityIds: ["sensor.atlas_power"],
+    });
+    expect(findHomeAssistantPanelGroup([group], "energy")).toBe(group);
+    expect(createHomeAssistantEntityPresentation(createHomeAssistantEntityState({
+      entityId: "sensor.atlas_power",
+      state: "available",
+      value: "210",
+      unit: "W",
+    }))).toEqual({ category: "power", label: "sensor.atlas_power", detail: "W" });
   });
 
   it("renders entity updates through the status panel", async () => {

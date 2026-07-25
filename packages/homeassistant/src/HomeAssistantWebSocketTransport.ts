@@ -147,6 +147,7 @@ export function createHomeAssistantWebSocketClient(
         domain: validatedCommand.domain,
         service: validatedCommand.service,
         target: { entity_id: validatedCommand.entityId },
+        ...(validatedCommand.brightnessPercent ? { service_data: { brightness_pct: validatedCommand.brightnessPercent } } : {}),
       }));
       pendingServiceCommands.set(requestId, validatedCommand);
       return { accepted: true, requestId };

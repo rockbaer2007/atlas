@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createHomeAssistantWebSocketClient,
   createHomeAssistantServiceCommand,
+  createHomeAssistantBrightnessCommand,
   mapHomeAssistantStateChangedEvent,
   parseHomeAssistantWebSocketMessage,
   type HomeAssistantWebSocket,
@@ -184,5 +185,12 @@ describe("Home Assistant WebSocket transport", () => {
       reason: "device unavailable",
     }]);
     expect(createHomeAssistantServiceCommand("sensor.atlas_temperature", "turn_on")).toBeUndefined();
+    expect(createHomeAssistantBrightnessCommand("light.atlas_lamp", 55)).toEqual({
+      entityId: "light.atlas_lamp",
+      domain: "light",
+      service: "turn_on",
+      brightnessPercent: 55,
+    });
+    expect(createHomeAssistantBrightnessCommand("switch.atlas_switch", 55)).toBeUndefined();
   });
 });

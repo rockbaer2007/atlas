@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant now provides reusable panel groups, common entity
+  presentations and validated light-brightness commands.
 - Home Assistant service calls now report completion or failure, and the demo
   retains only non-secret configuration while retrying unexpected disconnects.
 - Home Assistant now provides validated, subscription-gated light and switch

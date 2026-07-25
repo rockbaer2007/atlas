@@ -29,3 +29,6 @@ active and are not available for other entity domains.
 The URL and selected entities are stored only in this browser. Access tokens are
 never stored. After an unexpected socket close, the open page retries up to
 three times with its in-memory token; a manual disconnect stops retries.
+
+The panel-group selector provides quick entity sets for overview, energy and
+safety. Selecting a group only updates the local entity list.

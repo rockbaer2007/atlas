@@ -7,6 +7,8 @@ import {
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
+  createHomeAssistantEntityPresentation,
+  createHomeAssistantPanelGroup,
   createHomeAssistantServiceCommand,
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
@@ -26,6 +28,7 @@ const homeAssistantToken = document.querySelector("#home-assistant-token");
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
+const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
@@ -39,6 +42,11 @@ let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
 const entitySnapshots = new Map();
+const panelGroups = [
+  createHomeAssistantPanelGroup({ id: "overview", title: "Overview", entityIds: ["binary_sensor.atlas_status", "sensor.atlas_temperature"] }),
+  createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
+  createHomeAssistantPanelGroup({ id: "safety", title: "Safety", entityIds: ["binary_sensor.atlas_status", "binary_sensor.atlas_door"] }),
+];
 
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
@@ -151,9 +159,10 @@ function renderEntityList() {
     const value = document.createElement("span");
     const detail = document.createElement("small");
     card.className = "atlas-entity-card";
-    name.textContent = entity?.name ?? entityId;
+    const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
+    name.textContent = presentation?.label ?? entityId;
     value.textContent = entity?.value ?? entity?.state ?? "Waiting";
-    detail.textContent = entity?.unit ?? entityId.split(".", 1)[0];
+    detail.textContent = presentation?.detail ?? entityId.split(".", 1)[0];
     card.append(name, value, detail);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
@@ -290,6 +299,13 @@ homeAssistantEntity.addEventListener("input", () => {
   if (activeTransport === transport) {
     void renderEntityState("on");
   }
+});
+homeAssistantGroup.addEventListener("change", () => {
+  const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
+  if (group) {
+    homeAssistantEntity.value = group.entityIds.join(", ");
+  }
+  homeAssistantEntity.dispatchEvent(new Event("input"));
 });
 connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
