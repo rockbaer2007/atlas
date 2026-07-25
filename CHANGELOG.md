@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant now provides a browser WebSocket adapter and runtime connection
+  controller with non-persistent connect and reconnect credentials.
 - Home Assistant now models its WebSocket authentication, state-event protocol
   and lifecycle through an injected, network-free transport client.
 - Home Assistant now provides an in-memory entity transport, automatic panel

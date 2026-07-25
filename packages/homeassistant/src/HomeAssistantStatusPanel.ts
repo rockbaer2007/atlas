@@ -9,6 +9,7 @@ import {
   mapHomeAssistantEntityStateToStatus,
   type HomeAssistantEntityState,
 } from "./HomeAssistantEntityState";
+import type { HomeAssistantWebSocketLifecycle } from "./HomeAssistantWebSocketProtocol";
 
 export type HomeAssistantStatusPanel = Readonly<{
   id: string;
@@ -60,4 +61,14 @@ export async function renderHomeAssistantEntityStatusPanel(
     element: scenario.element,
     tokens: scenario.tokens,
   });
+}
+
+export function mapHomeAssistantConnectionLifecycleToStatus(
+  lifecycle: HomeAssistantWebSocketLifecycle,
+): ThemeRendererStatus {
+  return lifecycle.state === "connected"
+    ? "ready"
+    : lifecycle.state === "connecting" || lifecycle.state === "authenticating"
+      ? "pending"
+      : "blocked";
 }
