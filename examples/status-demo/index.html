@@ -237,6 +237,22 @@
         background: #ecfdf5;
       }
 
+      .atlas-entity-card[data-stack-selected="true"] {
+        box-shadow: inset 0 0 0 2px #0f766e;
+      }
+
+      .entity-section-title {
+        margin: 18px 0 4px;
+        font-size: 16px;
+        letter-spacing: 0;
+      }
+
+      #stack-selection-summary {
+        min-height: 20px;
+        color: #536079;
+        font-size: 14px;
+      }
+
       .atlas-entity-card strong {
         overflow-wrap: anywhere;
       }
@@ -289,6 +305,14 @@
 
       .atlas-entity-card .icon-button:last-child {
         color: #b91c1c;
+      }
+
+      .atlas-entity-card .stack-checkbox {
+        width: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        margin: 0;
+        accent-color: #0f766e;
       }
 
       #atlas-status-root {
@@ -425,6 +449,8 @@
         </div>
       </div>
       <div id="atlas-status-root" aria-live="polite"></div>
+      <h2 class="entity-section-title">Ausgewählte Entitäten</h2>
+      <output id="stack-selection-summary" aria-live="polite"></output>
       <output id="group-summary" aria-live="polite"></output>
       <output id="group-issues" aria-live="polite"></output>
       <div id="atlas-entity-list" aria-live="polite"></div>

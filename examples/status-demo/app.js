@@ -54,6 +54,7 @@ const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
+const stackSelectionSummary = document.querySelector("#stack-selection-summary");
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
@@ -70,6 +71,7 @@ let reconnectTimer;
 let reconnectAttempts = 0;
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
+const stackSelectedEntityIds = new Set();
 let pendingImport;
 let initialGroupSelection = "overview";
 let initialCardTarget = "entities";
@@ -98,6 +100,13 @@ try {
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
     initialGroupSelection = "custom";
+  }
+  if (Array.isArray(savedConfiguration?.stackEntityIds)) {
+    for (const entityId of savedConfiguration.stackEntityIds) {
+      if (typeof entityId === "string" && entityId.trim()) {
+        stackSelectedEntityIds.add(entityId.trim());
+      }
+    }
   }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
@@ -221,6 +230,7 @@ function persistConfiguration() {
       cardTarget: haCardTarget.value,
       cardLayout: haCardLayout.value,
       cardFormat: haCardFormat.value,
+      stackEntityIds: selectedStackEntityIds(),
       groups: panelGroups,
     }));
   } catch {
@@ -253,6 +263,46 @@ function trackedEntityIds() {
     knownEntityIds.add(entityId);
   }
   return entityIds;
+}
+
+function usesStackEntitySelection() {
+  return haCardTarget.value !== "entities" && (haCardLayout.value === "horizontal-stack" || haCardLayout.value === "vertical-stack");
+}
+
+function reconcileStackEntitySelection() {
+  const entityIds = trackedEntityIds();
+  for (const entityId of [...stackSelectedEntityIds]) {
+    if (!entityIds.includes(entityId)) {
+      stackSelectedEntityIds.delete(entityId);
+    }
+  }
+  if (stackSelectedEntityIds.size === 0) {
+    for (const entityId of entityIds) {
+      stackSelectedEntityIds.add(entityId);
+    }
+  }
+}
+
+function selectedStackEntityIds() {
+  reconcileStackEntitySelection();
+  return trackedEntityIds().filter(entityId => stackSelectedEntityIds.has(entityId));
+}
+
+function cardPreviewEntityIds() {
+  return usesStackEntitySelection() ? selectedStackEntityIds() : trackedEntityIds();
+}
+
+function renderStackSelectionSummary() {
+  const entityIds = trackedEntityIds();
+  if (usesStackEntitySelection()) {
+    const selectedIds = selectedStackEntityIds();
+    stackSelectionSummary.textContent = `Bei Stapel selektierte Entitäten: ${selectedIds.length}/${entityIds.length}${selectedIds.length ? ` - ${selectedIds.join(", ")}` : ""}`;
+    return;
+  }
+
+  stackSelectionSummary.textContent = entityIds[0]
+    ? `Simple nutzt die erste Entität: ${entityIds[0]}`
+    : "Simple nutzt die erste Entität.";
 }
 
 function renderEntityPickerOptions() {
@@ -301,7 +351,7 @@ function createHaCardConfig() {
     target: haCardTarget.value,
     layout: haCardLayout.value,
     title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
-    entityIds: trackedEntityIds(),
+    entityIds: cardPreviewEntityIds(),
   });
 }
 
@@ -355,6 +405,7 @@ function createGroupId(title) {
 
 function renderEntityList() {
   entityList.replaceChildren();
+  reconcileStackEntitySelection();
   let ready = 0;
   let pending = 0;
   let blocked = 0;
@@ -369,7 +420,9 @@ function renderEntityList() {
     card.className = "atlas-entity-card";
     card.tabIndex = 0;
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Use ${entityId} in the HA card preview`);
+    card.setAttribute("aria-label", usesStackEntitySelection()
+      ? `Toggle ${entityId} in the stack card preview`
+      : `Use ${entityId} in the HA card preview`);
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     card.dataset.category = presentation?.category ?? "status";
     if (presentation?.category === "battery" && entity?.value) {
@@ -389,11 +442,11 @@ function renderEntityList() {
       blocked += 1;
       blockedEntities.push(presentation?.label ?? entityId);
     }
-    card.addEventListener("click", () => selectPrimaryEntity(entityId));
+    card.addEventListener("click", () => handleEntityCardSelection(entityId));
     card.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectPrimaryEntity(entityId);
+        handleEntityCardSelection(entityId);
       }
     });
     controls.className = "atlas-entity-card-actions";
@@ -402,12 +455,17 @@ function renderEntityList() {
     if (position === 0) {
       card.dataset.primary = "true";
     }
+    if (usesStackEntitySelection() && stackSelectedEntityIds.has(entityId)) {
+      card.dataset.stackSelected = "true";
+    }
     const moveUp = document.createElement("button");
     const moveDown = document.createElement("button");
     const remove = document.createElement("button");
+    const stackToggle = document.createElement("input");
     moveUp.type = "button";
     moveDown.type = "button";
     remove.type = "button";
+    stackToggle.type = "checkbox";
     moveUp.className = "icon-button";
     moveDown.className = "icon-button";
     moveUp.textContent = "↑";
@@ -420,6 +478,15 @@ function renderEntityList() {
     remove.textContent = "🗑";
     remove.title = `Remove ${entityId}`;
     remove.setAttribute("aria-label", `Remove ${entityId}`);
+    stackToggle.className = "stack-checkbox";
+    stackToggle.checked = stackSelectedEntityIds.has(entityId);
+    stackToggle.title = `Use ${entityId} in stack export`;
+    stackToggle.setAttribute("aria-label", `Use ${entityId} in stack export`);
+    stackToggle.addEventListener("click", event => event.stopPropagation());
+    stackToggle.addEventListener("change", event => {
+      event.stopPropagation();
+      setStackEntitySelected(entityId, stackToggle.checked);
+    });
     moveUp.addEventListener("click", event => {
       event.stopPropagation();
       moveEntity(entityId, -1);
@@ -432,6 +499,7 @@ function renderEntityList() {
       event.stopPropagation();
       removeEntity(entityId);
     });
+    if (usesStackEntitySelection()) controls.append(stackToggle);
     if (position > 0) controls.append(moveUp);
     if (position < trackedEntityIds().length - 1) controls.append(moveDown);
     controls.append(remove);
@@ -451,6 +519,7 @@ function renderEntityList() {
   }
   groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
   groupIssues.textContent = blockedEntities.length ? `Needs attention: ${blockedEntities.join(", ")}.` : "";
+  renderStackSelectionSummary();
   renderHaCardPreview();
 }
 
@@ -467,12 +536,41 @@ function moveEntity(entityId, direction) {
 function selectPrimaryEntity(entityId) {
   const entityIds = trackedEntityIds();
   homeAssistantEntity.value = [entityId, ...entityIds.filter(candidate => candidate !== entityId)].join(", ");
+  stackSelectedEntityIds.add(entityId);
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = `${entityId} selected for the HA card preview.`;
 }
 
+function handleEntityCardSelection(entityId) {
+  if (usesStackEntitySelection()) {
+    setStackEntitySelected(entityId, !stackSelectedEntityIds.has(entityId));
+    return;
+  }
+
+  selectPrimaryEntity(entityId);
+}
+
+function setStackEntitySelected(entityId, selected) {
+  if (selected) {
+    stackSelectedEntityIds.add(entityId);
+  } else {
+    stackSelectedEntityIds.delete(entityId);
+  }
+  if (stackSelectedEntityIds.size === 0) {
+    stackSelectedEntityIds.add(entityId);
+    statusMessage.textContent = `${entityId} remains selected; stack export needs at least one entity.`;
+  } else {
+    statusMessage.textContent = selected
+      ? `${entityId} added to the stack preview.`
+      : `${entityId} removed from the stack preview.`;
+  }
+  persistConfiguration();
+  renderEntityList();
+}
+
 function removeEntity(entityId) {
   const entityIds = trackedEntityIds().filter(candidate => candidate !== entityId);
+  stackSelectedEntityIds.delete(entityId);
   homeAssistantEntity.value = entityIds.join(", ");
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = entityIds.length
@@ -654,11 +752,11 @@ homeAssistantGroupName.addEventListener("input", renderHaCardPreview);
 haCardTarget.addEventListener("change", () => {
   syncCardLayoutState();
   persistConfiguration();
-  renderHaCardPreview();
+  renderEntityList();
 });
 haCardLayout.addEventListener("change", () => {
   persistConfiguration();
-  renderHaCardPreview();
+  renderEntityList();
 });
 haCardFormat.addEventListener("change", () => {
   persistConfiguration();
@@ -713,6 +811,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardTarget: haCardTarget.value,
     cardLayout: haCardLayout.value,
     cardFormat: haCardFormat.value,
+    stackEntityIds: selectedStackEntityIds(),
     groups: panelGroups,
   }, null, 2);
   const link = document.createElement("a");
@@ -759,6 +858,14 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
       haCardFormat.value = pendingImport.cardFormat;
     }
+    stackSelectedEntityIds.clear();
+    if (Array.isArray(pendingImport.stackEntityIds)) {
+      for (const entityId of pendingImport.stackEntityIds) {
+        if (typeof entityId === "string" && entityId.trim()) {
+          stackSelectedEntityIds.add(entityId.trim());
+        }
+      }
+    }
     syncCardLayoutState();
     renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
     persistConfiguration();
@@ -792,6 +899,10 @@ importHaCardConfig.addEventListener("change", async () => {
     panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
     homeAssistantEntity.value = entityIds.join(", ");
     homeAssistantGroupName.value = title;
+    stackSelectedEntityIds.clear();
+    for (const entityId of entityIds) {
+      stackSelectedEntityIds.add(entityId);
+    }
     haCardTarget.value = parsed.target;
     haCardLayout.value = parsed.layout;
     haCardFormat.value = parsed.format;
