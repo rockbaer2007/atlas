@@ -8,10 +8,13 @@ import {
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
   createHomeAssistantEntityPresentation,
+  createHomeAssistantEntitiesCardConfiguration,
   createHomeAssistantPanelGroup,
   createHomeAssistantServiceCommand,
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
+  parseHomeAssistantEntitiesCardConfiguration,
+  serializeHomeAssistantEntitiesCardConfiguration,
   deriveHomeAssistantWebSocketUrl,
   findHomeAssistantStatusPanel,
   inspectHomeAssistantConnectionReadiness,
@@ -195,11 +198,10 @@ function trackedEntityIds() {
 
 function createHaCardConfig() {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
-  return {
-    type: "entities",
+  return createHomeAssistantEntitiesCardConfiguration({
     title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
-    entities: trackedEntityIds().map(entity => ({ entity })),
-  };
+    entityIds: trackedEntityIds(),
+  });
 }
 
 function renderHaCardPreview() {
@@ -207,23 +209,7 @@ function renderHaCardPreview() {
 }
 
 function createHaCardConfigText() {
-  if (haCardFormat.value === "yaml") {
-    return createHaCardConfigYaml(createHaCardConfig());
-  }
-
-  return JSON.stringify(createHaCardConfig(), null, 2);
-}
-
-function createHaCardConfigYaml(card) {
-  const lines = [
-    "type: entities",
-    `title: ${JSON.stringify(card.title)}`,
-    "entities:",
-  ];
-  for (const item of card.entities) {
-    lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
-  }
-  return lines.join("\n");
+  return serializeHomeAssistantEntitiesCardConfiguration(createHaCardConfig(), haCardFormat.value);
 }
 
 async function writeClipboardText(text) {
@@ -256,67 +242,6 @@ function createGroupId(title) {
     counter += 1;
   }
   return candidate;
-}
-
-function parseHaCardEntities(card) {
-  if (card?.type !== "entities" || !Array.isArray(card.entities)) {
-    throw new Error("Unsupported Home Assistant card.");
-  }
-
-  const entityIds = card.entities
-    .map(entity => typeof entity === "string" ? entity : entity?.entity)
-    .filter(entity => typeof entity === "string")
-    .map(entity => entity.trim())
-    .filter(Boolean);
-  if (entityIds.length === 0) {
-    throw new Error("Home Assistant card has no entities.");
-  }
-
-  return [...new Set(entityIds)];
-}
-
-function parseHaCardText(text) {
-  try {
-    return { card: JSON.parse(text), format: "json" };
-  } catch {
-    return { card: parseHaCardYaml(text), format: "yaml" };
-  }
-}
-
-function parseHaCardYaml(text) {
-  const lines = text.split(/\r?\n/).map(line => line.trimEnd()).filter(line => line.trim() && !line.trimStart().startsWith("#"));
-  const card = { entities: [] };
-  let inEntities = false;
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed === "entities:") {
-      inEntities = true;
-      continue;
-    }
-    if (!inEntities && trimmed.startsWith("type:")) {
-      card.type = parseYamlScalar(trimmed.slice("type:".length).trim());
-      continue;
-    }
-    if (!inEntities && trimmed.startsWith("title:")) {
-      card.title = parseYamlScalar(trimmed.slice("title:".length).trim());
-      continue;
-    }
-    if (inEntities && trimmed.startsWith("- entity:")) {
-      card.entities.push({ entity: parseYamlScalar(trimmed.slice("- entity:".length).trim()) });
-      continue;
-    }
-    if (inEntities && trimmed.startsWith("- ")) {
-      card.entities.push(parseYamlScalar(trimmed.slice(2).trim()));
-    }
-  }
-  return card;
-}
-
-function parseYamlScalar(value) {
-  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-    return value.slice(1, -1);
-  }
-  return value;
 }
 
 function renderEntityList() {
@@ -635,9 +560,9 @@ importHaCardConfig.addEventListener("change", async () => {
   const file = importHaCardConfig.files?.[0];
   if (!file) return;
   try {
-    const parsed = parseHaCardText(await file.text());
+    const parsed = parseHomeAssistantEntitiesCardConfiguration(await file.text());
     const card = parsed.card;
-    const entityIds = parseHaCardEntities(card);
+    const entityIds = card.entities.map(entity => entity.entity);
     const title = typeof card.title === "string" && card.title.trim() ? card.title.trim() : "Imported HA card";
     const id = createGroupId(title);
     panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];

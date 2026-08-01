@@ -40,8 +40,10 @@ completed or failed.
 
 Reusable panel groups collect entity IDs under a stable title. Entity
 presentations classify common temperature, power, battery, light and switch
-states. Lights can receive a validated brightness percentage from 1 through 100
-when a host explicitly invokes the command.
+states. Basic Home Assistant `entities` card configuration can be created,
+serialized as JSON or YAML, and parsed back into normalized entity groups.
+Lights can receive a validated brightness percentage from 1 through 100 when a
+host explicitly invokes the command.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
@@ -51,8 +53,7 @@ The integration boundary remains intentionally narrow: status panels can mount
 to a configured DOM-compatible surface, while all runtime and Home Assistant
 transport concerns remain outside the package.
 
-Concrete Home Assistant websocket clients, entity abstraction, service calls and
-general card infrastructure remain planned future work.
+Richer Home Assistant card infrastructure remains planned future work.
 
 ---
 

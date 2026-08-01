@@ -6,6 +6,7 @@
 export * from "./HomeAssistantStatusPanel";
 export * from "./HomeAssistantEntityState";
 export * from "./HomeAssistantEntityPresentation";
+export * from "./HomeAssistantCardConfiguration";
 export * from "./HomeAssistantPanelGroup";
 export * from "./HomeAssistantStatusPanelRegistry";
 export * from "./HomeAssistantConnectionConfiguration";
