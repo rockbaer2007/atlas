@@ -44,7 +44,9 @@ The same group selection also renders Home Assistant card code for built-in
 Entities, Mushroom template or Bubble button targets. The preview can be copied
 or exported as JSON or YAML for use in Home Assistant dashboards. Simple
 Entities, Mushroom template and Bubble button card JSON or YAML can be imported
-back into the demo as a new panel group.
+back into the demo as a new panel group. HA card exports use target- and
+layout-specific filenames so the downloaded file reflects whether it contains
+Entities, Mushroom or Bubble card code.
 
 When the demo is connected to Home Assistant, it requests Lovelace resources and
 marks Mushroom or Bubble dependencies as found, missing or not yet checked. The

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createHomeAssistantCardExportManifest,
   createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
   findHomeAssistantCardTargetDescriptor,
@@ -282,6 +283,46 @@ describe("Home Assistant entities card configuration", () => {
       status: "installed",
       matchedResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
       missingResourcePaths: [],
+    });
+  });
+
+  it("creates export manifests with stable filenames and dependency metadata", () => {
+    const card = createHomeAssistantCardConfiguration({
+      target: "bubble",
+      layout: "vertical-stack",
+      title: "Office controls",
+      entityIds: ["light.office", "switch.office_fan"],
+    });
+
+    expect(createHomeAssistantCardExportManifest({
+      card,
+      format: "yaml",
+      name: "Office Controls",
+    })).toEqual({
+      name: "Office Controls",
+      filename: "office-controls-bubble-vertical-stack.yaml",
+      format: "yaml",
+      mimeType: "text/yaml",
+      target: "bubble",
+      layout: "vertical-stack",
+      dependency: {
+        id: "bubble-card",
+        label: "Bubble Card",
+        required: true,
+        resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+        installPaths: [],
+      },
+    });
+
+    expect(createHomeAssistantCardExportManifest({
+      card: createHomeAssistantEntitiesCardConfiguration({ title: "Overview", entityIds: ["sensor.office"] }),
+      format: "json",
+    })).toMatchObject({
+      name: "ATLAS Home Assistant card",
+      filename: "atlas-home-assistant-card-entities-single.json",
+      mimeType: "application/json",
+      target: "entities",
+      layout: "single",
     });
   });
 

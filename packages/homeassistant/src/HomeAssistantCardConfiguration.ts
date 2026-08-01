@@ -52,6 +52,8 @@ export interface HomeAssistantEntitiesCardParseResult {
   readonly layout: HomeAssistantCardLayout;
 }
 
+export type HomeAssistantCardExportFormat = "json" | "yaml";
+
 export interface HomeAssistantEntitiesCardInput {
   readonly target?: HomeAssistantCardTarget;
   readonly layout?: HomeAssistantCardLayout;
@@ -82,6 +84,22 @@ export interface HomeAssistantCardTargetDescriptor {
   readonly target: HomeAssistantCardTarget;
   readonly label: string;
   readonly type: HomeAssistantSingleCardConfiguration["type"];
+  readonly dependency: HomeAssistantCardDependency;
+}
+
+export interface HomeAssistantCardExportManifestInput {
+  readonly card: HomeAssistantCardConfiguration;
+  readonly format: HomeAssistantCardExportFormat;
+  readonly name?: string;
+}
+
+export interface HomeAssistantCardExportManifest {
+  readonly name: string;
+  readonly filename: string;
+  readonly format: HomeAssistantCardExportFormat;
+  readonly mimeType: "application/json" | "text/yaml";
+  readonly target: HomeAssistantCardTarget;
+  readonly layout: HomeAssistantCardLayout;
   readonly dependency: HomeAssistantCardDependency;
 }
 
@@ -192,7 +210,7 @@ export function createHomeAssistantEntitiesCardConfiguration(
 
 export function serializeHomeAssistantEntitiesCardConfiguration(
   card: HomeAssistantCardConfiguration,
-  format: "json" | "yaml",
+  format: HomeAssistantCardExportFormat,
 ): string {
   if (format === "json") {
     return JSON.stringify(card, null, 2);
@@ -211,6 +229,25 @@ export function serializeHomeAssistantEntitiesCardConfiguration(
   }
 
   throw new Error("Unsupported Home Assistant card.");
+}
+
+export function createHomeAssistantCardExportManifest(
+  input: HomeAssistantCardExportManifestInput,
+): HomeAssistantCardExportManifest {
+  const name = input.name?.trim() || "ATLAS Home Assistant card";
+  const target = getHomeAssistantCardTarget(input.card);
+  const layout = isHomeAssistantStackCardConfiguration(input.card) ? input.card.type : "single";
+  const slug = slugifyHomeAssistantExportName(`${name}-${target}-${layout}`);
+
+  return {
+    name,
+    filename: `${slug}.${input.format === "yaml" ? "yaml" : "json"}`,
+    format: input.format,
+    mimeType: input.format === "yaml" ? "text/yaml" : "application/json",
+    target,
+    layout,
+    dependency: inspectHomeAssistantCardDependency(input.card),
+  };
 }
 
 export function parseHomeAssistantEntitiesCardConfiguration(
@@ -388,6 +425,14 @@ function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfigu
     });
   }
   return lines.join("\n");
+}
+
+function slugifyHomeAssistantExportName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "") || "atlas-home-assistant-card";
 }
 
 function normalizeHomeAssistantResourcePath(resourcePath: string): string | undefined {

@@ -3,6 +3,7 @@ import {
 } from "@atlas/theme";
 import {
   createHomeAssistantStatusPanel,
+  createHomeAssistantCardExportManifest,
   createHomeAssistantEntityState,
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
@@ -484,6 +485,11 @@ function createHaCardConfig() {
     title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
     entityIds: cardPreviewEntityIds(),
   });
+}
+
+function currentHaCardExportName() {
+  const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
+  return group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS Home Assistant card");
 }
 
 function renderHaCardPreview() {
@@ -1055,9 +1061,16 @@ exportHomeAssistantConfig.addEventListener("click", () => {
 });
 exportHaCardConfig.addEventListener("click", () => {
   const link = document.createElement("a");
-  const isYaml = haCardFormat.value === "yaml";
-  link.href = URL.createObjectURL(new Blob([createHaCardConfigText()], { type: isYaml ? "text/yaml" : "application/json" }));
-  link.download = `atlas-${homeAssistantGroup.value === "custom" ? "custom" : homeAssistantGroup.value}-ha-card.${isYaml ? "yaml" : "json"}`;
+  const card = createHaCardConfig();
+  const manifest = createHomeAssistantCardExportManifest({
+    card,
+    format: haCardFormat.value,
+    name: currentHaCardExportName(),
+  });
+  link.href = URL.createObjectURL(new Blob([
+    serializeHomeAssistantEntitiesCardConfiguration(card, manifest.format),
+  ], { type: manifest.mimeType }));
+  link.download = manifest.filename;
   link.click();
   URL.revokeObjectURL(link.href);
 });
