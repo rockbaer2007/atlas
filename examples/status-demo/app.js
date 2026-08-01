@@ -286,13 +286,9 @@ function addSelectedEntityFromPicker() {
     return;
   }
   const entityIds = trackedEntityIds();
-  if (entityIds.includes(entityId)) {
-    statusMessage.textContent = `${entityId} is already selected.`;
-    return;
-  }
-  homeAssistantEntity.value = [...entityIds, entityId].join(", ");
+  homeAssistantEntity.value = [entityId, ...entityIds.filter(candidate => candidate !== entityId)].join(", ");
   homeAssistantEntity.dispatchEvent(new Event("input"));
-  statusMessage.textContent = `${entityId} added.`;
+  statusMessage.textContent = `${entityId} selected for the HA card preview.`;
 }
 
 function refreshLiveEntityStates() {
