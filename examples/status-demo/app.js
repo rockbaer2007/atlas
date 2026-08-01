@@ -36,6 +36,7 @@ const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assi
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
+const importHaCardConfig = document.querySelector("#import-ha-card-config");
 const haCardPreview = document.querySelector("#ha-card-preview");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
@@ -191,6 +192,34 @@ function createHaCardConfig() {
 
 function renderHaCardPreview() {
   haCardPreview.textContent = JSON.stringify(createHaCardConfig(), null, 2);
+}
+
+function createGroupId(title) {
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "home-assistant-card";
+  let candidate = `group-${slug}`;
+  let counter = 2;
+  while (panelGroups.some(group => group.id === candidate)) {
+    candidate = `group-${slug}-${counter}`;
+    counter += 1;
+  }
+  return candidate;
+}
+
+function parseHaCardEntities(card) {
+  if (card?.type !== "entities" || !Array.isArray(card.entities)) {
+    throw new Error("Unsupported Home Assistant card.");
+  }
+
+  const entityIds = card.entities
+    .map(entity => typeof entity === "string" ? entity : entity?.entity)
+    .filter(entity => typeof entity === "string")
+    .map(entity => entity.trim())
+    .filter(Boolean);
+  if (entityIds.length === 0) {
+    throw new Error("Home Assistant card has no entities.");
+  }
+
+  return [...new Set(entityIds)];
 }
 
 function renderEntityList() {
@@ -486,6 +515,27 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     statusMessage.textContent = "Import failed: invalid configuration.";
   } finally {
     importHomeAssistantConfig.value = "";
+  }
+});
+importHaCardConfig.addEventListener("change", async () => {
+  const file = importHaCardConfig.files?.[0];
+  if (!file) return;
+  try {
+    const card = JSON.parse(await file.text());
+    const entityIds = parseHaCardEntities(card);
+    const title = typeof card.title === "string" && card.title.trim() ? card.title.trim() : "Imported HA card";
+    const id = createGroupId(title);
+    panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
+    homeAssistantEntity.value = entityIds.join(", ");
+    homeAssistantGroupName.value = title;
+    renderGroupOptions(id);
+    persistConfiguration();
+    homeAssistantEntity.dispatchEvent(new Event("input"));
+    statusMessage.textContent = `HA card imported: ${title} with ${entityIds.length} entities.`;
+  } catch {
+    statusMessage.textContent = "Import failed: invalid Home Assistant entities card.";
+  } finally {
+    importHaCardConfig.value = "";
   }
 });
 connectButton.addEventListener("click", connectHomeAssistant);
