@@ -275,6 +275,50 @@ function parseHaCardEntities(card) {
   return [...new Set(entityIds)];
 }
 
+function parseHaCardText(text) {
+  try {
+    return { card: JSON.parse(text), format: "json" };
+  } catch {
+    return { card: parseHaCardYaml(text), format: "yaml" };
+  }
+}
+
+function parseHaCardYaml(text) {
+  const lines = text.split(/\r?\n/).map(line => line.trimEnd()).filter(line => line.trim() && !line.trimStart().startsWith("#"));
+  const card = { entities: [] };
+  let inEntities = false;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === "entities:") {
+      inEntities = true;
+      continue;
+    }
+    if (!inEntities && trimmed.startsWith("type:")) {
+      card.type = parseYamlScalar(trimmed.slice("type:".length).trim());
+      continue;
+    }
+    if (!inEntities && trimmed.startsWith("title:")) {
+      card.title = parseYamlScalar(trimmed.slice("title:".length).trim());
+      continue;
+    }
+    if (inEntities && trimmed.startsWith("- entity:")) {
+      card.entities.push({ entity: parseYamlScalar(trimmed.slice("- entity:".length).trim()) });
+      continue;
+    }
+    if (inEntities && trimmed.startsWith("- ")) {
+      card.entities.push(parseYamlScalar(trimmed.slice(2).trim()));
+    }
+  }
+  return card;
+}
+
+function parseYamlScalar(value) {
+  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+    return value.slice(1, -1);
+  }
+  return value;
+}
+
 function renderEntityList() {
   entityList.replaceChildren();
   let ready = 0;
@@ -591,19 +635,21 @@ importHaCardConfig.addEventListener("change", async () => {
   const file = importHaCardConfig.files?.[0];
   if (!file) return;
   try {
-    const card = JSON.parse(await file.text());
+    const parsed = parseHaCardText(await file.text());
+    const card = parsed.card;
     const entityIds = parseHaCardEntities(card);
     const title = typeof card.title === "string" && card.title.trim() ? card.title.trim() : "Imported HA card";
     const id = createGroupId(title);
     panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
     homeAssistantEntity.value = entityIds.join(", ");
     homeAssistantGroupName.value = title;
+    haCardFormat.value = parsed.format;
     renderGroupOptions(id);
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
-    statusMessage.textContent = `HA card imported: ${title} with ${entityIds.length} entities.`;
+    statusMessage.textContent = `HA card ${parsed.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
   } catch {
-    statusMessage.textContent = "Import failed: invalid Home Assistant entities card.";
+    statusMessage.textContent = "Import failed: invalid Home Assistant entities card JSON or YAML.";
   } finally {
     importHaCardConfig.value = "";
   }

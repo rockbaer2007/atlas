@@ -36,5 +36,5 @@ safety. Selecting a group only updates the local entity list.
 The same group selection also renders a Home Assistant `entities` card preview
 and can copy or export that card as JSON or YAML for use in Home Assistant
 dashboards.
-Simple Home Assistant `entities` card JSON can be imported back into the demo
-as a new panel group.
+Simple Home Assistant `entities` card JSON or YAML can be imported back into
+the demo as a new panel group.
