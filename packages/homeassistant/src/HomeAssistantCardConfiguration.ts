@@ -64,6 +64,7 @@ export interface HomeAssistantCardDependency {
   readonly label: string;
   readonly required: boolean;
   readonly resourcePaths: readonly string[];
+  readonly installPaths: readonly string[];
 }
 
 export interface HomeAssistantCardTargetDescriptor {
@@ -78,7 +79,7 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
     target: "entities",
     label: "Entities",
     type: "entities",
-    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [] },
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
   },
   {
     target: "mushroom-template",
@@ -89,6 +90,7 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
       label: "Mushroom",
       required: true,
       resourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
+      installPaths: [],
     },
   },
   {
@@ -100,6 +102,7 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
       label: "Bubble Card",
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+      installPaths: ["config/bubble_card"],
     },
   },
 ];
@@ -220,7 +223,7 @@ export function inspectHomeAssistantCardDependency(
 ): HomeAssistantCardDependency {
   const target = typeof cardOrTarget === "string" ? cardOrTarget : getHomeAssistantCardTarget(cardOrTarget);
   return findHomeAssistantCardTargetDescriptor(target)?.dependency
-    ?? { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [] };
+    ?? { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] };
 }
 
 export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration): HomeAssistantCardTarget {
