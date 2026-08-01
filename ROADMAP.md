@@ -124,6 +124,7 @@ additional envelope-only contract expansion.
 
 * Home Assistant runtime
 * Dashboard integration
+* Dual deployment model for self-hosted ATLAS server and HACS/Home Assistant frontend integration
 * Card infrastructure
 * Selectable card targets for built-in Entities, Mushroom and Bubble Card
 * HACS-installable custom card export path
