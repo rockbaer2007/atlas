@@ -1,10 +1,12 @@
 import type { HomeAssistantEntityStatePublisher } from "./HomeAssistantEntityStateTransport";
 import { createInMemoryHomeAssistantEntityStateTransport } from "./HomeAssistantEntityStateTransport";
 import {
+  mapHomeAssistantStateResult,
   mapHomeAssistantStateChangedEvent,
   parseHomeAssistantWebSocketMessage,
   type HomeAssistantWebSocketLifecycle,
 } from "./HomeAssistantWebSocketProtocol";
+import type { HomeAssistantEntityState } from "./HomeAssistantEntityState";
 import {
   createHomeAssistantServiceCommand,
   type HomeAssistantServiceCommand,
@@ -21,6 +23,8 @@ export type HomeAssistantWebSocketClient = Readonly<{
   transport: HomeAssistantEntityStatePublisher;
   getLifecycle(): HomeAssistantWebSocketLifecycle;
   subscribeLifecycle(listener: (lifecycle: HomeAssistantWebSocketLifecycle) => void): () => void;
+  requestEntityStates(): HomeAssistantEntityStateRequestResult;
+  subscribeEntityStateList(listener: (result: HomeAssistantEntityStateListResult) => void): () => void;
   callService(command: HomeAssistantServiceCommand): HomeAssistantServiceCallResult;
   subscribeServiceResult(listener: (result: HomeAssistantServiceResult) => void): () => void;
   disconnect(): void;
@@ -29,6 +33,19 @@ export type HomeAssistantWebSocketClient = Readonly<{
 export type HomeAssistantServiceCallResult = Readonly<{
   accepted: boolean;
   requestId?: number;
+  reason?: string;
+}>;
+
+export type HomeAssistantEntityStateRequestResult = Readonly<{
+  accepted: boolean;
+  requestId?: number;
+  reason?: string;
+}>;
+
+export type HomeAssistantEntityStateListResult = Readonly<{
+  requestId: number;
+  entities: readonly HomeAssistantEntityState[];
+  success: boolean;
   reason?: string;
 }>;
 
@@ -48,7 +65,9 @@ export function createHomeAssistantWebSocketClient(
   let nextRequestId = 2;
   const lifecycleListeners = new Set<(lifecycle: HomeAssistantWebSocketLifecycle) => void>();
   const serviceResultListeners = new Set<(result: HomeAssistantServiceResult) => void>();
+  const entityStateListListeners = new Set<(result: HomeAssistantEntityStateListResult) => void>();
   const pendingServiceCommands = new Map<number, HomeAssistantServiceCommand>();
+  const pendingEntityStateRequests = new Set<number>();
   const updateLifecycle = (nextLifecycle: HomeAssistantWebSocketLifecycle): void => {
     lifecycle = nextLifecycle;
     for (const listener of lifecycleListeners) {
@@ -89,6 +108,24 @@ export function createHomeAssistantWebSocketClient(
         return;
       }
 
+      if (pendingEntityStateRequests.has(message.id)) {
+        pendingEntityStateRequests.delete(message.id);
+        const entities = message.success ? mapHomeAssistantStateResult(message.result) : [];
+        for (const entity of entities) {
+          await transport.publish(entity);
+        }
+        const result: HomeAssistantEntityStateListResult = {
+          requestId: message.id,
+          entities,
+          success: message.success,
+          ...(message.message ? { reason: message.message } : {}),
+        };
+        for (const listener of entityStateListListeners) {
+          listener(result);
+        }
+        return;
+      }
+
       const command = pendingServiceCommands.get(message.id);
       if (!command) {
         return;
@@ -122,6 +159,24 @@ export function createHomeAssistantWebSocketClient(
       lifecycleListeners.add(listener);
       listener(lifecycle);
       return () => lifecycleListeners.delete(listener);
+    },
+    requestEntityStates(): HomeAssistantEntityStateRequestResult {
+      if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {
+        return {
+          accepted: false,
+          reason: "Home Assistant event subscription is not active.",
+        };
+      }
+
+      const requestId = nextRequestId;
+      nextRequestId += 1;
+      socket.send(JSON.stringify({ id: requestId, type: "get_states" }));
+      pendingEntityStateRequests.add(requestId);
+      return { accepted: true, requestId };
+    },
+    subscribeEntityStateList(listener): () => void {
+      entityStateListListeners.add(listener);
+      return () => entityStateListListeners.delete(listener);
     },
     callService(command): HomeAssistantServiceCallResult {
       if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {

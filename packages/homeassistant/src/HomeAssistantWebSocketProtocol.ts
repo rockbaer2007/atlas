@@ -25,6 +25,7 @@ export type HomeAssistantWebSocketProtocolMessage =
     id: number;
     success: boolean;
     message?: string;
+    result?: unknown;
   }>
   | Readonly<{
     type: "event";
@@ -74,6 +75,7 @@ export function parseHomeAssistantWebSocketMessage(
         id: message.id,
         success: message.success,
         ...(errorMessage ? { message: errorMessage } : {}),
+        ...("result" in message ? { result: message.result } : {}),
       };
     }
 
@@ -129,6 +131,32 @@ export function parseHomeAssistantWebSocketMessage(
   } catch {
     return undefined;
   }
+}
+
+export function mapHomeAssistantStateResult(
+  result: unknown,
+): readonly HomeAssistantEntityState[] {
+  if (!Array.isArray(result)) {
+    return [];
+  }
+
+  return result
+    .map(entity => {
+      if (!isRecord(entity) || typeof entity.entity_id !== "string" || typeof entity.state !== "string") {
+        return undefined;
+      }
+      const attributes = isRecord(entity.attributes) ? entity.attributes : undefined;
+      return createHomeAssistantEntityState({
+        entityId: entity.entity_id,
+        state: entity.state === "on" || entity.state === "off" || entity.state === "unavailable" || entity.state === "unknown"
+          ? entity.state
+          : "available",
+        value: entity.state,
+        ...(typeof attributes?.friendly_name === "string" ? { name: attributes.friendly_name } : {}),
+        ...(typeof attributes?.unit_of_measurement === "string" ? { unit: attributes.unit_of_measurement } : {}),
+      });
+    })
+    .filter((entity): entity is HomeAssistantEntityState => entity !== undefined);
 }
 
 export function mapHomeAssistantStateChangedEvent(

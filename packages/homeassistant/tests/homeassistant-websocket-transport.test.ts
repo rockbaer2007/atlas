@@ -4,6 +4,7 @@ import {
   createHomeAssistantWebSocketClient,
   createHomeAssistantServiceCommand,
   createHomeAssistantBrightnessCommand,
+  mapHomeAssistantStateResult,
   mapHomeAssistantStateChangedEvent,
   parseHomeAssistantWebSocketMessage,
   type HomeAssistantWebSocket,
@@ -56,6 +57,25 @@ describe("Home Assistant WebSocket transport", () => {
       type: "auth_required",
     });
     expect(parseHomeAssistantWebSocketMessage("not-json")).toBeUndefined();
+    expect(parseHomeAssistantWebSocketMessage(JSON.stringify({
+      id: 7,
+      type: "result",
+      success: true,
+      result: [{
+        entity_id: "sensor.atlas_power",
+        state: "120",
+        attributes: { friendly_name: "ATLAS power", unit_of_measurement: "W" },
+      }],
+    }))).toEqual({
+      id: 7,
+      type: "result",
+      success: true,
+      result: [{
+        entity_id: "sensor.atlas_power",
+        state: "120",
+        attributes: { friendly_name: "ATLAS power", unit_of_measurement: "W" },
+      }],
+    });
 
     const event = parseHomeAssistantWebSocketMessage(JSON.stringify({
       type: "event",
@@ -98,6 +118,17 @@ describe("Home Assistant WebSocket transport", () => {
       name: "Office temperature",
       unit: "°C",
     });
+    expect(mapHomeAssistantStateResult([{
+      entity_id: "sensor.atlas_power",
+      state: "120",
+      attributes: { friendly_name: "ATLAS power", unit_of_measurement: "W" },
+    }])).toEqual([{
+      entityId: "sensor.atlas_power",
+      state: "available",
+      value: "120",
+      name: "ATLAS power",
+      unit: "W",
+    }]);
   });
 
   it("authenticates, subscribes and publishes state events through the local transport", async () => {
@@ -192,5 +223,51 @@ describe("Home Assistant WebSocket transport", () => {
       brightnessPercent: 55,
     });
     expect(createHomeAssistantBrightnessCommand("switch.atlas_switch", 55)).toBeUndefined();
+  });
+
+  it("requests the Home Assistant entity state list after subscription is active", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    expect(client.requestEntityStates()).toEqual({
+      accepted: false,
+      reason: "Home Assistant event subscription is not active.",
+    });
+
+    await socket.emitMessage('{"type":"auth_ok"}');
+    await socket.emitMessage('{"id":1,"type":"result","success":true}');
+    const results: Array<{ success: boolean; entities: readonly { entityId: string }[] }> = [];
+    client.subscribeEntityStateList(result => results.push(result));
+
+    expect(client.requestEntityStates()).toEqual({ accepted: true, requestId: 2 });
+    expect(socket.sent[1]).toBe('{"id":2,"type":"get_states"}');
+
+    await socket.emitMessage(JSON.stringify({
+      id: 2,
+      type: "result",
+      success: true,
+      result: [{
+        entity_id: "light.atlas_lamp",
+        state: "on",
+        attributes: { friendly_name: "ATLAS lamp" },
+      }],
+    }));
+
+    expect(results).toEqual([{
+      requestId: 2,
+      success: true,
+      entities: [{
+        entityId: "light.atlas_lamp",
+        state: "on",
+        value: "on",
+        name: "ATLAS lamp",
+      }],
+    }]);
+    expect(client.transport.getLatest("light.atlas_lamp")).toEqual({
+      entityId: "light.atlas_lamp",
+      state: "on",
+      value: "on",
+      name: "ATLAS lamp",
+    });
   });
 });

@@ -34,6 +34,9 @@ const rememberHomeAssistantToken = document.querySelector("#remember-home-assist
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
+const homeAssistantEntityPicker = document.querySelector("#home-assistant-entity-picker");
+const addHomeAssistantEntity = document.querySelector("#add-home-assistant-entity");
+const refreshHomeAssistantEntities = document.querySelector("#refresh-home-assistant-entities");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
 const haCardTarget = document.querySelector("#ha-card-target");
@@ -58,6 +61,7 @@ const cardTargets = listHomeAssistantCardTargets();
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
+let removeEntityStateListListener;
 let panelBinding;
 let activeTransport;
 let removeEntityListListener;
@@ -65,6 +69,7 @@ let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
 const entitySnapshots = new Map();
+const knownEntityIds = new Set();
 let pendingImport;
 let initialGroupSelection = "overview";
 let initialCardTarget = "entities";
@@ -73,6 +78,11 @@ let panelGroups = [
   createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
   createHomeAssistantPanelGroup({ id: "safety", title: "Safety", entityIds: ["binary_sensor.atlas_status", "binary_sensor.atlas_door"] }),
 ];
+for (const group of panelGroups) {
+  for (const entityId of group.entityIds) {
+    knownEntityIds.add(entityId);
+  }
+}
 
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
@@ -183,6 +193,7 @@ function renderConnectionLifecycle(lifecycle) {
       scheduleReconnect();
     }
   }
+  refreshHomeAssistantEntities.disabled = lifecycle.state !== "connected" || lifecycle.subscription !== "active";
 }
 
 function scheduleReconnect() {
@@ -237,7 +248,58 @@ function currentEntityId() {
 }
 
 function trackedEntityIds() {
-  return [...new Set(homeAssistantEntity.value.split(",").map(entityId => entityId.trim()).filter(Boolean))];
+  const entityIds = [...new Set(homeAssistantEntity.value.split(",").map(entityId => entityId.trim()).filter(Boolean))];
+  for (const entityId of entityIds) {
+    knownEntityIds.add(entityId);
+  }
+  return entityIds;
+}
+
+function renderEntityPickerOptions() {
+  const selected = homeAssistantEntityPicker.value;
+  const entityIds = [...new Set([
+    ...knownEntityIds,
+    ...trackedEntityIds(),
+    ...panelGroups.flatMap(group => group.entityIds),
+    ...entitySnapshots.keys(),
+  ])].sort((left, right) => left.localeCompare(right));
+
+  homeAssistantEntityPicker.replaceChildren();
+  for (const entityId of entityIds) {
+    const option = document.createElement("option");
+    const entity = entitySnapshots.get(entityId);
+    const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
+    option.value = entityId;
+    option.textContent = presentation && presentation.label !== entityId
+      ? `${presentation.label} (${entityId})`
+      : entityId;
+    homeAssistantEntityPicker.append(option);
+  }
+  homeAssistantEntityPicker.value = entityIds.includes(selected) ? selected : entityIds[0] ?? "";
+  addHomeAssistantEntity.disabled = !homeAssistantEntityPicker.value;
+}
+
+function addSelectedEntityFromPicker() {
+  const entityId = homeAssistantEntityPicker.value.trim();
+  if (!entityId) {
+    statusMessage.textContent = "Select an entity first.";
+    return;
+  }
+  const entityIds = trackedEntityIds();
+  if (entityIds.includes(entityId)) {
+    statusMessage.textContent = `${entityId} is already selected.`;
+    return;
+  }
+  homeAssistantEntity.value = [...entityIds, entityId].join(", ");
+  homeAssistantEntity.dispatchEvent(new Event("input"));
+  statusMessage.textContent = `${entityId} added.`;
+}
+
+function refreshLiveEntityStates() {
+  const result = connection?.getClient()?.requestEntityStates();
+  statusMessage.textContent = result?.accepted
+    ? `Entity list requested from Home Assistant (${result.requestId}).`
+    : result?.reason ?? "Connect to Home Assistant before refreshing entities.";
 }
 
 function createHaCardConfig() {
@@ -394,6 +456,8 @@ function bindSelectedEntity(nextTransport) {
   panelBinding?.dispose();
   removeEntityListListener?.();
   removeServiceResultListener?.();
+  removeEntityStateListListener?.();
+  removeEntityStateListListener = undefined;
   activeTransport = nextTransport;
   entitySnapshots.clear();
   panelBinding = bindHomeAssistantEntityStatusPanel({
@@ -409,6 +473,8 @@ function bindSelectedEntity(nextTransport) {
     }
 
     entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now() });
+    knownEntityIds.add(entity.entityId);
+    renderEntityPickerOptions();
     renderEntityList();
   });
   const usingLiveTransport = activeTransport !== transport;
@@ -418,6 +484,16 @@ function bindSelectedEntity(nextTransport) {
         ? `Command completed for ${result.command.entityId}.`
         : `Command failed for ${result.command.entityId}: ${result.reason ?? "Unknown error."}`;
     });
+    removeEntityStateListListener = connection?.getClient()?.subscribeEntityStateList(result => {
+      for (const entity of result.entities) {
+        knownEntityIds.add(entity.entityId);
+      }
+      renderEntityPickerOptions();
+      statusMessage.textContent = result.success
+        ? `Loaded ${result.entities.length} entities from Home Assistant.`
+        : `Entity list failed: ${result.reason ?? "Unknown error."}`;
+    });
+    refreshLiveEntityStates();
   }
   for (const button of buttons) {
     button.disabled = usingLiveTransport;
@@ -428,6 +504,7 @@ function bindSelectedEntity(nextTransport) {
   statusMessage.textContent = usingLiveTransport
     ? `Waiting for updates from ${currentEntityId()}.`
     : `Demo controls target ${currentEntityId()}.`;
+  renderEntityPickerOptions();
   renderEntityList();
 }
 
@@ -504,12 +581,15 @@ rememberHomeAssistantToken.addEventListener("change", () => {
 });
 homeAssistantEntity.addEventListener("input", () => {
   persistConfiguration();
+  renderEntityPickerOptions();
   bindSelectedEntity(activeTransport ?? transport);
   if (activeTransport === transport) {
     void renderEntityState("on");
   }
   renderHaCardPreview();
 });
+addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
+refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 homeAssistantGroup.addEventListener("change", () => {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   if (group) {
@@ -681,5 +761,6 @@ void renderEntityState("on");
 renderCardTargetOptions(initialCardTarget);
 syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
+renderEntityPickerOptions();
 renderConnectionReadiness();
 renderHaCardPreview();

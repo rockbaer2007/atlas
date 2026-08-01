@@ -13,22 +13,25 @@ selection replaces the current surface output while retaining the theme tokens.
 
 The Home Assistant controls validate a connection target, show the derived
 WebSocket endpoint and can connect to an instance. The supplied access token is
-cleared from the form immediately after starting the connection and is not
-stored or logged by the demo.
+cleared from the form immediately after starting the connection unless the
+local remember option is selected. Remembered tokens stay in browser storage
+only and are not logged by the demo.
 
-Enter one or more comma-separated Entity IDs before connecting. Once the event
-subscription is active, the primary entity drives the status panel and the list
-shows updates for all selected entities. Numeric and other available sensor
-values render as ready; `off` remains pending, while unavailable or unknown
-entities render as blocked.
+Enter one or more comma-separated Entity IDs before connecting, or use the
+entity picker to add known demo entities. Once a live event subscription is
+active, the demo requests Home Assistant `get_states` and populates the picker
+from the returned entity list. The primary entity drives the status panel and
+the list shows updates for all selected entities. Numeric and other available
+sensor values render as ready; `off` remains pending, while unavailable or
+unknown entities render as blocked.
 
 For a live `light` or `switch` entity, its card offers a single confirmed
 turn-on or turn-off action. Commands are unavailable until the subscription is
 active and are not available for other entity domains.
 
-The URL and selected entities are stored only in this browser. Access tokens are
-never stored. After an unexpected socket close, the open page retries up to
-three times with its in-memory token; a manual disconnect stops retries.
+The URL, selected entities and optional token preference are stored only in this
+browser. After an unexpected socket close, the open page retries up to three
+times with its in-memory token; a manual disconnect stops retries.
 
 The panel-group selector provides quick entity sets for overview, energy and
 safety. Selecting a group only updates the local entity list.
