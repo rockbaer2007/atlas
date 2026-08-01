@@ -127,6 +127,7 @@ additional envelope-only contract expansion.
 * Dual deployment model for self-hosted ATLAS server and HACS/Home Assistant frontend integration
 * Card infrastructure
 * Selectable card targets for built-in Entities, Mushroom and Bubble Card
+* Selectable simple, horizontal-stack and vertical-stack card layouts for Mushroom and Bubble Card exports
 * HACS-installable custom card export path
 * In-Home-Assistant entity picker for installed ATLAS cards
 * Entity abstraction

@@ -36,6 +36,7 @@ const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
 const haCardTarget = document.querySelector("#ha-card-target");
+const haCardLayout = document.querySelector("#ha-card-layout");
 const haCardFormat = document.querySelector("#ha-card-format");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
@@ -65,6 +66,7 @@ let reconnectAttempts = 0;
 const entitySnapshots = new Map();
 let pendingImport;
 let initialGroupSelection = "overview";
+let initialCardTarget = "entities";
 let panelGroups = [
   createHomeAssistantPanelGroup({ id: "overview", title: "Overview", entityIds: ["binary_sensor.atlas_status", "sensor.atlas_temperature"] }),
   createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
@@ -84,7 +86,10 @@ try {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
   }
   if (savedConfiguration?.cardTarget === "entities" || savedConfiguration?.cardTarget === "mushroom-template" || savedConfiguration?.cardTarget === "bubble") {
-    haCardTarget.value = savedConfiguration.cardTarget;
+    initialCardTarget = savedConfiguration.cardTarget;
+  }
+  if (savedConfiguration?.cardLayout === "single" || savedConfiguration?.cardLayout === "horizontal-stack" || savedConfiguration?.cardLayout === "vertical-stack") {
+    haCardLayout.value = savedConfiguration.cardLayout;
   }
   if (savedConfiguration?.cardFormat === "json" || savedConfiguration?.cardFormat === "yaml") {
     haCardFormat.value = savedConfiguration.cardFormat;
@@ -120,6 +125,15 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
     haCardTarget.append(option);
   }
   haCardTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget) ? selectedTarget : "entities";
+  syncCardLayoutState();
+}
+
+function syncCardLayoutState() {
+  const supportsStackLayout = haCardTarget.value === "mushroom-template" || haCardTarget.value === "bubble";
+  haCardLayout.disabled = !supportsStackLayout;
+  if (!supportsStackLayout) {
+    haCardLayout.value = "single";
+  }
 }
 
 async function renderEntityState(state) {
@@ -185,6 +199,7 @@ function persistConfiguration() {
       entities: homeAssistantEntity.value,
       selectedGroup: homeAssistantGroup.value,
       cardTarget: haCardTarget.value,
+      cardLayout: haCardLayout.value,
       cardFormat: haCardFormat.value,
       groups: panelGroups,
     }));
@@ -220,6 +235,7 @@ function createHaCardConfig() {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   return createHomeAssistantCardConfiguration({
     target: haCardTarget.value,
+    layout: haCardLayout.value,
     title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
     entityIds: trackedEntityIds(),
   });
@@ -483,6 +499,11 @@ homeAssistantGroup.addEventListener("change", () => {
 });
 homeAssistantGroupName.addEventListener("input", renderHaCardPreview);
 haCardTarget.addEventListener("change", () => {
+  syncCardLayoutState();
+  persistConfiguration();
+  renderHaCardPreview();
+});
+haCardLayout.addEventListener("change", () => {
   persistConfiguration();
   renderHaCardPreview();
 });
@@ -537,6 +558,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     entities: homeAssistantEntity.value,
     selectedGroup: homeAssistantGroup.value,
     cardTarget: haCardTarget.value,
+    cardLayout: haCardLayout.value,
     cardFormat: haCardFormat.value,
     groups: panelGroups,
   }, null, 2);
@@ -578,9 +600,13 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     if (pendingImport.cardTarget === "entities" || pendingImport.cardTarget === "mushroom-template" || pendingImport.cardTarget === "bubble") {
       haCardTarget.value = pendingImport.cardTarget;
     }
+    if (pendingImport.cardLayout === "single" || pendingImport.cardLayout === "horizontal-stack" || pendingImport.cardLayout === "vertical-stack") {
+      haCardLayout.value = pendingImport.cardLayout;
+    }
     if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
       haCardFormat.value = pendingImport.cardFormat;
     }
+    syncCardLayoutState();
     renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
@@ -598,18 +624,25 @@ importHaCardConfig.addEventListener("change", async () => {
   try {
     const parsed = parseHomeAssistantEntitiesCardConfiguration(await file.text());
     const card = parsed.card;
-    const entityIds = card.type === "entities" ? card.entities.map(entity => entity.entity) : [card.entity];
-    const title = card.type === "entities"
-      ? card.title
-      : card.type === "custom:bubble-card"
-        ? card.name
-        : card.primary;
+    const primaryCard = card.type === "horizontal-stack" || card.type === "vertical-stack" ? card.cards[0] : card;
+    const entityIds = card.type === "entities"
+      ? card.entities.map(entity => entity.entity)
+      : card.type === "horizontal-stack" || card.type === "vertical-stack"
+        ? card.cards.map(child => child.type === "entities" ? child.entities.map(entity => entity.entity) : [child.entity]).flat()
+        : [card.entity];
+    const title = primaryCard.type === "entities"
+      ? primaryCard.title
+      : primaryCard.type === "custom:bubble-card"
+        ? primaryCard.name
+        : primaryCard.primary;
     const id = createGroupId(title);
     panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
     homeAssistantEntity.value = entityIds.join(", ");
     homeAssistantGroupName.value = title;
     haCardTarget.value = parsed.target;
+    haCardLayout.value = parsed.layout;
     haCardFormat.value = parsed.format;
+    syncCardLayoutState();
     renderGroupOptions(id);
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
@@ -624,6 +657,8 @@ connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
 
 void renderEntityState("on");
-renderCardTargetOptions(haCardTarget.value);
+renderCardTargetOptions(initialCardTarget);
+syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderConnectionReadiness();
+renderHaCardPreview();

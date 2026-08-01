@@ -44,6 +44,7 @@ describe("Home Assistant entities card configuration", () => {
 
     expect(parsed.format).toBe("json");
     expect(parsed.target).toBe("entities");
+    expect(parsed.layout).toBe("single");
     expect(parsed.card).toEqual({
       type: "entities",
       title: "Energy",
@@ -65,6 +66,7 @@ describe("Home Assistant entities card configuration", () => {
 
     expect(parsed.format).toBe("yaml");
     expect(parsed.target).toBe("entities");
+    expect(parsed.layout).toBe("single");
     expect(parsed.card).toEqual({
       type: "entities",
       title: "Workshop",
@@ -88,6 +90,7 @@ describe("Home Assistant entities card configuration", () => {
       format: "yaml",
       card,
       target: "entities",
+      layout: "single",
     });
   });
 
@@ -128,6 +131,88 @@ describe("Home Assistant entities card configuration", () => {
       label: "Bubble Card",
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+    });
+  });
+
+  it("creates stacked Bubble and Mushroom card targets for multiple entities", () => {
+    const bubble = createHomeAssistantCardConfiguration({
+      target: "bubble",
+      layout: "horizontal-stack",
+      title: "Office",
+      entityIds: ["light.office", "switch.office_fan"],
+    });
+    const mushroom = createHomeAssistantCardConfiguration({
+      target: "mushroom-template",
+      layout: "vertical-stack",
+      title: "Climate",
+      entityIds: ["sensor.office_temperature", "sensor.office_humidity"],
+    });
+
+    expect(bubble).toEqual({
+      type: "horizontal-stack",
+      cards: [
+        {
+          type: "custom:bubble-card",
+          card_type: "button",
+          button_type: "state",
+          name: "light.office",
+          entity: "light.office",
+          show_state: true,
+        },
+        {
+          type: "custom:bubble-card",
+          card_type: "button",
+          button_type: "state",
+          name: "switch.office_fan",
+          entity: "switch.office_fan",
+          show_state: true,
+        },
+      ],
+    });
+    expect(mushroom).toEqual({
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "custom:mushroom-template-card",
+          primary: "sensor.office_temperature",
+          secondary: "sensor.office_temperature",
+          entity: "sensor.office_temperature",
+        },
+        {
+          type: "custom:mushroom-template-card",
+          primary: "sensor.office_humidity",
+          secondary: "sensor.office_humidity",
+          entity: "sensor.office_humidity",
+        },
+      ],
+    });
+    expect(serializeHomeAssistantEntitiesCardConfiguration(bubble, "yaml")).toBe([
+      "type: horizontal-stack",
+      "cards:",
+      "  - type: \"custom:bubble-card\"",
+      "    card_type: \"button\"",
+      "    button_type: \"state\"",
+      "    name: \"light.office\"",
+      "    entity: \"light.office\"",
+      "    show_state: true",
+      "  - type: \"custom:bubble-card\"",
+      "    card_type: \"button\"",
+      "    button_type: \"state\"",
+      "    name: \"switch.office_fan\"",
+      "    entity: \"switch.office_fan\"",
+      "    show_state: true",
+    ].join("\n"));
+    expect(parseHomeAssistantEntitiesCardConfiguration(JSON.stringify(mushroom))).toEqual({
+      format: "json",
+      target: "mushroom-template",
+      layout: "vertical-stack",
+      card: mushroom,
+    });
+    expect(parseHomeAssistantEntitiesCardConfiguration(serializeHomeAssistantEntitiesCardConfiguration(bubble, "yaml"))).toEqual({
+      format: "yaml",
+      target: "bubble",
+      layout: "horizontal-stack",
+      card: bubble,
     });
   });
 
@@ -174,6 +259,7 @@ describe("Home Assistant entities card configuration", () => {
     ].join("\n"))).toEqual({
       format: "yaml",
       target: "mushroom-template",
+      layout: "single",
       card: {
         type: "custom:mushroom-template-card",
         primary: "Office climate",
@@ -190,6 +276,7 @@ describe("Home Assistant entities card configuration", () => {
     }))).toEqual({
       format: "json",
       target: "bubble",
+      layout: "single",
       card: {
         type: "custom:bubble-card",
         card_type: "button",
