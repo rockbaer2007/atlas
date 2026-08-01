@@ -105,6 +105,42 @@
         outline-offset: 1px;
       }
 
+      .entity-domain-shortcuts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        min-height: 32px;
+      }
+
+      .entity-domain-shortcuts button {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #172033;
+        padding: 6px 9px;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .entity-domain-shortcuts button[aria-pressed="true"] {
+        border-color: #0f766e;
+        background: #e6fffb;
+        color: #0f766e;
+        font-weight: 700;
+      }
+
+      .entity-domain-shortcuts button:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 1px;
+      }
+
+      .entity-picker-status {
+        min-height: 20px;
+        color: #536079;
+        font-size: 13px;
+      }
+
       .connection-actions {
         display: flex;
         flex-wrap: wrap;
@@ -438,10 +474,12 @@
         <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
         <label for="home-assistant-entity-domain">Entity type</label>
         <select id="home-assistant-entity-domain"></select>
+        <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts"></div>
         <label for="home-assistant-entity-search">Entity search</label>
         <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID">
         <label for="home-assistant-entity-picker">Entity picker</label>
         <select id="home-assistant-entity-picker"></select>
+        <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
         <div class="connection-actions">
           <button id="add-home-assistant-entity" type="button">Add entity</button>
           <button id="refresh-home-assistant-entities" type="button">Refresh entities</button>

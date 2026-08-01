@@ -35,8 +35,10 @@ const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantEntityDomain = document.querySelector("#home-assistant-entity-domain");
+const homeAssistantEntityDomainShortcuts = document.querySelector("#home-assistant-entity-domain-shortcuts");
 const homeAssistantEntitySearch = document.querySelector("#home-assistant-entity-search");
 const homeAssistantEntityPicker = document.querySelector("#home-assistant-entity-picker");
+const homeAssistantEntityPickerStatus = document.querySelector("#home-assistant-entity-picker-status");
 const addHomeAssistantEntity = document.querySelector("#add-home-assistant-entity");
 const refreshHomeAssistantEntities = document.querySelector("#refresh-home-assistant-entities");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
@@ -74,6 +76,7 @@ let reconnectAttempts = 0;
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
+const preferredEntityDomains = ["sensor", "binary_sensor", "switch", "light"];
 let statusPreviewEntityId;
 let pendingImport;
 let initialGroupSelection = "overview";
@@ -310,6 +313,25 @@ function renderEntityDomainOptions() {
     homeAssistantEntityDomain.append(option);
   }
   homeAssistantEntityDomain.value = selected === "all" || domains.includes(selected) ? selected : "all";
+  renderEntityDomainShortcuts(domains);
+}
+
+function renderEntityDomainShortcuts(domains) {
+  const selected = homeAssistantEntityDomain.value || "all";
+  const shortcutDomains = ["all", ...preferredEntityDomains, ...domains]
+    .filter((domain, index, list) => list.indexOf(domain) === index)
+    .filter(domain => domain === "all" || domains.includes(domain));
+
+  homeAssistantEntityDomainShortcuts.replaceChildren();
+  for (const domain of shortcutDomains) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.dataset.entityDomain = domain;
+    button.textContent = domain === "all" ? "All" : domain;
+    button.setAttribute("aria-pressed", String(domain === selected));
+    button.title = domain === "all" ? "Show all entity types" : `Show ${domain} entities`;
+    homeAssistantEntityDomainShortcuts.append(button);
+  }
 }
 
 function entityMatchesSearch(entityId, searchTerm) {
@@ -385,6 +407,11 @@ function renderEntityPickerOptions() {
   }
   homeAssistantEntityPicker.value = entityIds.includes(selected) ? selected : entityIds[0] ?? "";
   addHomeAssistantEntity.disabled = !homeAssistantEntityPicker.value;
+  homeAssistantEntityPicker.disabled = entityIds.length === 0;
+  const domainLabel = selectedDomain === "all" ? "all types" : selectedDomain;
+  homeAssistantEntityPickerStatus.textContent = entityIds.length === 0
+    ? `No entities found for ${domainLabel}${searchTerm.trim() ? ` and "${searchTerm.trim()}"` : ""}.`
+    : `${entityIds.length} ${entityIds.length === 1 ? "entity" : "entities"} found for ${domainLabel}.`;
 }
 
 function addSelectedEntityFromPicker() {
@@ -821,6 +848,13 @@ homeAssistantEntity.addEventListener("input", () => {
   renderHaCardPreview();
 });
 homeAssistantEntityDomain.addEventListener("change", () => {
+  persistConfiguration();
+  renderEntityPickerOptions();
+});
+homeAssistantEntityDomainShortcuts.addEventListener("click", event => {
+  const button = event.target.closest("[data-entity-domain]");
+  if (!button) return;
+  homeAssistantEntityDomain.value = button.dataset.entityDomain;
   persistConfiguration();
   renderEntityPickerOptions();
 });
