@@ -14,6 +14,7 @@ import {
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
+  listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
   deriveHomeAssistantWebSocketUrl,
@@ -51,6 +52,7 @@ const entityList = document.querySelector("#atlas-entity-list");
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
+const cardTargets = listHomeAssistantCardTargets();
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
@@ -108,6 +110,17 @@ const panel = createHomeAssistantStatusPanel({
 });
 const panelRegistry = createHomeAssistantStatusPanelRegistry([panel]);
 const transport = createInMemoryHomeAssistantEntityStateTransport();
+
+function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entities") {
+  haCardTarget.replaceChildren();
+  for (const descriptor of cardTargets) {
+    const option = document.createElement("option");
+    option.value = descriptor.target;
+    option.textContent = descriptor.label;
+    haCardTarget.append(option);
+  }
+  haCardTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget) ? selectedTarget : "entities";
+}
 
 async function renderEntityState(state) {
   const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
@@ -610,5 +623,6 @@ connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
 
 void renderEntityState("on");
+renderCardTargetOptions(haCardTarget.value);
 renderGroupOptions(initialGroupSelection);
 renderConnectionReadiness();

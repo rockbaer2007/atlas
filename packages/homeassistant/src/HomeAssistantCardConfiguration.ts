@@ -49,6 +49,44 @@ export interface HomeAssistantCardDependency {
   readonly required: boolean;
 }
 
+export interface HomeAssistantCardTargetDescriptor {
+  readonly target: HomeAssistantCardTarget;
+  readonly label: string;
+  readonly type: HomeAssistantCardConfiguration["type"];
+  readonly dependency: HomeAssistantCardDependency;
+}
+
+const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
+  {
+    target: "entities",
+    label: "Entities",
+    type: "entities",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false },
+  },
+  {
+    target: "mushroom-template",
+    label: "Mushroom template",
+    type: "custom:mushroom-template-card",
+    dependency: { id: "mushroom", label: "Mushroom", required: true },
+  },
+  {
+    target: "bubble",
+    label: "Bubble button",
+    type: "custom:bubble-card",
+    dependency: { id: "bubble-card", label: "Bubble Card", required: true },
+  },
+];
+
+export function listHomeAssistantCardTargets(): readonly HomeAssistantCardTargetDescriptor[] {
+  return cardTargetDescriptors;
+}
+
+export function findHomeAssistantCardTargetDescriptor(
+  target: HomeAssistantCardTarget,
+): HomeAssistantCardTargetDescriptor | undefined {
+  return cardTargetDescriptors.find(descriptor => descriptor.target === target);
+}
+
 export function createHomeAssistantCardConfiguration(
   input: HomeAssistantEntitiesCardInput,
 ): HomeAssistantCardConfiguration {
@@ -122,13 +160,8 @@ export function inspectHomeAssistantCardDependency(
   cardOrTarget: HomeAssistantCardConfiguration | HomeAssistantCardTarget,
 ): HomeAssistantCardDependency {
   const target = typeof cardOrTarget === "string" ? cardOrTarget : getHomeAssistantCardTarget(cardOrTarget);
-  if (target === "mushroom-template") {
-    return { id: "mushroom", label: "Mushroom", required: true };
-  }
-  if (target === "bubble") {
-    return { id: "bubble-card", label: "Bubble Card", required: true };
-  }
-  return { id: "home-assistant", label: "Home Assistant built-in", required: false };
+  return findHomeAssistantCardTargetDescriptor(target)?.dependency
+    ?? { id: "home-assistant", label: "Home Assistant built-in", required: false };
 }
 
 export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration): HomeAssistantCardTarget {
