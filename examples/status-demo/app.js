@@ -17,8 +17,8 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
-  parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
+  summarizeHomeAssistantCardImport,
   deriveHomeAssistantWebSocketUrl,
   findHomeAssistantStatusPanel,
   inspectHomeAssistantConnectionReadiness,
@@ -1146,19 +1146,9 @@ importHaCardConfig.addEventListener("change", async () => {
   const file = importHaCardConfig.files?.[0];
   if (!file) return;
   try {
-    const parsed = parseHomeAssistantEntitiesCardConfiguration(await file.text());
-    const card = parsed.card;
-    const primaryCard = card.type === "horizontal-stack" || card.type === "vertical-stack" ? card.cards[0] : card;
-    const entityIds = card.type === "entities"
-      ? card.entities.map(entity => entity.entity)
-      : card.type === "horizontal-stack" || card.type === "vertical-stack"
-        ? card.cards.map(child => child.type === "entities" ? child.entities.map(entity => entity.entity) : [child.entity]).flat()
-        : [card.entity];
-    const title = primaryCard.type === "entities"
-      ? primaryCard.title
-      : primaryCard.type === "custom:bubble-card"
-        ? primaryCard.name
-        : primaryCard.primary;
+    const summary = summarizeHomeAssistantCardImport(await file.text());
+    const entityIds = [...summary.entityIds];
+    const title = summary.title;
     const id = createGroupId(title);
     panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
     homeAssistantEntity.value = entityIds.join(", ");
@@ -1167,14 +1157,14 @@ importHaCardConfig.addEventListener("change", async () => {
     for (const entityId of entityIds) {
       stackSelectedEntityIds.add(entityId);
     }
-    haCardTarget.value = parsed.target;
-    haCardLayout.value = parsed.layout;
-    haCardFormat.value = parsed.format;
+    haCardTarget.value = summary.target;
+    haCardLayout.value = summary.layout;
+    haCardFormat.value = summary.format;
     syncCardLayoutState();
     renderGroupOptions(id);
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
-    statusMessage.textContent = `HA card ${parsed.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
+    statusMessage.textContent = `HA card ${summary.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
   } catch {
     statusMessage.textContent = "Import failed: invalid Home Assistant entities card JSON or YAML.";
   } finally {

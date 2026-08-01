@@ -49,10 +49,12 @@ expected HACS resource paths and can be compared with Lovelace resources
 returned by Home Assistant. Card export manifests provide stable filenames,
 formats, MIME types, target, layout and dependency metadata for host UIs. Card
 export payloads pair that manifest metadata with the serialized card content so
-copy and download flows can share one source. The WebSocket client can request
-`get_states` and `lovelace/resources` after the event subscription is active.
-Lights can receive a validated brightness percentage from 1 through 100 when a
-host explicitly invokes the command.
+copy and download flows can share one source. Card import summaries normalize
+imported card text into title, entity IDs, target, layout, format and dependency
+metadata for editor UIs. The WebSocket client can request `get_states` and
+`lovelace/resources` after the event subscription is active. Lights can receive
+a validated brightness percentage from 1 through 100 when a host explicitly
+invokes the command.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

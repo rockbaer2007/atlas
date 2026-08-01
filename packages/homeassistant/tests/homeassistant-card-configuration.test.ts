@@ -11,6 +11,7 @@ import {
   listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
+  summarizeHomeAssistantCardImport,
 } from "../src";
 
 describe("Home Assistant entities card configuration", () => {
@@ -382,6 +383,40 @@ describe("Home Assistant entities card configuration", () => {
         name: "Office light",
         entity: "light.office",
         show_state: true,
+      },
+    });
+  });
+
+  it("summarizes imported cards for host editors", () => {
+    const summary = summarizeHomeAssistantCardImport([
+      "type: horizontal-stack",
+      "cards:",
+      "  - type: \"custom:bubble-card\"",
+      "    card_type: \"button\"",
+      "    button_type: \"state\"",
+      "    name: \"Office light\"",
+      "    entity: \"light.office\"",
+      "    show_state: true",
+      "  - type: \"custom:bubble-card\"",
+      "    card_type: \"button\"",
+      "    button_type: \"state\"",
+      "    name: \"Office fan\"",
+      "    entity: \"switch.office_fan\"",
+      "    show_state: true",
+    ].join("\n"));
+
+    expect(summary).toMatchObject({
+      title: "Office light",
+      entityIds: ["light.office", "switch.office_fan"],
+      format: "yaml",
+      target: "bubble",
+      layout: "horizontal-stack",
+      dependency: {
+        id: "bubble-card",
+        label: "Bubble Card",
+        required: true,
+        resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+        installPaths: [],
       },
     });
   });

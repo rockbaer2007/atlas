@@ -110,6 +110,16 @@ export interface HomeAssistantCardExportPayload {
   readonly content: string;
 }
 
+export interface HomeAssistantCardImportSummary {
+  readonly card: HomeAssistantCardConfiguration;
+  readonly title: string;
+  readonly entityIds: readonly string[];
+  readonly format: HomeAssistantCardExportFormat;
+  readonly target: HomeAssistantCardTarget;
+  readonly layout: HomeAssistantCardLayout;
+  readonly dependency: HomeAssistantCardDependency;
+}
+
 const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
   {
     target: "entities",
@@ -282,6 +292,16 @@ export function parseHomeAssistantEntitiesCardConfiguration(
   }
 }
 
+export function summarizeHomeAssistantCardImport(text: string): HomeAssistantCardImportSummary {
+  const parsed = parseHomeAssistantEntitiesCardConfiguration(text);
+  return {
+    ...parsed,
+    title: getHomeAssistantCardTitle(parsed.card),
+    entityIds: getHomeAssistantCardEntityIds(parsed.card),
+    dependency: inspectHomeAssistantCardDependency(parsed.card),
+  };
+}
+
 export function inspectHomeAssistantCardDependency(
   cardOrTarget: HomeAssistantCardConfiguration | HomeAssistantCardTarget,
 ): HomeAssistantCardDependency {
@@ -326,6 +346,34 @@ export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration)
   if (card.type === "custom:mushroom-template-card") return "mushroom-template";
   if (card.type === "custom:bubble-card") return "bubble";
   return "entities";
+}
+
+export function getHomeAssistantCardEntityIds(card: HomeAssistantCardConfiguration): readonly string[] {
+  if (isHomeAssistantStackCardConfiguration(card)) {
+    return dedupeEntityIds(card.cards.flatMap(getHomeAssistantCardEntityIds));
+  }
+
+  if (card.type === "entities") {
+    return dedupeEntityIds(card.entities.map(entity => entity.entity));
+  }
+
+  return card.entity ? [card.entity] : [];
+}
+
+export function getHomeAssistantCardTitle(card: HomeAssistantCardConfiguration): string {
+  if (isHomeAssistantStackCardConfiguration(card)) {
+    return card.cards[0] ? getHomeAssistantCardTitle(card.cards[0]) : "Imported HA card";
+  }
+
+  if (card.type === "entities") {
+    return card.title;
+  }
+
+  if (card.type === "custom:bubble-card") {
+    return card.name;
+  }
+
+  return card.primary;
 }
 
 function normalizeHomeAssistantCardConfiguration(
