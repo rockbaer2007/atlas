@@ -47,10 +47,12 @@ Entities, Mushroom template and Bubble button card JSON or YAML can be imported
 back into the demo as a new panel group.
 
 When the demo is connected to Home Assistant, it requests Lovelace resources and
-marks Mushroom or Bubble dependencies as found or missing. Bubble Card uses the
-case-sensitive HACS resource path `/hacsfiles/Bubble-Card/bubble-card.js`.
-Without an active connection, the dependency line keeps showing the expected
-resource path as an installation hint.
+marks Mushroom or Bubble dependencies as found, missing or not yet checked. The
+resource check can also be run manually from the card export controls. Bubble
+Card uses the case-sensitive HACS resource path
+`/hacsfiles/Bubble-Card/bubble-card.js`. Without an active connection, the
+dependency line keeps showing the expected resource path as an installation
+hint.
 
 The visual status surface below the code block is an ATLAS status preview, not a
 Home Assistant Lovelace renderer.

@@ -54,6 +54,7 @@ const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assi
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
+const checkHaCardResources = document.querySelector("#check-ha-card-resources");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const importHaCardConfig = document.querySelector("#import-ha-card-config");
 const haCardPreview = document.querySelector("#ha-card-preview");
@@ -78,6 +79,7 @@ let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
 let lovelaceResources = [];
+let lovelaceResourcesChecked = false;
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
@@ -213,6 +215,7 @@ function renderConnectionLifecycle(lifecycle) {
     : `Connection: ${lifecycle.state}${subscription}`;
   connectButton.disabled = lifecycle.state === "connecting" || lifecycle.state === "authenticating" || lifecycle.state === "connected";
   disconnectButton.disabled = lifecycle.state === "closed" || lifecycle.state === "failed";
+  checkHaCardResources.disabled = lifecycle.state !== "connected" || lifecycle.subscription !== "active";
 
   if (lifecycle.state === "connected" && lifecycle.subscription === "active") {
     reconnectAttempts = 0;
@@ -453,12 +456,23 @@ function addSelectedEntityFromPicker() {
 function refreshLiveEntityStates() {
   const client = connection?.getClient();
   const entityResult = client?.requestEntityStates();
-  const resourceResult = client?.requestLovelaceResources();
   statusMessage.textContent = entityResult?.accepted
     ? `Entity list requested from Home Assistant (${entityResult.requestId}).`
     : entityResult?.reason ?? "Connect to Home Assistant before refreshing entities.";
-  if (resourceResult?.accepted) {
-    statusMessage.textContent += ` Lovelace resources requested (${resourceResult.requestId}).`;
+  checkLiveLovelaceResources({ appendStatus: true });
+}
+
+function checkLiveLovelaceResources(options = {}) {
+  const result = connection?.getClient()?.requestLovelaceResources();
+  const message = result?.accepted
+    ? `Lovelace resources requested (${result.requestId}).`
+    : result?.reason ?? "Connect to Home Assistant before checking resources.";
+  statusMessage.textContent = options.appendStatus
+    ? `${statusMessage.textContent} ${message}`
+    : message;
+  if (result?.accepted) {
+    lovelaceResourcesChecked = false;
+    renderHaCardPreview();
   }
 }
 
@@ -476,6 +490,7 @@ function renderHaCardPreview() {
   if (cardPreviewEntityIds().length === 0) {
     haCardPreview.textContent = emptyEntitySelectionMessage;
     haCardDependency.dataset.required = "false";
+    haCardDependency.dataset.status = "not-required";
     haCardDependency.textContent = emptyEntitySelectionMessage;
     return;
   }
@@ -485,17 +500,19 @@ function renderHaCardPreview() {
   const availability = inspectHomeAssistantCardDependencyAvailability(card, lovelaceResources);
   haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   haCardDependency.dataset.required = String(dependency.required);
+  haCardDependency.dataset.status = dependency.required
+    ? lovelaceResourcesChecked ? availability.status : "unchecked"
+    : "not-required";
   const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
   const installHint = dependency.installPaths.length ? ` Install path: ${dependency.installPaths.join(", ")}.` : "";
   if (!dependency.required) {
     haCardDependency.textContent = "Uses built-in Home Assistant card.";
+  } else if (!lovelaceResourcesChecked) {
+    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint} Connect to Home Assistant or check resources.`;
   } else if (availability.status === "installed") {
     haCardDependency.textContent = `${dependency.label} resource found.${resourceHint}`;
   } else {
-    const checkedHint = lovelaceResources.length
-      ? ` Missing: ${availability.missingResourcePaths.join(", ")}.`
-      : " Connect to Home Assistant to check installed Lovelace resources.";
-    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint}${checkedHint}`;
+    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint} Missing: ${availability.missingResourcePaths.join(", ")}.`;
   }
 }
 
@@ -780,6 +797,7 @@ function bindSelectedEntity(nextTransport) {
   removeEntityStateListListener = undefined;
   removeLovelaceResourceListener = undefined;
   lovelaceResources = [];
+  lovelaceResourcesChecked = false;
   activeTransport = nextTransport;
   entitySnapshots.clear();
   if (trackedEntityIds().length === 0) {
@@ -826,10 +844,11 @@ function bindSelectedEntity(nextTransport) {
     });
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
       lovelaceResources = result.resources;
+      lovelaceResourcesChecked = result.success;
       renderHaCardPreview();
-      if (!result.success) {
-        statusMessage.textContent = `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
-      }
+      statusMessage.textContent = result.success
+        ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant.`
+        : `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
     });
     refreshLiveEntityStates();
   }
@@ -950,6 +969,7 @@ clearHomeAssistantEntitySearch.addEventListener("click", () => {
 addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
 homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
+checkHaCardResources.addEventListener("click", () => checkLiveLovelaceResources());
 homeAssistantGroup.addEventListener("change", () => {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   if (group) {

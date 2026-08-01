@@ -273,6 +273,18 @@
         color: #a16207;
       }
 
+      #ha-card-dependency[data-status="installed"] {
+        color: #0f766e;
+      }
+
+      #ha-card-dependency[data-status="missing"] {
+        color: #b91c1c;
+      }
+
+      #ha-card-dependency[data-status="unchecked"] {
+        color: #a16207;
+      }
+
       .ha-card-preview {
         display: grid;
         gap: 6px;
@@ -516,6 +528,7 @@
           <button id="export-home-assistant-config" type="button">Export</button>
           <button id="export-ha-card-config" type="button">Export HA card</button>
           <button id="copy-ha-card-config" type="button">Copy HA card</button>
+          <button id="check-ha-card-resources" type="button" disabled>Check resources</button>
           <label class="import-button" for="import-home-assistant-config">Import</label>
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
           <label class="import-button" for="import-ha-card-config">Import HA card</label>
