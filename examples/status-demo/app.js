@@ -63,6 +63,7 @@ const stackSelectionSummary = document.querySelector("#stack-selection-summary")
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
+const emptyEntitySelectionMessage = "Wählen Sie mindestens eine Entität aus.";
 const cardTargets = listHomeAssistantCardTargets();
 let connection;
 let removeLifecycleListener;
@@ -181,6 +182,11 @@ async function renderEntityState(state) {
     statusMessage.textContent = "Status panel is not registered.";
     return;
   }
+  if (trackedEntityIds().length === 0) {
+    renderEmptyStatusPreview();
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
 
   await transport.publish(createHomeAssistantEntityState({
     entityId: currentEntityId(),
@@ -284,6 +290,13 @@ function trackedEntityIds() {
   return entityIds;
 }
 
+function renderEmptyStatusPreview() {
+  const emptyState = document.createElement("div");
+  emptyState.className = "empty-selection-state";
+  emptyState.textContent = emptyEntitySelectionMessage;
+  statusRoot.replaceChildren(emptyState);
+}
+
 function entityDomain(entityId) {
   return entityId.includes(".") ? entityId.split(".", 1)[0] : "other";
 }
@@ -375,6 +388,11 @@ function cardPreviewEntityIds() {
 
 function renderStackSelectionSummary() {
   const entityIds = trackedEntityIds();
+  if (entityIds.length === 0) {
+    stackSelectionSummary.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
   if (usesStackEntitySelection()) {
     const selectedIds = selectedStackEntityIds();
     stackSelectionSummary.textContent = `Bei Stapel selektierte Entitäten: ${selectedIds.length}/${entityIds.length}${selectedIds.length ? ` - ${selectedIds.join(", ")}` : ""}`;
@@ -447,6 +465,13 @@ function createHaCardConfig() {
 }
 
 function renderHaCardPreview() {
+  if (cardPreviewEntityIds().length === 0) {
+    haCardPreview.textContent = emptyEntitySelectionMessage;
+    haCardDependency.dataset.required = "false";
+    haCardDependency.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
   const card = createHaCardConfig();
   const dependency = inspectHomeAssistantCardDependency(card);
   haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
@@ -497,11 +522,26 @@ function createGroupId(title) {
 function renderEntityList() {
   entityList.replaceChildren();
   reconcileStackEntitySelection();
+  const entityIds = trackedEntityIds();
+  if (entityIds.length === 0) {
+    const emptyState = document.createElement("div");
+    emptyState.className = "empty-selection-state";
+    emptyState.textContent = emptyEntitySelectionMessage;
+    entityList.append(emptyState);
+    groupSummary.textContent = emptyEntitySelectionMessage;
+    groupIssues.textContent = "";
+    selectedEntity.textContent = emptyEntitySelectionMessage;
+    renderStackSelectionSummary();
+    renderHaCardPreview();
+    renderEmptyStatusPreview();
+    return;
+  }
+
   let ready = 0;
   let pending = 0;
   let blocked = 0;
   const blockedEntities = [];
-  for (const entityId of trackedEntityIds()) {
+  for (const entityId of entityIds) {
     const entity = entitySnapshots.get(entityId);
     const card = document.createElement("article");
     const name = document.createElement("strong");
@@ -540,7 +580,7 @@ function renderEntityList() {
     });
     controls.className = "atlas-entity-card-actions";
     card.append(name, value, detail);
-    const position = trackedEntityIds().indexOf(entityId);
+    const position = entityIds.indexOf(entityId);
     if (entityId === currentEntityId()) {
       card.dataset.primary = "true";
     }
@@ -590,7 +630,7 @@ function renderEntityList() {
     });
     if (usesStackEntitySelection()) controls.append(stackToggle);
     if (position > 0) controls.append(moveUp);
-    if (position < trackedEntityIds().length - 1) controls.append(moveDown);
+    if (position < entityIds.length - 1) controls.append(moveDown);
     controls.append(remove);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
@@ -687,7 +727,7 @@ function removeEntity(entityId) {
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = entityIds.length
     ? `${entityId} removed.`
-    : `${entityId} removed. Add an entity before exporting a card.`;
+    : emptyEntitySelectionMessage;
 }
 
 function formatRelativeTime(timestamp) {
@@ -721,6 +761,15 @@ function bindSelectedEntity(nextTransport) {
   removeEntityStateListListener = undefined;
   activeTransport = nextTransport;
   entitySnapshots.clear();
+  if (trackedEntityIds().length === 0) {
+    renderEmptyStatusPreview();
+    selectedEntity.textContent = emptyEntitySelectionMessage;
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    renderEntityPickerOptions();
+    renderEntityList();
+    return;
+  }
+
   panelBinding = bindHomeAssistantEntityStatusPanel({
     transport: activeTransport,
     panel: registeredPanel,
