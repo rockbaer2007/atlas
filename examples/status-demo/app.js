@@ -589,6 +589,7 @@ homeAssistantEntity.addEventListener("input", () => {
   renderHaCardPreview();
 });
 addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
+homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 homeAssistantGroup.addEventListener("change", () => {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
