@@ -35,6 +35,7 @@ const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantEntityDomain = document.querySelector("#home-assistant-entity-domain");
+const homeAssistantEntitySearch = document.querySelector("#home-assistant-entity-search");
 const homeAssistantEntityPicker = document.querySelector("#home-assistant-entity-picker");
 const addHomeAssistantEntity = document.querySelector("#add-home-assistant-entity");
 const refreshHomeAssistantEntities = document.querySelector("#refresh-home-assistant-entities");
@@ -105,6 +106,9 @@ try {
   }
   if (typeof savedConfiguration?.entityDomain === "string") {
     homeAssistantEntityDomain.value = savedConfiguration.entityDomain;
+  }
+  if (typeof savedConfiguration?.entitySearch === "string") {
+    homeAssistantEntitySearch.value = savedConfiguration.entitySearch;
   }
   if (Array.isArray(savedConfiguration?.stackEntityIds)) {
     for (const entityId of savedConfiguration.stackEntityIds) {
@@ -232,6 +236,7 @@ function persistConfiguration() {
       token: rememberHomeAssistantToken.checked ? homeAssistantToken.value : undefined,
       entities: homeAssistantEntity.value,
       entityDomain: homeAssistantEntityDomain.value,
+      entitySearch: homeAssistantEntitySearch.value,
       selectedGroup: homeAssistantGroup.value,
       cardTarget: haCardTarget.value,
       cardLayout: haCardLayout.value,
@@ -307,6 +312,17 @@ function renderEntityDomainOptions() {
   homeAssistantEntityDomain.value = selected === "all" || domains.includes(selected) ? selected : "all";
 }
 
+function entityMatchesSearch(entityId, searchTerm) {
+  const term = searchTerm.trim().toLowerCase();
+  if (!term) return true;
+
+  const entity = entitySnapshots.get(entityId);
+  const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
+  return entityId.toLowerCase().includes(term)
+    || presentation?.label.toLowerCase().includes(term)
+    || entity?.name?.toLowerCase().includes(term);
+}
+
 function usesStackEntitySelection() {
   return haCardTarget.value !== "entities" && (haCardLayout.value === "horizontal-stack" || haCardLayout.value === "vertical-stack");
 }
@@ -351,8 +367,10 @@ function renderEntityPickerOptions() {
   const selected = homeAssistantEntityPicker.value;
   renderEntityDomainOptions();
   const selectedDomain = homeAssistantEntityDomain.value;
+  const searchTerm = homeAssistantEntitySearch.value;
   const entityIds = knownEntityPickerIds()
-    .filter(entityId => selectedDomain === "all" || entityDomain(entityId) === selectedDomain);
+    .filter(entityId => selectedDomain === "all" || entityDomain(entityId) === selectedDomain)
+    .filter(entityId => entityMatchesSearch(entityId, searchTerm));
 
   homeAssistantEntityPicker.replaceChildren();
   for (const entityId of entityIds) {
@@ -806,6 +824,10 @@ homeAssistantEntityDomain.addEventListener("change", () => {
   persistConfiguration();
   renderEntityPickerOptions();
 });
+homeAssistantEntitySearch.addEventListener("input", () => {
+  persistConfiguration();
+  renderEntityPickerOptions();
+});
 addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
 homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
@@ -877,6 +899,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     url: homeAssistantUrl.value,
     entities: homeAssistantEntity.value,
     entityDomain: homeAssistantEntityDomain.value,
+    entitySearch: homeAssistantEntitySearch.value,
     selectedGroup: homeAssistantGroup.value,
     cardTarget: haCardTarget.value,
     cardLayout: haCardLayout.value,
@@ -920,6 +943,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     homeAssistantEntity.value = pendingImport.entities;
     if (typeof pendingImport.entityDomain === "string") {
       homeAssistantEntityDomain.value = pendingImport.entityDomain;
+    }
+    if (typeof pendingImport.entitySearch === "string") {
+      homeAssistantEntitySearch.value = pendingImport.entitySearch;
     }
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
     if (pendingImport.cardTarget === "entities" || pendingImport.cardTarget === "mushroom-template" || pendingImport.cardTarget === "bubble") {
