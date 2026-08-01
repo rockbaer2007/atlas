@@ -2,20 +2,81 @@ export interface HomeAssistantEntitiesCardEntity {
   readonly entity: string;
 }
 
+export type HomeAssistantCardTarget = "entities" | "mushroom-template" | "bubble";
+
 export interface HomeAssistantEntitiesCardConfiguration {
   readonly type: "entities";
   readonly title: string;
   readonly entities: readonly HomeAssistantEntitiesCardEntity[];
 }
 
+export interface HomeAssistantMushroomTemplateCardConfiguration {
+  readonly type: "custom:mushroom-template-card";
+  readonly primary: string;
+  readonly secondary: string;
+  readonly entity: string;
+}
+
+export interface HomeAssistantBubbleCardConfiguration {
+  readonly type: "custom:bubble-card";
+  readonly card_type: "button";
+  readonly button_type: "state";
+  readonly name: string;
+  readonly entity: string;
+  readonly show_state: true;
+}
+
+export type HomeAssistantCardConfiguration =
+  | HomeAssistantEntitiesCardConfiguration
+  | HomeAssistantMushroomTemplateCardConfiguration
+  | HomeAssistantBubbleCardConfiguration;
+
 export interface HomeAssistantEntitiesCardParseResult {
-  readonly card: HomeAssistantEntitiesCardConfiguration;
+  readonly card: HomeAssistantCardConfiguration;
   readonly format: "json" | "yaml";
+  readonly target: HomeAssistantCardTarget;
 }
 
 export interface HomeAssistantEntitiesCardInput {
+  readonly target?: HomeAssistantCardTarget;
   readonly title?: string;
   readonly entityIds: readonly string[];
+}
+
+export interface HomeAssistantCardDependency {
+  readonly id: "home-assistant" | "mushroom" | "bubble-card";
+  readonly label: string;
+  readonly required: boolean;
+}
+
+export function createHomeAssistantCardConfiguration(
+  input: HomeAssistantEntitiesCardInput,
+): HomeAssistantCardConfiguration {
+  const entityIds = dedupeEntityIds(input.entityIds);
+  const title = input.title?.trim() || "ATLAS panel";
+  const primaryEntity = entityIds[0] ?? "";
+
+  if (input.target === "mushroom-template") {
+    return {
+      type: "custom:mushroom-template-card",
+      primary: title,
+      secondary: primaryEntity,
+      entity: primaryEntity,
+    };
+  }
+
+  if (input.target === "bubble") {
+    return {
+      type: "custom:bubble-card",
+      card_type: "button",
+      button_type: "state",
+      name: title,
+      entity: primaryEntity,
+      show_state: true,
+    };
+  }
+
+  return createHomeAssistantEntitiesCardConfiguration({ title, entityIds });
 }
 
 export function createHomeAssistantEntitiesCardConfiguration(
@@ -29,12 +90,16 @@ export function createHomeAssistantEntitiesCardConfiguration(
 }
 
 export function serializeHomeAssistantEntitiesCardConfiguration(
-  card: HomeAssistantEntitiesCardConfiguration,
+  card: HomeAssistantCardConfiguration,
   format: "json" | "yaml",
 ): string {
-  return format === "yaml"
+  if (format === "json") {
+    return JSON.stringify(card, null, 2);
+  }
+
+  return card.type === "entities"
     ? serializeHomeAssistantEntitiesCardYaml(card)
-    : JSON.stringify(card, null, 2);
+    : serializeHomeAssistantCustomCardYaml(card);
 }
 
 export function parseHomeAssistantEntitiesCardConfiguration(
@@ -42,19 +107,74 @@ export function parseHomeAssistantEntitiesCardConfiguration(
 ): HomeAssistantEntitiesCardParseResult {
   try {
     return {
-      card: normalizeHomeAssistantEntitiesCardConfiguration(JSON.parse(text)),
+      ...normalizeHomeAssistantCardConfiguration(JSON.parse(text)),
       format: "json",
     };
   } catch {
     return {
-      card: normalizeHomeAssistantEntitiesCardConfiguration(parseHomeAssistantEntitiesCardYaml(text)),
+      ...normalizeHomeAssistantCardConfiguration(parseHomeAssistantCardYaml(text)),
       format: "yaml",
     };
   }
 }
 
-function normalizeHomeAssistantEntitiesCardConfiguration(card: unknown): HomeAssistantEntitiesCardConfiguration {
-  if (!isRecord(card) || card.type !== "entities" || !Array.isArray(card.entities)) {
+export function inspectHomeAssistantCardDependency(
+  cardOrTarget: HomeAssistantCardConfiguration | HomeAssistantCardTarget,
+): HomeAssistantCardDependency {
+  const target = typeof cardOrTarget === "string" ? cardOrTarget : getHomeAssistantCardTarget(cardOrTarget);
+  if (target === "mushroom-template") {
+    return { id: "mushroom", label: "Mushroom", required: true };
+  }
+  if (target === "bubble") {
+    return { id: "bubble-card", label: "Bubble Card", required: true };
+  }
+  return { id: "home-assistant", label: "Home Assistant built-in", required: false };
+}
+
+export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration): HomeAssistantCardTarget {
+  if (card.type === "custom:mushroom-template-card") return "mushroom-template";
+  if (card.type === "custom:bubble-card") return "bubble";
+  return "entities";
+}
+
+function normalizeHomeAssistantCardConfiguration(
+  card: unknown,
+): { readonly card: HomeAssistantCardConfiguration; readonly target: HomeAssistantCardTarget } {
+  if (!isRecord(card)) {
+    throw new Error("Unsupported Home Assistant card.");
+  }
+
+  if (card.type === "custom:mushroom-template-card") {
+    const entity = typeof card.entity === "string" ? card.entity.trim() : "";
+    if (!entity) throw new Error("Mushroom card has no entity.");
+    return {
+      card: {
+        type: "custom:mushroom-template-card",
+        primary: typeof card.primary === "string" && card.primary.trim() ? card.primary.trim() : "Imported Mushroom card",
+        secondary: typeof card.secondary === "string" ? card.secondary : entity,
+        entity,
+      },
+      target: "mushroom-template",
+    };
+  }
+
+  if (card.type === "custom:bubble-card") {
+    const entity = typeof card.entity === "string" ? card.entity.trim() : "";
+    if (!entity) throw new Error("Bubble card has no entity.");
+    return {
+      card: {
+        type: "custom:bubble-card",
+        card_type: "button",
+        button_type: "state",
+        name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : "Imported Bubble card",
+        entity,
+        show_state: true,
+      },
+      target: "bubble",
+    };
+  }
+
+  if (card.type !== "entities" || !Array.isArray(card.entities)) {
     throw new Error("Unsupported Home Assistant card.");
   }
 
@@ -65,10 +185,13 @@ function normalizeHomeAssistantEntitiesCardConfiguration(card: unknown): HomeAss
     throw new Error("Home Assistant card has no entities.");
   }
 
-  return createHomeAssistantEntitiesCardConfiguration({
-    title: typeof card.title === "string" ? card.title : "Imported HA card",
-    entityIds,
-  });
+  return {
+    card: createHomeAssistantEntitiesCardConfiguration({
+      title: typeof card.title === "string" ? card.title : "Imported HA card",
+      entityIds,
+    }),
+    target: "entities",
+  };
 }
 
 function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardConfiguration): string {
@@ -83,12 +206,18 @@ function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardC
   return lines.join("\n");
 }
 
-function parseHomeAssistantEntitiesCardYaml(text: string): unknown {
+function serializeHomeAssistantCustomCardYaml(card: Exclude<HomeAssistantCardConfiguration, HomeAssistantEntitiesCardConfiguration>): string {
+  return Object.entries(card)
+    .map(([key, value]) => `${key}: ${serializeYamlScalar(value)}`)
+    .join("\n");
+}
+
+function parseHomeAssistantCardYaml(text: string): unknown {
   const lines = text
     .split(/\r?\n/)
     .map(line => line.trimEnd())
     .filter(line => line.trim() && !line.trimStart().startsWith("#"));
-  const card: { type?: string; title?: string; entities: Array<string | HomeAssistantEntitiesCardEntity> } = {
+  const card: Record<string, unknown> & { entities: Array<string | HomeAssistantEntitiesCardEntity> } = {
     entities: [],
   };
   let inEntities = false;
@@ -106,6 +235,11 @@ function parseHomeAssistantEntitiesCardYaml(text: string): unknown {
       card.title = parseYamlScalar(trimmed.slice("title:".length).trim());
       continue;
     }
+    if (!inEntities && trimmed.includes(":")) {
+      const separator = trimmed.indexOf(":");
+      card[trimmed.slice(0, separator)] = parseYamlScalar(trimmed.slice(separator + 1).trim());
+      continue;
+    }
     if (inEntities && trimmed.startsWith("- entity:")) {
       card.entities.push({ entity: parseYamlScalar(trimmed.slice("- entity:".length).trim()) });
       continue;
@@ -115,6 +249,12 @@ function parseHomeAssistantEntitiesCardYaml(text: string): unknown {
     }
   }
   return card;
+}
+
+function serializeYamlScalar(value: unknown): string {
+  if (typeof value === "boolean") return String(value);
+  if (typeof value === "number") return String(value);
+  return JSON.stringify(String(value));
 }
 
 function parseYamlScalar(value: string): string {

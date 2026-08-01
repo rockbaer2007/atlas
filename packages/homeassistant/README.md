@@ -40,10 +40,11 @@ completed or failed.
 
 Reusable panel groups collect entity IDs under a stable title. Entity
 presentations classify common temperature, power, battery, light and switch
-states. Basic Home Assistant `entities` card configuration can be created,
-serialized as JSON or YAML, and parsed back into normalized entity groups.
-Lights can receive a validated brightness percentage from 1 through 100 when a
-host explicitly invokes the command.
+states. Basic Home Assistant card configuration can be created for built-in
+Entities, Mushroom template and Bubble button targets, serialized as JSON or
+YAML, parsed back into normalized entity groups, and inspected for required
+frontend dependencies. Lights can receive a validated brightness percentage
+from 1 through 100 when a host explicitly invokes the command.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

@@ -8,11 +8,12 @@ import {
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
   createHomeAssistantEntityPresentation,
-  createHomeAssistantEntitiesCardConfiguration,
+  createHomeAssistantCardConfiguration,
   createHomeAssistantPanelGroup,
   createHomeAssistantServiceCommand,
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
+  inspectHomeAssistantCardDependency,
   parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
   deriveHomeAssistantWebSocketUrl,
@@ -33,6 +34,7 @@ const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
+const haCardTarget = document.querySelector("#ha-card-target");
 const haCardFormat = document.querySelector("#ha-card-format");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
@@ -43,6 +45,7 @@ const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const importHaCardConfig = document.querySelector("#import-ha-card-config");
 const haCardPreview = document.querySelector("#ha-card-preview");
+const haCardDependency = document.querySelector("#ha-card-dependency");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const groupSummary = document.querySelector("#group-summary");
@@ -77,6 +80,9 @@ try {
   }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
+  }
+  if (savedConfiguration?.cardTarget === "entities" || savedConfiguration?.cardTarget === "mushroom-template" || savedConfiguration?.cardTarget === "bubble") {
+    haCardTarget.value = savedConfiguration.cardTarget;
   }
   if (savedConfiguration?.cardFormat === "json" || savedConfiguration?.cardFormat === "yaml") {
     haCardFormat.value = savedConfiguration.cardFormat;
@@ -165,6 +171,7 @@ function persistConfiguration() {
       url: homeAssistantUrl.value,
       entities: homeAssistantEntity.value,
       selectedGroup: homeAssistantGroup.value,
+      cardTarget: haCardTarget.value,
       cardFormat: haCardFormat.value,
       groups: panelGroups,
     }));
@@ -198,14 +205,21 @@ function trackedEntityIds() {
 
 function createHaCardConfig() {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
-  return createHomeAssistantEntitiesCardConfiguration({
+  return createHomeAssistantCardConfiguration({
+    target: haCardTarget.value,
     title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
     entityIds: trackedEntityIds(),
   });
 }
 
 function renderHaCardPreview() {
-  haCardPreview.textContent = createHaCardConfigText();
+  const card = createHaCardConfig();
+  const dependency = inspectHomeAssistantCardDependency(card);
+  haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+  haCardDependency.dataset.required = String(dependency.required);
+  haCardDependency.textContent = dependency.required
+    ? `Requires ${dependency.label}.`
+    : "Uses built-in Home Assistant card.";
 }
 
 function createHaCardConfigText() {
@@ -454,6 +468,10 @@ homeAssistantGroup.addEventListener("change", () => {
   homeAssistantEntity.dispatchEvent(new Event("input"));
 });
 homeAssistantGroupName.addEventListener("input", renderHaCardPreview);
+haCardTarget.addEventListener("change", () => {
+  persistConfiguration();
+  renderHaCardPreview();
+});
 haCardFormat.addEventListener("change", () => {
   persistConfiguration();
   renderHaCardPreview();
@@ -504,6 +522,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     url: homeAssistantUrl.value,
     entities: homeAssistantEntity.value,
     selectedGroup: homeAssistantGroup.value,
+    cardTarget: haCardTarget.value,
     cardFormat: haCardFormat.value,
     groups: panelGroups,
   }, null, 2);
@@ -542,6 +561,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     homeAssistantUrl.value = pendingImport.url;
     homeAssistantEntity.value = pendingImport.entities;
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
+    if (pendingImport.cardTarget === "entities" || pendingImport.cardTarget === "mushroom-template" || pendingImport.cardTarget === "bubble") {
+      haCardTarget.value = pendingImport.cardTarget;
+    }
     if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
       haCardFormat.value = pendingImport.cardFormat;
     }
@@ -562,12 +584,17 @@ importHaCardConfig.addEventListener("change", async () => {
   try {
     const parsed = parseHomeAssistantEntitiesCardConfiguration(await file.text());
     const card = parsed.card;
-    const entityIds = card.entities.map(entity => entity.entity);
-    const title = typeof card.title === "string" && card.title.trim() ? card.title.trim() : "Imported HA card";
+    const entityIds = card.type === "entities" ? card.entities.map(entity => entity.entity) : [card.entity];
+    const title = card.type === "entities"
+      ? card.title
+      : card.type === "custom:bubble-card"
+        ? card.name
+        : card.primary;
     const id = createGroupId(title);
     panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
     homeAssistantEntity.value = entityIds.join(", ");
     homeAssistantGroupName.value = title;
+    haCardTarget.value = parsed.target;
     haCardFormat.value = parsed.format;
     renderGroupOptions(id);
     persistConfiguration();

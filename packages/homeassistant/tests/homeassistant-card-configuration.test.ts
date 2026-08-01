@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
+  inspectHomeAssistantCardDependency,
   parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
 } from "../src";
@@ -39,6 +41,7 @@ describe("Home Assistant entities card configuration", () => {
     }));
 
     expect(parsed.format).toBe("json");
+    expect(parsed.target).toBe("entities");
     expect(parsed.card).toEqual({
       type: "entities",
       title: "Energy",
@@ -59,6 +62,7 @@ describe("Home Assistant entities card configuration", () => {
     ].join("\n"));
 
     expect(parsed.format).toBe("yaml");
+    expect(parsed.target).toBe("entities");
     expect(parsed.card).toEqual({
       type: "entities",
       title: "Workshop",
@@ -81,6 +85,81 @@ describe("Home Assistant entities card configuration", () => {
     expect(parsed).toEqual({
       format: "yaml",
       card,
+      target: "entities",
+    });
+  });
+
+  it("creates Mushroom and Bubble card targets", () => {
+    const mushroom = createHomeAssistantCardConfiguration({
+      target: "mushroom-template",
+      title: "Office climate",
+      entityIds: ["sensor.office_temperature"],
+    });
+    const bubble = createHomeAssistantCardConfiguration({
+      target: "bubble",
+      title: "Office light",
+      entityIds: ["light.office"],
+    });
+
+    expect(mushroom).toEqual({
+      type: "custom:mushroom-template-card",
+      primary: "Office climate",
+      secondary: "sensor.office_temperature",
+      entity: "sensor.office_temperature",
+    });
+    expect(bubble).toEqual({
+      type: "custom:bubble-card",
+      card_type: "button",
+      button_type: "state",
+      name: "Office light",
+      entity: "light.office",
+      show_state: true,
+    });
+    expect(inspectHomeAssistantCardDependency(mushroom)).toEqual({
+      id: "mushroom",
+      label: "Mushroom",
+      required: true,
+    });
+    expect(inspectHomeAssistantCardDependency(bubble)).toEqual({
+      id: "bubble-card",
+      label: "Bubble Card",
+      required: true,
+    });
+  });
+
+  it("parses Mushroom and Bubble cards", () => {
+    expect(parseHomeAssistantEntitiesCardConfiguration([
+      "type: custom:mushroom-template-card",
+      "primary: Office climate",
+      "secondary: sensor.office_temperature",
+      "entity: sensor.office_temperature",
+    ].join("\n"))).toEqual({
+      format: "yaml",
+      target: "mushroom-template",
+      card: {
+        type: "custom:mushroom-template-card",
+        primary: "Office climate",
+        secondary: "sensor.office_temperature",
+        entity: "sensor.office_temperature",
+      },
+    });
+    expect(parseHomeAssistantEntitiesCardConfiguration(JSON.stringify({
+      type: "custom:bubble-card",
+      card_type: "button",
+      button_type: "state",
+      name: "Office light",
+      entity: "light.office",
+    }))).toEqual({
+      format: "json",
+      target: "bubble",
+      card: {
+        type: "custom:bubble-card",
+        card_type: "button",
+        button_type: "state",
+        name: "Office light",
+        entity: "light.office",
+        show_state: true,
+      },
     });
   });
 
