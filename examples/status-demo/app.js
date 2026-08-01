@@ -285,10 +285,7 @@ function addSelectedEntityFromPicker() {
     statusMessage.textContent = "Select an entity first.";
     return;
   }
-  const entityIds = trackedEntityIds();
-  homeAssistantEntity.value = [entityId, ...entityIds.filter(candidate => candidate !== entityId)].join(", ");
-  homeAssistantEntity.dispatchEvent(new Event("input"));
-  statusMessage.textContent = `${entityId} selected for the HA card preview.`;
+  selectPrimaryEntity(entityId);
 }
 
 function refreshLiveEntityStates() {
@@ -368,7 +365,11 @@ function renderEntityList() {
     const name = document.createElement("strong");
     const value = document.createElement("span");
     const detail = document.createElement("small");
+    const controls = document.createElement("div");
     card.className = "atlas-entity-card";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `Use ${entityId} in the HA card preview`);
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     card.dataset.category = presentation?.category ?? "status";
     if (presentation?.category === "battery" && entity?.value) {
@@ -388,26 +389,58 @@ function renderEntityList() {
       blocked += 1;
       blockedEntities.push(presentation?.label ?? entityId);
     }
+    card.addEventListener("click", () => selectPrimaryEntity(entityId));
+    card.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectPrimaryEntity(entityId);
+      }
+    });
+    controls.className = "atlas-entity-card-actions";
     card.append(name, value, detail);
     const position = trackedEntityIds().indexOf(entityId);
+    if (position === 0) {
+      card.dataset.primary = "true";
+    }
     const moveUp = document.createElement("button");
     const moveDown = document.createElement("button");
+    const remove = document.createElement("button");
     moveUp.type = "button";
     moveDown.type = "button";
+    remove.type = "button";
     moveUp.textContent = "Up";
     moveDown.textContent = "Down";
-    moveUp.addEventListener("click", () => moveEntity(entityId, -1));
-    moveDown.addEventListener("click", () => moveEntity(entityId, 1));
-    if (position > 0) card.append(moveUp);
-    if (position < trackedEntityIds().length - 1) card.append(moveDown);
+    remove.className = "icon-button";
+    remove.textContent = "🗑";
+    remove.title = `Remove ${entityId}`;
+    remove.setAttribute("aria-label", `Remove ${entityId}`);
+    moveUp.addEventListener("click", event => {
+      event.stopPropagation();
+      moveEntity(entityId, -1);
+    });
+    moveDown.addEventListener("click", event => {
+      event.stopPropagation();
+      moveEntity(entityId, 1);
+    });
+    remove.addEventListener("click", event => {
+      event.stopPropagation();
+      removeEntity(entityId);
+    });
+    if (position > 0) controls.append(moveUp);
+    if (position < trackedEntityIds().length - 1) controls.append(moveDown);
+    controls.append(remove);
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
       const service = entity.state === "on" ? "turn_off" : "turn_on";
       action.type = "button";
       action.textContent = service === "turn_on" ? "Turn on" : "Turn off";
-      action.addEventListener("click", () => requestEntityService(entityId, service));
-      card.append(action);
+      action.addEventListener("click", event => {
+        event.stopPropagation();
+        requestEntityService(entityId, service);
+      });
+      controls.append(action);
     }
+    card.append(controls);
     entityList.append(card);
   }
   groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
@@ -423,6 +456,22 @@ function moveEntity(entityId, direction) {
   [entityIds[index], entityIds[destination]] = [entityIds[destination], entityIds[index]];
   homeAssistantEntity.value = entityIds.join(", ");
   homeAssistantEntity.dispatchEvent(new Event("input"));
+}
+
+function selectPrimaryEntity(entityId) {
+  const entityIds = trackedEntityIds();
+  homeAssistantEntity.value = [entityId, ...entityIds.filter(candidate => candidate !== entityId)].join(", ");
+  homeAssistantEntity.dispatchEvent(new Event("input"));
+  statusMessage.textContent = `${entityId} selected for the HA card preview.`;
+}
+
+function removeEntity(entityId) {
+  const entityIds = trackedEntityIds().filter(candidate => candidate !== entityId);
+  homeAssistantEntity.value = entityIds.join(", ");
+  homeAssistantEntity.dispatchEvent(new Event("input"));
+  statusMessage.textContent = entityIds.length
+    ? `${entityId} removed.`
+    : `${entityId} removed. Add an entity before exporting a card.`;
 }
 
 function formatRelativeTime(timestamp) {

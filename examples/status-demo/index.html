@@ -224,6 +224,17 @@
         border: 1px solid #cbd5e1;
         border-radius: 6px;
         background: #ffffff;
+        cursor: pointer;
+      }
+
+      .atlas-entity-card:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 2px;
+      }
+
+      .atlas-entity-card[data-primary="true"] {
+        border-color: #0f766e;
+        background: #ecfdf5;
       }
 
       .atlas-entity-card strong {
@@ -256,6 +267,21 @@
         padding: 6px 8px;
         font: inherit;
         cursor: pointer;
+      }
+
+      .atlas-entity-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .atlas-entity-card .icon-button {
+        width: 34px;
+        min-height: 34px;
+        display: inline-grid;
+        place-items: center;
+        border-color: #cbd5e1;
+        color: #b91c1c;
       }
 
       #atlas-status-root {
