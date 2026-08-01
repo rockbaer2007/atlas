@@ -34,6 +34,7 @@ const rememberHomeAssistantToken = document.querySelector("#remember-home-assist
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
+const homeAssistantEntityDomain = document.querySelector("#home-assistant-entity-domain");
 const homeAssistantEntityPicker = document.querySelector("#home-assistant-entity-picker");
 const addHomeAssistantEntity = document.querySelector("#add-home-assistant-entity");
 const refreshHomeAssistantEntities = document.querySelector("#refresh-home-assistant-entities");
@@ -101,6 +102,9 @@ try {
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
     initialGroupSelection = "custom";
+  }
+  if (typeof savedConfiguration?.entityDomain === "string") {
+    homeAssistantEntityDomain.value = savedConfiguration.entityDomain;
   }
   if (Array.isArray(savedConfiguration?.stackEntityIds)) {
     for (const entityId of savedConfiguration.stackEntityIds) {
@@ -227,6 +231,7 @@ function persistConfiguration() {
       rememberToken: rememberHomeAssistantToken.checked,
       token: rememberHomeAssistantToken.checked ? homeAssistantToken.value : undefined,
       entities: homeAssistantEntity.value,
+      entityDomain: homeAssistantEntityDomain.value,
       selectedGroup: homeAssistantGroup.value,
       cardTarget: haCardTarget.value,
       cardLayout: haCardLayout.value,
@@ -268,6 +273,38 @@ function trackedEntityIds() {
     knownEntityIds.add(entityId);
   }
   return entityIds;
+}
+
+function entityDomain(entityId) {
+  return entityId.includes(".") ? entityId.split(".", 1)[0] : "other";
+}
+
+function knownEntityPickerIds() {
+  return [...new Set([
+    ...knownEntityIds,
+    ...trackedEntityIds(),
+    ...panelGroups.flatMap(group => group.entityIds),
+    ...entitySnapshots.keys(),
+  ])].sort((left, right) => left.localeCompare(right));
+}
+
+function renderEntityDomainOptions() {
+  const selected = homeAssistantEntityDomain.value || "all";
+  const domains = [...new Set(knownEntityPickerIds().map(entityDomain))]
+    .sort((left, right) => left.localeCompare(right));
+
+  homeAssistantEntityDomain.replaceChildren();
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All entity types";
+  homeAssistantEntityDomain.append(allOption);
+  for (const domain of domains) {
+    const option = document.createElement("option");
+    option.value = domain;
+    option.textContent = domain;
+    homeAssistantEntityDomain.append(option);
+  }
+  homeAssistantEntityDomain.value = selected === "all" || domains.includes(selected) ? selected : "all";
 }
 
 function usesStackEntitySelection() {
@@ -312,12 +349,10 @@ function renderStackSelectionSummary() {
 
 function renderEntityPickerOptions() {
   const selected = homeAssistantEntityPicker.value;
-  const entityIds = [...new Set([
-    ...knownEntityIds,
-    ...trackedEntityIds(),
-    ...panelGroups.flatMap(group => group.entityIds),
-    ...entitySnapshots.keys(),
-  ])].sort((left, right) => left.localeCompare(right));
+  renderEntityDomainOptions();
+  const selectedDomain = homeAssistantEntityDomain.value;
+  const entityIds = knownEntityPickerIds()
+    .filter(entityId => selectedDomain === "all" || entityDomain(entityId) === selectedDomain);
 
   homeAssistantEntityPicker.replaceChildren();
   for (const entityId of entityIds) {
@@ -767,6 +802,10 @@ homeAssistantEntity.addEventListener("input", () => {
   }
   renderHaCardPreview();
 });
+homeAssistantEntityDomain.addEventListener("change", () => {
+  persistConfiguration();
+  renderEntityPickerOptions();
+});
 addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
 homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
@@ -837,6 +876,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     createdAt: new Date().toISOString(),
     url: homeAssistantUrl.value,
     entities: homeAssistantEntity.value,
+    entityDomain: homeAssistantEntityDomain.value,
     selectedGroup: homeAssistantGroup.value,
     cardTarget: haCardTarget.value,
     cardLayout: haCardLayout.value,
@@ -878,6 +918,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     if (!window.confirm(`Import ${importedName}: ${imported.groups.length} groups and ${imported.entities.split(",").filter(Boolean).length} entities?`)) return;
     homeAssistantUrl.value = pendingImport.url;
     homeAssistantEntity.value = pendingImport.entities;
+    if (typeof pendingImport.entityDomain === "string") {
+      homeAssistantEntityDomain.value = pendingImport.entityDomain;
+    }
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
     if (pendingImport.cardTarget === "entities" || pendingImport.cardTarget === "mushroom-template" || pendingImport.cardTarget === "bubble") {
       haCardTarget.value = pendingImport.cardTarget;

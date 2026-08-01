@@ -18,12 +18,14 @@ local remember option is selected. Remembered tokens stay in browser storage
 only and are not logged by the demo.
 
 Enter one or more comma-separated Entity IDs before connecting, or use the
-entity picker to add known demo entities. Once a live event subscription is
-active, the demo requests Home Assistant `get_states` and populates the picker
-from the returned entity list. The primary entity drives the status panel and
-the list shows updates for all selected entities. Numeric and other available
-sensor values render as ready; `off` remains pending, while unavailable or
-unknown entities render as blocked.
+domain-filtered entity picker to add known demo entities. Once a live event
+subscription is active, the demo requests Home Assistant `get_states` and
+populates the picker from the returned entity list. The type selector filters
+the picker by entity domain, such as `sensor`, `binary_sensor`, `switch` or
+`light`. The primary entity drives the status panel and the list shows updates
+for all selected entities. Numeric and other available sensor values render as
+ready; `off` remains pending, while unavailable or unknown entities render as
+blocked.
 
 For a live `light` or `switch` entity, its card offers a single confirmed
 turn-on or turn-off action. Commands are unavailable until the subscription is
