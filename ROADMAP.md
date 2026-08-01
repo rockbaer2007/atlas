@@ -128,7 +128,7 @@ additional envelope-only contract expansion.
 * Card infrastructure
 * Selectable card targets for built-in Entities, Mushroom and Bubble Card
 * Selectable simple, horizontal-stack and vertical-stack card layouts for Mushroom and Bubble Card exports
-* Bubble Card dependency hints for the case-sensitive HACS resource `/hacsfiles/Bubble-Card/bubble-card.js` and local `config/bubble_card` installations
+* Bubble Card dependency hints for the case-sensitive HACS resource `/hacsfiles/Bubble-Card/bubble-card.js`
 * HACS-installable custom card export path
 * In-Home-Assistant entity picker for installed ATLAS cards
 * Entity abstraction

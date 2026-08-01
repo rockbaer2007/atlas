@@ -102,7 +102,7 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
       label: "Bubble Card",
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-      installPaths: ["config/bubble_card"],
+      installPaths: [],
     },
   },
 ];

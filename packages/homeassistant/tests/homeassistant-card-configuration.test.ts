@@ -132,7 +132,7 @@ describe("Home Assistant entities card configuration", () => {
       label: "Bubble Card",
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-      installPaths: ["config/bubble_card"],
+      installPaths: [],
     });
   });
 
@@ -247,7 +247,7 @@ describe("Home Assistant entities card configuration", () => {
           label: "Bubble Card",
           required: true,
           resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-          installPaths: ["config/bubble_card"],
+          installPaths: [],
         },
       },
     ]);
