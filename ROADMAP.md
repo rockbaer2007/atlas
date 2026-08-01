@@ -127,6 +127,7 @@ additional envelope-only contract expansion.
 * Card infrastructure
 * Selectable card targets for built-in Entities, Mushroom and Bubble Card
 * HACS-installable custom card export path
+* In-Home-Assistant entity picker for installed ATLAS cards
 * Entity abstraction
 * Service integration
 
