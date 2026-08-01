@@ -36,6 +36,7 @@ const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assi
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
+const haCardPreview = document.querySelector("#ha-card-preview");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const groupSummary = document.querySelector("#group-summary");
@@ -179,6 +180,19 @@ function trackedEntityIds() {
   return [...new Set(homeAssistantEntity.value.split(",").map(entityId => entityId.trim()).filter(Boolean))];
 }
 
+function createHaCardConfig() {
+  const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
+  return {
+    type: "entities",
+    title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
+    entities: trackedEntityIds().map(entity => ({ entity })),
+  };
+}
+
+function renderHaCardPreview() {
+  haCardPreview.textContent = JSON.stringify(createHaCardConfig(), null, 2);
+}
+
 function renderEntityList() {
   entityList.replaceChildren();
   let ready = 0;
@@ -235,6 +249,7 @@ function renderEntityList() {
   }
   groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
   groupIssues.textContent = blockedEntities.length ? `Needs attention: ${blockedEntities.join(", ")}.` : "";
+  renderHaCardPreview();
 }
 
 function moveEntity(entityId, direction) {
@@ -377,14 +392,17 @@ homeAssistantEntity.addEventListener("input", () => {
   if (activeTransport === transport) {
     void renderEntityState("on");
   }
+  renderHaCardPreview();
 });
 homeAssistantGroup.addEventListener("change", () => {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   if (group) {
     homeAssistantEntity.value = group.entityIds.join(", ");
+    homeAssistantGroupName.value = group.title;
   }
   homeAssistantEntity.dispatchEvent(new Event("input"));
 });
+homeAssistantGroupName.addEventListener("input", renderHaCardPreview);
 saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();
   const entityIds = trackedEntityIds();
@@ -440,12 +458,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
   URL.revokeObjectURL(link.href);
 });
 exportHaCardConfig.addEventListener("click", () => {
-  const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
-  const card = {
-    type: "entities",
-    title: group?.title ?? "ATLAS panel",
-    entities: trackedEntityIds().map(entity => ({ entity })),
-  };
+  const card = createHaCardConfig();
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([JSON.stringify(card, null, 2)], { type: "application/json" }));
   link.download = `atlas-${homeAssistantGroup.value === "custom" ? "custom" : homeAssistantGroup.value}-ha-card.json`;

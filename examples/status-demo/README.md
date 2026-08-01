@@ -32,3 +32,6 @@ three times with its in-memory token; a manual disconnect stops retries.
 
 The panel-group selector provides quick entity sets for overview, energy and
 safety. Selecting a group only updates the local entity list.
+
+The same group selection also renders a Home Assistant `entities` card preview
+and can export that card as JSON for use in Home Assistant dashboards.
