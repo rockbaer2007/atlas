@@ -30,6 +30,7 @@ const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
+const haCardFormat = document.querySelector("#ha-card-format");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
@@ -73,6 +74,9 @@ try {
   }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
+  }
+  if (savedConfiguration?.cardFormat === "json" || savedConfiguration?.cardFormat === "yaml") {
+    haCardFormat.value = savedConfiguration.cardFormat;
   }
   if (typeof savedConfiguration?.selectedGroup === "string") {
     initialGroupSelection = savedConfiguration.selectedGroup;
@@ -158,6 +162,7 @@ function persistConfiguration() {
       url: homeAssistantUrl.value,
       entities: homeAssistantEntity.value,
       selectedGroup: homeAssistantGroup.value,
+      cardFormat: haCardFormat.value,
       groups: panelGroups,
     }));
   } catch {
@@ -202,7 +207,23 @@ function renderHaCardPreview() {
 }
 
 function createHaCardConfigText() {
+  if (haCardFormat.value === "yaml") {
+    return createHaCardConfigYaml(createHaCardConfig());
+  }
+
   return JSON.stringify(createHaCardConfig(), null, 2);
+}
+
+function createHaCardConfigYaml(card) {
+  const lines = [
+    "type: entities",
+    `title: ${JSON.stringify(card.title)}`,
+    "entities:",
+  ];
+  for (const item of card.entities) {
+    lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
+  }
+  return lines.join("\n");
 }
 
 async function writeClipboardText(text) {
@@ -464,6 +485,10 @@ homeAssistantGroup.addEventListener("change", () => {
   homeAssistantEntity.dispatchEvent(new Event("input"));
 });
 homeAssistantGroupName.addEventListener("input", renderHaCardPreview);
+haCardFormat.addEventListener("change", () => {
+  persistConfiguration();
+  renderHaCardPreview();
+});
 saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();
   const entityIds = trackedEntityIds();
@@ -510,6 +535,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     url: homeAssistantUrl.value,
     entities: homeAssistantEntity.value,
     selectedGroup: homeAssistantGroup.value,
+    cardFormat: haCardFormat.value,
     groups: panelGroups,
   }, null, 2);
   const link = document.createElement("a");
@@ -521,15 +547,16 @@ exportHomeAssistantConfig.addEventListener("click", () => {
 });
 exportHaCardConfig.addEventListener("click", () => {
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(new Blob([createHaCardConfigText()], { type: "application/json" }));
-  link.download = `atlas-${homeAssistantGroup.value === "custom" ? "custom" : homeAssistantGroup.value}-ha-card.json`;
+  const isYaml = haCardFormat.value === "yaml";
+  link.href = URL.createObjectURL(new Blob([createHaCardConfigText()], { type: isYaml ? "text/yaml" : "application/json" }));
+  link.download = `atlas-${homeAssistantGroup.value === "custom" ? "custom" : homeAssistantGroup.value}-ha-card.${isYaml ? "yaml" : "json"}`;
   link.click();
   URL.revokeObjectURL(link.href);
 });
 copyHaCardConfig.addEventListener("click", async () => {
   try {
     await writeClipboardText(createHaCardConfigText());
-    statusMessage.textContent = "HA card copied to clipboard.";
+    statusMessage.textContent = `HA card ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
   } catch {
     statusMessage.textContent = "Copy failed: use the preview text instead.";
   }
@@ -546,6 +573,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     homeAssistantUrl.value = pendingImport.url;
     homeAssistantEntity.value = pendingImport.entities;
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
+    if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
+      haCardFormat.value = pendingImport.cardFormat;
+    }
     renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
