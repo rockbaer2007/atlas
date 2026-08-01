@@ -44,9 +44,10 @@ states. Basic Home Assistant card configuration can be created for built-in
 Entities, Mushroom template and Bubble button targets, serialized as JSON or
 YAML, parsed back into normalized entity groups, and inspected for required
 frontend dependencies. Hosts can list the supported card targets from the same
-package API they use for export and import. Lights can receive a validated
-brightness percentage from 1 through 100 when a host explicitly invokes the
-command.
+package API they use for export and import; dependency metadata includes
+expected HACS resource paths for later installation checks. Lights can receive a
+validated brightness percentage from 1 through 100 when a host explicitly
+invokes the command.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

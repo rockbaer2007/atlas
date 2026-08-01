@@ -121,11 +121,13 @@ describe("Home Assistant entities card configuration", () => {
       id: "mushroom",
       label: "Mushroom",
       required: true,
+      resourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
     });
     expect(inspectHomeAssistantCardDependency(bubble)).toEqual({
       id: "bubble-card",
       label: "Bubble Card",
       required: true,
+      resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
     });
   });
 
@@ -135,19 +137,29 @@ describe("Home Assistant entities card configuration", () => {
         target: "entities",
         label: "Entities",
         type: "entities",
-        dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false },
+        dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [] },
       },
       {
         target: "mushroom-template",
         label: "Mushroom template",
         type: "custom:mushroom-template-card",
-        dependency: { id: "mushroom", label: "Mushroom", required: true },
+        dependency: {
+          id: "mushroom",
+          label: "Mushroom",
+          required: true,
+          resourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
+        },
       },
       {
         target: "bubble",
         label: "Bubble button",
         type: "custom:bubble-card",
-        dependency: { id: "bubble-card", label: "Bubble Card", required: true },
+        dependency: {
+          id: "bubble-card",
+          label: "Bubble Card",
+          required: true,
+          resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+        },
       },
     ]);
     expect(findHomeAssistantCardTargetDescriptor("bubble")?.label).toBe("Bubble button");

@@ -230,8 +230,9 @@ function renderHaCardPreview() {
   const dependency = inspectHomeAssistantCardDependency(card);
   haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   haCardDependency.dataset.required = String(dependency.required);
+  const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
   haCardDependency.textContent = dependency.required
-    ? `Requires ${dependency.label}.`
+    ? `Requires ${dependency.label}.${resourceHint}`
     : "Uses built-in Home Assistant card.";
 }
 
