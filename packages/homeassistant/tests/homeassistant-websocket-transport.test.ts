@@ -270,4 +270,41 @@ describe("Home Assistant WebSocket transport", () => {
       name: "ATLAS lamp",
     });
   });
+
+  it("requests Lovelace resources after subscription is active", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    expect(client.requestLovelaceResources()).toEqual({
+      accepted: false,
+      reason: "Home Assistant event subscription is not active.",
+    });
+
+    await socket.emitMessage('{"type":"auth_ok"}');
+    await socket.emitMessage('{"id":1,"type":"result","success":true}');
+    const results: Array<{ success: boolean; resources: readonly { url: string }[] }> = [];
+    client.subscribeLovelaceResources(result => results.push(result));
+
+    expect(client.requestLovelaceResources()).toEqual({ accepted: true, requestId: 2 });
+    expect(socket.sent[1]).toBe('{"id":2,"type":"lovelace/resources"}');
+
+    await socket.emitMessage(JSON.stringify({
+      id: 2,
+      type: "result",
+      success: true,
+      result: [
+        { url: "/hacsfiles/Bubble-Card/bubble-card.js?ver=2" },
+        { url: " " },
+        { type: "module" },
+      ],
+    }));
+
+    expect(results).toEqual([{
+      requestId: 2,
+      success: true,
+      resources: [
+        { url: "/hacsfiles/Bubble-Card/bubble-card.js?ver=2" },
+      ],
+    }]);
+  });
 });

@@ -5,6 +5,7 @@ import {
   createHomeAssistantEntitiesCardConfiguration,
   findHomeAssistantCardTargetDescriptor,
   inspectHomeAssistantCardDependency,
+  inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
@@ -252,6 +253,36 @@ describe("Home Assistant entities card configuration", () => {
       },
     ]);
     expect(findHomeAssistantCardTargetDescriptor("bubble")?.label).toBe("Bubble button");
+  });
+
+  it("inspects custom card dependency availability from Lovelace resources", () => {
+    expect(inspectHomeAssistantCardDependencyAvailability("entities", [])).toMatchObject({
+      status: "not-required",
+      matchedResourcePaths: [],
+      missingResourcePaths: [],
+    });
+    expect(inspectHomeAssistantCardDependencyAvailability("bubble", [
+      "/hacsfiles/Bubble-Card/bubble-card.js?v=2.4.0",
+      { url: "https://atlas.local/hacsfiles/lovelace-mushroom/mushroom.js" },
+    ])).toMatchObject({
+      status: "installed",
+      matchedResourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+      missingResourcePaths: [],
+    });
+    expect(inspectHomeAssistantCardDependencyAvailability("bubble", [
+      "/hacsfiles/bubble-card/bubble-card.js",
+    ])).toMatchObject({
+      status: "missing",
+      matchedResourcePaths: [],
+      missingResourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+    });
+    expect(inspectHomeAssistantCardDependencyAvailability("mushroom-template", [
+      "/hacsfiles/lovelace-mushroom/mushroom.js",
+    ])).toMatchObject({
+      status: "installed",
+      matchedResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
+      missingResourcePaths: [],
+    });
   });
 
   it("parses Mushroom and Bubble cards", () => {

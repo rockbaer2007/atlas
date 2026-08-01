@@ -14,6 +14,7 @@ import {
   createHomeAssistantStatusPanelRegistry,
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
+  inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
   serializeHomeAssistantEntitiesCardConfiguration,
@@ -69,12 +70,14 @@ let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
 let removeEntityStateListListener;
+let removeLovelaceResourceListener;
 let panelBinding;
 let activeTransport;
 let removeEntityListListener;
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
+let lovelaceResources = [];
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
@@ -448,10 +451,15 @@ function addSelectedEntityFromPicker() {
 }
 
 function refreshLiveEntityStates() {
-  const result = connection?.getClient()?.requestEntityStates();
-  statusMessage.textContent = result?.accepted
-    ? `Entity list requested from Home Assistant (${result.requestId}).`
-    : result?.reason ?? "Connect to Home Assistant before refreshing entities.";
+  const client = connection?.getClient();
+  const entityResult = client?.requestEntityStates();
+  const resourceResult = client?.requestLovelaceResources();
+  statusMessage.textContent = entityResult?.accepted
+    ? `Entity list requested from Home Assistant (${entityResult.requestId}).`
+    : entityResult?.reason ?? "Connect to Home Assistant before refreshing entities.";
+  if (resourceResult?.accepted) {
+    statusMessage.textContent += ` Lovelace resources requested (${resourceResult.requestId}).`;
+  }
 }
 
 function createHaCardConfig() {
@@ -474,13 +482,21 @@ function renderHaCardPreview() {
 
   const card = createHaCardConfig();
   const dependency = inspectHomeAssistantCardDependency(card);
+  const availability = inspectHomeAssistantCardDependencyAvailability(card, lovelaceResources);
   haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   haCardDependency.dataset.required = String(dependency.required);
   const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
   const installHint = dependency.installPaths.length ? ` Install path: ${dependency.installPaths.join(", ")}.` : "";
-  haCardDependency.textContent = dependency.required
-    ? `Requires ${dependency.label}.${resourceHint}${installHint}`
-    : "Uses built-in Home Assistant card.";
+  if (!dependency.required) {
+    haCardDependency.textContent = "Uses built-in Home Assistant card.";
+  } else if (availability.status === "installed") {
+    haCardDependency.textContent = `${dependency.label} resource found.${resourceHint}`;
+  } else {
+    const checkedHint = lovelaceResources.length
+      ? ` Missing: ${availability.missingResourcePaths.join(", ")}.`
+      : " Connect to Home Assistant to check installed Lovelace resources.";
+    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint}${checkedHint}`;
+  }
 }
 
 function createHaCardConfigText() {
@@ -758,7 +774,12 @@ function bindSelectedEntity(nextTransport) {
   removeEntityListListener?.();
   removeServiceResultListener?.();
   removeEntityStateListListener?.();
+  removeLovelaceResourceListener?.();
+  removeEntityListListener = undefined;
+  removeServiceResultListener = undefined;
   removeEntityStateListListener = undefined;
+  removeLovelaceResourceListener = undefined;
+  lovelaceResources = [];
   activeTransport = nextTransport;
   entitySnapshots.clear();
   if (trackedEntityIds().length === 0) {
@@ -802,6 +823,13 @@ function bindSelectedEntity(nextTransport) {
       statusMessage.textContent = result.success
         ? `Loaded ${result.entities.length} entities from Home Assistant.`
         : `Entity list failed: ${result.reason ?? "Unknown error."}`;
+    });
+    removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
+      lovelaceResources = result.resources;
+      renderHaCardPreview();
+      if (!result.success) {
+        statusMessage.textContent = `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
+      }
     });
     refreshLiveEntityStates();
   }

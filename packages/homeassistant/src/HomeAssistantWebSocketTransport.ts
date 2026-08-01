@@ -7,6 +7,7 @@ import {
   type HomeAssistantWebSocketLifecycle,
 } from "./HomeAssistantWebSocketProtocol";
 import type { HomeAssistantEntityState } from "./HomeAssistantEntityState";
+import type { HomeAssistantLovelaceResource } from "./HomeAssistantCardConfiguration";
 import {
   createHomeAssistantServiceCommand,
   type HomeAssistantServiceCommand,
@@ -25,6 +26,8 @@ export type HomeAssistantWebSocketClient = Readonly<{
   subscribeLifecycle(listener: (lifecycle: HomeAssistantWebSocketLifecycle) => void): () => void;
   requestEntityStates(): HomeAssistantEntityStateRequestResult;
   subscribeEntityStateList(listener: (result: HomeAssistantEntityStateListResult) => void): () => void;
+  requestLovelaceResources(): HomeAssistantLovelaceResourceRequestResult;
+  subscribeLovelaceResources(listener: (result: HomeAssistantLovelaceResourceListResult) => void): () => void;
   callService(command: HomeAssistantServiceCommand): HomeAssistantServiceCallResult;
   subscribeServiceResult(listener: (result: HomeAssistantServiceResult) => void): () => void;
   disconnect(): void;
@@ -49,6 +52,19 @@ export type HomeAssistantEntityStateListResult = Readonly<{
   reason?: string;
 }>;
 
+export type HomeAssistantLovelaceResourceRequestResult = Readonly<{
+  accepted: boolean;
+  requestId?: number;
+  reason?: string;
+}>;
+
+export type HomeAssistantLovelaceResourceListResult = Readonly<{
+  requestId: number;
+  resources: readonly HomeAssistantLovelaceResource[];
+  success: boolean;
+  reason?: string;
+}>;
+
 export type HomeAssistantServiceResult = Readonly<{
   requestId: number;
   command: HomeAssistantServiceCommand;
@@ -66,8 +82,10 @@ export function createHomeAssistantWebSocketClient(
   const lifecycleListeners = new Set<(lifecycle: HomeAssistantWebSocketLifecycle) => void>();
   const serviceResultListeners = new Set<(result: HomeAssistantServiceResult) => void>();
   const entityStateListListeners = new Set<(result: HomeAssistantEntityStateListResult) => void>();
+  const lovelaceResourceListeners = new Set<(result: HomeAssistantLovelaceResourceListResult) => void>();
   const pendingServiceCommands = new Map<number, HomeAssistantServiceCommand>();
   const pendingEntityStateRequests = new Set<number>();
+  const pendingLovelaceResourceRequests = new Set<number>();
   const updateLifecycle = (nextLifecycle: HomeAssistantWebSocketLifecycle): void => {
     lifecycle = nextLifecycle;
     for (const listener of lifecycleListeners) {
@@ -126,6 +144,21 @@ export function createHomeAssistantWebSocketClient(
         return;
       }
 
+      if (pendingLovelaceResourceRequests.has(message.id)) {
+        pendingLovelaceResourceRequests.delete(message.id);
+        const resources = message.success ? mapHomeAssistantLovelaceResources(message.result) : [];
+        const result: HomeAssistantLovelaceResourceListResult = {
+          requestId: message.id,
+          resources,
+          success: message.success,
+          ...(message.message ? { reason: message.message } : {}),
+        };
+        for (const listener of lovelaceResourceListeners) {
+          listener(result);
+        }
+        return;
+      }
+
       const command = pendingServiceCommands.get(message.id);
       if (!command) {
         return;
@@ -178,6 +211,24 @@ export function createHomeAssistantWebSocketClient(
       entityStateListListeners.add(listener);
       return () => entityStateListListeners.delete(listener);
     },
+    requestLovelaceResources(): HomeAssistantLovelaceResourceRequestResult {
+      if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {
+        return {
+          accepted: false,
+          reason: "Home Assistant event subscription is not active.",
+        };
+      }
+
+      const requestId = nextRequestId;
+      nextRequestId += 1;
+      socket.send(JSON.stringify({ id: requestId, type: "lovelace/resources" }));
+      pendingLovelaceResourceRequests.add(requestId);
+      return { accepted: true, requestId };
+    },
+    subscribeLovelaceResources(listener): () => void {
+      lovelaceResourceListeners.add(listener);
+      return () => lovelaceResourceListeners.delete(listener);
+    },
     callService(command): HomeAssistantServiceCallResult {
       if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {
         return {
@@ -218,4 +269,24 @@ export function createHomeAssistantWebSocketClient(
       updateLifecycle({ state: "closed" });
     },
   };
+}
+
+function mapHomeAssistantLovelaceResources(result: unknown): readonly HomeAssistantLovelaceResource[] {
+  if (!Array.isArray(result)) {
+    return [];
+  }
+
+  return result
+    .map(resource => {
+      if (!isRecord(resource) || typeof resource.url !== "string" || !resource.url.trim()) {
+        return undefined;
+      }
+
+      return { url: resource.url.trim() };
+    })
+    .filter((resource): resource is HomeAssistantLovelaceResource => resource !== undefined);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

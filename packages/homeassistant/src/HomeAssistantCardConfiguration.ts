@@ -67,6 +67,17 @@ export interface HomeAssistantCardDependency {
   readonly installPaths: readonly string[];
 }
 
+export interface HomeAssistantLovelaceResource {
+  readonly url: string;
+}
+
+export interface HomeAssistantCardDependencyAvailability {
+  readonly dependency: HomeAssistantCardDependency;
+  readonly status: "not-required" | "installed" | "missing";
+  readonly matchedResourcePaths: readonly string[];
+  readonly missingResourcePaths: readonly string[];
+}
+
 export interface HomeAssistantCardTargetDescriptor {
   readonly target: HomeAssistantCardTarget;
   readonly label: string;
@@ -226,6 +237,35 @@ export function inspectHomeAssistantCardDependency(
     ?? { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] };
 }
 
+export function inspectHomeAssistantCardDependencyAvailability(
+  cardOrTarget: HomeAssistantCardConfiguration | HomeAssistantCardTarget,
+  resources: readonly (HomeAssistantLovelaceResource | string)[],
+): HomeAssistantCardDependencyAvailability {
+  const dependency = inspectHomeAssistantCardDependency(cardOrTarget);
+  if (!dependency.required) {
+    return {
+      dependency,
+      status: "not-required",
+      matchedResourcePaths: [],
+      missingResourcePaths: [],
+    };
+  }
+
+  const resourcePaths = resources
+    .map(resource => typeof resource === "string" ? resource : resource.url)
+    .map(normalizeHomeAssistantResourcePath)
+    .filter((resource): resource is string => resource !== undefined);
+  const matchedResourcePaths = dependency.resourcePaths.filter(path => resourcePaths.includes(path));
+  const missingResourcePaths = dependency.resourcePaths.filter(path => !matchedResourcePaths.includes(path));
+
+  return {
+    dependency,
+    status: missingResourcePaths.length === 0 ? "installed" : "missing",
+    matchedResourcePaths,
+    missingResourcePaths,
+  };
+}
+
 export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration): HomeAssistantCardTarget {
   if (isHomeAssistantStackCardConfiguration(card)) {
     return card.cards[0] ? getHomeAssistantCardTarget(card.cards[0]) : "entities";
@@ -348,6 +388,19 @@ function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfigu
     });
   }
   return lines.join("\n");
+}
+
+function normalizeHomeAssistantResourcePath(resourcePath: string): string | undefined {
+  const trimmed = resourcePath.trim();
+  if (!trimmed) return undefined;
+
+  try {
+    return new URL(trimmed, "http://homeassistant.local").pathname;
+  } catch {
+    const [withoutHash] = trimmed.split("#", 1);
+    const [withoutQuery] = withoutHash.split("?", 1);
+    return withoutQuery || undefined;
+  }
 }
 
 function parseHomeAssistantCardYaml(text: string): unknown {

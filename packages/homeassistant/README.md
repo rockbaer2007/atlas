@@ -8,9 +8,9 @@ Home Assistant status panel integration for the ATLAS Framework.
 
 Active status panel integration package.
 
-The package provides a first themed status panel through the active Renderer and
-Theme surface path. It intentionally excludes websocket clients, entity access,
-service calls and general card infrastructure.
+The package provides a themed status panel through the active Renderer and Theme
+surface path, plus narrow Home Assistant runtime helpers for entity state,
+service calls, Lovelace resources and card configuration.
 
 The package root exports the status panel contract and renderer-backed panel
 execution only. Its dependency direction runs through Theme rather than a direct
@@ -45,8 +45,10 @@ Entities, Mushroom template and Bubble button targets, serialized as JSON or
 YAML, parsed back into normalized entity groups, and inspected for required
 frontend dependencies. Hosts can list the supported card targets from the same
 package API they use for export and import; dependency metadata includes
-expected HACS resource paths for later installation checks. Lights can receive a
-validated brightness percentage from 1 through 100 when a host explicitly
+expected HACS resource paths and can be compared with Lovelace resources
+returned by Home Assistant. The WebSocket client can request `get_states` and
+`lovelace/resources` after the event subscription is active. Lights can receive
+a validated brightness percentage from 1 through 100 when a host explicitly
 invokes the command.
 
 A browser-compatible socket adapter and runtime connection controller are
