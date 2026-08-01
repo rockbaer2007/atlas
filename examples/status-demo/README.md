@@ -36,8 +36,11 @@ times with its in-memory token; a manual disconnect stops retries.
 The panel-group selector provides quick entity sets for overview, energy and
 safety. Selecting a group only updates the local entity list.
 
-The same group selection also renders a Home Assistant card preview for built-in
+The same group selection also renders Home Assistant card code for built-in
 Entities, Mushroom template or Bubble button targets. The preview can be copied
 or exported as JSON or YAML for use in Home Assistant dashboards. Simple
 Entities, Mushroom template and Bubble button card JSON or YAML can be imported
 back into the demo as a new panel group.
+
+The visual status surface below the code block is an ATLAS status preview, not a
+Home Assistant Lovelace renderer.
