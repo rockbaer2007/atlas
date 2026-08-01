@@ -3,7 +3,7 @@ import {
 } from "@atlas/theme";
 import {
   createHomeAssistantStatusPanel,
-  createHomeAssistantCardExportManifest,
+  createHomeAssistantCardExportPayload,
   createHomeAssistantEntityState,
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
@@ -522,8 +522,17 @@ function renderHaCardPreview() {
   }
 }
 
-function createHaCardConfigText() {
-  return serializeHomeAssistantEntitiesCardConfiguration(createHaCardConfig(), haCardFormat.value);
+function createHaCardExportPayload() {
+  const card = createHaCardConfig();
+  return createHomeAssistantCardExportPayload({
+    card,
+    format: haCardFormat.value,
+    name: currentHaCardExportName(),
+  });
+}
+
+function canExportHaCard() {
+  return cardPreviewEntityIds().length > 0;
 }
 
 async function writeClipboardText(text) {
@@ -1060,23 +1069,27 @@ exportHomeAssistantConfig.addEventListener("click", () => {
   URL.revokeObjectURL(link.href);
 });
 exportHaCardConfig.addEventListener("click", () => {
+  if (!canExportHaCard()) {
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
   const link = document.createElement("a");
-  const card = createHaCardConfig();
-  const manifest = createHomeAssistantCardExportManifest({
-    card,
-    format: haCardFormat.value,
-    name: currentHaCardExportName(),
-  });
-  link.href = URL.createObjectURL(new Blob([
-    serializeHomeAssistantEntitiesCardConfiguration(card, manifest.format),
-  ], { type: manifest.mimeType }));
-  link.download = manifest.filename;
+  const payload = createHaCardExportPayload();
+  link.href = URL.createObjectURL(new Blob([payload.content], { type: payload.manifest.mimeType }));
+  link.download = payload.manifest.filename;
   link.click();
   URL.revokeObjectURL(link.href);
 });
 copyHaCardConfig.addEventListener("click", async () => {
+  if (!canExportHaCard()) {
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
   try {
-    await writeClipboardText(createHaCardConfigText());
+    const payload = createHaCardExportPayload();
+    await writeClipboardText(payload.content);
     statusMessage.textContent = `HA card ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
   } catch {
     statusMessage.textContent = "Copy failed: use the preview text instead.";

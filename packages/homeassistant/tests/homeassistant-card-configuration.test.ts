@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createHomeAssistantCardExportManifest,
+  createHomeAssistantCardExportPayload,
   createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
   findHomeAssistantCardTargetDescriptor,
@@ -324,6 +325,27 @@ describe("Home Assistant entities card configuration", () => {
       target: "entities",
       layout: "single",
     });
+  });
+
+  it("creates export payloads with serialized content and manifest metadata", () => {
+    const card = createHomeAssistantCardConfiguration({
+      target: "mushroom-template",
+      title: "Office climate",
+      entityIds: ["sensor.office_temperature"],
+    });
+    const payload = createHomeAssistantCardExportPayload({
+      card,
+      format: "json",
+      name: "Office Climate",
+    });
+
+    expect(payload.manifest).toMatchObject({
+      filename: "office-climate-mushroom-template-single.json",
+      mimeType: "application/json",
+      target: "mushroom-template",
+      layout: "single",
+    });
+    expect(JSON.parse(payload.content)).toEqual(card);
   });
 
   it("parses Mushroom and Bubble cards", () => {

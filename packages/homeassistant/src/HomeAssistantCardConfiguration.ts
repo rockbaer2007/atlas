@@ -103,6 +103,13 @@ export interface HomeAssistantCardExportManifest {
   readonly dependency: HomeAssistantCardDependency;
 }
 
+export interface HomeAssistantCardExportPayloadInput extends HomeAssistantCardExportManifestInput {}
+
+export interface HomeAssistantCardExportPayload {
+  readonly manifest: HomeAssistantCardExportManifest;
+  readonly content: string;
+}
+
 const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
   {
     target: "entities",
@@ -247,6 +254,15 @@ export function createHomeAssistantCardExportManifest(
     target,
     layout,
     dependency: inspectHomeAssistantCardDependency(input.card),
+  };
+}
+
+export function createHomeAssistantCardExportPayload(
+  input: HomeAssistantCardExportPayloadInput,
+): HomeAssistantCardExportPayload {
+  return {
+    manifest: createHomeAssistantCardExportManifest(input),
+    content: serializeHomeAssistantEntitiesCardConfiguration(input.card, input.format),
   };
 }
 
