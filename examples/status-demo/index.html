@@ -83,6 +83,22 @@
         font: inherit;
       }
 
+      .connection-config .remember-secret {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        font-weight: 500;
+        color: #536079;
+      }
+
+      .connection-config .remember-secret input {
+        width: 16px;
+        min-height: 16px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
       .connection-config input:focus,
       .connection-config select:focus {
         outline: 2px solid #0f766e;
@@ -314,6 +330,10 @@
         <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
         <label for="home-assistant-token">Access token</label>
         <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
+        <label class="remember-secret" for="remember-home-assistant-token">
+          <input id="remember-home-assistant-token" type="checkbox">
+          Remember token locally
+        </label>
         <div class="connection-actions">
           <button id="connect-home-assistant" type="button">Connect</button>
           <button id="disconnect-home-assistant" type="button" disabled>Disconnect</button>

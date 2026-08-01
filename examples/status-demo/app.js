@@ -30,6 +30,7 @@ const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
+const rememberHomeAssistantToken = document.querySelector("#remember-home-assistant-token");
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
@@ -77,6 +78,12 @@ try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
   if (typeof savedConfiguration?.url === "string") {
     homeAssistantUrl.value = savedConfiguration.url;
+  }
+  if (savedConfiguration?.rememberToken === true) {
+    rememberHomeAssistantToken.checked = true;
+    if (typeof savedConfiguration?.token === "string") {
+      homeAssistantToken.value = savedConfiguration.token;
+    }
   }
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
@@ -196,6 +203,8 @@ function persistConfiguration() {
   try {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
       url: homeAssistantUrl.value,
+      rememberToken: rememberHomeAssistantToken.checked,
+      token: rememberHomeAssistantToken.checked ? homeAssistantToken.value : undefined,
       entities: homeAssistantEntity.value,
       selectedGroup: homeAssistantGroup.value,
       cardTarget: haCardTarget.value,
@@ -444,7 +453,10 @@ function connectHomeAssistant() {
   removeLifecycleListener = connection.subscribeLifecycle(renderConnectionLifecycle);
   reconnectToken = homeAssistantToken.value;
   connection.connect(reconnectToken);
-  homeAssistantToken.value = "";
+  if (!rememberHomeAssistantToken.checked) {
+    homeAssistantToken.value = "";
+  }
+  persistConfiguration();
 }
 
 function disconnectHomeAssistant() {
@@ -480,6 +492,14 @@ for (const button of buttons) {
 
 homeAssistantUrl.addEventListener("input", () => {
   renderConnectionReadiness();
+  persistConfiguration();
+});
+homeAssistantToken.addEventListener("input", () => {
+  if (rememberHomeAssistantToken.checked) {
+    persistConfiguration();
+  }
+});
+rememberHomeAssistantToken.addEventListener("change", () => {
   persistConfiguration();
 });
 homeAssistantEntity.addEventListener("input", () => {
