@@ -35,6 +35,7 @@ const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
+const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const importHaCardConfig = document.querySelector("#import-ha-card-config");
 const haCardPreview = document.querySelector("#ha-card-preview");
@@ -54,6 +55,7 @@ let reconnectTimer;
 let reconnectAttempts = 0;
 const entitySnapshots = new Map();
 let pendingImport;
+let initialGroupSelection = "overview";
 let panelGroups = [
   createHomeAssistantPanelGroup({ id: "overview", title: "Overview", entityIds: ["binary_sensor.atlas_status", "sensor.atlas_temperature"] }),
   createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
@@ -67,9 +69,13 @@ try {
   }
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
+    initialGroupSelection = "custom";
   }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
+  }
+  if (typeof savedConfiguration?.selectedGroup === "string") {
+    initialGroupSelection = savedConfiguration.selectedGroup;
   }
 } catch {
   // The demo remains usable when browser storage is unavailable or malformed.
@@ -151,6 +157,7 @@ function persistConfiguration() {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
       url: homeAssistantUrl.value,
       entities: homeAssistantEntity.value,
+      selectedGroup: homeAssistantGroup.value,
       groups: panelGroups,
     }));
   } catch {
@@ -170,7 +177,7 @@ function renderGroupOptions(selectedId = homeAssistantGroup.value) {
   custom.value = "custom";
   custom.textContent = "Custom";
   homeAssistantGroup.append(custom);
-  homeAssistantGroup.value = selectedId;
+  homeAssistantGroup.value = [...homeAssistantGroup.options].some(option => option.value === selectedId) ? selectedId : "custom";
 }
 
 function currentEntityId() {
@@ -191,7 +198,32 @@ function createHaCardConfig() {
 }
 
 function renderHaCardPreview() {
-  haCardPreview.textContent = JSON.stringify(createHaCardConfig(), null, 2);
+  haCardPreview.textContent = createHaCardConfigText();
+}
+
+function createHaCardConfigText() {
+  return JSON.stringify(createHaCardConfig(), null, 2);
+}
+
+async function writeClipboardText(text) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.inset = "0 auto auto 0";
+  textarea.style.opacity = "0";
+  document.body.append(textarea);
+  textarea.select();
+  const copied = document.execCommand("copy");
+  textarea.remove();
+  if (!copied) {
+    throw new Error("Clipboard copy was rejected.");
+  }
 }
 
 function createGroupId(title) {
@@ -477,6 +509,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     createdAt: new Date().toISOString(),
     url: homeAssistantUrl.value,
     entities: homeAssistantEntity.value,
+    selectedGroup: homeAssistantGroup.value,
     groups: panelGroups,
   }, null, 2);
   const link = document.createElement("a");
@@ -487,12 +520,19 @@ exportHomeAssistantConfig.addEventListener("click", () => {
   URL.revokeObjectURL(link.href);
 });
 exportHaCardConfig.addEventListener("click", () => {
-  const card = createHaCardConfig();
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(new Blob([JSON.stringify(card, null, 2)], { type: "application/json" }));
+  link.href = URL.createObjectURL(new Blob([createHaCardConfigText()], { type: "application/json" }));
   link.download = `atlas-${homeAssistantGroup.value === "custom" ? "custom" : homeAssistantGroup.value}-ha-card.json`;
   link.click();
   URL.revokeObjectURL(link.href);
+});
+copyHaCardConfig.addEventListener("click", async () => {
+  try {
+    await writeClipboardText(createHaCardConfigText());
+    statusMessage.textContent = "HA card copied to clipboard.";
+  } catch {
+    statusMessage.textContent = "Copy failed: use the preview text instead.";
+  }
 });
 importHomeAssistantConfig.addEventListener("change", async () => {
   const file = importHomeAssistantConfig.files?.[0];
@@ -506,7 +546,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     homeAssistantUrl.value = pendingImport.url;
     homeAssistantEntity.value = pendingImport.entities;
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
-    renderGroupOptions("custom");
+    renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
     renderConnectionReadiness();
@@ -542,5 +582,5 @@ connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
 
 void renderEntityState("on");
-renderGroupOptions();
+renderGroupOptions(initialGroupSelection);
 renderConnectionReadiness();
