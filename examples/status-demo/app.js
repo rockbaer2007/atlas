@@ -37,6 +37,7 @@ const homeAssistantEntity = document.querySelector("#home-assistant-entity");
 const homeAssistantEntityDomain = document.querySelector("#home-assistant-entity-domain");
 const homeAssistantEntityDomainShortcuts = document.querySelector("#home-assistant-entity-domain-shortcuts");
 const homeAssistantEntitySearch = document.querySelector("#home-assistant-entity-search");
+const clearHomeAssistantEntitySearch = document.querySelector("#clear-home-assistant-entity-search");
 const homeAssistantEntityPicker = document.querySelector("#home-assistant-entity-picker");
 const homeAssistantEntityPickerStatus = document.querySelector("#home-assistant-entity-picker-status");
 const addHomeAssistantEntity = document.querySelector("#add-home-assistant-entity");
@@ -390,6 +391,7 @@ function renderEntityPickerOptions() {
   renderEntityDomainOptions();
   const selectedDomain = homeAssistantEntityDomain.value;
   const searchTerm = homeAssistantEntitySearch.value;
+  clearHomeAssistantEntitySearch.disabled = searchTerm.trim().length === 0;
   const entityIds = knownEntityPickerIds()
     .filter(entityId => selectedDomain === "all" || entityDomain(entityId) === selectedDomain)
     .filter(entityId => entityMatchesSearch(entityId, searchTerm));
@@ -861,6 +863,12 @@ homeAssistantEntityDomainShortcuts.addEventListener("click", event => {
 homeAssistantEntitySearch.addEventListener("input", () => {
   persistConfiguration();
   renderEntityPickerOptions();
+});
+clearHomeAssistantEntitySearch.addEventListener("click", () => {
+  homeAssistantEntitySearch.value = "";
+  persistConfiguration();
+  renderEntityPickerOptions();
+  homeAssistantEntitySearch.focus();
 });
 addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
 homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
