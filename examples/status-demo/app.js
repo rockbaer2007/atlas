@@ -408,8 +408,14 @@ function renderEntityList() {
     moveUp.type = "button";
     moveDown.type = "button";
     remove.type = "button";
-    moveUp.textContent = "Up";
-    moveDown.textContent = "Down";
+    moveUp.className = "icon-button";
+    moveDown.className = "icon-button";
+    moveUp.textContent = "↑";
+    moveDown.textContent = "↓";
+    moveUp.title = `Move ${entityId} up`;
+    moveDown.title = `Move ${entityId} down`;
+    moveUp.setAttribute("aria-label", `Move ${entityId} up`);
+    moveDown.setAttribute("aria-label", `Move ${entityId} down`);
     remove.className = "icon-button";
     remove.textContent = "🗑";
     remove.title = `Remove ${entityId}`;

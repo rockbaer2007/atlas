@@ -271,16 +271,23 @@
 
       .atlas-entity-card-actions {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        align-items: center;
         gap: 6px;
       }
 
       .atlas-entity-card .icon-button {
-        width: 34px;
-        min-height: 34px;
+        width: 30px;
+        min-width: 30px;
+        min-height: 30px;
         display: inline-grid;
         place-items: center;
         border-color: #cbd5e1;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .atlas-entity-card .icon-button:last-child {
         color: #b91c1c;
       }
 
