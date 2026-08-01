@@ -125,6 +125,7 @@ additional envelope-only contract expansion.
 * Home Assistant runtime
 * Dashboard integration
 * Card infrastructure
+* HACS-installable custom card export path
 * Entity abstraction
 * Service integration
 

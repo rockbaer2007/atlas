@@ -69,6 +69,21 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("round-trips quoted YAML card values", () => {
+    const card = createHomeAssistantEntitiesCardConfiguration({
+      title: "Owner's Office",
+      entityIds: ["sensor.owner_office_temperature", "sensor.owner_office_power"],
+    });
+    const parsed = parseHomeAssistantEntitiesCardConfiguration(
+      serializeHomeAssistantEntitiesCardConfiguration(card, "yaml"),
+    );
+
+    expect(parsed).toEqual({
+      format: "yaml",
+      card,
+    });
+  });
+
   it("rejects cards without supported entities", () => {
     expect(() => parseHomeAssistantEntitiesCardConfiguration("type: markdown\ncontent: test")).toThrow();
     expect(() => parseHomeAssistantEntitiesCardConfiguration("{\"type\":\"entities\",\"entities\":[]}")).toThrow();

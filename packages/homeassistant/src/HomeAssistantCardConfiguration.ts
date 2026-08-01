@@ -118,8 +118,16 @@ function parseHomeAssistantEntitiesCardYaml(text: string): unknown {
 }
 
 function parseYamlScalar(value: string): string {
-  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-    return value.slice(1, -1);
+  if (value.startsWith("\"") && value.endsWith("\"")) {
+    try {
+      const parsed = JSON.parse(value);
+      return typeof parsed === "string" ? parsed : value.slice(1, -1);
+    } catch {
+      return value.slice(1, -1);
+    }
+  }
+  if (value.startsWith("'") && value.endsWith("'")) {
+    return value.slice(1, -1).replace(/''/g, "'");
   }
   return value;
 }
