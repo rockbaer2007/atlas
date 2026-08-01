@@ -72,6 +72,7 @@ let reconnectAttempts = 0;
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
+let statusPreviewEntityId;
 let pendingImport;
 let initialGroupSelection = "overview";
 let initialCardTarget = "entities";
@@ -254,7 +255,11 @@ function renderGroupOptions(selectedId = homeAssistantGroup.value) {
 }
 
 function currentEntityId() {
-  return trackedEntityIds()[0] ?? "binary_sensor.atlas_status";
+  const entityIds = trackedEntityIds();
+  if (statusPreviewEntityId && entityIds.includes(statusPreviewEntityId)) {
+    return statusPreviewEntityId;
+  }
+  return entityIds[0] ?? "binary_sensor.atlas_status";
 }
 
 function trackedEntityIds() {
@@ -333,6 +338,10 @@ function addSelectedEntityFromPicker() {
   const entityId = homeAssistantEntityPicker.value.trim();
   if (!entityId) {
     statusMessage.textContent = "Select an entity first.";
+    return;
+  }
+  if (usesStackEntitySelection()) {
+    addEntityForStatusPreview(entityId);
     return;
   }
   selectPrimaryEntity(entityId);
@@ -420,9 +429,7 @@ function renderEntityList() {
     card.className = "atlas-entity-card";
     card.tabIndex = 0;
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", usesStackEntitySelection()
-      ? `Toggle ${entityId} in the stack card preview`
-      : `Use ${entityId} in the HA card preview`);
+    card.setAttribute("aria-label", `Show ${entityId} in the ATLAS Status Preview`);
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     card.dataset.category = presentation?.category ?? "status";
     if (presentation?.category === "battery" && entity?.value) {
@@ -452,7 +459,7 @@ function renderEntityList() {
     controls.className = "atlas-entity-card-actions";
     card.append(name, value, detail);
     const position = trackedEntityIds().indexOf(entityId);
-    if (position === 0) {
+    if (entityId === currentEntityId()) {
       card.dataset.primary = "true";
     }
     if (usesStackEntitySelection() && stackSelectedEntityIds.has(entityId)) {
@@ -536,6 +543,7 @@ function moveEntity(entityId, direction) {
 function selectPrimaryEntity(entityId) {
   const entityIds = trackedEntityIds();
   homeAssistantEntity.value = [entityId, ...entityIds.filter(candidate => candidate !== entityId)].join(", ");
+  statusPreviewEntityId = entityId;
   stackSelectedEntityIds.add(entityId);
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = `${entityId} selected for the HA card preview.`;
@@ -543,11 +551,30 @@ function selectPrimaryEntity(entityId) {
 
 function handleEntityCardSelection(entityId) {
   if (usesStackEntitySelection()) {
-    setStackEntitySelected(entityId, !stackSelectedEntityIds.has(entityId));
+    selectStatusPreviewEntity(entityId);
     return;
   }
 
   selectPrimaryEntity(entityId);
+}
+
+function selectStatusPreviewEntity(entityId) {
+  statusPreviewEntityId = entityId;
+  bindSelectedEntity(activeTransport ?? transport);
+  if (activeTransport === transport) {
+    void renderEntityState("on");
+  }
+  statusMessage.textContent = `${entityId} shown in the ATLAS Status Preview.`;
+}
+
+function addEntityForStatusPreview(entityId) {
+  const entityIds = trackedEntityIds();
+  if (!entityIds.includes(entityId)) {
+    homeAssistantEntity.value = [...entityIds, entityId].join(", ");
+  }
+  statusPreviewEntityId = entityId;
+  homeAssistantEntity.dispatchEvent(new Event("input"));
+  statusMessage.textContent = `${entityId} shown in the ATLAS Status Preview. Use the checkbox to include it in the stack export.`;
 }
 
 function setStackEntitySelected(entityId, selected) {
@@ -571,6 +598,9 @@ function setStackEntitySelected(entityId, selected) {
 function removeEntity(entityId) {
   const entityIds = trackedEntityIds().filter(candidate => candidate !== entityId);
   stackSelectedEntityIds.delete(entityId);
+  if (statusPreviewEntityId === entityId) {
+    statusPreviewEntityId = entityIds[0];
+  }
   homeAssistantEntity.value = entityIds.join(", ");
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = entityIds.length
