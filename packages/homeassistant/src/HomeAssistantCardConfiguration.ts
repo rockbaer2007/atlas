@@ -442,15 +442,12 @@ function normalizeHomeAssistantCardConfiguration(
 
   if ((card.type === "horizontal-stack" || card.type === "vertical-stack") && Array.isArray(card.cards)) {
     const normalizedCards = card.cards.map(candidate => normalizeHomeAssistantCardConfiguration(candidate).card);
-    const singleCards = normalizedCards.filter((candidate): candidate is HomeAssistantSingleCardConfiguration =>
-      candidate.type !== "horizontal-stack" && candidate.type !== "vertical-stack",
-    );
-    if (singleCards.length === 0 || singleCards.length !== normalizedCards.length) {
+    if (normalizedCards.length === 0) {
       throw new Error("Home Assistant stack card has no supported cards.");
     }
     const normalizedCard = {
       type: card.type,
-      cards: singleCards,
+      cards: normalizedCards,
     } satisfies HomeAssistantStackCardConfiguration;
     return {
       card: normalizedCard,
@@ -589,84 +586,142 @@ function normalizeHomeAssistantResourcePath(resourcePath: string): string | unde
   }
 }
 
+interface ParsedYamlLine {
+  readonly indent: number;
+  readonly text: string;
+}
+
 function parseHomeAssistantCardYaml(text: string): unknown {
   const lines = text
     .split(/\r?\n/)
-    .map(line => line.trimEnd())
-    .filter(line => line.trim() && !line.trimStart().startsWith("#"));
-  const card: Record<string, unknown> & {
-    entities: Array<string | HomeAssistantEntitiesCardEntity>;
-    cards?: Array<Record<string, unknown>>;
-  } = {
-    entities: [],
-  };
-  let inEntities = false;
-  let inCards = false;
-  let currentChild: Record<string, unknown> | undefined;
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (trimmed === "cards:") {
-      inCards = true;
-      inEntities = false;
-      card.cards = [];
-      continue;
-    }
-    if (trimmed === "entities:") {
-      inEntities = true;
-      inCards = false;
-      continue;
-    }
-    if (inCards && trimmed.startsWith("- ")) {
-      currentChild = {};
-      card.cards?.push(currentChild);
-      parseYamlKeyValueInto(trimmed.slice(2).trim(), currentChild);
-      continue;
-    }
-    if (inCards && currentChild && trimmed.includes(":")) {
-      parseYamlKeyValueInto(trimmed, currentChild);
-      continue;
-    }
-    if (!inEntities && trimmed.startsWith("type:")) {
-      card.type = parseYamlScalar(trimmed.slice("type:".length).trim());
-      continue;
-    }
-    if (!inEntities && trimmed.startsWith("title:")) {
-      card.title = parseYamlScalar(trimmed.slice("title:".length).trim());
-      continue;
-    }
-    if (!inEntities && trimmed.includes(":")) {
-      const separator = trimmed.indexOf(":");
-      card[trimmed.slice(0, separator)] = parseYamlScalar(trimmed.slice(separator + 1).trim());
-      continue;
-    }
-    if (inEntities && trimmed.startsWith("- entity:")) {
-      card.entities.push({ entity: parseYamlScalar(trimmed.slice("- entity:".length).trim()) });
-      continue;
-    }
-    if (inEntities && trimmed.startsWith("- ")) {
-      card.entities.push(parseYamlScalar(trimmed.slice(2).trim()));
-    }
-  }
-  return card;
+    .map(line => ({
+      indent: line.match(/^ */)?.[0].length ?? 0,
+      text: line.trim(),
+    }))
+    .filter(line => line.text && !line.text.startsWith("#"));
+  const cursor = { index: 0 };
+  return parseYamlMap(lines, cursor, lines[0]?.indent ?? 0);
 }
 
-function parseYamlKeyValueInto(line: string, target: Record<string, unknown>): void {
-  if (!line.includes(":")) return;
-  const separator = line.indexOf(":");
-  target[line.slice(0, separator)] = parseYamlScalar(line.slice(separator + 1).trim());
+function parseYamlMap(
+  lines: readonly ParsedYamlLine[],
+  cursor: { index: number },
+  indent: number,
+): Record<string, unknown> {
+  const value: Record<string, unknown> = {};
+
+  while (cursor.index < lines.length) {
+    const line = lines[cursor.index]!;
+    if (line.indent < indent || line.text.startsWith("- ")) break;
+    if (line.indent > indent) {
+      cursor.index += 1;
+      continue;
+    }
+
+    const parsed = parseYamlKeyValue(line.text);
+    if (!parsed) {
+      cursor.index += 1;
+      continue;
+    }
+
+    cursor.index += 1;
+    if (parsed.value === "") {
+      const next = lines[cursor.index];
+      if (next && next.indent > line.indent) {
+        value[parsed.key] = next.text.startsWith("- ")
+          ? parseYamlList(lines, cursor, next.indent)
+          : parseYamlMap(lines, cursor, next.indent);
+      } else {
+        value[parsed.key] = "";
+      }
+      continue;
+    }
+
+    if (parsed.value === "|") {
+      value[parsed.key] = "";
+      while (cursor.index < lines.length && lines[cursor.index]!.indent > line.indent) {
+        cursor.index += 1;
+      }
+      continue;
+    }
+
+    value[parsed.key] = parseYamlScalar(parsed.value);
+  }
+
+  return value;
+}
+
+function parseYamlList(
+  lines: readonly ParsedYamlLine[],
+  cursor: { index: number },
+  indent: number,
+): unknown[] {
+  const values: unknown[] = [];
+
+  while (cursor.index < lines.length) {
+    const line = lines[cursor.index]!;
+    if (line.indent < indent || !line.text.startsWith("- ")) break;
+    if (line.indent > indent) {
+      cursor.index += 1;
+      continue;
+    }
+
+    const itemText = line.text.slice(2).trim();
+    cursor.index += 1;
+    if (!itemText) {
+      const next = lines[cursor.index];
+      values.push(next && next.text.startsWith("- ")
+        ? parseYamlList(lines, cursor, next.indent)
+        : parseYamlMap(lines, cursor, next?.indent ?? indent + 2));
+      continue;
+    }
+
+    const parsed = parseYamlKeyValue(itemText);
+    if (!parsed) {
+      values.push(parseYamlScalar(itemText));
+      continue;
+    }
+
+    const item: Record<string, unknown> = {};
+    if (parsed.value === "" || parsed.value === "|") {
+      item[parsed.key] = parsed.value === "|" ? "" : {};
+    } else {
+      item[parsed.key] = parseYamlScalar(parsed.value);
+    }
+    const next = lines[cursor.index];
+    if (next && next.indent > line.indent) {
+      Object.assign(item, parseYamlMap(lines, cursor, next.indent));
+    }
+    values.push(item);
+  }
+
+  return values;
+}
+
+function parseYamlKeyValue(text: string): { readonly key: string; readonly value: string } | undefined {
+  if (!text.includes(":")) return undefined;
+  const separator = text.indexOf(":");
+  return {
+    key: text.slice(0, separator).trim(),
+    value: text.slice(separator + 1).trim(),
+  };
 }
 
 function serializeYamlScalar(value: unknown): string {
   if (typeof value === "boolean") return String(value);
   if (typeof value === "number") return String(value);
+  if (value === null) return "null";
   return JSON.stringify(String(value));
 }
 
-function parseYamlScalar(value: string): string {
+function parseYamlScalar(value: string): unknown {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (value === "null" || value === "~") return null;
+  if (/^-?\d+(?:\.\d+)?$/.test(value)) return Number(value);
   if (value.startsWith("\"") && value.endsWith("\"")) {
     try {
-      const parsed = JSON.parse(value);
-      return typeof parsed === "string" ? parsed : value.slice(1, -1);
+      return JSON.parse(value);
     } catch {
       return value.slice(1, -1);
     }

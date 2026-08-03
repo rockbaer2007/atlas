@@ -144,6 +144,13 @@ template-backed fields and inspect the generated nested Home Assistant card code
 before a full drag-and-drop surface exists. The demo field list also supports
 removing individual preview fields.
 
+Imports now accept nested Home Assistant stack cards as well. A real-world
+`vertical-stack` can contain `horizontal-stack` rows and regular cards, and
+ATLAS will keep the supported stack structure while extracting the involved
+entities. Advanced Bubble Card details such as `modules`, `styles`,
+`grid_options`, sliders and sub-buttons are planned as a later preservation
+layer.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

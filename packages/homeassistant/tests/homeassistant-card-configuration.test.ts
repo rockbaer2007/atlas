@@ -735,6 +735,142 @@ describe("Home Assistant entities card configuration", () => {
     ].join("\n"));
   });
 
+  it("parses nested stack cards from Home Assistant YAML examples", () => {
+    expect(parseHomeAssistantEntitiesCardConfiguration([
+      "type: vertical-stack",
+      "cards:",
+      "  - type: horizontal-stack",
+      "    cards:",
+      "      - type: custom:bubble-card",
+      "        card_type: button",
+      "        button_type: state",
+      "        entity: sensor.shellypro3em_512_leistung",
+      "        name: Einlieger / Garten",
+      "        icon: mdi:flash",
+      "        show_name: true",
+      "        show_state: true",
+      "        modules:",
+      "          - liquid_glass_2",
+      "        styles: |",
+      "          .bubble-icon { color: green; }",
+      "      - type: custom:bubble-card",
+      "        card_type: button",
+      "        button_type: state",
+      "        entity: sensor.shellypro3em_500_leistung",
+      "        name: Haus",
+      "  - type: custom:bubble-card",
+      "    card_type: button",
+      "    button_type: state",
+      "    entity: sensor.shellypro3em_frequency",
+      "    name: Netzfrequenz",
+    ].join("\n"))).toEqual({
+      format: "yaml",
+      target: "bubble",
+      layout: "vertical-stack",
+      card: {
+        type: "vertical-stack",
+        cards: [
+          {
+            type: "horizontal-stack",
+            cards: [
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "state",
+                name: "Einlieger / Garten",
+                entity: "sensor.shellypro3em_512_leistung",
+                show_state: true,
+              },
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "state",
+                name: "Haus",
+                entity: "sensor.shellypro3em_500_leistung",
+                show_state: true,
+              },
+            ],
+          },
+          {
+            type: "custom:bubble-card",
+            card_type: "button",
+            button_type: "state",
+            name: "Netzfrequenz",
+            entity: "sensor.shellypro3em_frequency",
+            show_state: true,
+          },
+        ],
+      },
+    });
+  });
+
+  it("parses nested stack cards from JSON imports", () => {
+    const card = {
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "horizontal-stack",
+          cards: [
+            {
+              type: "custom:bubble-card",
+              entity: "sensor.left_power",
+              name: "Left power",
+            },
+            {
+              type: "custom:bubble-card",
+              entity: "sensor.right_power",
+              name: "Right power",
+            },
+          ],
+        },
+        {
+          type: "entities",
+          title: "Grid",
+          entities: ["sensor.grid_frequency"],
+        },
+      ],
+    };
+
+    expect(parseHomeAssistantEntitiesCardConfiguration(JSON.stringify(card))).toEqual({
+      format: "json",
+      target: "bubble",
+      layout: "vertical-stack",
+      card: {
+        type: "vertical-stack",
+        cards: [
+          {
+            type: "horizontal-stack",
+            cards: [
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "state",
+                name: "Left power",
+                entity: "sensor.left_power",
+                show_state: true,
+              },
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "state",
+                name: "Right power",
+                entity: "sensor.right_power",
+                show_state: true,
+              },
+            ],
+          },
+          {
+            type: "entities",
+            title: "Grid",
+            entities: [
+              { entity: "sensor.grid_frequency" },
+            ],
+          },
+        ],
+      },
+    });
+  });
+
   it("parses Mushroom and Bubble cards", () => {
     expect(parseHomeAssistantEntitiesCardConfiguration([
       "type: custom:mushroom-template-card",
