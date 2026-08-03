@@ -656,72 +656,19 @@ function shouldIgnoreLovelaceResourceUrl(url) {
   return ignoredLovelaceResourceTerms.some(term => normalizedUrl.includes(term));
 }
 
+function isMappedLovelaceResourceUrl(url) {
+  return url.includes("/bubble-card/")
+    || url.includes("bubble-card.js")
+    || url.includes("/lovelace-mushroom/")
+    || url.includes("mushroom.js");
+}
+
 function createScannedExpertPaletteCards(resources) {
   const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))]
     .filter(url => !shouldIgnoreLovelaceResourceUrl(url));
-  const hasBubbleCard = urls.some(url => url.includes("/bubble-card/") || url.includes("bubble-card.js"));
-  const hasMushroom = urls.some(url => url.includes("/lovelace-mushroom/") || url.includes("mushroom.js"));
-  const scannedCards = [];
-
-  if (hasMushroom) {
-    scannedCards.push({
-      id: "ha-scanned-mushroom-template",
-      category: "HA scanned",
-      label: "Mushroom template",
-      templateId: "state-button",
-      target: "mushroom-template",
-      preview: ["Detected from Lovelace resources"],
-      scanned: true,
-    });
-  }
-
-  if (hasBubbleCard) {
-    scannedCards.push(
-      {
-        id: "ha-scanned-bubble-state",
-        category: "HA scanned",
-        label: "Bubble state",
-        templateId: "state-button",
-        target: "bubble",
-        bubbleButtonType: "state",
-        preview: ["Detected button_type: state"],
-        scanned: true,
-      },
-      {
-        id: "ha-scanned-bubble-switch",
-        category: "HA scanned",
-        label: "Bubble switch",
-        templateId: "switch-button",
-        target: "bubble",
-        bubbleButtonType: "switch",
-        preview: ["Detected button_type: switch"],
-        scanned: true,
-      },
-      {
-        id: "ha-scanned-bubble-slider",
-        category: "HA scanned",
-        label: "Bubble slider",
-        templateId: "state-button",
-        target: "bubble",
-        bubbleButtonType: "slider",
-        preview: ["Detected button_type: slider"],
-        scanned: true,
-      },
-      {
-        id: "ha-scanned-bubble-name",
-        category: "HA scanned",
-        label: "Bubble name",
-        templateId: "state-button",
-        target: "bubble",
-        bubbleButtonType: "name",
-        preview: ["Detected button_type: name"],
-        scanned: true,
-      },
-    );
-  }
 
   const resourceCards = urls
-    .filter(url => !url.includes("/atlas/") && !url.includes("atlas-card"))
+    .filter(url => !url.includes("/atlas/") && !url.includes("atlas-card") && !isMappedLovelaceResourceUrl(url))
     .map((url, index) => ({
       id: createLovelaceResourcePaletteId(url, index),
       category: isHacsLovelaceResourceUrl(url) ? "HACS resource" : "HA resource",
@@ -734,13 +681,25 @@ function createScannedExpertPaletteCards(resources) {
       scanned: true,
     }));
 
-  return [...scannedCards, ...resourceCards];
+  return dedupeExpertPaletteCards(resourceCards);
+}
+
+function dedupeExpertPaletteCards(cards) {
+  const seen = new Set();
+  return cards.filter(card => {
+    const key = card.resourceUrl
+      ? `resource:${normalizeLovelaceResourceSearchText(card.resourceUrl)}`
+      : `${card.category}:${card.label}:${card.templateId}:${card.target}:${card.bubbleButtonType ?? ""}`.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function refreshScannedExpertPaletteCards() {
   const staticCards = expertPaletteCards.filter(card => !card.scanned);
   const scannedCards = createScannedExpertPaletteCards(lovelaceResources);
-  expertPaletteCards = [...staticCards, ...scannedCards];
+  expertPaletteCards = dedupeExpertPaletteCards([...staticCards, ...scannedCards]);
   return {
     total: scannedCards.length,
     hacs: scannedCards.filter(card => card.resourceUrl && isHacsLovelaceResourceUrl(card.resourceUrl)).length,
@@ -757,7 +716,7 @@ function scanExpertPaletteCardsFromHomeAssistant() {
   }
   const scanMessage = detectedCards.total
     ? `${detectedCards.total} palette entries detected from loaded HA resources, including ${detectedCards.hacs} /hacsfiles resources.`
-    : "No supported Community cards detected from loaded HA resources yet.";
+    : "No additional scan-only palette entries detected from loaded HA resources.";
   statusMessage.textContent = clientReady
     ? `${scanMessage} Refreshing Lovelace resources from Home Assistant.`
     : `${scanMessage} Connect to Home Assistant and scan again to refresh the list.`;
@@ -1409,16 +1368,14 @@ function renderExpertEditorSurface() {
       tile.classList.remove("dragging");
     });
     if (index === selectedExpertFieldIndex && expertFieldEditing) {
-      for (const corner of ["nw", "ne", "sw", "se"]) {
-        const handle = document.createElement("span");
-        handle.className = "expert-resize-handle";
-        handle.dataset.corner = corner;
-        handle.setAttribute("aria-hidden", "true");
-        handle.addEventListener("pointerdown", event => {
-          startExpertFieldResize(event, index, corner, tile);
-        });
-        tile.append(handle);
-      }
+      const handle = document.createElement("span");
+      handle.className = "expert-resize-handle";
+      handle.dataset.corner = "se";
+      handle.setAttribute("aria-hidden", "true");
+      handle.addEventListener("pointerdown", event => {
+        startExpertFieldResize(event, index, "se", tile);
+      });
+      tile.append(handle);
     }
     grid.append(tile);
   });

@@ -92,9 +92,9 @@ grid. Each sidebar template exposes its own column and row controls, including
 horizontal-stack and vertical-stack start from the same default footprint so
 layout adjustments are predictable. The sidebar uses loaded Lovelace resources
 to mark custom card families as installed, missing or unchecked. Surface tiles
-can be selected and then switched into edit mode, where corner handles resize
-the field inside the 12-column grid. This is still a preview surface, not the
-final drag-and-drop editor.
+can be selected and then switched into edit mode, where a bottom-right handle
+resizes the field inside the 12-column grid. This is still a preview surface,
+not the final drag-and-drop editor.
 Expert field titles are editable from the surface controls. The title is reused
 as the generated Home Assistant card title, Bubble name or Mushroom primary
 text. A manual apply button writes the edited title to the selected field, and
@@ -115,6 +115,8 @@ be selected in one pass. A Scan HA cards button requests the current Home
 Assistant Lovelace resources and adds recognized installed Community cards such
 as Mushroom and Bubble Card to the palette. Other registered Lovelace resources
 are shown as scanned-only entries until ATLAS has a safe card mapping for them.
+Mapped resources are deduplicated so they do not appear again as scanned-only
+copies.
 Core templates include Entity, Entities, Button, Grid, Sensor, Vertical stack,
 Horizontal stack, Thermostat, Link and Webpage. Webpage exports use the Home
 Assistant `iframe` card type.
