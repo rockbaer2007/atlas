@@ -22,10 +22,13 @@ domain-filtered entity picker to add known demo entities. Once a live event
 subscription is active, the demo requests Home Assistant `get_states` and
 populates the picker from the returned entity list. The type selector filters
 the picker by entity domain, such as `sensor`, `binary_sensor`, `switch` or
-`light`, and quick buttons expose the common domains directly. The search field
-narrows the filtered picker further by matching parts of the entity ID or
-friendly name, with a visible result count or empty state. The primary entity
-drives the status panel and the list shows updates for all selected entities.
+`light`, and quick buttons expose the common domains directly. The picker is
+backed by the shared `@atlas/homeassistant` entity catalog, so domain filtering,
+deduplication, live labels and partial search can be reused by future hosts.
+The search field narrows the filtered picker further by matching parts of the
+entity ID or friendly name, with a visible result count or empty state. The
+primary entity drives the status panel and the list shows updates for all
+selected entities.
 Numeric and other available sensor values render as ready; `off` remains
 pending, while unavailable or unknown entities render as blocked.
 

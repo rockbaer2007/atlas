@@ -12,10 +12,14 @@ import {
   createHomeAssistantAtlasFrontendIntegrationPlan,
   serializeHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantEntityPresentation,
+  createHomeAssistantEntityCatalog,
   createHomeAssistantCardConfiguration,
   createHomeAssistantPanelGroup,
   createHomeAssistantServiceCommand,
   createHomeAssistantStatusPanelRegistry,
+  filterHomeAssistantEntityCatalog,
+  listHomeAssistantEntityCatalogDomains,
+  listHomeAssistantEntityDomainShortcuts,
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
@@ -89,7 +93,6 @@ let lovelaceResourcesChecked = false;
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
-const preferredEntityDomains = ["sensor", "binary_sensor", "switch", "light"];
 let statusPreviewEntityId;
 let pendingImport;
 let initialGroupSelection = "overview";
@@ -309,10 +312,6 @@ function renderEmptyStatusPreview() {
   statusRoot.replaceChildren(emptyState);
 }
 
-function entityDomain(entityId) {
-  return entityId.includes(".") ? entityId.split(".", 1)[0] : "other";
-}
-
 function knownEntityPickerIds() {
   return [...new Set([
     ...knownEntityIds,
@@ -322,10 +321,16 @@ function knownEntityPickerIds() {
   ])].sort((left, right) => left.localeCompare(right));
 }
 
+function createEntityPickerCatalog() {
+  return createHomeAssistantEntityCatalog({
+    entityIds: knownEntityPickerIds(),
+    entities: [...entitySnapshots.values()],
+  });
+}
+
 function renderEntityDomainOptions() {
   const selected = homeAssistantEntityDomain.value || "all";
-  const domains = [...new Set(knownEntityPickerIds().map(entityDomain))]
-    .sort((left, right) => left.localeCompare(right));
+  const domains = listHomeAssistantEntityCatalogDomains(createEntityPickerCatalog());
 
   homeAssistantEntityDomain.replaceChildren();
   const allOption = document.createElement("option");
@@ -344,9 +349,7 @@ function renderEntityDomainOptions() {
 
 function renderEntityDomainShortcuts(domains) {
   const selected = homeAssistantEntityDomain.value || "all";
-  const shortcutDomains = ["all", ...preferredEntityDomains, ...domains]
-    .filter((domain, index, list) => list.indexOf(domain) === index)
-    .filter(domain => domain === "all" || domains.includes(domain));
+  const shortcutDomains = listHomeAssistantEntityDomainShortcuts(domains);
 
   homeAssistantEntityDomainShortcuts.replaceChildren();
   for (const domain of shortcutDomains) {
@@ -358,17 +361,6 @@ function renderEntityDomainShortcuts(domains) {
     button.title = domain === "all" ? "Show all entity types" : `Show ${domain} entities`;
     homeAssistantEntityDomainShortcuts.append(button);
   }
-}
-
-function entityMatchesSearch(entityId, searchTerm) {
-  const term = searchTerm.trim().toLowerCase();
-  if (!term) return true;
-
-  const entity = entitySnapshots.get(entityId);
-  const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
-  return entityId.toLowerCase().includes(term)
-    || presentation?.label.toLowerCase().includes(term)
-    || entity?.name?.toLowerCase().includes(term);
 }
 
 function usesStackEntitySelection() {
@@ -422,19 +414,19 @@ function renderEntityPickerOptions() {
   const selectedDomain = homeAssistantEntityDomain.value;
   const searchTerm = homeAssistantEntitySearch.value;
   clearHomeAssistantEntitySearch.disabled = searchTerm.trim().length === 0;
-  const entityIds = knownEntityPickerIds()
-    .filter(entityId => selectedDomain === "all" || entityDomain(entityId) === selectedDomain)
-    .filter(entityId => entityMatchesSearch(entityId, searchTerm));
+  const entityEntries = filterHomeAssistantEntityCatalog(createEntityPickerCatalog(), {
+    domain: selectedDomain,
+    search: searchTerm,
+  });
+  const entityIds = entityEntries.map(entry => entry.entityId);
 
   homeAssistantEntityPicker.replaceChildren();
-  for (const entityId of entityIds) {
+  for (const entry of entityEntries) {
     const option = document.createElement("option");
-    const entity = entitySnapshots.get(entityId);
-    const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
-    option.value = entityId;
-    option.textContent = presentation && presentation.label !== entityId
-      ? `${presentation.label} (${entityId})`
-      : entityId;
+    option.value = entry.entityId;
+    option.textContent = entry.label !== entry.entityId
+      ? `${entry.label} (${entry.entityId})`
+      : entry.entityId;
     homeAssistantEntityPicker.append(option);
   }
   homeAssistantEntityPicker.value = entityIds.includes(selected) ? selected : entityIds[0] ?? "";

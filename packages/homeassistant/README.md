@@ -41,25 +41,28 @@ completed or failed.
 
 Reusable panel groups collect entity IDs under a stable title. Entity
 presentations classify common temperature, power, battery, light and switch
-states. Basic Home Assistant card configuration can be created for built-in
-Entities, Mushroom template and Bubble button targets, serialized as JSON or
-YAML, parsed back into normalized entity groups, and inspected for required
-frontend dependencies. Hosts can list the supported card targets from the same
-package API they use for export and import; dependency metadata includes
-expected HACS resource paths and can be compared with Lovelace resources
-returned by Home Assistant. Card export manifests provide stable filenames,
-formats, MIME types, target, layout and dependency metadata for host UIs. Card
-export payloads pair that manifest metadata with the serialized card content so
-copy and download flows can share one source. Card packages wrap the manifest
-and content in a portable Atlas JSON envelope for round-tripping through editor
-UIs. Lovelace resource references can be derived from the selected card target
-and serialized as JSON or YAML, which lets host UIs offer copy-ready HACS
-resource snippets for Mushroom and Bubble Card. Card import summaries normalize
-raw card text or Atlas packages into title, entity IDs, target, layout, format
-and dependency metadata. The WebSocket client can request `get_states` and
-`lovelace/resources` as soon as authentication succeeds, even while the live
-event subscription is still pending. Lights can receive a validated brightness
-percentage from 1 through 100 when a host explicitly invokes the command.
+states. Entity catalogs normalize known and live entity IDs into a sorted,
+deduplicated list with domains, labels and searchable text so hosts can provide
+the same entity picker behavior outside the demo. Basic Home Assistant card
+configuration can be created for built-in Entities, Mushroom template and
+Bubble button targets, serialized as JSON or YAML, parsed back into normalized
+entity groups, and inspected for required frontend dependencies. Hosts can list
+the supported card targets from the same package API they use for export and
+import; dependency metadata includes expected HACS resource paths and can be
+compared with Lovelace resources returned by Home Assistant. Card export
+manifests provide stable filenames, formats, MIME types, target, layout and
+dependency metadata for host UIs. Card export payloads pair that manifest
+metadata with the serialized card content so copy and download flows can share
+one source. Card packages wrap the manifest and content in a portable Atlas JSON
+envelope for round-tripping through editor UIs. Lovelace resource references can
+be derived from the selected card target and serialized as JSON or YAML, which
+lets host UIs offer copy-ready HACS resource snippets for Mushroom and Bubble
+Card. Card import summaries normalize raw card text or Atlas packages into
+title, entity IDs, target, layout, format and dependency metadata. The WebSocket
+client can request `get_states` and `lovelace/resources` as soon as
+authentication succeeds, even while the live event subscription is still
+pending. Lights can receive a validated brightness percentage from 1 through
+100 when a host explicitly invokes the command.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server
