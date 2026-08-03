@@ -617,6 +617,10 @@ function createLovelaceResourcePaletteId(url, index) {
   return `ha-resource-${slug || index}`;
 }
 
+function isHacsLovelaceResourceUrl(url) {
+  return url.includes("/hacsfiles/");
+}
+
 function createScannedExpertPaletteCards(resources) {
   const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))];
   const hasBubbleCard = urls.some(url => url.includes("/bubble-card/") || url.includes("bubble-card.js"));
@@ -684,7 +688,7 @@ function createScannedExpertPaletteCards(resources) {
     .filter(url => !url.includes("/atlas/") && !url.includes("atlas-card"))
     .map((url, index) => ({
       id: createLovelaceResourcePaletteId(url, index),
-      category: "HA resource",
+      category: isHacsLovelaceResourceUrl(url) ? "HACS resource" : "HA resource",
       label: formatLovelaceResourceLabel(url),
       templateId: "entity-list",
       target: "entities",
@@ -701,7 +705,10 @@ function refreshScannedExpertPaletteCards() {
   const staticCards = expertPaletteCards.filter(card => !card.scanned);
   const scannedCards = createScannedExpertPaletteCards(lovelaceResources);
   expertPaletteCards = [...staticCards, ...scannedCards];
-  return scannedCards.length;
+  return {
+    total: scannedCards.length,
+    hacs: scannedCards.filter(card => card.resourceUrl && isHacsLovelaceResourceUrl(card.resourceUrl)).length,
+  };
 }
 
 function scanExpertPaletteCardsFromHomeAssistant() {
@@ -712,8 +719,8 @@ function scanExpertPaletteCardsFromHomeAssistant() {
   if (clientReady) {
     checkLiveLovelaceResources({ appendStatus: true });
   }
-  const scanMessage = detectedCards
-    ? `${detectedCards} palette entries detected from loaded HA resources.`
+  const scanMessage = detectedCards.total
+    ? `${detectedCards.total} palette entries detected from loaded HA resources, including ${detectedCards.hacs} /hacsfiles resources.`
     : "No supported Community cards detected from loaded HA resources yet.";
   statusMessage.textContent = clientReady
     ? `${scanMessage} Refreshing Lovelace resources from Home Assistant.`
@@ -815,7 +822,7 @@ function renderHaCardImportDecision(text) {
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
   const visibleCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
-    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
+    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id) || card.scanned === true)
     : expertPaletteCards;
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;
@@ -846,7 +853,7 @@ function renderExpertTemplatePalette() {
     const detail = document.createElement("small");
     const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType}` : "";
     detail.textContent = card.disabled === true
-      ? "Registered Lovelace resource, not mapped yet"
+      ? `${card.category} registered, not mapped yet`
       : `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${card.target}${bubbleType}`;
     const preview = document.createElement("span");
     preview.textContent = card.preview.join(" / ");
@@ -1887,11 +1894,11 @@ function bindSelectedEntity(nextTransport) {
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
       lovelaceResources = result.resources;
       lovelaceResourcesChecked = result.success;
-      const scannedCardCount = result.success ? refreshScannedExpertPaletteCards() : 0;
+      const scannedCards = result.success ? refreshScannedExpertPaletteCards() : { total: 0, hacs: 0 };
       renderHaCardPreview();
       renderExpertTemplatePalette();
       statusMessage.textContent = result.success
-        ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant. ${scannedCardCount} palette entries detected.`
+        ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant. ${scannedCards.total} palette entries detected, including ${scannedCards.hacs} /hacsfiles resources.`
         : `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
     });
     refreshLiveEntityStates();

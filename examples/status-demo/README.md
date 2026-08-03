@@ -115,6 +115,9 @@ be selected in one pass. A Scan HA cards button requests the current Home
 Assistant Lovelace resources and adds recognized installed Community cards such
 as Mushroom and Bubble Card to the palette. Other registered Lovelace resources
 are shown as scanned-only entries until ATLAS has a safe card mapping for them.
+When Home Assistant connects, ATLAS requests the same resource list
+automatically and keeps registered `/hacsfiles/` entries visible next to saved
+favorites.
 The palette itself is scrollable and uses compact two-column template rows:
 card name and favorite state stay on the left, while layout details and sizing
 controls sit on the right.
