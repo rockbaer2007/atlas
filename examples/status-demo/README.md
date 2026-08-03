@@ -120,7 +120,10 @@ Horizontal stack, Thermostat, Link and Webpage. Webpage exports use the Home
 Assistant `iframe` card type.
 When Home Assistant connects, ATLAS requests the same resource list
 automatically and keeps registered `/hacsfiles/` entries visible next to saved
-favorites.
+favorites. Scanned-only HACS and HA resources can also be marked as favorites,
+even before ATLAS has a draggable card mapping for them.
 The palette itself is scrollable and uses compact two-column template rows:
 card name and favorite state stay on the left, while layout details and sizing
-controls sit on the right.
+controls sit on the right. Selected editor fields can be resized through the
+Width and Height controls in one-cell steps up to 5x5; the current template
+size remains the default when a field is added.

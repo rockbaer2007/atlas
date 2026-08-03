@@ -143,6 +143,7 @@ const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
 ]));
 const expertGridColumns = 12;
 const expertGridRows = 12;
+const expertFieldMaxSpan = 5;
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
@@ -869,21 +870,22 @@ function renderExpertTemplatePalette() {
 
     main.append(category, title);
     meta.append(detail, preview, availability);
+    const favorite = document.createElement("label");
+    favorite.className = "favorite-toggle";
+    const favoriteCheckbox = document.createElement("input");
+    favoriteCheckbox.type = "checkbox";
+    favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
+    favorite.append(favoriteCheckbox, "Favorite");
+    main.append(favorite);
+    favorite.addEventListener("click", event => event.stopPropagation());
+    favoriteCheckbox.addEventListener("change", event => {
+      event.stopPropagation();
+      setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
+    });
+
     if (card.disabled !== true) {
       const sizing = createExpertTemplateSizingControls(template);
-      const favorite = document.createElement("label");
-      favorite.className = "favorite-toggle";
-      const favoriteCheckbox = document.createElement("input");
-      favoriteCheckbox.type = "checkbox";
-      favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
-      favorite.append(favoriteCheckbox, "Favorite");
-      main.append(favorite);
       meta.append(sizing);
-      favorite.addEventListener("click", event => event.stopPropagation());
-      favoriteCheckbox.addEventListener("change", event => {
-        event.stopPropagation();
-        setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
-      });
     }
     item.append(main, meta);
 
@@ -1089,7 +1091,7 @@ function renderExpertFieldList() {
     item.classList.toggle("selected", index === selectedExpertFieldIndex);
     const text = document.createElement("span");
     const bubbleType = field.target === "bubble" ? `, ${field.bubbleButtonType ?? "state"}` : "";
-    text.textContent = `${field.id}: ${field.target}${bubbleType}, ${field.layout ?? "card"}, ${field.entityId || "demo entity"}, c${field.column + 1}/r${field.row + 1}`;
+    text.textContent = `${field.id}: ${field.target}${bubbleType}, ${field.layout ?? "card"}, ${field.width}x${field.height}, ${field.entityId || "demo entity"}, c${field.column + 1}/r${field.row + 1}`;
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "icon-button";
@@ -1196,6 +1198,45 @@ function updateSelectedExpertFieldBubbleType() {
   };
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} Bubble button type set to ${expertBubbleButtonType.value}.`;
+}
+
+function clampExpertFieldSpan(value, fallback) {
+  const numericValue = Number(value);
+  const nextValue = Number.isFinite(numericValue) ? Math.floor(numericValue) : fallback;
+  return Math.max(1, Math.min(expertFieldMaxSpan, nextValue));
+}
+
+function clampExpertFieldOffset(value, fallback, max) {
+  const numericValue = Number(value);
+  const nextValue = Number.isFinite(numericValue) ? Math.floor(numericValue) : fallback;
+  return Math.max(0, Math.min(max, nextValue));
+}
+
+function updateSelectedExpertFieldGeometry() {
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  if (!field) {
+    statusMessage.textContent = "Select an Expert field before changing its size.";
+    return false;
+  }
+
+  const width = clampExpertFieldSpan(expertWidth.value, field.width);
+  const height = clampExpertFieldSpan(expertHeight.value, field.height);
+  const column = clampExpertFieldOffset(expertColumn.value, field.column, expertGridColumns - width);
+  const row = clampExpertFieldOffset(expertRow.value, field.row, expertGridRows - height);
+  expertEditorFields[selectedExpertFieldIndex] = {
+    ...field,
+    column,
+    row,
+    width,
+    height,
+  };
+  expertColumn.value = String(column);
+  expertRow.value = String(row);
+  expertWidth.value = String(width);
+  expertHeight.value = String(height);
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${field.id} resized to ${width}x${height}.`;
+  return true;
 }
 
 function applyEntityToSelectedExpertField(entityId) {
@@ -1373,6 +1414,20 @@ function startExpertFieldResize(event, index, corner, tile) {
       next.row = Math.max(0, Math.min(starting.row + starting.height - 1, pointer.row));
       next.height = starting.row + starting.height - next.row;
     }
+    if (next.width > expertFieldMaxSpan) {
+      if (corner.includes("w")) {
+        next.column = Math.max(0, starting.column + starting.width - expertFieldMaxSpan);
+      }
+      next.width = expertFieldMaxSpan;
+    }
+    if (next.height > expertFieldMaxSpan) {
+      if (corner.includes("n")) {
+        next.row = Math.max(0, starting.row + starting.height - expertFieldMaxSpan);
+      }
+      next.height = expertFieldMaxSpan;
+    }
+    next.column = Math.max(0, Math.min(expertGridColumns - next.width, next.column));
+    next.row = Math.max(0, Math.min(expertGridRows - next.height, next.row));
 
     expertEditorFields[index] = {
       ...field,
@@ -2064,6 +2119,9 @@ expertTemplate.addEventListener("change", () => {
 });
 expertTarget.addEventListener("change", updateSelectedExpertFieldTarget);
 expertBubbleButtonType.addEventListener("change", updateSelectedExpertFieldBubbleType);
+for (const control of [expertColumn, expertRow, expertWidth, expertHeight]) {
+  control.addEventListener("change", updateSelectedExpertFieldGeometry);
+}
 applyExpertTitle.addEventListener("click", () => {
   updateSelectedExpertFieldTitle(expertTitle.value);
 });
