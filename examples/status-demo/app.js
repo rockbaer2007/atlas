@@ -629,8 +629,36 @@ function isHacsLovelaceResourceUrl(url) {
   return url.includes("/hacsfiles/");
 }
 
+const ignoredLovelaceResourceTerms = [
+  "card-mad",
+  "card-tools",
+  "wallpanel",
+  "lovelace-buuble-room",
+  "lovelace-bubble-room",
+  "mushroom-strategy",
+  "ha-dashboard",
+  "swipe-navigation",
+  "auto-entities",
+  "floorplan",
+  "view-assistant",
+  "sidebar-card",
+  "cardbuilder.zip",
+  "icon",
+  "andy",
+];
+
+function normalizeLovelaceResourceSearchText(url) {
+  return url.replace(/[^a-z0-9.]+/g, "-");
+}
+
+function shouldIgnoreLovelaceResourceUrl(url) {
+  const normalizedUrl = normalizeLovelaceResourceSearchText(url);
+  return ignoredLovelaceResourceTerms.some(term => normalizedUrl.includes(term));
+}
+
 function createScannedExpertPaletteCards(resources) {
-  const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))];
+  const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))]
+    .filter(url => !shouldIgnoreLovelaceResourceUrl(url));
   const hasBubbleCard = urls.some(url => url.includes("/bubble-card/") || url.includes("bubble-card.js"));
   const hasMushroom = urls.some(url => url.includes("/lovelace-mushroom/") || url.includes("mushroom.js"));
   const scannedCards = [];
