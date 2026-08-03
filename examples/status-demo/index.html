@@ -238,6 +238,18 @@
         color: #172033;
       }
 
+      .expert-editor-actions {
+        gap: 6px;
+      }
+
+      .expert-editor-actions button {
+        flex: 0 1 auto;
+        min-width: 88px;
+        padding: 6px 9px;
+        font-size: 14px;
+        line-height: 1.2;
+      }
+
       .connection-actions .import-button {
         display: inline-flex;
         align-items: center;
@@ -1129,12 +1141,12 @@
               <label for="expert-height">Height</label>
               <input id="expert-height" type="number" min="1" max="12" value="2">
             </div>
-            <div class="connection-actions">
+            <div class="connection-actions expert-editor-actions">
               <button id="add-expert-field" type="button">Add template</button>
               <button id="edit-expert-field" type="button">Edit selected</button>
               <button id="arrange-expert-fields" type="button">Auto arrange</button>
-              <button id="reset-expert-surface-size" type="button">Reset surface size</button>
-              <button id="clear-expert-fields" type="button">Clear expert preview</button>
+              <button id="reset-expert-surface-size" type="button">Reset size</button>
+              <button id="clear-expert-fields" type="button">Clear preview</button>
             </div>
             <output id="expert-editor-summary" aria-live="polite"></output>
             <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
