@@ -131,4 +131,6 @@ The palette itself is scrollable and uses compact two-column template rows:
 card name and favorite state stay on the left, while layout details and sizing
 controls sit on the right. Selected editor fields can be resized with the mouse
 or through the Width and Height controls in one-cell steps, up to five grid
-cells beyond their template default size.
+cells beyond their template default size. The editor surface itself has a
+visible bottom-right resize handle and can grow by up to five grid steps in
+both directions while keeping the current size as the default.

@@ -568,7 +568,10 @@
       }
 
       .expert-editor-dropzone {
-        min-height: 448px;
+        --expert-editor-extra-width: 0px;
+        --expert-editor-extra-height: 0px;
+        position: relative;
+        width: calc(100% + var(--expert-editor-extra-width));
         padding: 14px;
         border: 1px dashed #0f766e;
         border-radius: 6px;
@@ -578,6 +581,8 @@
           #f8fffd;
         background-size: calc(100% / 12) 100%, 100% calc(100% / 12), auto;
         color: #115e59;
+        box-sizing: border-box;
+        min-height: calc(448px + var(--expert-editor-extra-height));
         text-align: center;
       }
 
@@ -586,7 +591,31 @@
         grid-template-columns: repeat(12, minmax(0, 1fr));
         grid-template-rows: repeat(12, minmax(32px, 1fr));
         gap: 6px;
-        min-height: 420px;
+        min-height: calc(420px + var(--expert-editor-extra-height));
+      }
+
+      .expert-editor-surface-resize-handle {
+        position: absolute;
+        right: -8px;
+        bottom: -8px;
+        z-index: 4;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        border: 2px solid #f0645c;
+        border-radius: 6px;
+        background:
+          linear-gradient(135deg, transparent 0 46%, #f0645c 47% 53%, transparent 54%),
+          linear-gradient(135deg, transparent 0 64%, #f0645c 65% 71%, transparent 72%),
+          #ffffff;
+        box-shadow: 0 6px 14px rgba(23, 32, 51, 0.16);
+        cursor: nwse-resize;
+        touch-action: none;
+      }
+
+      .expert-editor-surface-resize-handle:focus-visible {
+        outline: 3px solid rgba(15, 118, 110, 0.35);
+        outline-offset: 3px;
       }
 
       .expert-surface-grid p {
