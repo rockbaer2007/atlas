@@ -98,6 +98,13 @@ Empty expert plans fall back to the safe demo entities, preserving a usable
 export while the user still has to replace them with real Home Assistant
 entities.
 
+The expert editor model also exposes a sidebar template palette. Hosts can list
+visual templates for entity lists, state buttons, switch buttons,
+`vertical-stack` and `horizontal-stack` areas. A selected template can be
+combined with a chosen card family, such as Bubble Card or Mushroom, and placed
+inside a bounded editor grid. Placement is clamped to the configured grid so
+fields cannot be dropped outside the valid surface.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

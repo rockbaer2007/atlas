@@ -136,6 +136,8 @@ additional envelope-only contract expansion.
 * Dependency planning for mixed Expert editor fields using Entities, Bubble Card and Mushroom Template together
 * Projection from Simple and Expert editor plans into exportable Home Assistant card configurations
 * Nested Expert layout projection with row-based horizontal stacks, page-level vertical stacks and per-field stack mode
+* Template sidebar for visual Button, Switch, State, Entity, vertical-stack and horizontal-stack building blocks
+* Grid-bounded placement for selected templates on the Expert editor surface
 * User-defined HACS card script filenames such as `energy-kitchen.js` instead of only `atlas-card.js`
 * HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards

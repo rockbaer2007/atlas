@@ -2,11 +2,15 @@ import { describe, expect, it } from "vitest";
 
 import {
   createAtlasFrontendResource,
+  clampSurfaceFieldPlacement,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorDependencyPlan,
+  createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
+  findHomeAssistantCardEditorTemplate,
+  listHomeAssistantCardEditorTemplates,
   normalizeHomeAssistantCardEditorScriptFilename,
   inspectAtlasFrontendResourceAvailability,
   serializeHomeAssistantAtlasFrontendResourceReferences,
@@ -207,6 +211,92 @@ describe("Home Assistant frontend integration planning", () => {
         height: 1,
       },
     ]);
+  });
+
+  it("lists visual sidebar templates for expert card placement", () => {
+    expect(listHomeAssistantCardEditorTemplates().map(template => template.id)).toEqual([
+      "entity-list",
+      "state-button",
+      "switch-button",
+      "vertical-stack",
+      "horizontal-stack",
+    ]);
+    expect(findHomeAssistantCardEditorTemplate("switch-button")).toMatchObject({
+      label: "Switch button",
+      target: "bubble",
+      defaultEntityDomain: "switch",
+      preview: ["Switch", "On/off"],
+    });
+  });
+
+  it("creates bounded expert fields from sidebar templates and selected card families", () => {
+    expect(createHomeAssistantCardEditorFieldFromTemplate({
+      template: "state-button",
+      target: "mushroom-template",
+      entityId: "sensor.office_temperature",
+      id: "Office temperature",
+      column: 11,
+      row: 11,
+      width: 4,
+      height: 3,
+      bounds: {
+        columns: 12,
+        rows: 12,
+      },
+    })).toEqual({
+      id: "Office temperature",
+      target: "mushroom-template",
+      entityId: "sensor.office_temperature",
+      layout: "card",
+      entries: [],
+      column: 8,
+      row: 9,
+      width: 4,
+      height: 3,
+    });
+  });
+
+  it("creates stack fields from sidebar templates", () => {
+    expect(createHomeAssistantCardEditorFieldFromTemplate({
+      template: "vertical-stack",
+      target: "bubble",
+      entityId: "switch.office_fan",
+      column: 2,
+      row: 1,
+    })).toMatchObject({
+      id: "Vertical stack",
+      target: "bubble",
+      entityId: "switch.office_fan",
+      layout: "vertical-stack",
+      entries: [
+        {
+          id: "Vertical stack item",
+          target: "bubble",
+          entityId: "switch.office_fan",
+        },
+      ],
+      column: 2,
+      row: 1,
+      width: 4,
+      height: 4,
+    });
+  });
+
+  it("clamps surface placement inside the editor grid", () => {
+    expect(clampSurfaceFieldPlacement({
+      column: 8.8,
+      row: -1,
+      width: 8,
+      height: 0,
+    }, {
+      columns: 10,
+      rows: 6,
+    })).toEqual({
+      column: 2,
+      row: 0,
+      width: 8,
+      height: 1,
+    });
   });
 
   it("tracks the selected simple editor card target dependency", () => {

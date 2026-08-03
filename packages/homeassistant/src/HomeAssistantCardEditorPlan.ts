@@ -8,6 +8,40 @@ import { createHomeAssistantCardConfiguration, inspectHomeAssistantCardDependenc
 
 export type HomeAssistantCardEditorMode = "simple" | "expert";
 export type HomeAssistantCardEditorSurfaceFieldLayout = "card" | "horizontal-stack" | "vertical-stack";
+export type HomeAssistantCardEditorTemplateId =
+  | "entity-list"
+  | "state-button"
+  | "switch-button"
+  | "vertical-stack"
+  | "horizontal-stack";
+
+export interface HomeAssistantCardEditorGridBounds {
+  readonly columns: number;
+  readonly rows: number;
+}
+
+export interface HomeAssistantCardEditorTemplate {
+  readonly id: HomeAssistantCardEditorTemplateId;
+  readonly label: string;
+  readonly layout: HomeAssistantCardEditorSurfaceFieldLayout;
+  readonly target: HomeAssistantCardTarget;
+  readonly defaultWidth: number;
+  readonly defaultHeight: number;
+  readonly defaultEntityDomain?: string;
+  readonly preview: readonly string[];
+}
+
+export interface HomeAssistantCardEditorTemplatePlacementInput {
+  readonly template: HomeAssistantCardEditorTemplate | HomeAssistantCardEditorTemplateId;
+  readonly target?: HomeAssistantCardTarget;
+  readonly entityId?: string;
+  readonly id?: string;
+  readonly column: number;
+  readonly row: number;
+  readonly width?: number;
+  readonly height?: number;
+  readonly bounds?: HomeAssistantCardEditorGridBounds;
+}
 
 export interface HomeAssistantCardEditorSurfaceFieldEntry {
   readonly id: string;
@@ -76,6 +110,102 @@ const defaultSupportedFieldTargets = [
   "bubble",
   "mushroom-template",
 ] as const satisfies readonly HomeAssistantCardTarget[];
+
+const defaultGridBounds: HomeAssistantCardEditorGridBounds = {
+  columns: 12,
+  rows: 12,
+};
+
+const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
+  {
+    id: "entity-list",
+    label: "Entity list",
+    layout: "card",
+    target: "entities",
+    defaultWidth: 4,
+    defaultHeight: 2,
+    preview: ["Entity", "Value"],
+  },
+  {
+    id: "state-button",
+    label: "State button",
+    layout: "card",
+    target: "bubble",
+    defaultWidth: 3,
+    defaultHeight: 2,
+    preview: ["Name", "State"],
+  },
+  {
+    id: "switch-button",
+    label: "Switch button",
+    layout: "card",
+    target: "bubble",
+    defaultWidth: 3,
+    defaultHeight: 2,
+    defaultEntityDomain: "switch",
+    preview: ["Switch", "On/off"],
+  },
+  {
+    id: "vertical-stack",
+    label: "Vertical stack",
+    layout: "vertical-stack",
+    target: "entities",
+    defaultWidth: 4,
+    defaultHeight: 4,
+    preview: ["Card", "Card", "Card"],
+  },
+  {
+    id: "horizontal-stack",
+    label: "Horizontal stack",
+    layout: "horizontal-stack",
+    target: "entities",
+    defaultWidth: 6,
+    defaultHeight: 2,
+    preview: ["Card | Card"],
+  },
+];
+
+export function listHomeAssistantCardEditorTemplates(): readonly HomeAssistantCardEditorTemplate[] {
+  return cardEditorTemplates;
+}
+
+export function findHomeAssistantCardEditorTemplate(
+  templateId: HomeAssistantCardEditorTemplateId,
+): HomeAssistantCardEditorTemplate | undefined {
+  return cardEditorTemplates.find(template => template.id === templateId);
+}
+
+export function createHomeAssistantCardEditorFieldFromTemplate(
+  input: HomeAssistantCardEditorTemplatePlacementInput,
+): HomeAssistantCardEditorSurfaceField {
+  const template = typeof input.template === "string"
+    ? findHomeAssistantCardEditorTemplate(input.template)
+    : input.template;
+  if (!template) {
+    throw new Error("Unknown Home Assistant card editor template.");
+  }
+
+  const target = input.target ?? template.target;
+  return normalizeSurfaceField({
+    id: input.id ?? template.label,
+    target,
+    entityId: input.entityId ?? "",
+    layout: template.layout,
+    entries: template.layout === "card" ? [] : [
+      {
+        id: `${template.label} item`,
+        target,
+        entityId: input.entityId ?? "",
+      },
+    ],
+    ...clampSurfaceFieldPlacement({
+      column: input.column,
+      row: input.row,
+      width: input.width ?? template.defaultWidth,
+      height: input.height ?? template.defaultHeight,
+    }, input.bounds ?? defaultGridBounds),
+  });
+}
 
 export function createHomeAssistantCardEditorPackagePlan(
   input: HomeAssistantCardEditorPackagePlanInput = {},
@@ -166,6 +296,25 @@ export function normalizeHomeAssistantCardEditorScriptFilename(name: string): st
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   return `${withoutExtension || "atlas-card"}.js`;
+}
+
+export function clampSurfaceFieldPlacement(
+  placement: Pick<HomeAssistantCardEditorSurfaceField, "column" | "row" | "width" | "height">,
+  bounds: HomeAssistantCardEditorGridBounds = defaultGridBounds,
+): Pick<HomeAssistantCardEditorSurfaceField, "column" | "row" | "width" | "height"> {
+  const columns = Math.max(1, Math.floor(bounds.columns));
+  const rows = Math.max(1, Math.floor(bounds.rows));
+  const width = Math.min(columns, Math.max(1, Math.floor(placement.width)));
+  const height = Math.min(rows, Math.max(1, Math.floor(placement.height)));
+  const column = Math.min(columns - width, Math.max(0, Math.floor(placement.column)));
+  const row = Math.min(rows - height, Math.max(0, Math.floor(placement.row)));
+
+  return {
+    column,
+    row,
+    width,
+    height,
+  };
 }
 
 function dedupeStrings(values: readonly string[]): string[] {
