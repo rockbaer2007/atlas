@@ -83,6 +83,14 @@ with a clear replacement hint for Home Assistant users.
 The status demo exposes that filename as a package-export field, persists it in
 the local configuration and restores it again when an ATLAS card package is
 imported.
+The same package plan can generate an installable custom-card JavaScript source.
+That export includes the normalized filename, the Lovelace `custom:<name>` card
+type, the `/hacsfiles/atlas/...` resource path, a `getStubConfig()` default with
+the safe demo entities and the replacement hint users should see before wiring
+their own Home Assistant entities.
+The status demo exposes this source as a direct script download next to the
+portable card package export, so the generated `.js` artifact can be inspected
+or staged separately before a full HACS bundle is produced.
 
 The card editor plan separates a simple mode from an expert mode. Simple mode
 is intended for fast button stacks. Expert mode describes a free editor surface

@@ -1,4 +1,7 @@
-import type { HomeAssistantCardEditorPackagePlan } from "./HomeAssistantCardEditorPlan";
+import type {
+  HomeAssistantCardEditorPackagePlan,
+  HomeAssistantCardEditorScriptExport,
+} from "./HomeAssistantCardEditorPlan";
 
 export interface HomeAssistantEntitiesCardEntity {
   readonly entity: string;
@@ -191,6 +194,10 @@ export interface HomeAssistantCardExportManifest {
 
 export interface HomeAssistantCardExportPayloadInput extends HomeAssistantCardExportManifestInput {}
 
+export interface HomeAssistantCardExportPackageInput extends HomeAssistantCardExportPayloadInput {
+  readonly script?: HomeAssistantCardEditorScriptExport;
+}
+
 export interface HomeAssistantCardExportPayload {
   readonly manifest: HomeAssistantCardExportManifest;
   readonly content: string;
@@ -202,6 +209,7 @@ export interface HomeAssistantCardExportPackage {
   readonly manifest: HomeAssistantCardExportManifest;
   readonly content: string;
   readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
+  readonly script?: HomeAssistantCardEditorScriptExport;
 }
 
 export interface HomeAssistantCardImportSummary {
@@ -214,6 +222,7 @@ export interface HomeAssistantCardImportSummary {
   readonly dependency: HomeAssistantCardDependency;
   readonly packaged: boolean;
   readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
+  readonly script?: HomeAssistantCardEditorScriptExport;
 }
 
 const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
@@ -488,13 +497,14 @@ export function createHomeAssistantCardExportPayload(
 }
 
 export function createHomeAssistantCardExportPackage(
-  input: HomeAssistantCardExportPayloadInput,
+  input: HomeAssistantCardExportPackageInput,
 ): HomeAssistantCardExportPackage {
   return {
     version: 1,
     kind: "atlas.homeassistant.card",
     ...createHomeAssistantCardExportPayload(input),
     ...(input.editorPlan ? { editorPlan: input.editorPlan } : {}),
+    ...(input.script ? { script: input.script } : {}),
   };
 }
 
@@ -526,6 +536,7 @@ export function summarizeHomeAssistantCardImport(text: string): HomeAssistantCar
     dependency: inspectHomeAssistantCardDependency(parsed.card),
     packaged: packageCandidate !== undefined,
     ...(packageCandidate?.editorPlan ? { editorPlan: packageCandidate.editorPlan } : {}),
+    ...(packageCandidate?.script ? { script: packageCandidate.script } : {}),
   };
 }
 
@@ -953,6 +964,7 @@ function parseHomeAssistantCardExportPackage(text: string): HomeAssistantCardExp
       manifest: parsed.manifest as unknown as HomeAssistantCardExportManifest,
       content: parsed.content,
       ...(isRecord(parsed.editorPlan) ? { editorPlan: parsed.editorPlan as unknown as HomeAssistantCardEditorPackagePlan } : {}),
+      ...(isRecord(parsed.script) ? { script: parsed.script as unknown as HomeAssistantCardEditorScriptExport } : {}),
     };
   } catch {
     return undefined;

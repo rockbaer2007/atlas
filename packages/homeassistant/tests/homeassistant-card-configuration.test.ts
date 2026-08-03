@@ -9,6 +9,7 @@ import {
   createHomeAssistantLovelaceResourceReferences,
   createHomeAssistantCardArtifactReview,
   createHomeAssistantCardEditorPackagePlan,
+  createHomeAssistantCardEditorScriptExport,
   decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
   formatHomeAssistantCardArtifactReviewLines,
@@ -476,25 +477,28 @@ describe("Home Assistant entities card configuration", () => {
       title: "Office light",
       entityIds: ["light.office"],
     });
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Office Light",
+      scriptFilename: "Office Light Panel",
+      editorMode: "expert",
+      simpleTarget: "bubble",
+      fields: [{
+        id: "Office light",
+        target: "bubble",
+        bubbleButtonType: "switch",
+        entityId: "light.office",
+        column: 1,
+        row: 2,
+        width: 3,
+        height: 2,
+      }],
+    });
     const cardPackage = createHomeAssistantCardExportPackage({
       card,
       format: "yaml",
       name: "Office Light",
-      editorPlan: createHomeAssistantCardEditorPackagePlan({
-        cardName: "Office Light",
-        editorMode: "expert",
-        simpleTarget: "bubble",
-        fields: [{
-          id: "Office light",
-          target: "bubble",
-          bubbleButtonType: "switch",
-          entityId: "light.office",
-          column: 1,
-          row: 2,
-          width: 3,
-          height: 2,
-        }],
-      }),
+      editorPlan,
+      script: createHomeAssistantCardEditorScriptExport(editorPlan),
     });
 
     expect(cardPackage).toMatchObject({
@@ -507,6 +511,7 @@ describe("Home Assistant entities card configuration", () => {
         layout: "single",
       },
       editorPlan: {
+        scriptFilename: "office-light-panel.js",
         editorMode: "expert",
         fields: [{
           id: "Office light",
@@ -519,6 +524,12 @@ describe("Home Assistant entities card configuration", () => {
           height: 2,
         }],
       },
+      script: {
+        filename: "office-light-panel.js",
+        customElementName: "office-light-panel",
+        cardType: "custom:office-light-panel",
+        resourcePath: "/hacsfiles/atlas/office-light-panel.js",
+      },
     });
     expect(cardPackage.content).toContain("type: \"custom:bubble-card\"");
 
@@ -530,6 +541,7 @@ describe("Home Assistant entities card configuration", () => {
       layout: "single",
       packaged: true,
       editorPlan: {
+        scriptFilename: "office-light-panel.js",
         editorMode: "expert",
         fields: [{
           id: "Office light",
@@ -541,6 +553,10 @@ describe("Home Assistant entities card configuration", () => {
           width: 3,
           height: 2,
         }],
+      },
+      script: {
+        filename: "office-light-panel.js",
+        customElementName: "office-light-panel",
       },
     });
     expect(summarizeHomeAssistantCardImport(cardPackage.content)).toMatchObject({

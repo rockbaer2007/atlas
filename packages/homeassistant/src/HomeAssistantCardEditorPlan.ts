@@ -105,6 +105,20 @@ export interface HomeAssistantCardEditorDependencyPlan {
   readonly installSteps: readonly string[];
 }
 
+export interface HomeAssistantCardEditorScriptExport {
+  readonly filename: string;
+  readonly customElementName: string;
+  readonly cardType: `custom:${string}`;
+  readonly resourcePath: string;
+  readonly defaultConfig: {
+    readonly type: `custom:${string}`;
+    readonly title: string;
+    readonly entities: readonly string[];
+    readonly replacement_hint: string;
+  };
+  readonly source: string;
+}
+
 export interface HomeAssistantCardEditorSurfaceOverlap {
   readonly firstFieldId: string;
   readonly secondFieldId: string;
@@ -355,6 +369,31 @@ export function createHomeAssistantCardEditorDependencyPlan(
   };
 }
 
+export function createHomeAssistantCardEditorScriptExport(
+  input: HomeAssistantCardEditorPackagePlan | HomeAssistantCardEditorPackagePlanInput = {},
+): HomeAssistantCardEditorScriptExport {
+  const editorPlan = "resourcePath" in input
+    ? input
+    : createHomeAssistantCardEditorPackagePlan(input);
+  const customElementName = normalizeHomeAssistantCustomElementName(editorPlan.scriptFilename);
+  const cardType = `custom:${customElementName}` as const;
+  const defaultConfig = {
+    type: cardType,
+    title: editorPlan.cardName,
+    entities: editorPlan.defaultEntityIds,
+    replacement_hint: editorPlan.replacementHint,
+  } satisfies HomeAssistantCardEditorScriptExport["defaultConfig"];
+
+  return {
+    filename: editorPlan.scriptFilename,
+    customElementName,
+    cardType,
+    resourcePath: `/hacsfiles/atlas/${editorPlan.scriptFilename}`,
+    defaultConfig,
+    source: createHomeAssistantCardEditorScriptSource(customElementName, defaultConfig),
+  };
+}
+
 export function analyzeHomeAssistantCardEditorSurface(
   fields: readonly HomeAssistantCardEditorSurfaceField[] = [],
 ): HomeAssistantCardEditorSurfaceAnalysis {
@@ -444,6 +483,12 @@ export function normalizeHomeAssistantCardEditorScriptFilename(name: string): st
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   return `${withoutExtension || "atlas-card"}.js`;
+}
+
+export function normalizeHomeAssistantCustomElementName(scriptFilename: string): string {
+  const withoutExtension = normalizeHomeAssistantCardEditorScriptFilename(scriptFilename).replace(/\.js$/i, "");
+  const withHyphen = withoutExtension.includes("-") ? withoutExtension : `${withoutExtension}-card`;
+  return /^[a-z]/.test(withHyphen) ? withHyphen : `atlas-${withHyphen}`;
 }
 
 export function clampSurfaceFieldPlacement(
@@ -633,6 +678,79 @@ function defaultEntityForTarget(target: HomeAssistantCardTarget): string {
   if (target === "webpage") return "https://www.home-assistant.io";
   if (target === "link") return "/lovelace";
   return "";
+}
+
+function createHomeAssistantCardEditorScriptSource(
+  customElementName: string,
+  defaultConfig: HomeAssistantCardEditorScriptExport["defaultConfig"],
+): string {
+  const className = createHomeAssistantCardEditorClassName(customElementName);
+  const sourceConfig = JSON.stringify(defaultConfig, null, 2);
+  return [
+    `const DEFAULT_CONFIG = ${sourceConfig};`,
+    "",
+    `class ${className} extends HTMLElement {`,
+    "  setConfig(config) {",
+    "    const configuredEntities = Array.isArray(config?.entities) ? config.entities.filter(Boolean) : [];",
+    "    this.config = {",
+    "      ...DEFAULT_CONFIG,",
+    "      ...config,",
+    "      entities: configuredEntities.length > 0 ? configuredEntities : DEFAULT_CONFIG.entities,",
+    "    };",
+    "    this.render();",
+    "  }",
+    "",
+    "  set hass(value) {",
+    "    this._hass = value;",
+    "    this.render();",
+    "  }",
+    "",
+    "  getCardSize() {",
+    "    return Math.max(1, Math.min(6, this.config?.entities?.length ?? DEFAULT_CONFIG.entities.length));",
+    "  }",
+    "",
+    "  static getStubConfig() {",
+    "    return { ...DEFAULT_CONFIG, entities: [...DEFAULT_CONFIG.entities] };",
+    "  }",
+    "",
+    "  render() {",
+    "    const root = this.shadowRoot ?? this.attachShadow({ mode: \"open\" });",
+    "    root.innerHTML = \"\";",
+    "    const wrapper = document.createElement(\"ha-card\");",
+    "    wrapper.header = this.config?.title ?? DEFAULT_CONFIG.title;",
+    "    const body = document.createElement(\"div\");",
+    "    body.style.padding = \"0 16px 16px\";",
+    "    const hint = document.createElement(\"p\");",
+    "    hint.textContent = this.config?.replacement_hint ?? DEFAULT_CONFIG.replacement_hint;",
+    "    body.append(hint);",
+    "    const list = document.createElement(\"ul\");",
+    "    for (const entityId of this.config?.entities ?? DEFAULT_CONFIG.entities) {",
+    "      const item = document.createElement(\"li\");",
+    "      const state = this._hass?.states?.[entityId];",
+    "      item.textContent = state ? `${entityId}: ${state.state}` : `${entityId} (set your own entity)`;",
+    "      list.append(item);",
+    "    }",
+    "    body.append(list);",
+    "    wrapper.append(body);",
+    "    root.append(wrapper);",
+    "  }",
+    "}",
+    "",
+    `customElements.define("${customElementName}", ${className});`,
+    "window.customCards = window.customCards ?? [];",
+    "window.customCards.push({",
+    `  type: "${customElementName}",`,
+    `  name: ${JSON.stringify(defaultConfig.title)},`,
+    "  preview: true,",
+    `  description: ${JSON.stringify(defaultConfig.replacement_hint)},`,
+    "});",
+    "",
+  ].join("\n");
+}
+
+function createHomeAssistantCardEditorClassName(customElementName: string): string {
+  const words = customElementName.split("-").filter(Boolean);
+  return `${words.map(word => `${word[0]?.toUpperCase() ?? ""}${word.slice(1)}`).join("")}Card`;
 }
 
 function createStackFromSurfaceRows(

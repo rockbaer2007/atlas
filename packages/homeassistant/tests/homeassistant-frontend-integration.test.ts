@@ -11,10 +11,12 @@ import {
   createHomeAssistantCardEditorDependencyPlan,
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantCardEditorPackagePlan,
+  createHomeAssistantCardEditorScriptExport,
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
   listHomeAssistantCardEditorTemplates,
+  normalizeHomeAssistantCustomElementName,
   normalizeHomeAssistantCardEditorScriptFilename,
   inspectAtlasFrontendResourceAvailability,
   serializeHomeAssistantAtlasFrontendResourceReferences,
@@ -835,5 +837,31 @@ describe("Home Assistant frontend integration planning", () => {
     expect(normalizeHomeAssistantCardEditorScriptFilename("My Fancy Card")).toBe("my-fancy-card.js");
     expect(normalizeHomeAssistantCardEditorScriptFilename("already-ready.js")).toBe("already-ready.js");
     expect(normalizeHomeAssistantCardEditorScriptFilename("")).toBe("atlas-card.js");
+  });
+
+  it("creates an installable custom card script export with demo entity defaults", () => {
+    const scriptExport = createHomeAssistantCardEditorScriptExport({
+      cardName: "Energy Kitchen",
+      scriptFilename: "Energy Kitchen.js",
+      defaultEntityIds: ["sensor.energy_today", "binary_sensor.energy_ready"],
+    });
+
+    expect(scriptExport).toMatchObject({
+      filename: "energy-kitchen.js",
+      customElementName: "energy-kitchen",
+      cardType: "custom:energy-kitchen",
+      resourcePath: "/hacsfiles/atlas/energy-kitchen.js",
+      defaultConfig: {
+        type: "custom:energy-kitchen",
+        title: "Energy Kitchen",
+        entities: ["sensor.energy_today", "binary_sensor.energy_ready"],
+        replacement_hint: "Replace the demo entities with your own Home Assistant entities.",
+      },
+    });
+    expect(scriptExport.source).toContain("class EnergyKitchenCard extends HTMLElement");
+    expect(scriptExport.source).toContain("static getStubConfig()");
+    expect(scriptExport.source).toContain("customElements.define(\"energy-kitchen\"");
+    expect(normalizeHomeAssistantCustomElementName("Kitchen")).toBe("kitchen-card");
+    expect(normalizeHomeAssistantCustomElementName("123 Kitchen")).toBe("atlas-123-kitchen");
   });
 });

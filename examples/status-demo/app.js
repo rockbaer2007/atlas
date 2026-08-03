@@ -13,6 +13,7 @@ import {
   arrangeHomeAssistantCardEditorSurfaceFields,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorPackagePlan,
+  createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   decideHomeAssistantCardArtifactImport,
@@ -74,6 +75,7 @@ const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assi
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const exportHaCardPackage = document.querySelector("#export-ha-card-package");
+const exportHaCardScript = document.querySelector("#export-ha-card-script");
 const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
 const copyHaCardResources = document.querySelector("#copy-ha-card-resources");
 const checkHaCardResources = document.querySelector("#check-ha-card-resources");
@@ -166,6 +168,7 @@ const translations = {
     "button.exportHaCard": "Export HA card",
     "button.exportExpertHaCard": "Export Expert HA card",
     "button.exportCardPackage": "Export card package",
+    "button.exportCardScript": "Export card script",
     "button.copyHaCard": "Copy HA card",
     "button.copyExpertHaCard": "Copy Expert HA card",
     "button.copyResources": "Copy resources",
@@ -315,6 +318,7 @@ const translations = {
     "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
+    "message.scriptExported": "Card script exported as {scriptFilename}.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
     "message.atlasPackage": "ATLAS card package",
     "message.haCard": "HA card",
@@ -451,6 +455,7 @@ const translations = {
     "button.exportHaCard": "HA-Card exportieren",
     "button.exportExpertHaCard": "Expert-HA-Card exportieren",
     "button.exportCardPackage": "Card-Paket exportieren",
+    "button.exportCardScript": "Card-Script exportieren",
     "button.copyHaCard": "HA-Card kopieren",
     "button.copyExpertHaCard": "Expert-HA-Card kopieren",
     "button.copyResources": "Ressourcen kopieren",
@@ -600,6 +605,7 @@ const translations = {
     "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitaeten.",
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
+    "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
     "message.atlasPackage": "ATLAS-Card-Paket",
     "message.haCard": "HA-Card",
@@ -2681,11 +2687,13 @@ function createHaCardExportPayload() {
 
 function createHaCardExportPackage() {
   const card = createActiveHaCardConfig();
+  const editorPlan = createActiveCardEditorPlan();
   return createHomeAssistantCardExportPackage({
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
-    editorPlan: createActiveCardEditorPlan(),
+    editorPlan,
+    script: createHomeAssistantCardEditorScriptExport(editorPlan),
   });
 }
 
@@ -3366,6 +3374,20 @@ exportHaCardPackage.addEventListener("click", () => {
     scriptFilename: cardPackage.editorPlan?.scriptFilename ?? currentHaCardScriptFilename(),
   });
 });
+exportHaCardScript.addEventListener("click", () => {
+  if (!canExportHaCard()) {
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
+  const scriptExport = createHomeAssistantCardEditorScriptExport(createActiveCardEditorPlan());
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([scriptExport.source], { type: "text/javascript" }));
+  link.download = scriptExport.filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  statusMessage.textContent = t("message.scriptExported", { scriptFilename: scriptExport.filename });
+});
 copyHaCardConfig.addEventListener("click", async () => {
   if (!canExportHaCard()) {
     statusMessage.textContent = emptyEntitySelectionMessage;
@@ -3521,8 +3543,8 @@ importHaCardConfig.addEventListener("change", async () => {
     haCardTarget.value = summary.target;
     haCardLayout.value = summary.layout;
     haCardFormat.value = summary.format;
-    if (summary.editorPlan?.scriptFilename) {
-      haCardScriptFilename.value = summary.editorPlan.scriptFilename ?? "";
+    if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
+      haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
     }
     syncCardLayoutState();
     renderGroupOptions(id);
@@ -3530,7 +3552,7 @@ importHaCardConfig.addEventListener("change", async () => {
       expertEditorFields.splice(0, expertEditorFields.length, ...createHomeAssistantCardEditorPackagePlan(summary.editorPlan).fields);
       selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
       expertCardName.value = summary.editorPlan.cardName;
-      haCardScriptFilename.value = summary.editorPlan.scriptFilename;
+      haCardScriptFilename.value = summary.editorPlan.scriptFilename ?? summary.script?.filename ?? "";
       expertFieldEditing = false;
       renderEditorMode("expert");
     } else {

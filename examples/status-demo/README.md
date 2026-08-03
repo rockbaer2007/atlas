@@ -69,7 +69,11 @@ portable Atlas JSON envelope that can be imported back through the same HA card
 import control. The HACS script filename field controls the JavaScript filename
 stored in the embedded editor plan and normalizes names such as `Energy Kitchen`
 to `energy-kitchen.js`; the exported package download follows the same base
-name.
+name. The package also carries a generated custom-card JavaScript source with a
+matching `custom:<card-name>` type, Home Assistant `getStubConfig()` defaults
+and the demo-entity replacement hint for the later HACS card workflow. The
+same source can also be downloaded directly through the Export card script
+button.
 When the package is exported from Expert mode, the envelope also carries the
 Expert editor plan so a later import can restore the placed fields and switch
 back to Expert automatically.
