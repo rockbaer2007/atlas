@@ -9,6 +9,8 @@ import {
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
+  createHomeAssistantCardEditorConfiguration,
+  createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   decideHomeAssistantCardArtifactImport,
   formatHomeAssistantCardArtifactReviewLines,
@@ -25,6 +27,7 @@ import {
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
+  listHomeAssistantCardEditorTemplates,
   listHomeAssistantCardTargets,
   serializeHomeAssistantEntitiesCardConfiguration,
   summarizeHomeAssistantCardImport,
@@ -73,6 +76,19 @@ const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const selectedEntity = document.querySelector("#selected-entity");
+const expertTemplate = document.querySelector("#expert-template");
+const expertTarget = document.querySelector("#expert-target");
+const expertEntity = document.querySelector("#expert-entity");
+const expertColumn = document.querySelector("#expert-column");
+const expertRow = document.querySelector("#expert-row");
+const expertWidth = document.querySelector("#expert-width");
+const expertHeight = document.querySelector("#expert-height");
+const addExpertField = document.querySelector("#add-expert-field");
+const clearExpertFields = document.querySelector("#clear-expert-fields");
+const expertTemplatePalette = document.querySelector("#expert-template-palette");
+const expertEditorSummary = document.querySelector("#expert-editor-summary");
+const expertFieldList = document.querySelector("#expert-field-list");
+const expertEditorPreview = document.querySelector("#expert-editor-preview");
 const entityList = document.querySelector("#atlas-entity-list");
 const stackSelectionSummary = document.querySelector("#stack-selection-summary");
 const groupSummary = document.querySelector("#group-summary");
@@ -80,6 +96,8 @@ const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
+const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
+const expertEditorFields = [];
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
@@ -183,6 +201,25 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
   }
   haCardTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget) ? selectedTarget : "entities";
   syncCardLayoutState();
+}
+
+function renderExpertEditorOptions() {
+  expertTemplate.replaceChildren();
+  for (const template of cardEditorTemplates) {
+    const option = document.createElement("option");
+    option.value = template.id;
+    option.textContent = template.label;
+    expertTemplate.append(option);
+  }
+
+  expertTarget.replaceChildren();
+  for (const descriptor of cardTargets) {
+    const option = document.createElement("option");
+    option.value = descriptor.target;
+    option.textContent = descriptor.label;
+    expertTarget.append(option);
+  }
+  expertTarget.value = "bubble";
 }
 
 function syncCardLayoutState() {
@@ -551,6 +588,104 @@ function renderHaCardImportDecision(text) {
 
   haCardImportReview.textContent = `${decision.message} ${decision.inspection.reason}`;
   return decision;
+}
+
+function renderExpertTemplatePalette() {
+  expertTemplatePalette.replaceChildren();
+  for (const template of cardEditorTemplates) {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "expert-template-card";
+    item.classList.toggle("selected", template.id === expertTemplate.value);
+    item.dataset.template = template.id;
+
+    const title = document.createElement("strong");
+    title.textContent = template.label;
+    const detail = document.createElement("small");
+    detail.textContent = `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${template.target}`;
+    const preview = document.createElement("span");
+    preview.textContent = template.preview.join(" / ");
+
+    item.append(title, detail, preview);
+    item.addEventListener("click", () => selectExpertTemplate(template.id));
+    expertTemplatePalette.append(item);
+  }
+}
+
+function selectExpertTemplate(templateId) {
+  const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+  if (!template) return;
+  expertTemplate.value = template.id;
+  expertWidth.value = String(template.defaultWidth);
+  expertHeight.value = String(template.defaultHeight);
+  expertTarget.value = template.target;
+  renderExpertTemplatePalette();
+}
+
+function renderExpertFieldList() {
+  expertFieldList.replaceChildren();
+  if (expertEditorFields.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "No expert fields added.";
+    expertFieldList.append(empty);
+    return;
+  }
+
+  expertEditorFields.forEach((field, index) => {
+    const item = document.createElement("div");
+    item.className = "expert-field-row";
+    const text = document.createElement("span");
+    text.textContent = `${field.id}: ${field.target}, ${field.layout ?? "card"}, ${field.entityId || "demo entity"}, c${field.column + 1}/r${field.row + 1}`;
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "icon-button";
+    remove.textContent = "🗑";
+    remove.title = `Remove ${field.id}`;
+    remove.setAttribute("aria-label", `Remove ${field.id}`);
+    remove.addEventListener("click", () => {
+      expertEditorFields.splice(index, 1);
+      renderExpertEditorPreview();
+      statusMessage.textContent = `${field.id} removed from the Expert editor preview.`;
+    });
+    item.append(text, remove);
+    expertFieldList.append(item);
+  });
+}
+
+function renderExpertEditorPreview() {
+  if (expertEditorFields.length === 0) {
+    expertEditorSummary.textContent = "Expert fields: 0.";
+    expertEditorPreview.textContent = "Add a template field to preview the Expert editor output.";
+    renderExpertFieldList();
+    return;
+  }
+
+  const card = createHomeAssistantCardEditorConfiguration({
+    cardName: homeAssistantGroupName.value.trim() || "ATLAS Expert card",
+    editorMode: "expert",
+    fields: expertEditorFields,
+  });
+  expertEditorSummary.textContent = `Expert fields: ${expertEditorFields.length}.`;
+  expertEditorPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+  renderExpertFieldList();
+}
+
+function addExpertEditorField() {
+  const entityId = expertEntity.value.trim() || currentEntityId();
+  const field = createHomeAssistantCardEditorFieldFromTemplate({
+    template: expertTemplate.value,
+    target: expertTarget.value,
+    entityId,
+    id: `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
+    column: Number(expertColumn.value),
+    row: Number(expertRow.value),
+    width: Number(expertWidth.value),
+    height: Number(expertHeight.value),
+  });
+  expertEditorFields.push(field);
+  expertEntity.value = "";
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${field.id} added to the Expert editor preview.`;
 }
 
 function createHaCardExportPayload() {
@@ -1046,6 +1181,16 @@ haCardLayout.addEventListener("change", () => {
 haCardFormat.addEventListener("change", () => {
   persistConfiguration();
   renderHaCardPreview();
+  renderExpertEditorPreview();
+});
+expertTemplate.addEventListener("change", () => {
+  selectExpertTemplate(expertTemplate.value);
+});
+addExpertField.addEventListener("click", addExpertEditorField);
+clearExpertFields.addEventListener("click", () => {
+  expertEditorFields.length = 0;
+  renderExpertEditorPreview();
+  statusMessage.textContent = "Expert editor preview cleared.";
 });
 saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();
@@ -1260,6 +1405,9 @@ disconnectButton.addEventListener("click", disconnectHomeAssistant);
 
 void renderEntityState("on");
 renderCardTargetOptions(initialCardTarget);
+renderExpertEditorOptions();
+renderExpertTemplatePalette();
+renderExpertEditorPreview();
 syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();

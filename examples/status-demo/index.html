@@ -326,6 +326,94 @@
         overflow-wrap: anywhere;
       }
 
+      .expert-editor-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .expert-editor-controls .wide {
+        grid-column: 1 / -1;
+      }
+
+      .expert-template-palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+      }
+
+      .expert-template-card {
+        display: grid;
+        gap: 4px;
+        min-height: 84px;
+        box-sizing: border-box;
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+        cursor: pointer;
+        text-align: left;
+      }
+
+      .expert-template-card:hover,
+      .expert-template-card:focus-visible {
+        border-color: #0f766e;
+        outline: none;
+      }
+
+      .expert-template-card.selected {
+        border-color: #0f766e;
+        box-shadow: inset 0 0 0 1px #0f766e;
+      }
+
+      .expert-template-card strong {
+        overflow-wrap: anywhere;
+      }
+
+      .expert-template-card small,
+      .expert-template-card span {
+        color: #536079;
+        font-size: 12px;
+      }
+
+      .expert-field-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .expert-field-list p {
+        margin: 0;
+        color: #536079;
+      }
+
+      .expert-field-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-height: 36px;
+        padding: 8px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .expert-field-row span {
+        overflow-wrap: anywhere;
+      }
+
+      .expert-field-row .icon-button {
+        width: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        display: inline-grid;
+        place-items: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #b91c1c;
+      }
+
       #atlas-entity-list {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -577,6 +665,34 @@
         <div class="ha-card-preview">
           <label for="ha-card-preview">HA card code</label>
           <pre id="ha-card-preview" aria-live="polite"></pre>
+        </div>
+        <h2 class="entity-section-title">Expert editor preview</h2>
+        <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
+        <div class="expert-editor-controls">
+          <label for="expert-template">Template</label>
+          <select id="expert-template"></select>
+          <label for="expert-target">Card family</label>
+          <select id="expert-target"></select>
+          <label class="wide" for="expert-entity">Entity</label>
+          <input class="wide" id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
+          <label for="expert-column">Column</label>
+          <input id="expert-column" type="number" min="0" max="11" value="0">
+          <label for="expert-row">Row</label>
+          <input id="expert-row" type="number" min="0" max="11" value="0">
+          <label for="expert-width">Width</label>
+          <input id="expert-width" type="number" min="1" max="12" value="3">
+          <label for="expert-height">Height</label>
+          <input id="expert-height" type="number" min="1" max="12" value="2">
+        </div>
+        <div class="connection-actions">
+          <button id="add-expert-field" type="button">Add template</button>
+          <button id="clear-expert-fields" type="button">Clear expert preview</button>
+        </div>
+        <output id="expert-editor-summary" aria-live="polite"></output>
+        <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
+        <div class="ha-card-preview">
+          <label for="expert-editor-preview">Expert HA card code</label>
+          <pre id="expert-editor-preview" aria-live="polite"></pre>
         </div>
       </div>
       <h2 class="entity-section-title">ATLAS Status Preview</h2>

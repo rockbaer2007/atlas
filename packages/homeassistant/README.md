@@ -138,6 +138,11 @@ importing it.
 The status demo uses this flow before HA-card imports: supported ATLAS packages
 and raw Home Assistant cards import directly, external card-builder-shaped files
 show a compatibility review, and unknown content is rejected before parsing.
+The demo now also shows a first Expert editor preview using the shared,
+clickable template palette and grid placement contracts. Hosts can add
+template-backed fields and inspect the generated nested Home Assistant card code
+before a full drag-and-drop surface exists. The demo field list also supports
+removing individual preview fields.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
