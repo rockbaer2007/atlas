@@ -12,6 +12,7 @@ import {
   analyzeHomeAssistantCardEditorSurface,
   arrangeHomeAssistantCardEditorSurfaceFields,
   createHomeAssistantCardEditorConfiguration,
+  createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   decideHomeAssistantCardArtifactImport,
@@ -174,6 +175,7 @@ const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
 let statusPreviewEntityId;
 let pendingImport;
+let initialEditorMode = "simple";
 let initialGroupSelection = "overview";
 let initialCardTarget = "entities";
 let panelGroups = [
@@ -228,6 +230,18 @@ try {
       columns: clampExpertEditorSurfaceDelta(savedConfiguration.expertEditorSurfaceSize.columns),
       rows: clampExpertEditorSurfaceDelta(savedConfiguration.expertEditorSurfaceSize.rows),
     };
+  }
+  if (Array.isArray(savedConfiguration?.expertEditorFields)) {
+    expertEditorFields.push(...createHomeAssistantCardEditorPackagePlan({
+      editorMode: "expert",
+      fields: savedConfiguration.expertEditorFields,
+    }).fields);
+  }
+  if (Number.isInteger(savedConfiguration?.selectedExpertFieldIndex)) {
+    selectedExpertFieldIndex = Math.max(-1, Math.min(expertEditorFields.length - 1, savedConfiguration.selectedExpertFieldIndex));
+  }
+  if (savedConfiguration?.editorMode === "expert") {
+    initialEditorMode = "expert";
   }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
@@ -412,6 +426,9 @@ function persistConfiguration() {
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       expertEditorSurfaceSize,
+      expertEditorFields,
+      selectedExpertFieldIndex,
+      editorMode: activeEditorMode,
       groups: panelGroups,
     }));
   } catch {
@@ -757,6 +774,16 @@ function createExpertHaCardConfig() {
 
 function createActiveHaCardConfig() {
   return activeEditorMode === "expert" ? createExpertHaCardConfig() : createHaCardConfig();
+}
+
+function createActiveCardEditorPlan() {
+  return createHomeAssistantCardEditorPackagePlan({
+    cardName: currentHaCardExportName(),
+    editorMode: activeEditorMode,
+    simpleTarget: haCardTarget.value,
+    defaultEntityIds: cardPreviewEntityIds(),
+    fields: activeEditorMode === "expert" ? expertEditorFields : [],
+  });
 }
 
 function currentHaCardExportName() {
@@ -1111,6 +1138,7 @@ function renderExpertFieldList() {
       } else if (selectedExpertFieldIndex > index) {
         selectedExpertFieldIndex -= 1;
       }
+      persistConfiguration();
       renderExpertEditorPreview();
       statusMessage.textContent = `${field.id} removed from the Expert editor preview.`;
     });
@@ -1155,6 +1183,7 @@ function updateSelectedExpertFieldTitle(title) {
     id: nextTitle,
     entries: renameExpertFieldEntries(field, nextTitle),
   };
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${nextTitle} set as Expert field title.`;
   return true;
@@ -1185,6 +1214,7 @@ function updateSelectedExpertFieldTarget() {
       ...(nextBubbleButtonType ? { bubbleButtonType: nextBubbleButtonType } : { bubbleButtonType: undefined }),
     })),
   };
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} card family updated to ${nextTarget}.`;
 }
@@ -1200,6 +1230,7 @@ function updateSelectedExpertFieldBubbleType() {
       bubbleButtonType: expertBubbleButtonType.value,
     })),
   };
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} Bubble button type set to ${expertBubbleButtonType.value}.`;
 }
@@ -1317,6 +1348,7 @@ function arrangeExpertEditorFields() {
   });
   expertEditorFields.splice(0, expertEditorFields.length, ...arrangedFields);
   selectedExpertFieldIndex = Math.min(Math.max(0, selectedExpertFieldIndex), expertEditorFields.length - 1);
+  persistConfiguration();
   renderExpertEditorPreview();
   const nextOverlapCount = analyzeHomeAssistantCardEditorSurface(expertEditorFields).overlapCount;
   statusMessage.textContent = `Expert fields arranged. Overlaps: ${previousOverlapCount} -> ${nextOverlapCount}.`;
@@ -1348,6 +1380,7 @@ function updateSelectedExpertFieldGeometry() {
   expertRow.value = String(row);
   expertWidth.value = String(width);
   expertHeight.value = String(height);
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} resized to ${width}x${height}.`;
   return true;
@@ -1372,6 +1405,7 @@ function applyEntityToSelectedExpertField(entityId) {
     entityId,
     entries,
   };
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${entityId} assigned to ${title}.`;
   return true;
@@ -1406,6 +1440,7 @@ function selectExpertEditorField(index) {
   syncExpertBubbleTypeControl();
   expertTitle.value = field.id;
   expertEntity.value = field.entityId;
+  persistConfiguration();
   renderExpertFieldList();
   renderExpertEditorSurface();
   statusMessage.textContent = `${field.id} selected on the Expert editor surface.`;
@@ -1573,6 +1608,7 @@ function resizeExpertEditorFieldBy(index, delta) {
   expertWidth.value = String(nextWidth);
   expertHeight.value = String(nextHeight);
   selectedExpertFieldIndex = index;
+  persistConfiguration();
   renderExpertEditorPreview();
   focusExpertSurfaceField(index);
   statusMessage.textContent = `${field.id} resized to ${nextWidth}x${nextHeight}.`;
@@ -1655,6 +1691,7 @@ function startExpertFieldResize(event, index, corner, tile) {
     window.removeEventListener("pointermove", applyResize);
     window.removeEventListener("pointerup", finishResize);
     tile.draggable = true;
+    persistConfiguration();
     renderExpertEditorPreview();
     const resizedField = expertEditorFields[index];
     statusMessage.textContent = `${resizedField.id} resized to ${resizedField.width}x${resizedField.height}.`;
@@ -1719,6 +1756,7 @@ function addExpertEditorField() {
   expertFieldEditing = false;
   expertTitle.value = field.id;
   expertEntity.value = "";
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} added to the Expert editor preview.`;
 }
@@ -1789,6 +1827,7 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
   expertFieldEditing = false;
   expertTitle.value = field.id;
   expertEntity.value = "";
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} placed on the Expert editor surface.`;
 }
@@ -1836,6 +1875,7 @@ function moveExpertEditorField(index, placement) {
   selectedExpertFieldIndex = index;
   expertColumn.value = String(column);
   expertRow.value = String(row);
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} moved on the Expert editor surface.`;
 }
@@ -1855,6 +1895,7 @@ function createHaCardExportPackage() {
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
+    editorPlan: createActiveCardEditorPlan(),
   });
 }
 
@@ -2345,6 +2386,7 @@ haCardFormat.addEventListener("change", () => {
 for (const button of editorModeButtons) {
   button.addEventListener("click", () => {
     renderEditorMode(button.dataset.editorMode);
+    persistConfiguration();
   });
 }
 expertTemplate.addEventListener("change", () => {
@@ -2378,6 +2420,7 @@ clearExpertFields.addEventListener("click", () => {
   selectedExpertFieldIndex = -1;
   expertFieldEditing = false;
   expertTitle.value = "";
+  persistConfiguration();
   renderExpertEditorPreview();
   statusMessage.textContent = "Expert editor preview cleared.";
 });
@@ -2462,6 +2505,10 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardFormat: haCardFormat.value,
     stackEntityIds: selectedStackEntityIds(),
     expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
+    expertEditorSurfaceSize,
+    expertEditorFields,
+    selectedExpertFieldIndex,
+    editorMode: activeEditorMode,
     groups: panelGroups,
   }, null, 2);
   const link = document.createElement("a");
@@ -2560,6 +2607,25 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
       haCardFormat.value = pendingImport.cardFormat;
     }
+    if (pendingImport.expertEditorSurfaceSize && typeof pendingImport.expertEditorSurfaceSize === "object") {
+      expertEditorSurfaceSize = {
+        columns: clampExpertEditorSurfaceDelta(pendingImport.expertEditorSurfaceSize.columns),
+        rows: clampExpertEditorSurfaceDelta(pendingImport.expertEditorSurfaceSize.rows),
+      };
+    } else {
+      expertEditorSurfaceSize = { columns: 0, rows: 0 };
+    }
+    expertEditorFields.length = 0;
+    if (Array.isArray(pendingImport.expertEditorFields)) {
+      expertEditorFields.push(...createHomeAssistantCardEditorPackagePlan({
+        editorMode: "expert",
+        fields: pendingImport.expertEditorFields,
+      }).fields);
+    }
+    selectedExpertFieldIndex = Number.isInteger(pendingImport.selectedExpertFieldIndex)
+      ? Math.max(-1, Math.min(expertEditorFields.length - 1, pendingImport.selectedExpertFieldIndex))
+      : -1;
+    expertFieldEditing = false;
     stackSelectedEntityIds.clear();
     if (Array.isArray(pendingImport.stackEntityIds)) {
       for (const entityId of pendingImport.stackEntityIds) {
@@ -2570,6 +2636,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     }
     syncCardLayoutState();
     renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
+    renderEditorMode(pendingImport.editorMode === "expert" ? "expert" : "simple");
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
     renderConnectionReadiness();
@@ -2609,6 +2676,17 @@ importHaCardConfig.addEventListener("change", async () => {
     haCardFormat.value = summary.format;
     syncCardLayoutState();
     renderGroupOptions(id);
+    if (summary.editorPlan?.editorMode === "expert") {
+      expertEditorFields.splice(0, expertEditorFields.length, ...createHomeAssistantCardEditorPackagePlan(summary.editorPlan).fields);
+      selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
+      expertFieldEditing = false;
+      renderEditorMode("expert");
+    } else {
+      expertEditorFields.length = 0;
+      selectedExpertFieldIndex = -1;
+      expertFieldEditing = false;
+      renderEditorMode("simple");
+    }
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
     statusMessage.textContent = `${summary.packaged ? "ATLAS card package" : "HA card"} ${summary.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
@@ -2629,4 +2707,4 @@ syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
-renderEditorMode("simple");
+renderEditorMode(initialEditorMode);

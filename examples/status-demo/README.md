@@ -44,6 +44,8 @@ browser. After an unexpected socket close, the open page retries up to three
 times with its in-memory token; a manual disconnect stops retries. A normal
 browser close with code `1000` is shown as a regular ATLAS connection close
 instead of a raw WebSocket code.
+The current editor mode, Expert fields, selected Expert field and resized
+Expert surface are also restored from the same local browser storage.
 
 The panel-group selector provides quick entity sets for overview, energy and
 safety. Selecting a group only updates the local entity list.
@@ -59,6 +61,9 @@ download use the same export payload and require at least one selected entity.
 The card package export wraps the manifest and serialized card content in a
 portable Atlas JSON envelope that can be imported back through the same HA card
 import control.
+When the package is exported from Expert mode, the envelope also carries the
+Expert editor plan so a later import can restore the placed fields and switch
+back to Expert automatically.
 When Expert mode is active, the simple card-layout selector and simple HA card
 code block are hidden. Copy and export actions then use the Expert HA card code
 generated from the editor surface.

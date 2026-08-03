@@ -8,6 +8,7 @@ import {
   createHomeAssistantEntitiesCardConfiguration,
   createHomeAssistantLovelaceResourceReferences,
   createHomeAssistantCardArtifactReview,
+  createHomeAssistantCardEditorPackagePlan,
   decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
   formatHomeAssistantCardArtifactReviewLines,
@@ -479,6 +480,21 @@ describe("Home Assistant entities card configuration", () => {
       card,
       format: "yaml",
       name: "Office Light",
+      editorPlan: createHomeAssistantCardEditorPackagePlan({
+        cardName: "Office Light",
+        editorMode: "expert",
+        simpleTarget: "bubble",
+        fields: [{
+          id: "Office light",
+          target: "bubble",
+          bubbleButtonType: "switch",
+          entityId: "light.office",
+          column: 1,
+          row: 2,
+          width: 3,
+          height: 2,
+        }],
+      }),
     });
 
     expect(cardPackage).toMatchObject({
@@ -490,6 +506,19 @@ describe("Home Assistant entities card configuration", () => {
         target: "bubble",
         layout: "single",
       },
+      editorPlan: {
+        editorMode: "expert",
+        fields: [{
+          id: "Office light",
+          target: "bubble",
+          bubbleButtonType: "switch",
+          entityId: "light.office",
+          column: 1,
+          row: 2,
+          width: 3,
+          height: 2,
+        }],
+      },
     });
     expect(cardPackage.content).toContain("type: \"custom:bubble-card\"");
 
@@ -500,6 +529,19 @@ describe("Home Assistant entities card configuration", () => {
       target: "bubble",
       layout: "single",
       packaged: true,
+      editorPlan: {
+        editorMode: "expert",
+        fields: [{
+          id: "Office light",
+          target: "bubble",
+          bubbleButtonType: "switch",
+          entityId: "light.office",
+          column: 1,
+          row: 2,
+          width: 3,
+          height: 2,
+        }],
+      },
     });
     expect(summarizeHomeAssistantCardImport(cardPackage.content)).toMatchObject({
       packaged: false,

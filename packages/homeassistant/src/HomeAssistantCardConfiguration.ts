@@ -1,3 +1,5 @@
+import type { HomeAssistantCardEditorPackagePlan } from "./HomeAssistantCardEditorPlan";
+
 export interface HomeAssistantEntitiesCardEntity {
   readonly entity: string;
 }
@@ -174,6 +176,7 @@ export interface HomeAssistantCardExportManifestInput {
   readonly card: HomeAssistantCardConfiguration;
   readonly format: HomeAssistantCardExportFormat;
   readonly name?: string;
+  readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
 }
 
 export interface HomeAssistantCardExportManifest {
@@ -198,6 +201,7 @@ export interface HomeAssistantCardExportPackage {
   readonly kind: "atlas.homeassistant.card";
   readonly manifest: HomeAssistantCardExportManifest;
   readonly content: string;
+  readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
 }
 
 export interface HomeAssistantCardImportSummary {
@@ -209,6 +213,7 @@ export interface HomeAssistantCardImportSummary {
   readonly layout: HomeAssistantCardLayout;
   readonly dependency: HomeAssistantCardDependency;
   readonly packaged: boolean;
+  readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
 }
 
 const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
@@ -489,6 +494,7 @@ export function createHomeAssistantCardExportPackage(
     version: 1,
     kind: "atlas.homeassistant.card",
     ...createHomeAssistantCardExportPayload(input),
+    ...(input.editorPlan ? { editorPlan: input.editorPlan } : {}),
   };
 }
 
@@ -519,6 +525,7 @@ export function summarizeHomeAssistantCardImport(text: string): HomeAssistantCar
     entityIds: getHomeAssistantCardEntityIds(parsed.card),
     dependency: inspectHomeAssistantCardDependency(parsed.card),
     packaged: packageCandidate !== undefined,
+    ...(packageCandidate?.editorPlan ? { editorPlan: packageCandidate.editorPlan } : {}),
   };
 }
 
@@ -945,6 +952,7 @@ function parseHomeAssistantCardExportPackage(text: string): HomeAssistantCardExp
       kind: "atlas.homeassistant.card",
       manifest: parsed.manifest as unknown as HomeAssistantCardExportManifest,
       content: parsed.content,
+      ...(isRecord(parsed.editorPlan) ? { editorPlan: parsed.editorPlan as unknown as HomeAssistantCardEditorPackagePlan } : {}),
     };
   } catch {
     return undefined;
