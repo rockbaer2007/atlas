@@ -102,6 +102,13 @@ const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const expertEditorFields = [];
+const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
+  template.id,
+  {
+    columns: String(template.defaultWidth),
+    rows: "auto",
+  },
+]));
 const expertGridColumns = 12;
 const expertGridRows = 12;
 let connection;
@@ -610,11 +617,12 @@ function renderHaCardImportDecision(text) {
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
   for (const template of cardEditorTemplates) {
-    const item = document.createElement("button");
-    item.type = "button";
+    const item = document.createElement("article");
     item.className = "expert-template-card";
     item.classList.toggle("selected", template.id === expertTemplate.value);
     item.draggable = true;
+    item.tabIndex = 0;
+    item.role = "button";
     item.dataset.template = template.id;
 
     const title = document.createElement("strong");
@@ -625,9 +633,16 @@ function renderExpertTemplatePalette() {
     preview.textContent = template.preview.join(" / ");
     const availability = document.createElement("span");
     availability.textContent = formatExpertTemplateAvailability(template.target);
+    const sizing = createExpertTemplateSizingControls(template);
 
-    item.append(title, detail, preview, availability);
+    item.append(title, detail, preview, availability, sizing);
     item.addEventListener("click", () => selectExpertTemplate(template.id));
+    item.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectExpertTemplate(template.id);
+      }
+    });
     item.addEventListener("dragstart", event => {
       event.dataTransfer?.setData("text/plain", template.id);
       event.dataTransfer?.setData("application/x-atlas-template", template.id);
@@ -639,6 +654,59 @@ function renderExpertTemplatePalette() {
     });
     expertTemplatePalette.append(item);
   }
+}
+
+function createExpertTemplateSizingControls(template) {
+  const sizing = expertTemplateSizing.get(template.id) ?? { columns: String(template.defaultWidth), rows: "auto" };
+  const controls = document.createElement("span");
+  controls.className = "expert-template-sizing";
+
+  const columns = document.createElement("select");
+  columns.setAttribute("aria-label", `${template.label} columns`);
+  for (let index = 1; index <= expertGridColumns; index += 1) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `${index} col`;
+    columns.append(option);
+  }
+  const full = document.createElement("option");
+  full.value = "full";
+  full.textContent = "full";
+  columns.append(full);
+  columns.value = sizing.columns;
+
+  const rows = document.createElement("select");
+  rows.setAttribute("aria-label", `${template.label} rows`);
+  const auto = document.createElement("option");
+  auto.value = "auto";
+  auto.textContent = "auto";
+  rows.append(auto);
+  for (let index = 1; index <= 8; index += 1) {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `${index} row`;
+    rows.append(option);
+  }
+  rows.value = sizing.rows;
+
+  const update = () => {
+    expertTemplateSizing.set(template.id, {
+      columns: columns.value,
+      rows: rows.value,
+    });
+    if (expertTemplate.value === template.id) {
+      syncExpertInputsFromTemplateSizing(template.id);
+    }
+  };
+  for (const control of [columns, rows]) {
+    control.addEventListener("click", event => event.stopPropagation());
+    control.addEventListener("mousedown", event => event.stopPropagation());
+    control.addEventListener("dragstart", event => event.stopPropagation());
+    control.addEventListener("change", update);
+  }
+
+  controls.append(columns, rows);
+  return controls;
 }
 
 function formatExpertTemplateAvailability(target) {
@@ -653,10 +721,17 @@ function selectExpertTemplate(templateId) {
   const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
   if (!template) return;
   expertTemplate.value = template.id;
-  expertWidth.value = String(template.defaultWidth);
-  expertHeight.value = String(template.defaultHeight);
+  syncExpertInputsFromTemplateSizing(template.id);
   expertTarget.value = template.target;
   renderExpertTemplatePalette();
+}
+
+function syncExpertInputsFromTemplateSizing(templateId) {
+  const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+  if (!template) return;
+  const sizing = expertTemplateSizing.get(templateId) ?? { columns: String(template.defaultWidth), rows: "auto" };
+  expertWidth.value = sizing.columns === "full" ? String(expertGridColumns) : sizing.columns;
+  expertHeight.value = sizing.rows === "auto" ? String(template.defaultHeight) : sizing.rows;
 }
 
 function renderExpertFieldList() {
@@ -758,13 +833,14 @@ function renderExpertEditorPreview() {
 
 function addExpertEditorField() {
   const entityId = expertEntity.value.trim() || currentEntityId();
+  const sizing = resolveExpertTemplateSizing(expertTemplate.value);
   const field = createExpertEditorField({
     templateId: expertTemplate.value,
     entityId,
     column: Number(expertColumn.value),
     row: Number(expertRow.value),
-    width: Number(expertWidth.value),
-    height: Number(expertHeight.value),
+    width: sizing.width,
+    height: sizing.height,
   });
   expertEditorFields.push(field);
   expertEntity.value = "";
@@ -773,6 +849,13 @@ function addExpertEditorField() {
 }
 
 function createExpertEditorField(input) {
+  const template = cardEditorTemplates.find(candidate => candidate.id === input.templateId);
+  const stackEntityIds = template?.layout === "horizontal-stack" || template?.layout === "vertical-stack"
+    ? selectedStackEntityIds()
+    : [];
+  const width = template?.layout === "horizontal-stack"
+    ? Math.min(expertGridColumns, Math.max(1, input.width) * Math.max(1, stackEntityIds.length))
+    : input.width;
   const field = createHomeAssistantCardEditorFieldFromTemplate({
     template: input.templateId,
     target: expertTarget.value,
@@ -780,26 +863,47 @@ function createExpertEditorField(input) {
     id: `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
     column: input.column,
     row: input.row,
-    width: input.width,
+    width,
     height: input.height,
   });
+  if (stackEntityIds.length > 1 && field.layout !== "card") {
+    return {
+      ...field,
+      entityId: "",
+      entries: stackEntityIds.map((entityId, index) => ({
+        id: `${field.id} item ${index + 1}`,
+        target: expertTarget.value,
+        entityId,
+      })),
+    };
+  }
   return field;
 }
 
 function addExpertEditorFieldFromTemplate(templateId, placement = calculateExpertDropPlacement()) {
   selectExpertTemplate(templateId);
+  const sizing = resolveExpertTemplateSizing(templateId);
   const field = createExpertEditorField({
     templateId,
     entityId: expertEntity.value.trim() || currentEntityId(),
     column: placement.column,
     row: placement.row,
-    width: Number(expertWidth.value),
-    height: Number(expertHeight.value),
+    width: sizing.width,
+    height: sizing.height,
   });
   expertEditorFields.push(field);
   expertEntity.value = "";
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} placed on the Expert editor surface.`;
+}
+
+function resolveExpertTemplateSizing(templateId) {
+  const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+  const sizing = expertTemplateSizing.get(templateId);
+  return {
+    width: sizing?.columns === "full" ? expertGridColumns : Number(sizing?.columns ?? template?.defaultWidth ?? expertWidth.value),
+    height: sizing?.rows === "auto" ? template?.defaultHeight ?? Number(expertHeight.value) : Number(sizing?.rows ?? expertHeight.value),
+  };
 }
 
 function calculateExpertDropPlacement(event) {

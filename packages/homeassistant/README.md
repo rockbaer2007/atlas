@@ -153,6 +153,12 @@ columns and `empty-column` cards. Advanced Bubble Card details such as
 `modules`, `styles`, `grid_options`, sliders and sub-buttons are planned as a
 later preservation layer.
 
+The visible Expert demo surface now uses a larger Home Assistant-like
+12-column grid. Sidebar templates expose per-block sizing controls for columns
+1-12 or `full`, plus rows `auto` or 1-8. Core templates start with the same
+default footprint, while horizontal-stack drops can grow with the selected stack
+entity count.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

@@ -144,6 +144,9 @@ additional envelope-only contract expansion.
 * Drag-and-drop from the Expert sidebar palette into the editor surface
 * Simple/Expert editor mode switch in the status demo
 * Movable Expert editor field tiles on a bounded layout surface
+* Home Assistant-like visible 12-column Expert editor grid with a larger editing surface
+* Per-sidebar-template column and row sizing controls, including full width and auto height
+* Unified default template footprint for Entity, State, Switch, horizontal-stack and vertical-stack blocks
 * Sidebar availability hints from Home Assistant Lovelace resources for installed custom card families
 * Grid-bounded placement for selected templates on the Expert editor surface
 * Evaluate `studiobts/home-assistant-card-builder` as an AGPL-3.0 external reference without copying source code into ATLAS

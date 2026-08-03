@@ -653,7 +653,7 @@ describe("Home Assistant entities card configuration", () => {
           layout: "card",
           column: 0,
           row: 0,
-          width: 3,
+          width: 4,
           height: 2,
         },
         {
@@ -662,7 +662,7 @@ describe("Home Assistant entities card configuration", () => {
           layout: "card",
           column: 6,
           row: 0,
-          width: 3,
+          width: 4,
           height: 2,
         },
       ],

@@ -22,7 +22,7 @@
       }
 
       main {
-        width: min(100%, 560px);
+        width: min(100%, 1180px);
       }
 
       h1 {
@@ -358,7 +358,7 @@
 
       .expert-editor-workbench {
         display: grid;
-        grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+        grid-template-columns: minmax(220px, 280px) minmax(640px, 1fr);
         gap: 12px;
         align-items: start;
       }
@@ -388,6 +388,18 @@
         background: #ffffff;
         cursor: pointer;
         text-align: left;
+      }
+
+      .expert-template-sizing {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+
+      .expert-template-sizing select {
+        min-height: 32px;
+        padding: 4px 6px;
+        font-size: 12px;
       }
 
       .expert-template-card:hover,
@@ -421,11 +433,15 @@
       }
 
       .expert-editor-dropzone {
-        min-height: 112px;
+        min-height: 448px;
         padding: 14px;
         border: 1px dashed #0f766e;
         border-radius: 6px;
-        background: #f8fffd;
+        background:
+          linear-gradient(to right, rgba(15, 118, 110, 0.16) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 118, 110, 0.16) 1px, transparent 1px),
+          #f8fffd;
+        background-size: calc(100% / 12) 100%, 100% calc(100% / 12), auto;
         color: #115e59;
         text-align: center;
       }
@@ -433,9 +449,9 @@
       .expert-surface-grid {
         display: grid;
         grid-template-columns: repeat(12, minmax(0, 1fr));
-        grid-template-rows: repeat(12, minmax(18px, auto));
+        grid-template-rows: repeat(12, minmax(32px, 1fr));
         gap: 6px;
-        min-height: 220px;
+        min-height: 420px;
       }
 
       .expert-surface-grid p {

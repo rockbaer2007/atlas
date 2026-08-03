@@ -83,6 +83,10 @@ host choose or drag a card template into the editor surface, places the field on
 the bounded expert grid and renders the resulting nested Home Assistant card
 code. Added fields are shown as movable tiles on the surface and are also listed
 with a remove button so the preview can be adjusted without clearing the whole
-surface. The sidebar uses loaded Lovelace resources to mark custom card families
-as installed, missing or unchecked. This is still a preview surface, not the
-final drag-and-drop editor.
+surface. The surface now uses a larger visible 12-column Home Assistant-like
+grid. Each sidebar template exposes its own column and row controls, including
+`full` width and `auto` height. Entity List, State Button, Switch Button,
+horizontal-stack and vertical-stack start from the same default footprint so
+layout adjustments are predictable. The sidebar uses loaded Lovelace resources
+to mark custom card families as installed, missing or unchecked. This is still a
+preview surface, not the final drag-and-drop editor.

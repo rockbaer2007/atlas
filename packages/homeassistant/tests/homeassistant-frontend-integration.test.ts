@@ -223,6 +223,13 @@ describe("Home Assistant frontend integration planning", () => {
       "vertical-stack",
       "horizontal-stack",
     ]);
+    expect(listHomeAssistantCardEditorTemplates().map(template => [template.id, template.defaultWidth, template.defaultHeight])).toEqual([
+      ["entity-list", 4, 2],
+      ["state-button", 4, 2],
+      ["switch-button", 4, 2],
+      ["vertical-stack", 4, 2],
+      ["horizontal-stack", 4, 2],
+    ]);
     expect(findHomeAssistantCardEditorTemplate("switch-button")).toMatchObject({
       label: "Switch button",
       target: "bubble",
@@ -280,7 +287,7 @@ describe("Home Assistant frontend integration planning", () => {
       column: 2,
       row: 1,
       width: 4,
-      height: 4,
+      height: 2,
     });
   });
 
