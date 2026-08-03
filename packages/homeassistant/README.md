@@ -135,6 +135,9 @@ ATLAS can also preview editor fields from mapped external blocks. These fields
 are placed onto the expert grid with empty entities and remain marked as
 review-required, so a host can show the conversion result without silently
 importing it.
+The status demo uses this flow before HA-card imports: supported ATLAS packages
+and raw Home Assistant cards import directly, external card-builder-shaped files
+show a compatibility review, and unknown content is rejected before parsing.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

@@ -10,6 +10,7 @@ import {
   createHomeAssistantCardArtifactReview,
   decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
+  formatHomeAssistantCardArtifactReviewLines,
   inspectHomeAssistantCardArtifact,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
@@ -668,6 +669,27 @@ describe("Home Assistant entities card configuration", () => {
       unmappedBlocks: ["unknown"],
       requiresReview: true,
     });
+  });
+
+  it("formats review lines for host UI output", () => {
+    expect(formatHomeAssistantCardArtifactReviewLines(JSON.stringify({
+      card_builder_version: "2.6.0",
+      blocks: [
+        { id: "main", type: "entity-state" },
+      ],
+      entity_slots: [],
+    }))).toEqual([
+      "Show a compatibility review before importing this external card-builder artifact.",
+      "License boundary: External card-builder artifacts require explicit compatibility mapping and attribution review before import.",
+      "Block model: 1 possible visual blocks detected.",
+      "Entity slots: 0 possible entity slots detected.",
+      "Next step: Map the external artifact into ATLAS template fields before enabling import.",
+      "Mapped fields: 1.",
+      "Unmapped blocks: none.",
+    ]);
+    expect(formatHomeAssistantCardArtifactReviewLines("not a card")).toEqual([
+      "Reject this artifact because ATLAS cannot identify a safe import path.",
+    ]);
   });
 
   it("serializes nested Home Assistant stack cards recursively", () => {

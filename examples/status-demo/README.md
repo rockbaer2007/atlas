@@ -56,6 +56,11 @@ download use the same export payload and require at least one selected entity.
 The card package export wraps the manifest and serialized card content in a
 portable Atlas JSON envelope that can be imported back through the same HA card
 import control.
+Before the HA card import is parsed, the demo now runs the shared artifact
+inspection. Supported ATLAS packages and raw Home Assistant cards continue
+directly. External card-builder-shaped artifacts pause on a compatibility
+review that shows license, block, entity-slot, mapping and field-preview
+details. Unknown artifacts are rejected before parsing.
 
 When the demo is connected to Home Assistant, it requests Lovelace resources and
 marks Mushroom or Bubble dependencies as found, missing or not yet checked. The

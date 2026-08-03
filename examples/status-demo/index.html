@@ -285,6 +285,25 @@
         color: #a16207;
       }
 
+      #ha-card-import-review {
+        min-height: 20px;
+        color: #536079;
+        font-size: 14px;
+        white-space: pre-wrap;
+      }
+
+      #ha-card-import-review[data-action="review"] {
+        color: #a16207;
+      }
+
+      #ha-card-import-review[data-action="reject"] {
+        color: #b91c1c;
+      }
+
+      #ha-card-import-review[data-action="import"] {
+        color: #0f766e;
+      }
+
       .ha-card-preview {
         display: grid;
         gap: 6px;
@@ -536,6 +555,7 @@
           <label class="import-button" for="import-ha-card-config">Import HA card</label>
           <input id="import-ha-card-config" type="file" accept="application/json,.json,.yaml,.yml" hidden>
         </div>
+        <output id="ha-card-import-review" aria-live="polite"></output>
         <label for="home-assistant-entity">Entity IDs</label>
         <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
         <label for="home-assistant-entity-domain">Entity type</label>

@@ -223,6 +223,24 @@ export function previewHomeAssistantCardArtifactFields(
   };
 }
 
+export function formatHomeAssistantCardArtifactReviewLines(text: string): readonly string[] {
+  const decision = decideHomeAssistantCardArtifactImport(text);
+  if (decision.action !== "review") {
+    return [
+      decision.message,
+    ];
+  }
+
+  const review = createHomeAssistantCardArtifactReview(text);
+  const fieldPreview = previewHomeAssistantCardArtifactFields(text);
+  return [
+    decision.message,
+    ...review.items.map(item => `${item.label}: ${item.detail}`),
+    `Mapped fields: ${fieldPreview.fields.length}.`,
+    `Unmapped blocks: ${fieldPreview.unmappedBlocks.length ? fieldPreview.unmappedBlocks.join(", ") : "none"}.`,
+  ];
+}
+
 function inspectJsonCardArtifact(json: Record<string, unknown>): HomeAssistantCardArtifactInspection {
   if (json.version === 1 && json.kind === "atlas.homeassistant.card" && typeof json.content === "string") {
     return {

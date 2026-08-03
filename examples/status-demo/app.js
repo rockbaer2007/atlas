@@ -10,6 +10,8 @@ import {
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
   createHomeAssistantAtlasFrontendIntegrationPlan,
+  decideHomeAssistantCardArtifactImport,
+  formatHomeAssistantCardArtifactReviewLines,
   serializeHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantEntityPresentation,
   createHomeAssistantEntityCatalog,
@@ -69,6 +71,7 @@ const importHomeAssistantConfig = document.querySelector("#import-home-assistant
 const importHaCardConfig = document.querySelector("#import-ha-card-config");
 const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
+const haCardImportReview = document.querySelector("#ha-card-import-review");
 const selectedEntity = document.querySelector("#selected-entity");
 const entityList = document.querySelector("#atlas-entity-list");
 const stackSelectionSummary = document.querySelector("#stack-selection-summary");
@@ -530,6 +533,24 @@ function renderHaCardPreview() {
       ...availability.missingResourcePaths,
     ].join(", ")}.`;
   }
+}
+
+function renderHaCardImportDecision(text) {
+  const decision = decideHomeAssistantCardArtifactImport(text);
+  haCardImportReview.dataset.action = decision.action;
+
+  if (decision.action === "import") {
+    haCardImportReview.textContent = decision.message;
+    return decision;
+  }
+
+  if (decision.action === "review") {
+    haCardImportReview.textContent = formatHomeAssistantCardArtifactReviewLines(text).join("\n");
+    return decision;
+  }
+
+  haCardImportReview.textContent = `${decision.message} ${decision.inspection.reason}`;
+  return decision;
 }
 
 function createHaCardExportPayload() {
@@ -1200,7 +1221,16 @@ importHaCardConfig.addEventListener("change", async () => {
   const file = importHaCardConfig.files?.[0];
   if (!file) return;
   try {
-    const summary = summarizeHomeAssistantCardImport(await file.text());
+    const text = await file.text();
+    const decision = renderHaCardImportDecision(text);
+    if (decision.action !== "import") {
+      statusMessage.textContent = decision.action === "review"
+        ? "Import paused: review the compatibility details before mapping this artifact."
+        : "Import rejected: unsupported Home Assistant card artifact.";
+      return;
+    }
+
+    const summary = summarizeHomeAssistantCardImport(text);
     const entityIds = [...summary.entityIds];
     const title = summary.title;
     const id = createGroupId(title);
