@@ -110,6 +110,10 @@ including `studiobts/home-assistant-card-builder`. That project is tracked as
 an external AGPL-3.0 reference for inspiration, interoperability and possible
 future fork evaluation. ATLAS does not copy its source code by default; any
 future derivative use must keep attribution and satisfy the AGPL-3.0 license.
+The current interoperability plan allows product-level reference and planned
+schema-based import/export evaluation, while direct source copying is explicitly
+blocked unless ATLAS intentionally accepts the derivative-work and AGPL-3.0
+obligations.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

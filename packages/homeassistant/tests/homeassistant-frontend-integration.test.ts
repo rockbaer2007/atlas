@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createAtlasFrontendResource,
   clampSurfaceFieldPlacement,
+  createHomeAssistantCardBuilderInteropPlan,
   createHomeAssistantCardBuilderReference,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorDependencyPlan,
@@ -315,6 +316,47 @@ describe("Home Assistant frontend integration planning", () => {
         "Prefer independent ATLAS contracts, import/export compatibility and clear documentation references.",
       ],
     });
+  });
+
+  it("plans card builder interoperability without source copying", () => {
+    const interopPlan = createHomeAssistantCardBuilderInteropPlan();
+
+    expect(interopPlan.sourceCodePolicy).toBe("do-not-copy");
+    expect(interopPlan.recommendedNextStep).toBe(
+      "Keep ATLAS independent, then add import/export compatibility only through documented schemas and explicit attribution.",
+    );
+    expect(interopPlan.capabilities).toEqual([
+      {
+        id: "product-reference",
+        label: "Use product concepts as an external reference",
+        status: "supported",
+        reason: "Public behavior, documentation and product ideas can inform independent ATLAS contracts.",
+      },
+      {
+        id: "atlas-importer",
+        label: "Evaluate import of exported card artifacts",
+        status: "planned",
+        reason: "Import compatibility can be designed around documented artifacts without copying implementation code.",
+      },
+      {
+        id: "atlas-exporter",
+        label: "Evaluate export toward compatible Home Assistant card artifacts",
+        status: "planned",
+        reason: "ATLAS can expose its own export model and later map it to compatible formats when license boundaries are clear.",
+      },
+      {
+        id: "source-clone",
+        label: "Copy source code directly into ATLAS",
+        status: "blocked-by-license",
+        reason: "The reference project is AGPL-3.0; copying source would require an explicit derivative-work decision and license compliance.",
+      },
+      {
+        id: "silent-fork",
+        label: "Create an unattributed fork",
+        status: "not-planned",
+        reason: "ATLAS must keep original attribution and license notices if a fork is ever intentionally created.",
+      },
+    ]);
   });
 
   it("tracks the selected simple editor card target dependency", () => {
