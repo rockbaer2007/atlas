@@ -151,9 +151,11 @@ Helper resources such as card tools, dashboards, strategies, navigation helpers,
 icon packs and known non-card resources are filtered out of the palette scan.
 The palette itself is scrollable and uses compact two-column template rows:
 card name and favorite state stay on the left, while layout details and sizing
-controls sit on the right. Selected editor fields can be resized with the mouse
-or through the Width and Height controls in one-cell steps, up to five grid
-cells beyond their template default size. The editor surface itself has a
+controls sit on the right. Template column and row choices are stored with the
+local demo configuration and can be restored to defaults with Reset sizes.
+Selected editor fields can be resized with the mouse or through the Width and
+Height controls in one-cell steps, up to five grid cells beyond their template
+default size. The editor surface itself has a
 visible bottom-right resize handle and can grow by up to five grid steps in
 both directions while keeping the current size as the default. A Reset surface
 size button returns the editor surface to the default footprint.

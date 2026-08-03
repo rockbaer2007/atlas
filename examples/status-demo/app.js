@@ -110,6 +110,7 @@ const expertTemplatePalette = document.querySelector("#expert-template-palette")
 const saveExpertPaletteFavorites = document.querySelector("#save-expert-palette-favorites");
 const showAllExpertPaletteCards = document.querySelector("#show-all-expert-palette-cards");
 const scanExpertPaletteCards = document.querySelector("#scan-expert-palette-cards");
+const resetExpertTemplateSizing = document.querySelector("#reset-expert-template-sizing");
 const resetExpertPaletteFavorites = document.querySelector("#reset-expert-palette-favorites");
 const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
@@ -227,6 +228,13 @@ try {
       if (typeof paletteId === "string" && paletteId.trim()) {
         expertPaletteFavoriteIds.add(paletteId);
         expertPaletteDraftFavoriteIds.add(paletteId);
+      }
+    }
+  }
+  if (Array.isArray(savedConfiguration?.expertTemplateSizing)) {
+    for (const entry of savedConfiguration.expertTemplateSizing) {
+      if (typeof entry?.templateId === "string" && cardEditorTemplates.some(template => template.id === entry.templateId)) {
+        expertTemplateSizing.set(entry.templateId, normalizeExpertTemplateSizing(entry));
       }
     }
   }
@@ -442,6 +450,7 @@ function persistConfiguration() {
       cardFormat: haCardFormat.value,
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
+      expertTemplateSizing: serializedExpertTemplateSizing(),
       expertEditorSurfaceSize,
       expertEditorFields,
       selectedExpertFieldIndex,
@@ -890,6 +899,7 @@ function renderExpertTemplatePalette() {
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;
   showAllExpertPaletteCards.textContent = expertPaletteShowAllCards ? "Show favorites" : "Show all cards";
+  resetExpertTemplateSizing.disabled = !isExpertTemplateSizingDirty();
   resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
   for (const card of visibleCards) {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
@@ -988,6 +998,13 @@ function isExpertPaletteFavoriteDraftDirty() {
   return false;
 }
 
+function isExpertTemplateSizingDirty() {
+  return cardEditorTemplates.some(template => {
+    const sizing = expertTemplateSizing.get(template.id) ?? { columns: String(template.defaultWidth), rows: "auto" };
+    return sizing.columns !== String(template.defaultWidth) || sizing.rows !== "auto";
+  });
+}
+
 function isExpertPaletteCardSelected(card) {
   return expertTemplate.value === card.templateId
     && expertTarget.value === card.target
@@ -1034,6 +1051,37 @@ function resetExpertPaletteFavoriteSelection() {
   statusMessage.textContent = "All Core and Community cards are visible again.";
 }
 
+function normalizeExpertTemplateSizing(input) {
+  const columns = input?.columns === "full" ? "full" : String(Math.max(1, Math.min(expertGridColumns, Number(input?.columns) || 1)));
+  const rows = input?.rows === "auto" ? "auto" : String(Math.max(1, Math.min(8, Number(input?.rows) || 1)));
+  return { columns, rows };
+}
+
+function serializedExpertTemplateSizing() {
+  return [...expertTemplateSizing.entries()].map(([templateId, sizing]) => ({
+    templateId,
+    ...normalizeExpertTemplateSizing(sizing),
+  }));
+}
+
+function resetExpertTemplateSizingDefaults() {
+  expertTemplateSizing.clear();
+  for (const template of cardEditorTemplates) {
+    expertTemplateSizing.set(template.id, {
+      columns: String(template.defaultWidth),
+      rows: "auto",
+    });
+  }
+}
+
+function resetExpertTemplateSizingSelection() {
+  resetExpertTemplateSizingDefaults();
+  syncExpertInputsFromTemplateSizing(expertTemplate.value);
+  persistConfiguration();
+  renderExpertTemplatePalette();
+  statusMessage.textContent = "Template sizes reset to their defaults.";
+}
+
 function createExpertTemplateSizingControls(template) {
   const sizing = expertTemplateSizing.get(template.id) ?? { columns: String(template.defaultWidth), rows: "auto" };
   const controls = document.createElement("span");
@@ -1075,6 +1123,9 @@ function createExpertTemplateSizingControls(template) {
     if (expertTemplate.value === template.id) {
       syncExpertInputsFromTemplateSizing(template.id);
     }
+    persistConfiguration();
+    renderExpertTemplatePalette();
+    statusMessage.textContent = `${template.label} size set to ${columns.value} columns and ${rows.value} rows.`;
   };
   for (const control of [columns, rows]) {
     control.addEventListener("click", event => event.stopPropagation());
@@ -2444,6 +2495,7 @@ resetExpertSurfaceSize.addEventListener("click", resetExpertEditorSurfaceSize);
 saveExpertPaletteFavorites.addEventListener("click", saveExpertPaletteFavoriteSelection);
 showAllExpertPaletteCards.addEventListener("click", toggleExpertPaletteAllCards);
 scanExpertPaletteCards.addEventListener("click", scanExpertPaletteCardsFromHomeAssistant);
+resetExpertTemplateSizing.addEventListener("click", resetExpertTemplateSizingSelection);
 resetExpertPaletteFavorites.addEventListener("click", resetExpertPaletteFavoriteSelection);
 window.addEventListener("resize", applyExpertEditorSurfaceSize);
 clearExpertFields.addEventListener("click", () => {
@@ -2536,6 +2588,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardFormat: haCardFormat.value,
     stackEntityIds: selectedStackEntityIds(),
     expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
+    expertTemplateSizing: serializedExpertTemplateSizing(),
     expertEditorSurfaceSize,
     expertEditorFields,
     selectedExpertFieldIndex,
@@ -2648,6 +2701,14 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     } else {
       expertEditorSurfaceSize = { columns: 0, rows: 0 };
     }
+    resetExpertTemplateSizingDefaults();
+    if (Array.isArray(pendingImport.expertTemplateSizing)) {
+      for (const entry of pendingImport.expertTemplateSizing) {
+        if (typeof entry?.templateId === "string" && cardEditorTemplates.some(template => template.id === entry.templateId)) {
+          expertTemplateSizing.set(entry.templateId, normalizeExpertTemplateSizing(entry));
+        }
+      }
+    }
     expertEditorFields.length = 0;
     if (Array.isArray(pendingImport.expertEditorFields)) {
       expertEditorFields.push(...createHomeAssistantCardEditorPackagePlan({
@@ -2672,6 +2733,8 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     syncCardLayoutState();
     renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
     renderEditorMode(pendingImport.editorMode === "expert" ? "expert" : "simple");
+    syncExpertInputsFromTemplateSizing(expertTemplate.value);
+    renderExpertTemplatePalette();
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
     renderConnectionReadiness();
