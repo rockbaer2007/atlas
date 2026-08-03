@@ -107,6 +107,9 @@ visual templates for entity lists, state buttons, switch buttons,
 combined with a chosen card family, such as Bubble Card or Mushroom, and placed
 inside a bounded editor grid. Placement is clamped to the configured grid so
 fields cannot be dropped outside the valid surface.
+In the demo surface, placed fields can be selected and switched into edit mode.
+Edit mode shows corner handles only for the selected field and resizes it within
+the same grid bounds.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as

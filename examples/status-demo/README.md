@@ -91,5 +91,7 @@ grid. Each sidebar template exposes its own column and row controls, including
 `full` width and `auto` height. Entity List, State Button, Switch Button,
 horizontal-stack and vertical-stack start from the same default footprint so
 layout adjustments are predictable. The sidebar uses loaded Lovelace resources
-to mark custom card families as installed, missing or unchecked. This is still a
-preview surface, not the final drag-and-drop editor.
+to mark custom card families as installed, missing or unchecked. Surface tiles
+can be selected and then switched into edit mode, where corner handles resize
+the field inside the 12-column grid. This is still a preview surface, not the
+final drag-and-drop editor.
