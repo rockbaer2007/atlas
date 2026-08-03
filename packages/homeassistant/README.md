@@ -105,6 +105,12 @@ combined with a chosen card family, such as Bubble Card or Mushroom, and placed
 inside a bounded editor grid. Placement is clamped to the configured grid so
 fields cannot be dropped outside the valid surface.
 
+The visual editor direction is informed by existing Home Assistant projects,
+including `studiobts/home-assistant-card-builder`. That project is tracked as
+an external AGPL-3.0 reference for inspiration, interoperability and possible
+future fork evaluation. ATLAS does not copy its source code by default; any
+future derivative use must keep attribution and satisfy the AGPL-3.0 license.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

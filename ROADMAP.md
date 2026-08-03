@@ -138,6 +138,7 @@ additional envelope-only contract expansion.
 * Nested Expert layout projection with row-based horizontal stacks, page-level vertical stacks and per-field stack mode
 * Template sidebar for visual Button, Switch, State, Entity, vertical-stack and horizontal-stack building blocks
 * Grid-bounded placement for selected templates on the Expert editor surface
+* Evaluate `studiobts/home-assistant-card-builder` as an AGPL-3.0 external reference without copying source code into ATLAS
 * User-defined HACS card script filenames such as `energy-kitchen.js` instead of only `atlas-card.js`
 * HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards
