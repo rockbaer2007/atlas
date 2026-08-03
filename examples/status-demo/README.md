@@ -106,3 +106,6 @@ entity name.
 Bubble fields expose a Bubble button type dropdown with the supported
 `state`, `switch`, `slider` and `name` values. The selected type is written into
 the generated Bubble Card configuration.
+The left Expert palette now lists Core cards and Community cards. Individual
+cards can be marked as favorites with a checkbox; when favorites exist, the
+palette shows only those cards until the reset button restores the full list.

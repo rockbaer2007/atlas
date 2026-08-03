@@ -430,6 +430,24 @@
         grid-template-columns: 1fr;
       }
 
+      .expert-palette-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 0 0 8px;
+      }
+
+      .expert-palette-toolbar button {
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #172033;
+        padding: 6px 8px;
+        font: inherit;
+        cursor: pointer;
+      }
+
       .expert-template-card {
         display: grid;
         gap: 4px;
@@ -472,6 +490,29 @@
 
       .expert-template-card strong {
         overflow-wrap: anywhere;
+      }
+
+      .expert-template-card .favorite-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 24px;
+        color: #536079;
+        font-size: 12px;
+      }
+
+      .expert-template-card .favorite-toggle input {
+        width: 14px;
+        height: 14px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
+      .expert-template-card .palette-category {
+        color: #0f766e;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
       }
 
       .expert-template-card small,
@@ -908,6 +949,10 @@
           <h2 class="entity-section-title">Expert editor preview</h2>
           <div class="expert-editor-workbench">
           <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards">
+            <div class="expert-palette-toolbar">
+              <strong>Card list</strong>
+              <button id="reset-expert-palette-favorites" type="button">Reset favorites</button>
+            </div>
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
           </aside>
           <section class="expert-editor-surface" aria-label="Expert editor surface">

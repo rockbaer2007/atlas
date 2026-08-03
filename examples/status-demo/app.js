@@ -97,6 +97,7 @@ const addExpertField = document.querySelector("#add-expert-field");
 const editExpertField = document.querySelector("#edit-expert-field");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
+const resetExpertPaletteFavorites = document.querySelector("#reset-expert-palette-favorites");
 const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
 const expertFieldList = document.querySelector("#expert-field-list");
@@ -110,7 +111,18 @@ const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
+const expertPaletteCards = [
+  { id: "core-entities", category: "Core", label: "Entities", templateId: "entity-list", target: "entities", preview: ["Entity list"] },
+  { id: "core-horizontal-stack", category: "Core", label: "Horizontal stack", templateId: "horizontal-stack", target: "entities", preview: ["Cards in a row"] },
+  { id: "core-vertical-stack", category: "Core", label: "Vertical stack", templateId: "vertical-stack", target: "entities", preview: ["Cards in a column"] },
+  { id: "community-mushroom-template", category: "Community", label: "Mushroom template", templateId: "state-button", target: "mushroom-template", preview: ["Primary / secondary"] },
+  { id: "community-bubble-state", category: "Community", label: "Bubble state", templateId: "state-button", target: "bubble", bubbleButtonType: "state", preview: ["button_type: state"] },
+  { id: "community-bubble-switch", category: "Community", label: "Bubble switch", templateId: "switch-button", target: "bubble", bubbleButtonType: "switch", preview: ["button_type: switch"] },
+  { id: "community-bubble-slider", category: "Community", label: "Bubble slider", templateId: "state-button", target: "bubble", bubbleButtonType: "slider", preview: ["button_type: slider"] },
+  { id: "community-bubble-name", category: "Community", label: "Bubble name", templateId: "state-button", target: "bubble", bubbleButtonType: "name", preview: ["button_type: name"] },
+];
 const expertEditorFields = [];
+const expertPaletteFavoriteIds = new Set();
 const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
   template.id,
   {
@@ -179,6 +191,13 @@ try {
     for (const entityId of savedConfiguration.stackEntityIds) {
       if (typeof entityId === "string" && entityId.trim()) {
         stackSelectedEntityIds.add(entityId.trim());
+      }
+    }
+  }
+  if (Array.isArray(savedConfiguration?.expertPaletteFavoriteIds)) {
+    for (const paletteId of savedConfiguration.expertPaletteFavoriteIds) {
+      if (typeof paletteId === "string" && expertPaletteCards.some(card => card.id === paletteId)) {
+        expertPaletteFavoriteIds.add(paletteId);
       }
     }
   }
@@ -363,6 +382,7 @@ function persistConfiguration() {
       cardLayout: haCardLayout.value,
       cardFormat: haCardFormat.value,
       stackEntityIds: selectedStackEntityIds(),
+      expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       groups: panelGroups,
     }));
   } catch {
@@ -670,36 +690,58 @@ function renderHaCardImportDecision(text) {
 
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
-  for (const template of cardEditorTemplates) {
+  const visibleCards = expertPaletteFavoriteIds.size
+    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
+    : expertPaletteCards;
+  resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
+  for (const card of visibleCards) {
+    const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
+    if (!template) continue;
     const item = document.createElement("article");
     item.className = "expert-template-card";
-    item.classList.toggle("selected", template.id === expertTemplate.value);
+    item.classList.toggle("selected", isExpertPaletteCardSelected(card));
     item.draggable = true;
     item.tabIndex = 0;
-    item.role = "button";
-    item.dataset.template = template.id;
+    item.setAttribute("role", "button");
+    item.dataset.paletteCard = card.id;
 
+    const category = document.createElement("span");
+    category.className = "palette-category";
+    category.textContent = card.category;
     const title = document.createElement("strong");
-    title.textContent = template.label;
+    title.textContent = card.label;
     const detail = document.createElement("small");
-    detail.textContent = `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${template.target}`;
+    const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType}` : "";
+    detail.textContent = `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${card.target}${bubbleType}`;
     const preview = document.createElement("span");
-    preview.textContent = template.preview.join(" / ");
+    preview.textContent = card.preview.join(" / ");
     const availability = document.createElement("span");
-    availability.textContent = formatExpertTemplateAvailability(template.target);
+    availability.textContent = formatExpertTemplateAvailability(card.target);
     const sizing = createExpertTemplateSizingControls(template);
+    const favorite = document.createElement("label");
+    favorite.className = "favorite-toggle";
+    const favoriteCheckbox = document.createElement("input");
+    favoriteCheckbox.type = "checkbox";
+    favoriteCheckbox.checked = expertPaletteFavoriteIds.has(card.id);
+    favorite.append(favoriteCheckbox, "Favorite");
 
-    item.append(title, detail, preview, availability, sizing);
-    item.addEventListener("click", () => selectExpertTemplate(template.id));
+    item.append(category, title, detail, preview, availability, favorite, sizing);
+    favorite.addEventListener("click", event => event.stopPropagation());
+    favoriteCheckbox.addEventListener("change", event => {
+      event.stopPropagation();
+      setExpertPaletteFavorite(card.id, favoriteCheckbox.checked);
+    });
+    item.addEventListener("click", () => selectExpertPaletteCard(card.id));
     item.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectExpertTemplate(template.id);
+        selectExpertPaletteCard(card.id);
       }
     });
     item.addEventListener("dragstart", event => {
-      event.dataTransfer?.setData("text/plain", template.id);
-      event.dataTransfer?.setData("application/x-atlas-template", template.id);
+      event.dataTransfer?.setData("text/plain", card.templateId);
+      event.dataTransfer?.setData("application/x-atlas-template", card.templateId);
+      event.dataTransfer?.setData("application/x-atlas-palette-card", card.id);
       event.dataTransfer?.setDragImage(item, 12, 12);
       item.classList.add("dragging");
     });
@@ -708,6 +750,29 @@ function renderExpertTemplatePalette() {
     });
     expertTemplatePalette.append(item);
   }
+}
+
+function isExpertPaletteCardSelected(card) {
+  return expertTemplate.value === card.templateId
+    && expertTarget.value === card.target
+    && (card.target !== "bubble" || expertBubbleButtonType.value === (card.bubbleButtonType ?? "state"));
+}
+
+function setExpertPaletteFavorite(cardId, favorite) {
+  if (favorite) {
+    expertPaletteFavoriteIds.add(cardId);
+  } else {
+    expertPaletteFavoriteIds.delete(cardId);
+  }
+  persistConfiguration();
+  renderExpertTemplatePalette();
+}
+
+function resetExpertPaletteFavoriteSelection() {
+  expertPaletteFavoriteIds.clear();
+  persistConfiguration();
+  renderExpertTemplatePalette();
+  statusMessage.textContent = "All Core and Community cards are visible again.";
 }
 
 function createExpertTemplateSizingControls(template) {
@@ -779,6 +844,20 @@ function selectExpertTemplate(templateId) {
   expertTarget.value = template.target;
   syncExpertBubbleTypeControl();
   renderExpertTemplatePalette();
+}
+
+function selectExpertPaletteCard(cardId) {
+  const card = expertPaletteCards.find(candidate => candidate.id === cardId);
+  const template = cardEditorTemplates.find(candidate => candidate.id === card?.templateId);
+  if (!card || !template) return undefined;
+  expertTemplate.value = template.id;
+  syncExpertInputsFromTemplateSizing(template.id);
+  expertTarget.value = card.target;
+  expertBubbleButtonType.value = card.bubbleButtonType ?? "state";
+  syncExpertBubbleTypeControl();
+  renderExpertTemplatePalette();
+  statusMessage.textContent = `${card.label} selected from the card list.`;
+  return card;
 }
 
 function syncExpertInputsFromTemplateSizing(templateId) {
@@ -1200,8 +1279,10 @@ function createExpertEditorField(input) {
   };
 }
 
-function addExpertEditorFieldFromTemplate(templateId, placement = calculateExpertDropPlacement()) {
-  selectExpertTemplate(templateId);
+function addExpertEditorFieldFromTemplate(templateId, placement = calculateExpertDropPlacement(), options = {}) {
+  if (!options.preserveSelection) {
+    selectExpertTemplate(templateId);
+  }
   const sizing = resolveExpertTemplateSizing(templateId);
   const fieldTitle = expertTitle.value.trim() || undefined;
   const field = createExpertEditorField({
@@ -1220,6 +1301,12 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
   expertEntity.value = "";
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} placed on the Expert editor surface.`;
+}
+
+function addExpertEditorFieldFromPaletteCard(cardId, placement = calculateExpertDropPlacement()) {
+  const card = selectExpertPaletteCard(cardId);
+  if (!card) return;
+  addExpertEditorFieldFromTemplate(card.templateId, placement, { preserveSelection: true });
 }
 
 function resolveExpertTemplateSizing(templateId) {
@@ -1779,6 +1866,7 @@ useEntityNameAsTitle.addEventListener("click", () => {
 });
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
+resetExpertPaletteFavorites.addEventListener("click", resetExpertPaletteFavoriteSelection);
 clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;
   selectedExpertFieldIndex = -1;
@@ -1802,6 +1890,11 @@ expertEditorDropzone.addEventListener("drop", event => {
   const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
   if (fieldIndex) {
     moveExpertEditorField(Number(fieldIndex), calculateExpertDropPlacement(event));
+    return;
+  }
+  const paletteCardId = event.dataTransfer?.getData("application/x-atlas-palette-card");
+  if (paletteCardId) {
+    addExpertEditorFieldFromPaletteCard(paletteCardId, calculateExpertDropPlacement(event));
     return;
   }
   const templateId = event.dataTransfer?.getData("application/x-atlas-template")
@@ -1861,6 +1954,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardLayout: haCardLayout.value,
     cardFormat: haCardFormat.value,
     stackEntityIds: selectedStackEntityIds(),
+    expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
     groups: panelGroups,
   }, null, 2);
   const link = document.createElement("a");

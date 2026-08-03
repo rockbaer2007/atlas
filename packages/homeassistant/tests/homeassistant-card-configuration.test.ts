@@ -14,6 +14,7 @@ import {
   inspectHomeAssistantCardArtifact,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
+  listHomeAssistantBubbleButtonTypes,
   listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
   previewHomeAssistantCardArtifactFields,
@@ -163,6 +164,10 @@ describe("Home Assistant entities card configuration", () => {
       entity: "light.office",
       show_state: true,
     });
+  });
+
+  it("lists supported Bubble button types", () => {
+    expect(listHomeAssistantBubbleButtonTypes()).toEqual(["state", "switch", "slider", "name"]);
   });
 
   it("creates stacked Bubble and Mushroom card targets for multiple entities", () => {
