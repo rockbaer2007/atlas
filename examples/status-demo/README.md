@@ -47,7 +47,9 @@ browser close with code `1000` is shown as a regular ATLAS connection close
 instead of a raw WebSocket code.
 The editor UI can now be switched between English and German from the header.
 The selected language is stored with the same local demo configuration and is
-restored after a reload.
+restored after a reload. Static labels, editor mode controls, entity picker
+feedback, stack summaries, dependency hints and the main import/export status
+messages use the same translation table.
 The current editor mode, Expert fields, selected Expert field and resized
 Expert surface are also restored from the same local browser storage.
 

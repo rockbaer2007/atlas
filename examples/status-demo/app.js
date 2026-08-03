@@ -189,6 +189,10 @@ const translations = {
     "button.off": "Off",
     "button.on": "On",
     "button.unavailable": "Unavailable",
+    "button.simpleMode": "Simple",
+    "button.expertMode": "Expert",
+    "button.turnOn": "Turn on",
+    "button.turnOff": "Turn off",
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
     "heading.diagnostics": "Diagnostics",
@@ -207,16 +211,115 @@ const translations = {
     "placeholder.expertEntity": "Use current entity when empty",
     "aria.entityTypeShortcuts": "Entity type shortcuts",
     "aria.clearEntitySearch": "Clear entity search",
+    "aria.language": "Language",
     "aria.cardEditorMode": "Card editor mode",
     "aria.availableCards": "Available Home Assistant cards",
     "aria.expertTemplates": "Expert editor templates",
     "aria.expertSurface": "Expert editor surface",
+    "aria.resizeExpertSurface": "Resize Expert editor surface",
+    "aria.showStatusPreview": "Show {entityId} in the ATLAS Status Preview",
+    "aria.moveEntityUp": "Move {entityId} up",
+    "aria.moveEntityDown": "Move {entityId} down",
+    "aria.removeEntity": "Remove {entityId}",
+    "aria.useEntityInStack": "Use {entityId} in stack export",
     "aria.entityState": "Entity state",
     "message.emptySelection": "Select at least one entity.",
     "message.noExpertFields": "No expert fields added.",
     "message.dragCard": "Drag a card from the left into this editor surface.",
     "message.addTemplatePreview": "Add a template field to preview the Expert editor output.",
     "message.addTemplateBeforeExport": "Add a template field before exporting an Expert HA card.",
+    "message.statusPanelNotRegistered": "Status panel is not registered.",
+    "message.connectionUrlReady": "Connection URL ready: {url}",
+    "message.connectionState": "Connection: {state}",
+    "message.connectionStateWithReason": "Connection: {state} ({reason})",
+    "message.connectionStateWithSubscription": "Connection: {state}, subscription {subscription}",
+    "message.reconnecting": "Reconnecting in {seconds}s ({attempt}/3).",
+    "message.stackSelectedEntities": "Stack-selected entities: {selected}/{total}{entities}",
+    "message.stackEntitySuffix": " - {entities}",
+    "message.simpleUsesFirstEntity": "Simple uses the first entity: {entityId}",
+    "message.simpleUsesFirstEntityEmpty": "Simple uses the first entity.",
+    "message.noEntitiesFound": "No entities found for {domain}{search}.",
+    "message.entitySearchSuffix": " and \"{search}\"",
+    "message.entitiesFound": "{count} {entityLabel} found for {domain}.",
+    "message.entitySingular": "entity",
+    "message.entityPlural": "entities",
+    "message.allTypes": "all types",
+    "message.selectEntityFirst": "Select an entity first.",
+    "message.entityListRequested": "Entity list requested from Home Assistant ({requestId}).",
+    "message.connectBeforeRefreshingEntities": "Connect to Home Assistant before refreshing entities.",
+    "message.resourcesRequested": "Lovelace resources requested ({requestId}).",
+    "message.connectBeforeCheckingResources": "Connect to Home Assistant before checking resources.",
+    "message.paletteEntriesDetected": "{total} palette entries detected from loaded HA resources, including {hacs} /hacsfiles resources.",
+    "message.noPaletteEntriesDetected": "No additional scan-only palette entries detected from loaded HA resources.",
+    "message.refreshingResources": "{message} Refreshing Lovelace resources from Home Assistant.",
+    "message.connectAndScanAgain": "{message} Connect to Home Assistant and scan again to refresh the list.",
+    "message.templateSizeSet": "{template} size set to {columns} columns and {rows} rows.",
+    "message.surfaceResized": "Expert editor surface resized: +{columns} columns, +{rows} rows.",
+    "message.surfaceSizeReset": "Expert editor surface size reset to the default.",
+    "message.arrangeNeedsFields": "Add Expert fields before arranging the editor surface.",
+    "message.fieldsArranged": "Expert fields arranged. Overlaps: {previous} -> {next}.",
+    "message.selectFieldBeforeResize": "Select an Expert field before changing its size.",
+    "message.fieldResized": "{field} resized to {width}x{height}.",
+    "message.fieldMoved": "{field} moved on the Expert editor surface.",
+    "message.groupStatus": "Group status: {ready} ready, {pending} pending, {blocked} blocked.",
+    "message.needsAttention": "Needs attention: {entities}.",
+    "message.selectedForHaPreview": "{entityId} selected for the HA card preview.",
+    "message.selectedForDiagnosticsPreview": "{entityId} selected for the Diagnostics status preview.",
+    "message.selectedForDiagnosticsWithStack": "{entityId} selected for Diagnostics. Use the checkbox to include it in the stack export.",
+    "message.stackNeedsEntity": "{entityId} remains selected; stack export needs at least one entity.",
+    "message.addedToStackPreview": "{entityId} added to the stack preview.",
+    "message.removedFromStackPreview": "{entityId} removed from the stack preview.",
+    "message.entityRemoved": "{entityId} removed.",
+    "message.justNow": "just now",
+    "message.minutesAgo": "{count} min ago",
+    "message.hoursAgo": "{count} h ago",
+    "message.sendServiceConfirm": "Send {service} to {entityId}?",
+    "message.commandSent": "Command sent for {entityId}.",
+    "message.noActiveConnection": "No active Home Assistant connection.",
+    "message.commandCompleted": "Command completed for {entityId}.",
+    "message.commandFailed": "Command failed for {entityId}: {reason}",
+    "message.unknownError": "Unknown error.",
+    "message.loadedEntities": "Loaded {count} entities from Home Assistant.",
+    "message.entityListFailed": "Entity list failed: {reason}",
+    "message.loadedResources": "Loaded {count} Lovelace resources from Home Assistant. {total} palette entries detected, including {hacs} /hacsfiles resources.",
+    "message.lovelaceFailed": "Lovelace resources failed: {reason}",
+    "message.liveEntity": "Live entity: {entityId}",
+    "message.demoEntityTarget": "Demo entity: {entityId}",
+    "message.waitingForUpdates": "Waiting for updates from {entityId}.",
+    "message.demoControlsTarget": "Demo controls target {entityId}.",
+    "message.tokenRequired": "An access token is required to connect.",
+    "message.entityStateUpdated": "Entity state updated: {state}.",
+    "message.titleCopied": "{title} copied from the selected entity.",
+    "message.expertPreviewCleared": "Expert editor preview cleared.",
+    "message.groupRequiresNameAndEntity": "A group name and at least one entity are required.",
+    "message.groupSaved": "Group {title} saved.",
+    "message.builtInGroupsCannotDelete": "Built-in groups cannot be deleted.",
+    "message.groupDeleted": "Group deleted.",
+    "message.selectGroupToDuplicate": "Select a group to duplicate.",
+    "message.groupCreated": "Group {title} created.",
+    "message.haCardCopied": "HA card {format} copied to clipboard.",
+    "message.copyPreviewFailed": "Copy failed: use the preview text instead.",
+    "message.resourcesCopiedWithDependency": "ATLAS and {dependency} Lovelace resources {format} copied to clipboard.",
+    "message.atlasResourceCopied": "ATLAS Lovelace resource {format} copied to clipboard.",
+    "message.copyDependencyFailed": "Copy failed: use the dependency path instead.",
+    "message.importConfigurationConfirm": "Import {name}: {groups} groups and {entities} entities?",
+    "message.unnamedConfiguration": "Unnamed configuration",
+    "message.configurationImported": "Configuration imported: {groups} groups and {entities} entities.",
+    "message.importConfigurationFailed": "Import failed: invalid configuration.",
+    "message.importPaused": "Import paused: review the compatibility details before mapping this artifact.",
+    "message.importRejected": "Import rejected: unsupported Home Assistant card artifact.",
+    "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
+    "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
+    "message.atlasPackage": "ATLAS card package",
+    "message.haCard": "HA card",
+    "dependency.resource": " Resource: {paths}.",
+    "dependency.installPath": " Install path: {paths}.",
+    "dependency.atlasFrontend": " ATLAS frontend: {paths}.",
+    "dependency.builtIn": "Uses built-in Home Assistant card.{atlasHint}",
+    "dependency.requiresUnchecked": "Requires {dependency}.{resourceHint}{installHint}{atlasHint} Connect to Home Assistant or check resources.",
+    "dependency.ready": "{dependency} and ATLAS frontend resources found.{resourceHint}{atlasHint}",
+    "dependency.cardFoundAtlasMissing": "{dependency} resource found.{resourceHint}{atlasHint} Missing ATLAS frontend: {missing}.",
+    "dependency.missing": "Requires {dependency}.{resourceHint}{installHint}{atlasHint} Missing: {missing}.",
     "text.allEntityTypes": "All entity types",
     "text.all": "All",
     "text.favorite": "Favorite",
@@ -226,6 +329,7 @@ const translations = {
     "text.resourceInstalled": "Resource installed",
     "text.resourceMissing": "Resource missing",
     "text.demoEntity": "demo entity",
+    "text.waiting": "Waiting",
     "text.col": "col",
     "text.row": "row",
     "text.full": "full",
@@ -366,6 +470,10 @@ const translations = {
     "button.off": "Aus",
     "button.on": "Ein",
     "button.unavailable": "Nicht verfuegbar",
+    "button.simpleMode": "Simple",
+    "button.expertMode": "Expert",
+    "button.turnOn": "Einschalten",
+    "button.turnOff": "Ausschalten",
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
     "heading.diagnostics": "Diagnose",
@@ -384,16 +492,115 @@ const translations = {
     "placeholder.expertEntity": "Aktuelle Entitaet nutzen, wenn leer",
     "aria.entityTypeShortcuts": "Entitaetstyp-Schnellauswahl",
     "aria.clearEntitySearch": "Entitaetssuche loeschen",
+    "aria.language": "Sprache",
     "aria.cardEditorMode": "Card-Editor-Modus",
     "aria.availableCards": "Verfuegbare Home Assistant Cards",
     "aria.expertTemplates": "Expert-Editor-Templates",
     "aria.expertSurface": "Expert-Editor-Flaeche",
+    "aria.resizeExpertSurface": "Expert-Editor-Flaeche vergroessern",
+    "aria.showStatusPreview": "{entityId} in der ATLAS Status Vorschau anzeigen",
+    "aria.moveEntityUp": "{entityId} nach oben verschieben",
+    "aria.moveEntityDown": "{entityId} nach unten verschieben",
+    "aria.removeEntity": "{entityId} entfernen",
+    "aria.useEntityInStack": "{entityId} im Stapel-Export nutzen",
     "aria.entityState": "Entitaetsstatus",
     "message.emptySelection": "Waehle mindestens eine Entitaet aus.",
     "message.noExpertFields": "Keine Expert-Felder hinzugefuegt.",
     "message.dragCard": "Ziehe eine Card von links in diese Editor-Flaeche.",
     "message.addTemplatePreview": "Fuege ein Template-Feld hinzu, um die Expert-Ausgabe zu sehen.",
     "message.addTemplateBeforeExport": "Fuege vor dem Export einer Expert-HA-Card ein Template-Feld hinzu.",
+    "message.statusPanelNotRegistered": "Status-Panel ist nicht registriert.",
+    "message.connectionUrlReady": "Connection-URL bereit: {url}",
+    "message.connectionState": "Verbindung: {state}",
+    "message.connectionStateWithReason": "Verbindung: {state} ({reason})",
+    "message.connectionStateWithSubscription": "Verbindung: {state}, Subscription {subscription}",
+    "message.reconnecting": "Verbinde erneut in {seconds}s ({attempt}/3).",
+    "message.stackSelectedEntities": "Fuer Stapel ausgewaehlte Entitaeten: {selected}/{total}{entities}",
+    "message.stackEntitySuffix": " - {entities}",
+    "message.simpleUsesFirstEntity": "Simple nutzt die erste Entitaet: {entityId}",
+    "message.simpleUsesFirstEntityEmpty": "Simple nutzt die erste Entitaet.",
+    "message.noEntitiesFound": "Keine Entitaeten gefunden fuer {domain}{search}.",
+    "message.entitySearchSuffix": " und \"{search}\"",
+    "message.entitiesFound": "{count} {entityLabel} gefunden fuer {domain}.",
+    "message.entitySingular": "Entitaet",
+    "message.entityPlural": "Entitaeten",
+    "message.allTypes": "alle Typen",
+    "message.selectEntityFirst": "Waehle zuerst eine Entitaet aus.",
+    "message.entityListRequested": "Entitaetsliste von Home Assistant angefordert ({requestId}).",
+    "message.connectBeforeRefreshingEntities": "Verbinde zuerst Home Assistant, bevor du Entitaeten aktualisierst.",
+    "message.resourcesRequested": "Lovelace-Ressourcen angefordert ({requestId}).",
+    "message.connectBeforeCheckingResources": "Verbinde zuerst Home Assistant, bevor du Ressourcen pruefst.",
+    "message.paletteEntriesDetected": "{total} Palette-Eintraege aus geladenen HA-Ressourcen erkannt, davon {hacs} /hacsfiles-Ressourcen.",
+    "message.noPaletteEntriesDetected": "Keine zusaetzlichen Scan-only-Palette-Eintraege aus geladenen HA-Ressourcen erkannt.",
+    "message.refreshingResources": "{message} Lovelace-Ressourcen werden von Home Assistant aktualisiert.",
+    "message.connectAndScanAgain": "{message} Verbinde Home Assistant und scanne erneut, um die Liste zu aktualisieren.",
+    "message.templateSizeSet": "{template} Groesse auf {columns} Spalten und {rows} Zeilen gesetzt.",
+    "message.surfaceResized": "Expert-Editor-Flaeche geaendert: +{columns} Spalten, +{rows} Zeilen.",
+    "message.surfaceSizeReset": "Expert-Editor-Flaeche auf Standardgroesse zurueckgesetzt.",
+    "message.arrangeNeedsFields": "Fuege Expert-Felder hinzu, bevor du die Editor-Flaeche anordnest.",
+    "message.fieldsArranged": "Expert-Felder angeordnet. Ueberlappungen: {previous} -> {next}.",
+    "message.selectFieldBeforeResize": "Waehle ein Expert-Feld aus, bevor du seine Groesse aenderst.",
+    "message.fieldResized": "{field} auf {width}x{height} geaendert.",
+    "message.fieldMoved": "{field} auf der Expert-Editor-Flaeche verschoben.",
+    "message.groupStatus": "Gruppenstatus: {ready} bereit, {pending} wartend, {blocked} blockiert.",
+    "message.needsAttention": "Braucht Aufmerksamkeit: {entities}.",
+    "message.selectedForHaPreview": "{entityId} fuer die HA-Card-Vorschau ausgewaehlt.",
+    "message.selectedForDiagnosticsPreview": "{entityId} fuer die Diagnose-Statusvorschau ausgewaehlt.",
+    "message.selectedForDiagnosticsWithStack": "{entityId} fuer Diagnose ausgewaehlt. Nutze die Checkbox, um sie in den Stapel-Export aufzunehmen.",
+    "message.stackNeedsEntity": "{entityId} bleibt ausgewaehlt; der Stapel-Export braucht mindestens eine Entitaet.",
+    "message.addedToStackPreview": "{entityId} zur Stapel-Vorschau hinzugefuegt.",
+    "message.removedFromStackPreview": "{entityId} aus der Stapel-Vorschau entfernt.",
+    "message.entityRemoved": "{entityId} entfernt.",
+    "message.justNow": "gerade eben",
+    "message.minutesAgo": "vor {count} Min.",
+    "message.hoursAgo": "vor {count} Std.",
+    "message.sendServiceConfirm": "{service} an {entityId} senden?",
+    "message.commandSent": "Befehl fuer {entityId} gesendet.",
+    "message.noActiveConnection": "Keine aktive Home-Assistant-Verbindung.",
+    "message.commandCompleted": "Befehl fuer {entityId} abgeschlossen.",
+    "message.commandFailed": "Befehl fuer {entityId} fehlgeschlagen: {reason}",
+    "message.unknownError": "Unbekannter Fehler.",
+    "message.loadedEntities": "{count} Entitaeten aus Home Assistant geladen.",
+    "message.entityListFailed": "Entitaetsliste fehlgeschlagen: {reason}",
+    "message.loadedResources": "{count} Lovelace-Ressourcen aus Home Assistant geladen. {total} Palette-Eintraege erkannt, davon {hacs} /hacsfiles-Ressourcen.",
+    "message.lovelaceFailed": "Lovelace-Ressourcen fehlgeschlagen: {reason}",
+    "message.liveEntity": "Live-Entitaet: {entityId}",
+    "message.demoEntityTarget": "Demo-Entitaet: {entityId}",
+    "message.waitingForUpdates": "Warte auf Updates von {entityId}.",
+    "message.demoControlsTarget": "Demo-Controls steuern {entityId}.",
+    "message.tokenRequired": "Zum Verbinden wird ein Access Token benoetigt.",
+    "message.entityStateUpdated": "Entitaetsstatus aktualisiert: {state}.",
+    "message.titleCopied": "{title} aus der ausgewaehlten Entitaet kopiert.",
+    "message.expertPreviewCleared": "Expert-Editor-Vorschau geleert.",
+    "message.groupRequiresNameAndEntity": "Gruppenname und mindestens eine Entitaet werden benoetigt.",
+    "message.groupSaved": "Gruppe {title} gespeichert.",
+    "message.builtInGroupsCannotDelete": "Eingebaute Gruppen koennen nicht geloescht werden.",
+    "message.groupDeleted": "Gruppe geloescht.",
+    "message.selectGroupToDuplicate": "Waehle eine Gruppe zum Duplizieren aus.",
+    "message.groupCreated": "Gruppe {title} erstellt.",
+    "message.haCardCopied": "HA-Card {format} in die Zwischenablage kopiert.",
+    "message.copyPreviewFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Vorschautext.",
+    "message.resourcesCopiedWithDependency": "ATLAS- und {dependency}-Lovelace-Ressourcen {format} in die Zwischenablage kopiert.",
+    "message.atlasResourceCopied": "ATLAS-Lovelace-Ressource {format} in die Zwischenablage kopiert.",
+    "message.copyDependencyFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Abhaengigkeitspfad.",
+    "message.importConfigurationConfirm": "{name} importieren: {groups} Gruppen und {entities} Entitaeten?",
+    "message.unnamedConfiguration": "Unbenannte Konfiguration",
+    "message.configurationImported": "Konfiguration importiert: {groups} Gruppen und {entities} Entitaeten.",
+    "message.importConfigurationFailed": "Import fehlgeschlagen: ungueltige Konfiguration.",
+    "message.importPaused": "Import pausiert: Pruefe die Kompatibilitaetsdetails, bevor dieses Artefakt gemappt wird.",
+    "message.importRejected": "Import abgelehnt: nicht unterstuetztes Home-Assistant-Card-Artefakt.",
+    "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitaeten.",
+    "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
+    "message.atlasPackage": "ATLAS-Card-Paket",
+    "message.haCard": "HA-Card",
+    "dependency.resource": " Ressource: {paths}.",
+    "dependency.installPath": " Installationspfad: {paths}.",
+    "dependency.atlasFrontend": " ATLAS-Frontend: {paths}.",
+    "dependency.builtIn": "Nutzt eine eingebaute Home-Assistant-Card.{atlasHint}",
+    "dependency.requiresUnchecked": "Benoetigt {dependency}.{resourceHint}{installHint}{atlasHint} Verbinde Home Assistant oder pruefe die Ressourcen.",
+    "dependency.ready": "{dependency}- und ATLAS-Frontend-Ressourcen gefunden.{resourceHint}{atlasHint}",
+    "dependency.cardFoundAtlasMissing": "{dependency}-Ressource gefunden.{resourceHint}{atlasHint} ATLAS-Frontend fehlt: {missing}.",
+    "dependency.missing": "Benoetigt {dependency}.{resourceHint}{installHint}{atlasHint} Fehlt: {missing}.",
     "text.allEntityTypes": "Alle Entitaetstypen",
     "text.all": "Alle",
     "text.favorite": "Favorit",
@@ -403,6 +610,7 @@ const translations = {
     "text.resourceInstalled": "Ressource installiert",
     "text.resourceMissing": "Ressource fehlt",
     "text.demoEntity": "Demo-Entitaet",
+    "text.waiting": "Wartet",
     "text.col": "Sp.",
     "text.row": "Zeile",
     "text.full": "voll",
@@ -808,7 +1016,7 @@ function syncCardLayoutState() {
 async function renderEntityState(state) {
   const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
   if (!registeredPanel) {
-    statusMessage.textContent = "Status panel is not registered.";
+    statusMessage.textContent = t("message.statusPanelNotRegistered");
     return;
   }
   if (trackedEntityIds().length === 0) {
@@ -827,16 +1035,17 @@ function renderConnectionReadiness() {
   const configuration = createHomeAssistantConnectionConfiguration({ url: homeAssistantUrl.value });
   const readiness = inspectHomeAssistantConnectionReadiness(configuration);
   connectionReadiness.textContent = readiness.ready
-    ? `Connection URL ready: ${deriveHomeAssistantWebSocketUrl(configuration)}`
+    ? t("message.connectionUrlReady", { url: deriveHomeAssistantWebSocketUrl(configuration) })
     : readiness.reason;
 }
 
 function renderConnectionLifecycle(lifecycle) {
-  const subscription = lifecycle.subscription ? `, subscription ${lifecycle.subscription}` : "";
   connectionState.dataset.state = lifecycle.state;
   connectionState.textContent = lifecycle.reason
-    ? `Connection: ${lifecycle.state} (${lifecycle.reason})`
-    : `Connection: ${lifecycle.state}${subscription}`;
+    ? t("message.connectionStateWithReason", { state: lifecycle.state, reason: lifecycle.reason })
+    : lifecycle.subscription
+      ? t("message.connectionStateWithSubscription", { state: lifecycle.state, subscription: lifecycle.subscription })
+      : t("message.connectionState", { state: lifecycle.state });
   connectButton.disabled = lifecycle.state === "connecting" || lifecycle.state === "authenticating" || lifecycle.state === "connected";
   disconnectButton.disabled = lifecycle.state === "closed" || lifecycle.state === "failed";
   checkHaCardResources.disabled = lifecycle.state !== "connected";
@@ -861,7 +1070,7 @@ function scheduleReconnect() {
 
   reconnectAttempts += 1;
   const delay = reconnectAttempts * 1000;
-  statusMessage.textContent = `Reconnecting in ${delay / 1000}s (${reconnectAttempts}/3).`;
+  statusMessage.textContent = t("message.reconnecting", { seconds: delay / 1000, attempt: reconnectAttempts });
   reconnectTimer = window.setTimeout(() => {
     reconnectTimer = undefined;
     connection?.reconnect(reconnectToken);
@@ -1025,13 +1234,17 @@ function renderStackSelectionSummary() {
 
   if (usesStackEntitySelection()) {
     const selectedIds = selectedStackEntityIds();
-    stackSelectionSummary.textContent = `Stack-selected entities: ${selectedIds.length}/${entityIds.length}${selectedIds.length ? ` - ${selectedIds.join(", ")}` : ""}`;
+    stackSelectionSummary.textContent = t("message.stackSelectedEntities", {
+      selected: selectedIds.length,
+      total: entityIds.length,
+      entities: selectedIds.length ? t("message.stackEntitySuffix", { entities: selectedIds.join(", ") }) : "",
+    });
     return;
   }
 
   stackSelectionSummary.textContent = entityIds[0]
-    ? `Simple uses the first entity: ${entityIds[0]}`
-    : "Simple uses the first entity.";
+    ? t("message.simpleUsesFirstEntity", { entityId: entityIds[0] })
+    : t("message.simpleUsesFirstEntityEmpty");
 }
 
 function renderEntityPickerOptions() {
@@ -1058,16 +1271,21 @@ function renderEntityPickerOptions() {
   homeAssistantEntityPicker.value = entityIds.includes(selected) ? selected : entityIds[0] ?? "";
   addHomeAssistantEntity.disabled = !homeAssistantEntityPicker.value;
   homeAssistantEntityPicker.disabled = entityIds.length === 0;
-  const domainLabel = selectedDomain === "all" ? "all types" : selectedDomain;
+  const domainLabel = selectedDomain === "all" ? t("message.allTypes") : selectedDomain;
+  const searchSuffix = searchTerm.trim() ? t("message.entitySearchSuffix", { search: searchTerm.trim() }) : "";
   homeAssistantEntityPickerStatus.textContent = entityIds.length === 0
-    ? `No entities found for ${domainLabel}${searchTerm.trim() ? ` and "${searchTerm.trim()}"` : ""}.`
-    : `${entityIds.length} ${entityIds.length === 1 ? "entity" : "entities"} found for ${domainLabel}.`;
+    ? t("message.noEntitiesFound", { domain: domainLabel, search: searchSuffix })
+    : t("message.entitiesFound", {
+      count: entityIds.length,
+      entityLabel: entityIds.length === 1 ? t("message.entitySingular") : t("message.entityPlural"),
+      domain: domainLabel,
+    });
 }
 
 function addSelectedEntityFromPicker() {
   const entityId = homeAssistantEntityPicker.value.trim();
   if (!entityId) {
-    statusMessage.textContent = "Select an entity first.";
+    statusMessage.textContent = t("message.selectEntityFirst");
     return;
   }
   if (usesStackEntitySelection()) {
@@ -1085,16 +1303,16 @@ function refreshLiveEntityStates() {
   const client = connection?.getClient();
   const entityResult = client?.requestEntityStates();
   statusMessage.textContent = entityResult?.accepted
-    ? `Entity list requested from Home Assistant (${entityResult.requestId}).`
-    : entityResult?.reason ?? "Connect to Home Assistant before refreshing entities.";
+    ? t("message.entityListRequested", { requestId: entityResult.requestId })
+    : entityResult?.reason ?? t("message.connectBeforeRefreshingEntities");
   checkLiveLovelaceResources({ appendStatus: true });
 }
 
 function checkLiveLovelaceResources(options = {}) {
   const result = connection?.getClient()?.requestLovelaceResources();
   const message = result?.accepted
-    ? `Lovelace resources requested (${result.requestId}).`
-    : result?.reason ?? "Connect to Home Assistant before checking resources.";
+    ? t("message.resourcesRequested", { requestId: result.requestId })
+    : result?.reason ?? t("message.connectBeforeCheckingResources");
   statusMessage.textContent = options.appendStatus
     ? `${statusMessage.textContent} ${message}`
     : message;
@@ -1209,11 +1427,11 @@ function scanExpertPaletteCardsFromHomeAssistant() {
     checkLiveLovelaceResources({ appendStatus: true });
   }
   const scanMessage = detectedCards.total
-    ? `${detectedCards.total} palette entries detected from loaded HA resources, including ${detectedCards.hacs} /hacsfiles resources.`
-    : "No additional scan-only palette entries detected from loaded HA resources.";
+    ? t("message.paletteEntriesDetected", { total: detectedCards.total, hacs: detectedCards.hacs })
+    : t("message.noPaletteEntriesDetected");
   statusMessage.textContent = clientReady
-    ? `${scanMessage} Refreshing Lovelace resources from Home Assistant.`
-    : `${scanMessage} Connect to Home Assistant and scan again to refresh the list.`;
+    ? t("message.refreshingResources", { message: scanMessage })
+    : t("message.connectAndScanAgain", { message: scanMessage });
 }
 
 function createHaCardConfig() {
@@ -1288,22 +1506,46 @@ function renderHaCardDependency(card) {
     ? integrationPlan.ready ? "installed" : "missing"
     : dependency.required ? "unchecked" : "not-required";
   copyHaCardResources.disabled = false;
-  const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
-  const installHint = dependency.installPaths.length ? ` Install path: ${dependency.installPaths.join(", ")}.` : "";
-  const atlasHint = ` ATLAS frontend: ${integrationPlan.atlasResource.resourcePaths.join(", ")}.`;
+  const resourceHint = dependency.resourcePaths.length
+    ? t("dependency.resource", { paths: dependency.resourcePaths.join(", ") })
+    : "";
+  const installHint = dependency.installPaths.length
+    ? t("dependency.installPath", { paths: dependency.installPaths.join(", ") })
+    : "";
+  const atlasHint = t("dependency.atlasFrontend", { paths: integrationPlan.atlasResource.resourcePaths.join(", ") });
   if (!dependency.required) {
-    haCardDependency.textContent = `Uses built-in Home Assistant card.${atlasHint}`;
+    haCardDependency.textContent = t("dependency.builtIn", { atlasHint });
   } else if (!lovelaceResourcesChecked) {
-    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint}${atlasHint} Connect to Home Assistant or check resources.`;
+    haCardDependency.textContent = t("dependency.requiresUnchecked", {
+      dependency: dependency.label,
+      resourceHint,
+      installHint,
+      atlasHint,
+    });
   } else if (integrationPlan.ready) {
-    haCardDependency.textContent = `${dependency.label} and ATLAS frontend resources found.${resourceHint}${atlasHint}`;
+    haCardDependency.textContent = t("dependency.ready", {
+      dependency: dependency.label,
+      resourceHint,
+      atlasHint,
+    });
   } else if (availability.status === "installed") {
-    haCardDependency.textContent = `${dependency.label} resource found.${resourceHint}${atlasHint} Missing ATLAS frontend: ${integrationPlan.atlasAvailability.missingResourcePaths.join(", ")}.`;
+    haCardDependency.textContent = t("dependency.cardFoundAtlasMissing", {
+      dependency: dependency.label,
+      resourceHint,
+      atlasHint,
+      missing: integrationPlan.atlasAvailability.missingResourcePaths.join(", "),
+    });
   } else {
-    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint}${atlasHint} Missing: ${[
-      ...integrationPlan.atlasAvailability.missingResourcePaths,
-      ...availability.missingResourcePaths,
-    ].join(", ")}.`;
+    haCardDependency.textContent = t("dependency.missing", {
+      dependency: dependency.label,
+      resourceHint,
+      installHint,
+      atlasHint,
+      missing: [
+        ...integrationPlan.atlasAvailability.missingResourcePaths,
+        ...availability.missingResourcePaths,
+      ].join(", "),
+    });
   }
 }
 
@@ -1565,7 +1807,11 @@ function createExpertTemplateSizingControls(template) {
     }
     persistConfiguration();
     renderExpertTemplatePalette();
-    statusMessage.textContent = `${template.label} size set to ${columns.value} columns and ${rows.value} rows.`;
+    statusMessage.textContent = t("message.templateSizeSet", {
+      template: translateTemplateLabel(template.id, template.label),
+      columns: columns.value,
+      rows: rows.value,
+    });
   };
   for (const control of [columns, rows]) {
     control.addEventListener("click", event => event.stopPropagation());
@@ -1805,8 +2051,8 @@ function appendExpertEditorSurfaceResizeHandle() {
   const handle = document.createElement("button");
   handle.type = "button";
   handle.className = "expert-editor-surface-resize-handle";
-  handle.setAttribute("aria-label", "Resize Expert editor surface");
-  handle.title = "Resize Expert editor surface";
+  handle.setAttribute("aria-label", t("aria.resizeExpertSurface"));
+  handle.title = t("aria.resizeExpertSurface");
   handle.addEventListener("pointerdown", startExpertEditorSurfaceResize);
   handle.addEventListener("click", event => {
     event.preventDefault();
@@ -1838,7 +2084,10 @@ function startExpertEditorSurfaceResize(event) {
     window.removeEventListener("pointerup", finishResize);
     document.body.style.cursor = "";
     persistConfiguration();
-    statusMessage.textContent = `Expert editor surface resized: +${expertEditorSurfaceSize.columns} columns, +${expertEditorSurfaceSize.rows} rows.`;
+    statusMessage.textContent = t("message.surfaceResized", {
+      columns: expertEditorSurfaceSize.columns,
+      rows: expertEditorSurfaceSize.rows,
+    });
   };
 
   window.addEventListener("pointermove", applyResize);
@@ -1849,12 +2098,12 @@ function resetExpertEditorSurfaceSize() {
   expertEditorSurfaceSize = { columns: 0, rows: 0 };
   applyExpertEditorSurfaceSize();
   persistConfiguration();
-  statusMessage.textContent = "Expert editor surface size reset to the default.";
+  statusMessage.textContent = t("message.surfaceSizeReset");
 }
 
 function arrangeExpertEditorFields() {
   if (expertEditorFields.length === 0) {
-    statusMessage.textContent = "Add Expert fields before arranging the editor surface.";
+    statusMessage.textContent = t("message.arrangeNeedsFields");
     return;
   }
 
@@ -1868,13 +2117,13 @@ function arrangeExpertEditorFields() {
   persistConfiguration();
   renderExpertEditorPreview();
   const nextOverlapCount = analyzeHomeAssistantCardEditorSurface(expertEditorFields).overlapCount;
-  statusMessage.textContent = `Expert fields arranged. Overlaps: ${previousOverlapCount} -> ${nextOverlapCount}.`;
+  statusMessage.textContent = t("message.fieldsArranged", { previous: previousOverlapCount, next: nextOverlapCount });
 }
 
 function updateSelectedExpertFieldGeometry() {
   const field = expertEditorFields[selectedExpertFieldIndex];
   if (!field) {
-    statusMessage.textContent = "Select an Expert field before changing its size.";
+    statusMessage.textContent = t("message.selectFieldBeforeResize");
     return false;
   }
 
@@ -1899,7 +2148,7 @@ function updateSelectedExpertFieldGeometry() {
   expertHeight.value = String(height);
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${field.id} resized to ${width}x${height}.`;
+  statusMessage.textContent = t("message.fieldResized", { field: field.id, width, height });
   return true;
 }
 
@@ -2128,7 +2377,7 @@ function resizeExpertEditorFieldBy(index, delta) {
   persistConfiguration();
   renderExpertEditorPreview();
   focusExpertSurfaceField(index);
-  statusMessage.textContent = `${field.id} resized to ${nextWidth}x${nextHeight}.`;
+  statusMessage.textContent = t("message.fieldResized", { field: field.id, width: nextWidth, height: nextHeight });
 }
 
 function startExpertFieldResize(event, index, corner, tile) {
@@ -2211,7 +2460,11 @@ function startExpertFieldResize(event, index, corner, tile) {
     persistConfiguration();
     renderExpertEditorPreview();
     const resizedField = expertEditorFields[index];
-    statusMessage.textContent = `${resizedField.id} resized to ${resizedField.width}x${resizedField.height}.`;
+    statusMessage.textContent = t("message.fieldResized", {
+      field: resizedField.id,
+      width: resizedField.width,
+      height: resizedField.height,
+    });
   };
 
   window.addEventListener("pointermove", applyResize);
@@ -2395,7 +2648,7 @@ function moveExpertEditorField(index, placement) {
   expertRow.value = String(row);
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${field.id} moved on the Expert editor surface.`;
+  statusMessage.textContent = t("message.fieldMoved", { field: field.id });
 }
 
 function createHaCardExportPayload() {
@@ -2485,7 +2738,7 @@ function renderEntityList() {
     card.className = "atlas-entity-card";
     card.tabIndex = 0;
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Show ${entityId} in the ATLAS Status Preview`);
+    card.setAttribute("aria-label", t("aria.showStatusPreview", { entityId }));
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     card.dataset.category = presentation?.category ?? "status";
     if (presentation?.category === "battery" && entity?.value) {
@@ -2495,7 +2748,7 @@ function renderEntityList() {
     name.textContent = presentation?.label ?? entityId;
     value.textContent = entity?.value && presentation?.category === "battery" && !entity.unit
       ? `${entity.value}%`
-      : entity?.value ?? entity?.state ?? "Waiting";
+      : entity?.value ?? entity?.state ?? t("text.waiting");
     detail.textContent = entity?.updatedAt
       ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${formatRelativeTime(entity.updatedAt)}`
       : presentation?.detail ?? entityId.split(".", 1)[0];
@@ -2533,18 +2786,18 @@ function renderEntityList() {
     moveDown.className = "icon-button";
     moveUp.textContent = "↑";
     moveDown.textContent = "↓";
-    moveUp.title = `Move ${entityId} up`;
-    moveDown.title = `Move ${entityId} down`;
-    moveUp.setAttribute("aria-label", `Move ${entityId} up`);
-    moveDown.setAttribute("aria-label", `Move ${entityId} down`);
+    moveUp.title = t("aria.moveEntityUp", { entityId });
+    moveDown.title = t("aria.moveEntityDown", { entityId });
+    moveUp.setAttribute("aria-label", t("aria.moveEntityUp", { entityId }));
+    moveDown.setAttribute("aria-label", t("aria.moveEntityDown", { entityId }));
     remove.className = "icon-button";
     remove.textContent = "🗑";
-    remove.title = `Remove ${entityId}`;
-    remove.setAttribute("aria-label", `Remove ${entityId}`);
+    remove.title = t("aria.removeEntity", { entityId });
+    remove.setAttribute("aria-label", t("aria.removeEntity", { entityId }));
     stackToggle.className = "stack-checkbox";
     stackToggle.checked = stackSelectedEntityIds.has(entityId);
-    stackToggle.title = `Use ${entityId} in stack export`;
-    stackToggle.setAttribute("aria-label", `Use ${entityId} in stack export`);
+    stackToggle.title = t("aria.useEntityInStack", { entityId });
+    stackToggle.setAttribute("aria-label", t("aria.useEntityInStack", { entityId }));
     stackToggle.addEventListener("click", event => event.stopPropagation());
     stackToggle.addEventListener("change", event => {
       event.stopPropagation();
@@ -2570,7 +2823,7 @@ function renderEntityList() {
       const action = document.createElement("button");
       const service = entity.state === "on" ? "turn_off" : "turn_on";
       action.type = "button";
-      action.textContent = service === "turn_on" ? "Turn on" : "Turn off";
+      action.textContent = service === "turn_on" ? t("button.turnOn") : t("button.turnOff");
       action.addEventListener("click", event => {
         event.stopPropagation();
         requestEntityService(entityId, service);
@@ -2580,8 +2833,8 @@ function renderEntityList() {
     card.append(controls);
     entityList.append(card);
   }
-  groupSummary.textContent = `Group status: ${ready} ready, ${pending} pending, ${blocked} blocked.`;
-  groupIssues.textContent = blockedEntities.length ? `Needs attention: ${blockedEntities.join(", ")}.` : "";
+  groupSummary.textContent = t("message.groupStatus", { ready, pending, blocked });
+  groupIssues.textContent = blockedEntities.length ? t("message.needsAttention", { entities: blockedEntities.join(", ") }) : "";
   renderStackSelectionSummary();
   renderHaCardPreview();
 }
@@ -2602,7 +2855,7 @@ function selectPrimaryEntity(entityId) {
   statusPreviewEntityId = entityId;
   stackSelectedEntityIds.add(entityId);
   homeAssistantEntity.dispatchEvent(new Event("input"));
-  statusMessage.textContent = `${entityId} selected for the HA card preview.`;
+  statusMessage.textContent = t("message.selectedForHaPreview", { entityId });
 }
 
 function handleEntityCardSelection(entityId) {
@@ -2624,7 +2877,7 @@ function selectStatusPreviewEntity(entityId) {
   if (activeTransport === transport) {
     void renderEntityState("on");
   }
-  statusMessage.textContent = `${entityId} selected for the Diagnostics status preview.`;
+  statusMessage.textContent = t("message.selectedForDiagnosticsPreview", { entityId });
 }
 
 function addEntityForStatusPreview(entityId) {
@@ -2634,7 +2887,7 @@ function addEntityForStatusPreview(entityId) {
   }
   statusPreviewEntityId = entityId;
   homeAssistantEntity.dispatchEvent(new Event("input"));
-  statusMessage.textContent = `${entityId} selected for Diagnostics. Use the checkbox to include it in the stack export.`;
+  statusMessage.textContent = t("message.selectedForDiagnosticsWithStack", { entityId });
 }
 
 function setStackEntitySelected(entityId, selected) {
@@ -2645,11 +2898,11 @@ function setStackEntitySelected(entityId, selected) {
   }
   if (stackSelectedEntityIds.size === 0) {
     stackSelectedEntityIds.add(entityId);
-    statusMessage.textContent = `${entityId} remains selected; stack export needs at least one entity.`;
+    statusMessage.textContent = t("message.stackNeedsEntity", { entityId });
   } else {
     statusMessage.textContent = selected
-      ? `${entityId} added to the stack preview.`
-      : `${entityId} removed from the stack preview.`;
+      ? t("message.addedToStackPreview", { entityId })
+      : t("message.removedFromStackPreview", { entityId });
   }
   persistConfiguration();
   renderEntityList();
@@ -2664,27 +2917,27 @@ function removeEntity(entityId) {
   homeAssistantEntity.value = entityIds.join(", ");
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = entityIds.length
-    ? `${entityId} removed.`
+    ? t("message.entityRemoved", { entityId })
     : emptyEntitySelectionMessage;
 }
 
 function formatRelativeTime(timestamp) {
   const seconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
-  if (seconds < 60) return "just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
-  return `${Math.floor(seconds / 3600)} h ago`;
+  if (seconds < 60) return t("message.justNow");
+  if (seconds < 3600) return t("message.minutesAgo", { count: Math.floor(seconds / 60) });
+  return t("message.hoursAgo", { count: Math.floor(seconds / 3600) });
 }
 
 function requestEntityService(entityId, service) {
   const command = createHomeAssistantServiceCommand(entityId, service);
-  if (!command || !window.confirm(`Send ${service} to ${entityId}?`)) {
+  if (!command || !window.confirm(t("message.sendServiceConfirm", { service, entityId }))) {
     return;
   }
 
   const result = connection?.getClient()?.callService(command);
   statusMessage.textContent = result?.accepted
-    ? `Command sent for ${entityId}.`
-    : result?.reason ?? "No active Home Assistant connection.";
+    ? t("message.commandSent", { entityId })
+    : result?.reason ?? t("message.noActiveConnection");
 }
 
 function bindSelectedEntity(nextTransport) {
@@ -2736,8 +2989,11 @@ function bindSelectedEntity(nextTransport) {
   if (usingLiveTransport) {
     removeServiceResultListener = connection?.getClient()?.subscribeServiceResult(result => {
       statusMessage.textContent = result.success
-        ? `Command completed for ${result.command.entityId}.`
-        : `Command failed for ${result.command.entityId}: ${result.reason ?? "Unknown error."}`;
+        ? t("message.commandCompleted", { entityId: result.command.entityId })
+        : t("message.commandFailed", {
+          entityId: result.command.entityId,
+          reason: result.reason ?? t("message.unknownError"),
+        });
     });
     removeEntityStateListListener = connection?.getClient()?.subscribeEntityStateList(result => {
       for (const entity of result.entities) {
@@ -2745,8 +3001,8 @@ function bindSelectedEntity(nextTransport) {
       }
       renderEntityPickerOptions();
       statusMessage.textContent = result.success
-        ? `Loaded ${result.entities.length} entities from Home Assistant.`
-        : `Entity list failed: ${result.reason ?? "Unknown error."}`;
+        ? t("message.loadedEntities", { count: result.entities.length })
+        : t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
     });
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
       lovelaceResources = result.resources;
@@ -2755,8 +3011,12 @@ function bindSelectedEntity(nextTransport) {
       renderHaCardPreview();
       renderExpertTemplatePalette();
       statusMessage.textContent = result.success
-        ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant. ${scannedCards.total} palette entries detected, including ${scannedCards.hacs} /hacsfiles resources.`
-        : `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
+        ? t("message.loadedResources", {
+          count: result.resources.length,
+          total: scannedCards.total,
+          hacs: scannedCards.hacs,
+        })
+        : t("message.lovelaceFailed", { reason: result.reason ?? t("message.unknownError") });
     });
     refreshLiveEntityStates();
   }
@@ -2764,11 +3024,11 @@ function bindSelectedEntity(nextTransport) {
     button.disabled = usingLiveTransport;
   }
   selectedEntity.textContent = usingLiveTransport
-    ? `Live entity: ${currentEntityId()}`
-    : `Demo entity: ${currentEntityId()}`;
+    ? t("message.liveEntity", { entityId: currentEntityId() })
+    : t("message.demoEntityTarget", { entityId: currentEntityId() });
   statusMessage.textContent = usingLiveTransport
-    ? `Waiting for updates from ${currentEntityId()}.`
-    : `Demo controls target ${currentEntityId()}.`;
+    ? t("message.waitingForUpdates", { entityId: currentEntityId() })
+    : t("message.demoControlsTarget", { entityId: currentEntityId() });
   renderEntityPickerOptions();
   renderEntityList();
 }
@@ -2782,7 +3042,7 @@ function connectHomeAssistant() {
   }
 
   if (!homeAssistantToken.value) {
-    renderConnectionLifecycle({ state: "failed", reason: "An access token is required to connect." });
+    renderConnectionLifecycle({ state: "failed", reason: t("message.tokenRequired") });
     return;
   }
 
@@ -2813,7 +3073,7 @@ applyTranslations();
 
 const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
 if (!registeredPanel) {
-  statusMessage.textContent = "Status panel is not registered.";
+  statusMessage.textContent = t("message.statusPanelNotRegistered");
 } else {
   bindSelectedEntity(transport);
   transport.subscribe(entity => {
@@ -2824,7 +3084,7 @@ if (!registeredPanel) {
     for (const button of buttons) {
       button.setAttribute("aria-pressed", String(button.dataset.entityState === entity.state));
     }
-    statusMessage.textContent = `Entity state updated: ${entity.state}.`;
+    statusMessage.textContent = t("message.entityStateUpdated", { state: entity.state });
   });
 }
 
@@ -2935,7 +3195,7 @@ useEntityNameAsTitle.addEventListener("click", () => {
   const title = currentExpertEntityTitle();
   expertTitle.value = title;
   updateSelectedExpertFieldTitle(title);
-  statusMessage.textContent = `${title} copied from the selected entity.`;
+  statusMessage.textContent = t("message.titleCopied", { title });
 });
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
@@ -2954,7 +3214,7 @@ clearExpertFields.addEventListener("click", () => {
   expertTitle.value = "";
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = "Expert editor preview cleared.";
+  statusMessage.textContent = t("message.expertPreviewCleared");
 });
 expertEditorDropzone.addEventListener("dragover", event => {
   event.preventDefault();
@@ -2988,30 +3248,30 @@ saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();
   const entityIds = trackedEntityIds();
   if (!title || entityIds.length === 0) {
-    statusMessage.textContent = "A group name and at least one entity are required.";
+    statusMessage.textContent = t("message.groupRequiresNameAndEntity");
     return;
   }
   const id = `group-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
   panelGroups = [...panelGroups.filter(group => group.id !== id), createHomeAssistantPanelGroup({ id, title, entityIds })];
   renderGroupOptions(id);
   persistConfiguration();
-  statusMessage.textContent = `Group ${title} saved.`;
+  statusMessage.textContent = t("message.groupSaved", { title });
 });
 deleteHomeAssistantGroup.addEventListener("click", () => {
   const id = homeAssistantGroup.value;
   if (!id.startsWith("group-")) {
-    statusMessage.textContent = "Built-in groups cannot be deleted.";
+    statusMessage.textContent = t("message.builtInGroupsCannotDelete");
     return;
   }
   panelGroups = panelGroups.filter(group => group.id !== id);
   renderGroupOptions("custom");
   persistConfiguration();
-  statusMessage.textContent = "Group deleted.";
+  statusMessage.textContent = t("message.groupDeleted");
 });
 duplicateHomeAssistantGroup.addEventListener("click", () => {
   const source = panelGroups.find(group => group.id === homeAssistantGroup.value);
   if (!source) {
-    statusMessage.textContent = "Select a group to duplicate.";
+    statusMessage.textContent = t("message.selectGroupToDuplicate");
     return;
   }
   const title = `${source.title} copy`;
@@ -3020,7 +3280,7 @@ duplicateHomeAssistantGroup.addEventListener("click", () => {
   homeAssistantGroupName.value = title;
   renderGroupOptions(id);
   persistConfiguration();
-  statusMessage.textContent = `Group ${title} created.`;
+  statusMessage.textContent = t("message.groupCreated", { title });
 });
 exportHomeAssistantConfig.addEventListener("click", () => {
   const payload = JSON.stringify({
@@ -3088,9 +3348,9 @@ copyHaCardConfig.addEventListener("click", async () => {
   try {
     const payload = createHaCardExportPayload();
     await writeClipboardText(payload.content);
-    statusMessage.textContent = `HA card ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
+    statusMessage.textContent = t("message.haCardCopied", { format: haCardFormat.value.toUpperCase() });
   } catch {
-    statusMessage.textContent = "Copy failed: use the preview text instead.";
+    statusMessage.textContent = t("message.copyPreviewFailed");
   }
 });
 copyHaCardResources.addEventListener("click", async () => {
@@ -3109,10 +3369,13 @@ copyHaCardResources.addEventListener("click", async () => {
       resources: lovelaceResources,
     }, haCardFormat.value));
     statusMessage.textContent = dependency.required
-      ? `ATLAS and ${dependency.label} Lovelace resources ${haCardFormat.value.toUpperCase()} copied to clipboard.`
-      : `ATLAS Lovelace resource ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
+      ? t("message.resourcesCopiedWithDependency", {
+        dependency: dependency.label,
+        format: haCardFormat.value.toUpperCase(),
+      })
+      : t("message.atlasResourceCopied", { format: haCardFormat.value.toUpperCase() });
   } catch {
-    statusMessage.textContent = "Copy failed: use the dependency path instead.";
+    statusMessage.textContent = t("message.copyDependencyFailed");
   }
 });
 importHomeAssistantConfig.addEventListener("change", async () => {
@@ -3122,8 +3385,12 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     const imported = JSON.parse(await file.text());
     if (imported.version !== 1 || typeof imported.url !== "string" || typeof imported.entities !== "string" || !Array.isArray(imported.groups)) throw new Error();
     pendingImport = imported;
-    const importedName = typeof imported.name === "string" ? imported.name : "Unnamed configuration";
-    if (!window.confirm(`Import ${importedName}: ${imported.groups.length} groups and ${imported.entities.split(",").filter(Boolean).length} entities?`)) return;
+    const importedName = typeof imported.name === "string" ? imported.name : t("message.unnamedConfiguration");
+    if (!window.confirm(t("message.importConfigurationConfirm", {
+      name: importedName,
+      groups: imported.groups.length,
+      entities: imported.entities.split(",").filter(Boolean).length,
+    }))) return;
     homeAssistantUrl.value = pendingImport.url;
     homeAssistantEntity.value = pendingImport.entities;
     if (typeof pendingImport.entityDomain === "string") {
@@ -3187,9 +3454,12 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
     renderConnectionReadiness();
-    statusMessage.textContent = `Configuration imported: ${panelGroups.length} groups and ${trackedEntityIds().length} entities.`;
+    statusMessage.textContent = t("message.configurationImported", {
+      groups: panelGroups.length,
+      entities: trackedEntityIds().length,
+    });
   } catch {
-    statusMessage.textContent = "Import failed: invalid configuration.";
+    statusMessage.textContent = t("message.importConfigurationFailed");
   } finally {
     importHomeAssistantConfig.value = "";
   }
@@ -3202,8 +3472,8 @@ importHaCardConfig.addEventListener("change", async () => {
     const decision = renderHaCardImportDecision(text);
     if (decision.action !== "import") {
       statusMessage.textContent = decision.action === "review"
-        ? "Import paused: review the compatibility details before mapping this artifact."
-        : "Import rejected: unsupported Home Assistant card artifact.";
+        ? t("message.importPaused")
+        : t("message.importRejected");
       return;
     }
 
@@ -3238,9 +3508,14 @@ importHaCardConfig.addEventListener("change", async () => {
     }
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
-    statusMessage.textContent = `${summary.packaged ? "ATLAS card package" : "HA card"} ${summary.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
+    statusMessage.textContent = t("message.haCardImported", {
+      type: summary.packaged ? t("message.atlasPackage") : t("message.haCard"),
+      format: summary.format.toUpperCase(),
+      title,
+      entities: entityIds.length,
+    });
   } catch {
-    statusMessage.textContent = "Import failed: invalid Home Assistant entities card JSON or YAML.";
+    statusMessage.textContent = t("message.importHaCardFailed");
   } finally {
     importHaCardConfig.value = "";
   }

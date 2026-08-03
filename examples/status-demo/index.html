@@ -1047,7 +1047,7 @@
           <h1 data-i18n="page.title">ATLAS Home Assistant Card Editor</h1>
           <p data-i18n="page.subtitle">Build Simple or Expert Home Assistant cards from live or local entities.</p>
         </div>
-        <div class="language-toggle" role="group" aria-label="Language">
+        <div class="language-toggle" role="group" aria-label="Language" data-i18n-aria-label="aria.language">
           <button type="button" data-language="de" aria-pressed="false">DE</button>
           <button type="button" data-language="en" aria-pressed="true">EN</button>
         </div>
@@ -1157,8 +1157,8 @@
         </div>
         <output id="selected-entity" aria-live="polite"></output>
         <div class="editor-mode-toggle" role="group" aria-label="Card editor mode" data-i18n-aria-label="aria.cardEditorMode">
-          <button type="button" data-editor-mode="simple" aria-pressed="true">Simple</button>
-          <button type="button" data-editor-mode="expert" aria-pressed="false">Expert</button>
+          <button type="button" data-editor-mode="simple" aria-pressed="true" data-i18n="button.simpleMode">Simple</button>
+          <button type="button" data-editor-mode="expert" aria-pressed="false" data-i18n="button.expertMode">Expert</button>
         </div>
         <div id="simple-card-section" class="ha-card-preview">
           <label for="ha-card-preview" data-i18n="label.haCardCode">HA card code</label>
@@ -1181,7 +1181,7 @@
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates" data-i18n-aria-label="aria.expertTemplates"></div>
           </aside>
           <section class="expert-editor-surface" aria-label="Expert editor surface" data-i18n-aria-label="aria.expertSurface">
-            <div id="expert-editor-dropzone" class="expert-editor-dropzone">
+            <div id="expert-editor-dropzone" class="expert-editor-dropzone" data-i18n="message.dragCard">
               Drag a card from the left into this editor surface.
             </div>
             <div class="expert-editor-controls">
