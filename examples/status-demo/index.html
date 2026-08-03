@@ -70,6 +70,21 @@
         gap: 6px;
       }
 
+      .connection-config .field-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 10px;
+        align-items: end;
+      }
+
+      .connection-config .field-grid.three-column {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .connection-config .field-grid.two-column {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+
       .connection-config .field-pair[hidden] {
         display: none;
       }
@@ -935,10 +950,16 @@
         <button type="button" data-entity-state="unavailable" aria-pressed="false">Unavailable</button>
       </div>
       <div class="connection-config">
-        <label for="home-assistant-url">Home Assistant URL</label>
-        <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
-        <label for="home-assistant-token">Access token</label>
-        <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
+        <div class="field-grid two-column">
+          <div class="field-pair">
+            <label for="home-assistant-url">Home Assistant URL</label>
+            <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
+          </div>
+          <div class="field-pair">
+            <label for="home-assistant-token">Access token</label>
+            <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
         <label class="remember-secret" for="remember-home-assistant-token">
           <input id="remember-home-assistant-token" type="checkbox">
           Remember token locally
@@ -951,30 +972,40 @@
         <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
       </div>
       <div class="connection-config">
-        <label for="home-assistant-group">Panel group</label>
-        <select id="home-assistant-group">
-          <option value="overview">Overview</option>
-          <option value="energy">Energy</option>
-          <option value="safety">Safety</option>
-          <option value="custom">Custom</option>
-        </select>
-        <label for="home-assistant-group-name">Group name</label>
-        <input id="home-assistant-group-name" type="text" autocomplete="off">
-        <label for="ha-card-target">Card target</label>
-        <select id="ha-card-target"></select>
-        <div id="card-layout-control" class="field-pair">
-          <label for="ha-card-layout">Card layout</label>
-          <select id="ha-card-layout">
-            <option value="single">Simple</option>
-            <option value="horizontal-stack">Horizontal stack</option>
-            <option value="vertical-stack">Vertical stack</option>
-          </select>
+        <div class="field-grid three-column">
+          <div class="field-pair">
+            <label for="home-assistant-group">Panel group</label>
+            <select id="home-assistant-group">
+              <option value="overview">Overview</option>
+              <option value="energy">Energy</option>
+              <option value="safety">Safety</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div class="field-pair">
+            <label for="home-assistant-group-name">Group name</label>
+            <input id="home-assistant-group-name" type="text" autocomplete="off">
+          </div>
+          <div class="field-pair">
+            <label for="ha-card-target">Card target</label>
+            <select id="ha-card-target"></select>
+          </div>
+          <div id="card-layout-control" class="field-pair">
+            <label for="ha-card-layout">Card layout</label>
+            <select id="ha-card-layout">
+              <option value="single">Simple</option>
+              <option value="horizontal-stack">Horizontal stack</option>
+              <option value="vertical-stack">Vertical stack</option>
+            </select>
+          </div>
+          <div class="field-pair">
+            <label for="ha-card-format">Card format</label>
+            <select id="ha-card-format">
+              <option value="json">JSON</option>
+              <option value="yaml">YAML</option>
+            </select>
+          </div>
         </div>
-        <label for="ha-card-format">Card format</label>
-        <select id="ha-card-format">
-          <option value="json">JSON</option>
-          <option value="yaml">YAML</option>
-        </select>
         <output id="ha-card-dependency" aria-live="polite"></output>
         <div class="connection-actions">
           <button id="save-home-assistant-group" type="button">Save group</button>
@@ -992,18 +1023,30 @@
           <input id="import-ha-card-config" type="file" accept="application/json,.json,.yaml,.yml" hidden>
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
-        <label for="home-assistant-entity">Entity IDs</label>
-        <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
-        <label for="home-assistant-entity-domain">Entity type</label>
-        <select id="home-assistant-entity-domain"></select>
-        <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts"></div>
-        <label for="home-assistant-entity-search">Entity search</label>
-        <div class="entity-search-control">
-          <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID">
-          <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" disabled>&times;</button>
+        <div class="field-grid two-column">
+          <div class="field-pair">
+            <label for="home-assistant-entity">Entity IDs</label>
+            <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
+          </div>
+          <div class="field-pair">
+            <label for="home-assistant-entity-domain">Entity type</label>
+            <select id="home-assistant-entity-domain"></select>
+          </div>
         </div>
-        <label for="home-assistant-entity-picker">Entity picker</label>
-        <select id="home-assistant-entity-picker"></select>
+        <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts"></div>
+        <div class="field-grid two-column">
+          <div class="field-pair">
+            <label for="home-assistant-entity-search">Entity search</label>
+            <div class="entity-search-control">
+              <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID">
+              <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" disabled>&times;</button>
+            </div>
+          </div>
+          <div class="field-pair">
+            <label for="home-assistant-entity-picker">Entity picker</label>
+            <select id="home-assistant-entity-picker"></select>
+          </div>
+        </div>
         <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
         <div class="connection-actions">
           <button id="add-home-assistant-entity" type="button">Add entity</button>
