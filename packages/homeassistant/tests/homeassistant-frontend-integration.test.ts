@@ -188,6 +188,8 @@ describe("Home Assistant frontend integration planning", () => {
         id: "main light",
         target: "bubble",
         entityId: "light.kitchen",
+        layout: "card",
+        entries: [],
         column: 1,
         row: 0,
         width: 2,
@@ -197,6 +199,8 @@ describe("Home Assistant frontend integration planning", () => {
         id: "mushroom-template-sensor.kitchen_temperature",
         target: "mushroom-template",
         entityId: "sensor.kitchen_temperature",
+        layout: "card",
+        entries: [],
         column: 3,
         row: 1,
         width: 1,
@@ -242,6 +246,24 @@ describe("Home Assistant frontend integration planning", () => {
           id: "door",
           target: "bubble",
           entityId: "binary_sensor.atlas_door",
+          layout: "vertical-stack",
+          entries: [
+            {
+              id: "temperature",
+              target: "mushroom-template",
+              entityId: "sensor.atlas_temperature",
+            },
+            {
+              id: "status",
+              target: "entities",
+              entityId: "binary_sensor.atlas_status",
+            },
+            {
+              id: "door",
+              target: "bubble",
+              entityId: "binary_sensor.atlas_door",
+            },
+          ],
           column: 0,
           row: 1,
           width: 2,
@@ -313,6 +335,134 @@ describe("Home Assistant frontend integration planning", () => {
           name: "Door",
           entity: "binary_sensor.atlas_door",
           show_state: true,
+        },
+      ],
+    });
+  });
+
+  it("creates nested horizontal and vertical stacks from an arbitrary expert surface", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "Top left",
+          target: "bubble",
+          entityId: "light.top_left",
+          column: 0,
+          row: 0,
+          width: 2,
+          height: 1,
+        },
+        {
+          id: "Top right",
+          target: "mushroom-template",
+          entityId: "sensor.top_right",
+          column: 2,
+          row: 0,
+          width: 2,
+          height: 1,
+        },
+        {
+          id: "Middle row",
+          target: "entities",
+          entityId: "binary_sensor.middle",
+          column: 0,
+          row: 1,
+          width: 4,
+          height: 1,
+        },
+        {
+          id: "Bottom stack",
+          target: "entities",
+          entityId: "",
+          layout: "vertical-stack",
+          entries: [
+            {
+              id: "First",
+              target: "bubble",
+              entityId: "switch.first",
+            },
+            {
+              id: "Second",
+              target: "mushroom-template",
+              entityId: "sensor.second",
+            },
+          ],
+          column: 0,
+          row: 2,
+          width: 2,
+          height: 2,
+        },
+        {
+          id: "Bottom right",
+          target: "bubble",
+          entityId: "light.bottom_right",
+          column: 2,
+          row: 2,
+          width: 2,
+          height: 2,
+        },
+      ],
+    })).toEqual({
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "horizontal-stack",
+          cards: [
+            {
+              type: "custom:bubble-card",
+              card_type: "button",
+              button_type: "state",
+              name: "Top left",
+              entity: "light.top_left",
+              show_state: true,
+            },
+            {
+              type: "custom:mushroom-template-card",
+              primary: "Top right",
+              secondary: "sensor.top_right",
+              entity: "sensor.top_right",
+            },
+          ],
+        },
+        {
+          type: "entities",
+          title: "Middle row",
+          entities: [
+            { entity: "binary_sensor.middle" },
+          ],
+        },
+        {
+          type: "horizontal-stack",
+          cards: [
+            {
+              type: "vertical-stack",
+              cards: [
+                {
+                  type: "custom:bubble-card",
+                  card_type: "button",
+                  button_type: "state",
+                  name: "First",
+                  entity: "switch.first",
+                  show_state: true,
+                },
+                {
+                  type: "custom:mushroom-template-card",
+                  primary: "Second",
+                  secondary: "sensor.second",
+                  entity: "sensor.second",
+                },
+              ],
+            },
+            {
+              type: "custom:bubble-card",
+              card_type: "button",
+              button_type: "state",
+              name: "Bottom right",
+              entity: "light.bottom_right",
+              show_state: true,
+            },
+          ],
         },
       ],
     });

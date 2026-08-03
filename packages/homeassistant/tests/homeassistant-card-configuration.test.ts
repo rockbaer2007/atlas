@@ -409,6 +409,49 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("serializes nested Home Assistant stack cards recursively", () => {
+    expect(serializeHomeAssistantEntitiesCardConfiguration({
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "horizontal-stack",
+          cards: [
+            {
+              type: "custom:bubble-card",
+              card_type: "button",
+              button_type: "state",
+              name: "Door",
+              entity: "binary_sensor.door",
+              show_state: true,
+            },
+            {
+              type: "entities",
+              title: "Status",
+              entities: [
+                { entity: "sensor.status" },
+              ],
+            },
+          ],
+        },
+      ],
+    }, "yaml")).toBe([
+      "type: vertical-stack",
+      "cards:",
+      "  - type: horizontal-stack",
+      "    cards:",
+      "      - type: \"custom:bubble-card\"",
+      "        card_type: \"button\"",
+      "        button_type: \"state\"",
+      "        name: \"Door\"",
+      "        entity: \"binary_sensor.door\"",
+      "        show_state: true",
+      "      - type: entities",
+      "        title: \"Status\"",
+      "        entities:",
+      "          - entity: \"sensor.status\"",
+    ].join("\n"));
+  });
+
   it("parses Mushroom and Bubble cards", () => {
     expect(parseHomeAssistantEntitiesCardConfiguration([
       "type: custom:mushroom-template-card",

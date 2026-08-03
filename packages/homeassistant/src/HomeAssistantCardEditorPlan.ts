@@ -2,17 +2,25 @@ import type {
   HomeAssistantCardConfiguration,
   HomeAssistantCardDependency,
   HomeAssistantCardLayout,
-  HomeAssistantSingleCardConfiguration,
   HomeAssistantCardTarget,
 } from "./HomeAssistantCardConfiguration";
 import { createHomeAssistantCardConfiguration, inspectHomeAssistantCardDependency } from "./HomeAssistantCardConfiguration";
 
 export type HomeAssistantCardEditorMode = "simple" | "expert";
+export type HomeAssistantCardEditorSurfaceFieldLayout = "card" | "horizontal-stack" | "vertical-stack";
+
+export interface HomeAssistantCardEditorSurfaceFieldEntry {
+  readonly id: string;
+  readonly target: HomeAssistantCardTarget;
+  readonly entityId: string;
+}
 
 export interface HomeAssistantCardEditorSurfaceField {
   readonly id: string;
   readonly target: HomeAssistantCardTarget;
   readonly entityId: string;
+  readonly layout?: HomeAssistantCardEditorSurfaceFieldLayout;
+  readonly entries?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
   readonly column: number;
   readonly row: number;
   readonly width: number;
@@ -99,7 +107,7 @@ export function createHomeAssistantCardEditorDependencyPlan(
 ): HomeAssistantCardEditorDependencyPlan {
   const editorPlan = createHomeAssistantCardEditorPackagePlan(input);
   const usedTargets = dedupeCardTargets(editorPlan.editorMode === "expert"
-    ? editorPlan.fields.map(field => field.target)
+    ? editorPlan.fields.flatMap(field => listSurfaceFieldTargets(field))
     : [editorPlan.simpleTarget]);
   const dependencies = usedTargets.map(inspectHomeAssistantCardDependency);
 
@@ -126,13 +134,14 @@ export function createHomeAssistantCardEditorConfiguration(
   }
 
   const fieldCards = [...editorPlan.fields]
-    .filter(field => field.entityId)
-    .sort(compareSurfaceFields)
-    .map(field => createHomeAssistantCardConfiguration({
-      target: field.target,
-      title: field.id,
-      entityIds: [field.entityId],
-    }));
+    .map(field => ({
+      field,
+      card: createSurfaceFieldCardConfiguration(field),
+    }))
+    .filter((fieldCard): fieldCard is { readonly field: HomeAssistantCardEditorSurfaceField; readonly card: HomeAssistantCardConfiguration } =>
+      fieldCard.card !== undefined,
+    )
+    .sort((first, second) => compareSurfaceFields(first.field, second.field));
 
   if (fieldCards.length === 0) {
     return createHomeAssistantCardConfiguration({
@@ -143,13 +152,10 @@ export function createHomeAssistantCardEditorConfiguration(
   }
 
   if (fieldCards.length === 1) {
-    return fieldCards[0]!;
+    return fieldCards[0]!.card;
   }
 
-  return {
-    type: "vertical-stack",
-    cards: fieldCards.filter(isSingleCardConfiguration),
-  };
+  return createStackFromSurfaceRows(fieldCards);
 }
 
 export function normalizeHomeAssistantCardEditorScriptFilename(name: string): string {
@@ -179,10 +185,22 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
     id: field.id.trim() || `${field.target}-${field.entityId}`,
     target: field.target,
     entityId: field.entityId.trim(),
+    layout: field.layout ?? "card",
+    entries: (field.entries ?? []).map(normalizeSurfaceFieldEntry),
     column: Math.max(0, Math.floor(field.column)),
     row: Math.max(0, Math.floor(field.row)),
     width: Math.max(1, Math.floor(field.width)),
     height: Math.max(1, Math.floor(field.height)),
+  };
+}
+
+function normalizeSurfaceFieldEntry(
+  entry: HomeAssistantCardEditorSurfaceFieldEntry,
+): HomeAssistantCardEditorSurfaceFieldEntry {
+  return {
+    id: entry.id.trim() || `${entry.target}-${entry.entityId}`,
+    target: entry.target,
+    entityId: entry.entityId.trim(),
   };
 }
 
@@ -193,8 +211,65 @@ function compareSurfaceFields(
   return first.row - second.row || first.column - second.column || first.id.localeCompare(second.id);
 }
 
-function isSingleCardConfiguration(
-  card: HomeAssistantCardConfiguration,
-): card is HomeAssistantSingleCardConfiguration {
-  return card.type !== "horizontal-stack" && card.type !== "vertical-stack";
+function listSurfaceFieldTargets(field: HomeAssistantCardEditorSurfaceField): HomeAssistantCardTarget[] {
+  const entryTargets = (field.entries ?? []).map(entry => entry.target);
+  return entryTargets.length > 0 ? entryTargets : [field.target];
+}
+
+function createSurfaceFieldCardConfiguration(
+  field: HomeAssistantCardEditorSurfaceField,
+): HomeAssistantCardConfiguration | undefined {
+  const layout = field.layout ?? "card";
+  const entries = (field.entries ?? []).filter(entry => entry.entityId);
+  if (layout !== "card" && entries.length > 0) {
+    return {
+      type: layout,
+      cards: entries.map(entry => createHomeAssistantCardConfiguration({
+        target: entry.target,
+        title: entry.id,
+        entityIds: [entry.entityId],
+      })),
+    };
+  }
+
+  if (!field.entityId) return undefined;
+  return createHomeAssistantCardConfiguration({
+    target: field.target,
+    title: field.id,
+    entityIds: [field.entityId],
+  });
+}
+
+function createStackFromSurfaceRows(
+  fieldCards: readonly { readonly field: HomeAssistantCardEditorSurfaceField; readonly card: HomeAssistantCardConfiguration }[],
+): HomeAssistantCardConfiguration {
+  const rows = groupSurfaceFieldCardsByRow(fieldCards);
+  const rowCards = rows.map(row => {
+    if (row.length === 1) return row[0]!.card;
+    return {
+      type: "horizontal-stack",
+      cards: row.map(item => item.card),
+    } satisfies HomeAssistantCardConfiguration;
+  });
+
+  if (rowCards.length === 1) return rowCards[0]!;
+  return {
+    type: "vertical-stack",
+    cards: rowCards,
+  };
+}
+
+function groupSurfaceFieldCardsByRow(
+  fieldCards: readonly { readonly field: HomeAssistantCardEditorSurfaceField; readonly card: HomeAssistantCardConfiguration }[],
+): Array<Array<{ readonly field: HomeAssistantCardEditorSurfaceField; readonly card: HomeAssistantCardConfiguration }>> {
+  const rows = new Map<number, Array<{ readonly field: HomeAssistantCardEditorSurfaceField; readonly card: HomeAssistantCardConfiguration }>>();
+  for (const item of fieldCards) {
+    const row = rows.get(item.field.row) ?? [];
+    row.push(item);
+    rows.set(item.field.row, row);
+  }
+
+  return [...rows.entries()]
+    .sort(([first], [second]) => first - second)
+    .map(([, row]) => row.sort((first, second) => first.field.column - second.field.column || first.field.id.localeCompare(second.field.id)));
 }

@@ -29,7 +29,7 @@ export interface HomeAssistantBubbleCardConfiguration {
 
 export interface HomeAssistantStackCardConfiguration {
   readonly type: "horizontal-stack" | "vertical-stack";
-  readonly cards: readonly HomeAssistantSingleCardConfiguration[];
+  readonly cards: readonly HomeAssistantCardConfiguration[];
 }
 
 export type HomeAssistantSingleCardConfiguration =
@@ -538,9 +538,7 @@ function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfigu
     "cards:",
   ];
   for (const child of card.cards) {
-    const childLines = (child.type === "entities"
-      ? serializeHomeAssistantEntitiesCardYaml(child)
-      : serializeHomeAssistantCustomCardYaml(child)).split("\n");
+    const childLines = serializeHomeAssistantEntitiesCardConfiguration(child, "yaml").split("\n");
     childLines.forEach((line, index) => {
       lines.push(index === 0 ? `  - ${line}` : `    ${line}`);
     });
