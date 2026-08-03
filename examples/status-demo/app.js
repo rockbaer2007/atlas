@@ -98,6 +98,8 @@ const editExpertField = document.querySelector("#edit-expert-field");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
 const saveExpertPaletteFavorites = document.querySelector("#save-expert-palette-favorites");
+const showAllExpertPaletteCards = document.querySelector("#show-all-expert-palette-cards");
+const scanExpertPaletteCards = document.querySelector("#scan-expert-palette-cards");
 const resetExpertPaletteFavorites = document.querySelector("#reset-expert-palette-favorites");
 const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
@@ -112,7 +114,7 @@ const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
-const expertPaletteCards = [
+let expertPaletteCards = [
   { id: "core-entities", category: "Core", label: "Entities", templateId: "entity-list", target: "entities", preview: ["Entity list"] },
   { id: "core-horizontal-stack", category: "Core", label: "Horizontal stack", templateId: "horizontal-stack", target: "entities", preview: ["Cards in a row"] },
   { id: "core-vertical-stack", category: "Core", label: "Vertical stack", templateId: "vertical-stack", target: "entities", preview: ["Cards in a column"] },
@@ -148,6 +150,7 @@ let reconnectAttempts = 0;
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let activeEditorMode = "simple";
+let expertPaletteShowAllCards = false;
 let selectedExpertFieldIndex = -1;
 let expertFieldEditing = false;
 const entitySnapshots = new Map();
@@ -198,7 +201,7 @@ try {
   }
   if (Array.isArray(savedConfiguration?.expertPaletteFavoriteIds)) {
     for (const paletteId of savedConfiguration.expertPaletteFavoriteIds) {
-      if (typeof paletteId === "string" && expertPaletteCards.some(card => card.id === paletteId)) {
+      if (typeof paletteId === "string" && paletteId.trim()) {
         expertPaletteFavoriteIds.add(paletteId);
         expertPaletteDraftFavoriteIds.add(paletteId);
       }
@@ -599,6 +602,124 @@ function checkLiveLovelaceResources(options = {}) {
   }
 }
 
+function normalizeLovelaceResourceUrl(resource) {
+  const url = typeof resource === "string" ? resource : resource?.url;
+  return typeof url === "string" ? url.split("?")[0].toLowerCase() : "";
+}
+
+function formatLovelaceResourceLabel(url) {
+  const fileName = url.split("/").filter(Boolean).pop() ?? url;
+  return fileName.replace(/\.js$/i, "").replace(/[-_]+/g, " ");
+}
+
+function createLovelaceResourcePaletteId(url, index) {
+  const slug = url.replace(/^https?:\/\//, "").replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "").toLowerCase();
+  return `ha-resource-${slug || index}`;
+}
+
+function createScannedExpertPaletteCards(resources) {
+  const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))];
+  const hasBubbleCard = urls.some(url => url.includes("/bubble-card/") || url.includes("bubble-card.js"));
+  const hasMushroom = urls.some(url => url.includes("/lovelace-mushroom/") || url.includes("mushroom.js"));
+  const scannedCards = [];
+
+  if (hasMushroom) {
+    scannedCards.push({
+      id: "ha-scanned-mushroom-template",
+      category: "HA scanned",
+      label: "Mushroom template",
+      templateId: "state-button",
+      target: "mushroom-template",
+      preview: ["Detected from Lovelace resources"],
+      scanned: true,
+    });
+  }
+
+  if (hasBubbleCard) {
+    scannedCards.push(
+      {
+        id: "ha-scanned-bubble-state",
+        category: "HA scanned",
+        label: "Bubble state",
+        templateId: "state-button",
+        target: "bubble",
+        bubbleButtonType: "state",
+        preview: ["Detected button_type: state"],
+        scanned: true,
+      },
+      {
+        id: "ha-scanned-bubble-switch",
+        category: "HA scanned",
+        label: "Bubble switch",
+        templateId: "switch-button",
+        target: "bubble",
+        bubbleButtonType: "switch",
+        preview: ["Detected button_type: switch"],
+        scanned: true,
+      },
+      {
+        id: "ha-scanned-bubble-slider",
+        category: "HA scanned",
+        label: "Bubble slider",
+        templateId: "state-button",
+        target: "bubble",
+        bubbleButtonType: "slider",
+        preview: ["Detected button_type: slider"],
+        scanned: true,
+      },
+      {
+        id: "ha-scanned-bubble-name",
+        category: "HA scanned",
+        label: "Bubble name",
+        templateId: "state-button",
+        target: "bubble",
+        bubbleButtonType: "name",
+        preview: ["Detected button_type: name"],
+        scanned: true,
+      },
+    );
+  }
+
+  const resourceCards = urls
+    .filter(url => !url.includes("/atlas/") && !url.includes("atlas-card"))
+    .map((url, index) => ({
+      id: createLovelaceResourcePaletteId(url, index),
+      category: "HA resource",
+      label: formatLovelaceResourceLabel(url),
+      templateId: "entity-list",
+      target: "entities",
+      preview: [url],
+      resourceUrl: url,
+      disabled: true,
+      scanned: true,
+    }));
+
+  return [...scannedCards, ...resourceCards];
+}
+
+function refreshScannedExpertPaletteCards() {
+  const staticCards = expertPaletteCards.filter(card => !card.scanned);
+  const scannedCards = createScannedExpertPaletteCards(lovelaceResources);
+  expertPaletteCards = [...staticCards, ...scannedCards];
+  return scannedCards.length;
+}
+
+function scanExpertPaletteCardsFromHomeAssistant() {
+  const detectedCards = refreshScannedExpertPaletteCards();
+  expertPaletteShowAllCards = true;
+  renderExpertTemplatePalette();
+  const clientReady = Boolean(connection?.getClient());
+  if (clientReady) {
+    checkLiveLovelaceResources({ appendStatus: true });
+  }
+  const scanMessage = detectedCards
+    ? `${detectedCards} palette entries detected from loaded HA resources.`
+    : "No supported Community cards detected from loaded HA resources yet.";
+  statusMessage.textContent = clientReady
+    ? `${scanMessage} Refreshing Lovelace resources from Home Assistant.`
+    : `${scanMessage} Connect to Home Assistant and scan again to refresh the list.`;
+}
+
 function createHaCardConfig() {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   return createHomeAssistantCardConfiguration({
@@ -693,10 +814,12 @@ function renderHaCardImportDecision(text) {
 
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
-  const visibleCards = expertPaletteFavoriteIds.size
+  const visibleCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
     ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
     : expertPaletteCards;
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
+  showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;
+  showAllExpertPaletteCards.textContent = expertPaletteShowAllCards ? "Show favorites" : "Show all cards";
   resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
   for (const card of visibleCards) {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
@@ -704,7 +827,8 @@ function renderExpertTemplatePalette() {
     const item = document.createElement("article");
     item.className = "expert-template-card";
     item.classList.toggle("selected", isExpertPaletteCardSelected(card));
-    item.draggable = true;
+    item.classList.toggle("disabled", card.disabled === true);
+    item.draggable = card.disabled !== true;
     item.tabIndex = 0;
     item.setAttribute("role", "button");
     item.dataset.paletteCard = card.id;
@@ -716,33 +840,53 @@ function renderExpertTemplatePalette() {
     title.textContent = card.label;
     const detail = document.createElement("small");
     const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType}` : "";
-    detail.textContent = `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${card.target}${bubbleType}`;
+    detail.textContent = card.disabled === true
+      ? "Registered Lovelace resource, not mapped yet"
+      : `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${card.target}${bubbleType}`;
     const preview = document.createElement("span");
     preview.textContent = card.preview.join(" / ");
     const availability = document.createElement("span");
-    availability.textContent = formatExpertTemplateAvailability(card.target);
-    const sizing = createExpertTemplateSizingControls(template);
-    const favorite = document.createElement("label");
-    favorite.className = "favorite-toggle";
-    const favoriteCheckbox = document.createElement("input");
-    favoriteCheckbox.type = "checkbox";
-    favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
-    favorite.append(favoriteCheckbox, "Favorite");
+    availability.textContent = card.disabled === true ? "Scanned only" : formatExpertTemplateAvailability(card.target);
 
-    item.append(category, title, detail, preview, availability, favorite, sizing);
-    favorite.addEventListener("click", event => event.stopPropagation());
-    favoriteCheckbox.addEventListener("change", event => {
-      event.stopPropagation();
-      setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
+    item.append(category, title, detail, preview, availability);
+    if (card.disabled !== true) {
+      const sizing = createExpertTemplateSizingControls(template);
+      const favorite = document.createElement("label");
+      favorite.className = "favorite-toggle";
+      const favoriteCheckbox = document.createElement("input");
+      favoriteCheckbox.type = "checkbox";
+      favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
+      favorite.append(favoriteCheckbox, "Favorite");
+      item.append(favorite, sizing);
+      favorite.addEventListener("click", event => event.stopPropagation());
+      favoriteCheckbox.addEventListener("change", event => {
+        event.stopPropagation();
+        setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
+      });
+    }
+
+    item.addEventListener("click", () => {
+      if (card.disabled === true) {
+        statusMessage.textContent = `${card.label} is registered in Home Assistant, but ATLAS does not map this custom card yet.`;
+        return;
+      }
+      selectExpertPaletteCard(card.id);
     });
-    item.addEventListener("click", () => selectExpertPaletteCard(card.id));
     item.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
+        if (card.disabled === true) {
+          statusMessage.textContent = `${card.label} is registered in Home Assistant, but ATLAS does not map this custom card yet.`;
+          return;
+        }
         selectExpertPaletteCard(card.id);
       }
     });
     item.addEventListener("dragstart", event => {
+      if (card.disabled === true) {
+        event.preventDefault();
+        return;
+      }
       event.dataTransfer?.setData("text/plain", card.templateId);
       event.dataTransfer?.setData("application/x-atlas-template", card.templateId);
       event.dataTransfer?.setData("application/x-atlas-palette-card", card.id);
@@ -780,11 +924,20 @@ function setExpertPaletteFavoriteDraft(cardId, favorite) {
   statusMessage.textContent = "Favorite selection changed. Use Save favorites to apply it.";
 }
 
+function toggleExpertPaletteAllCards() {
+  expertPaletteShowAllCards = !expertPaletteShowAllCards;
+  renderExpertTemplatePalette();
+  statusMessage.textContent = expertPaletteShowAllCards
+    ? "Full Core and Community card list is visible for favorite selection."
+    : "Saved favorites are visible.";
+}
+
 function saveExpertPaletteFavoriteSelection() {
   expertPaletteFavoriteIds.clear();
   for (const cardId of expertPaletteDraftFavoriteIds) {
     expertPaletteFavoriteIds.add(cardId);
   }
+  expertPaletteShowAllCards = false;
   persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteFavoriteIds.size
@@ -795,6 +948,7 @@ function saveExpertPaletteFavoriteSelection() {
 function resetExpertPaletteFavoriteSelection() {
   expertPaletteFavoriteIds.clear();
   expertPaletteDraftFavoriteIds.clear();
+  expertPaletteShowAllCards = false;
   persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = "All Core and Community cards are visible again.";
@@ -875,6 +1029,10 @@ function selectExpertPaletteCard(cardId) {
   const card = expertPaletteCards.find(candidate => candidate.id === cardId);
   const template = cardEditorTemplates.find(candidate => candidate.id === card?.templateId);
   if (!card || !template) return undefined;
+  if (card.disabled === true) {
+    statusMessage.textContent = `${card.label} is registered in Home Assistant, but ATLAS does not map this custom card yet.`;
+    return undefined;
+  }
   expertTemplate.value = template.id;
   syncExpertInputsFromTemplateSizing(template.id);
   expertTarget.value = card.target;
@@ -1721,10 +1879,11 @@ function bindSelectedEntity(nextTransport) {
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
       lovelaceResources = result.resources;
       lovelaceResourcesChecked = result.success;
+      const scannedCardCount = result.success ? refreshScannedExpertPaletteCards() : 0;
       renderHaCardPreview();
       renderExpertTemplatePalette();
       statusMessage.textContent = result.success
-        ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant.`
+        ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant. ${scannedCardCount} palette entries detected.`
         : `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
     });
     refreshLiveEntityStates();
@@ -1892,6 +2051,8 @@ useEntityNameAsTitle.addEventListener("click", () => {
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
 saveExpertPaletteFavorites.addEventListener("click", saveExpertPaletteFavoriteSelection);
+showAllExpertPaletteCards.addEventListener("click", toggleExpertPaletteAllCards);
+scanExpertPaletteCards.addEventListener("click", scanExpertPaletteCardsFromHomeAssistant);
 resetExpertPaletteFavorites.addEventListener("click", resetExpertPaletteFavoriteSelection);
 clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;

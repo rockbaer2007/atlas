@@ -434,6 +434,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        flex-wrap: wrap;
         gap: 8px;
         margin: 0 0 8px;
       }
@@ -450,6 +451,8 @@
 
       .expert-palette-actions {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
         gap: 6px;
       }
 
@@ -482,6 +485,16 @@
       .expert-template-card:focus-visible {
         border-color: #0f766e;
         outline: none;
+      }
+
+      .expert-template-card.disabled {
+        cursor: not-allowed;
+        opacity: 0.72;
+      }
+
+      .expert-template-card.disabled:hover,
+      .expert-template-card.disabled:focus-visible {
+        border-color: #cbd5e1;
       }
 
       .expert-template-card.selected {
@@ -958,6 +971,8 @@
               <strong>Card list</strong>
               <div class="expert-palette-actions">
                 <button id="save-expert-palette-favorites" type="button">Save favorites</button>
+                <button id="show-all-expert-palette-cards" type="button">Show all cards</button>
+                <button id="scan-expert-palette-cards" type="button">Scan HA cards</button>
                 <button id="reset-expert-palette-favorites" type="button">Reset favorites</button>
               </div>
             </div>

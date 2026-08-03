@@ -109,4 +109,9 @@ the generated Bubble Card configuration.
 The left Expert palette now lists Core cards and Community cards. Individual
 cards can be marked as favorites with a checkbox and applied through the Save
 favorites button. When saved favorites exist, the palette shows only those cards
-until the reset button restores the full list.
+until the reset button restores the full list. A Show all cards button reopens
+the complete palette without deleting saved favorites, so several favorites can
+be selected in one pass. A Scan HA cards button requests the current Home
+Assistant Lovelace resources and adds recognized installed Community cards such
+as Mushroom and Bubble Card to the palette. Other registered Lovelace resources
+are shown as scanned-only entries until ATLAS has a safe card mapping for them.
