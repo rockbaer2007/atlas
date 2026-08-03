@@ -448,6 +448,11 @@
         cursor: pointer;
       }
 
+      .expert-palette-actions {
+        display: flex;
+        gap: 6px;
+      }
+
       .expert-template-card {
         display: grid;
         gap: 4px;
@@ -951,7 +956,10 @@
           <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards">
             <div class="expert-palette-toolbar">
               <strong>Card list</strong>
-              <button id="reset-expert-palette-favorites" type="button">Reset favorites</button>
+              <div class="expert-palette-actions">
+                <button id="save-expert-palette-favorites" type="button">Save favorites</button>
+                <button id="reset-expert-palette-favorites" type="button">Reset favorites</button>
+              </div>
             </div>
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
           </aside>

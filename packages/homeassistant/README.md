@@ -120,8 +120,9 @@ Bubble fields can now carry a selected Bubble button type. The current supported
 values are `state`, `switch`, `slider` and `name`, and the value is emitted as
 `button_type` in the generated Bubble Card YAML or JSON.
 The demo palette separates Core and Community cards and supports checkbox-based
-favorites. Once one or more favorites are selected, the palette hides the rest
-until the reset control shows every card again.
+favorites. Favorite checkboxes are applied with Save favorites; once one or
+more favorites are saved, the palette hides the rest until the reset control
+shows every card again.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as

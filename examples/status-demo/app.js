@@ -97,6 +97,7 @@ const addExpertField = document.querySelector("#add-expert-field");
 const editExpertField = document.querySelector("#edit-expert-field");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
+const saveExpertPaletteFavorites = document.querySelector("#save-expert-palette-favorites");
 const resetExpertPaletteFavorites = document.querySelector("#reset-expert-palette-favorites");
 const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
@@ -123,6 +124,7 @@ const expertPaletteCards = [
 ];
 const expertEditorFields = [];
 const expertPaletteFavoriteIds = new Set();
+const expertPaletteDraftFavoriteIds = new Set();
 const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
   template.id,
   {
@@ -198,6 +200,7 @@ try {
     for (const paletteId of savedConfiguration.expertPaletteFavoriteIds) {
       if (typeof paletteId === "string" && expertPaletteCards.some(card => card.id === paletteId)) {
         expertPaletteFavoriteIds.add(paletteId);
+        expertPaletteDraftFavoriteIds.add(paletteId);
       }
     }
   }
@@ -693,6 +696,7 @@ function renderExpertTemplatePalette() {
   const visibleCards = expertPaletteFavoriteIds.size
     ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
     : expertPaletteCards;
+  saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
   for (const card of visibleCards) {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
@@ -722,14 +726,14 @@ function renderExpertTemplatePalette() {
     favorite.className = "favorite-toggle";
     const favoriteCheckbox = document.createElement("input");
     favoriteCheckbox.type = "checkbox";
-    favoriteCheckbox.checked = expertPaletteFavoriteIds.has(card.id);
+    favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
     favorite.append(favoriteCheckbox, "Favorite");
 
     item.append(category, title, detail, preview, availability, favorite, sizing);
     favorite.addEventListener("click", event => event.stopPropagation());
     favoriteCheckbox.addEventListener("change", event => {
       event.stopPropagation();
-      setExpertPaletteFavorite(card.id, favoriteCheckbox.checked);
+      setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
     });
     item.addEventListener("click", () => selectExpertPaletteCard(card.id));
     item.addEventListener("keydown", event => {
@@ -752,24 +756,45 @@ function renderExpertTemplatePalette() {
   }
 }
 
+function isExpertPaletteFavoriteDraftDirty() {
+  if (expertPaletteDraftFavoriteIds.size !== expertPaletteFavoriteIds.size) return true;
+  for (const cardId of expertPaletteDraftFavoriteIds) {
+    if (!expertPaletteFavoriteIds.has(cardId)) return true;
+  }
+  return false;
+}
+
 function isExpertPaletteCardSelected(card) {
   return expertTemplate.value === card.templateId
     && expertTarget.value === card.target
     && (card.target !== "bubble" || expertBubbleButtonType.value === (card.bubbleButtonType ?? "state"));
 }
 
-function setExpertPaletteFavorite(cardId, favorite) {
+function setExpertPaletteFavoriteDraft(cardId, favorite) {
   if (favorite) {
-    expertPaletteFavoriteIds.add(cardId);
+    expertPaletteDraftFavoriteIds.add(cardId);
   } else {
-    expertPaletteFavoriteIds.delete(cardId);
+    expertPaletteDraftFavoriteIds.delete(cardId);
+  }
+  renderExpertTemplatePalette();
+  statusMessage.textContent = "Favorite selection changed. Use Save favorites to apply it.";
+}
+
+function saveExpertPaletteFavoriteSelection() {
+  expertPaletteFavoriteIds.clear();
+  for (const cardId of expertPaletteDraftFavoriteIds) {
+    expertPaletteFavoriteIds.add(cardId);
   }
   persistConfiguration();
   renderExpertTemplatePalette();
+  statusMessage.textContent = expertPaletteFavoriteIds.size
+    ? `${expertPaletteFavoriteIds.size} favorite cards saved.`
+    : "Favorite selection saved. All cards remain visible.";
 }
 
 function resetExpertPaletteFavoriteSelection() {
   expertPaletteFavoriteIds.clear();
+  expertPaletteDraftFavoriteIds.clear();
   persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = "All Core and Community cards are visible again.";
@@ -1866,6 +1891,7 @@ useEntityNameAsTitle.addEventListener("click", () => {
 });
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
+saveExpertPaletteFavorites.addEventListener("click", saveExpertPaletteFavoriteSelection);
 resetExpertPaletteFavorites.addEventListener("click", resetExpertPaletteFavoriteSelection);
 clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;
