@@ -143,7 +143,7 @@ const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
 ]));
 const expertGridColumns = 12;
 const expertGridRows = 12;
-const expertFieldMaxSpan = 5;
+const expertFieldMaxResizeDelta = 5;
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
@@ -1228,10 +1228,25 @@ function updateSelectedExpertFieldBubbleType() {
   statusMessage.textContent = `${field.id} Bubble button type set to ${expertBubbleButtonType.value}.`;
 }
 
-function clampExpertFieldSpan(value, fallback) {
+function getExpertFieldResizeBase(field) {
+  return {
+    width: Math.max(1, Math.floor(Number(field.resizeBaseWidth ?? field.width))),
+    height: Math.max(1, Math.floor(Number(field.resizeBaseHeight ?? field.height))),
+  };
+}
+
+function getExpertFieldResizeLimit(field) {
+  const base = getExpertFieldResizeBase(field);
+  return {
+    width: Math.min(expertGridColumns, base.width + expertFieldMaxResizeDelta),
+    height: Math.min(expertGridRows, base.height + expertFieldMaxResizeDelta),
+  };
+}
+
+function clampExpertFieldSpan(value, fallback, limit) {
   const numericValue = Number(value);
   const nextValue = Number.isFinite(numericValue) ? Math.floor(numericValue) : fallback;
-  return Math.max(1, Math.min(expertFieldMaxSpan, nextValue));
+  return Math.max(1, Math.min(limit, nextValue));
 }
 
 function clampExpertFieldOffset(value, fallback, max) {
@@ -1247,8 +1262,10 @@ function updateSelectedExpertFieldGeometry() {
     return false;
   }
 
-  const width = clampExpertFieldSpan(expertWidth.value, field.width);
-  const height = clampExpertFieldSpan(expertHeight.value, field.height);
+  const base = getExpertFieldResizeBase(field);
+  const limit = getExpertFieldResizeLimit(field);
+  const width = clampExpertFieldSpan(expertWidth.value, field.width, limit.width);
+  const height = clampExpertFieldSpan(expertHeight.value, field.height, limit.height);
   const column = clampExpertFieldOffset(expertColumn.value, field.column, expertGridColumns - width);
   const row = clampExpertFieldOffset(expertRow.value, field.row, expertGridRows - height);
   expertEditorFields[selectedExpertFieldIndex] = {
@@ -1257,6 +1274,8 @@ function updateSelectedExpertFieldGeometry() {
     row,
     width,
     height,
+    resizeBaseWidth: base.width,
+    resizeBaseHeight: base.height,
   };
   expertColumn.value = String(column);
   expertRow.value = String(row);
@@ -1308,10 +1327,13 @@ function selectExpertEditorField(index) {
   const field = expertEditorFields[index];
   if (!field) return;
   selectedExpertFieldIndex = index;
+  const limit = getExpertFieldResizeLimit(field);
   expertColumn.value = String(field.column);
   expertRow.value = String(field.row);
   expertWidth.value = String(field.width);
   expertHeight.value = String(field.height);
+  expertWidth.max = String(limit.width);
+  expertHeight.max = String(limit.height);
   expertTarget.value = field.target;
   expertBubbleButtonType.value = field.bubbleButtonType ?? "state";
   syncExpertBubbleTypeControl();
@@ -1417,6 +1439,8 @@ function startExpertFieldResize(event, index, corner, tile) {
     width: field.width,
     height: field.height,
   };
+  const base = getExpertFieldResizeBase(field);
+  const limit = getExpertFieldResizeLimit(field);
 
   const pointerToGridCell = pointerEvent => ({
     column: Math.max(0, Math.min(expertGridColumns - 1, Math.floor(((pointerEvent.clientX - gridBounds.left) / gridBounds.width) * expertGridColumns))),
@@ -1442,17 +1466,17 @@ function startExpertFieldResize(event, index, corner, tile) {
       next.row = Math.max(0, Math.min(starting.row + starting.height - 1, pointer.row));
       next.height = starting.row + starting.height - next.row;
     }
-    if (next.width > expertFieldMaxSpan) {
+    if (next.width > limit.width) {
       if (corner.includes("w")) {
-        next.column = Math.max(0, starting.column + starting.width - expertFieldMaxSpan);
+        next.column = Math.max(0, starting.column + starting.width - limit.width);
       }
-      next.width = expertFieldMaxSpan;
+      next.width = limit.width;
     }
-    if (next.height > expertFieldMaxSpan) {
+    if (next.height > limit.height) {
       if (corner.includes("n")) {
-        next.row = Math.max(0, starting.row + starting.height - expertFieldMaxSpan);
+        next.row = Math.max(0, starting.row + starting.height - limit.height);
       }
-      next.height = expertFieldMaxSpan;
+      next.height = limit.height;
     }
     next.column = Math.max(0, Math.min(expertGridColumns - next.width, next.column));
     next.row = Math.max(0, Math.min(expertGridRows - next.height, next.row));
@@ -1463,6 +1487,8 @@ function startExpertFieldResize(event, index, corner, tile) {
       row: next.row,
       width: next.width,
       height: next.height,
+      resizeBaseWidth: base.width,
+      resizeBaseHeight: base.height,
     };
     expertColumn.value = String(next.column);
     expertRow.value = String(next.row);
@@ -1552,9 +1578,15 @@ function createExpertEditorField(input) {
     width,
     height: input.height,
   });
+  const fieldWithResizeBase = {
+    ...field,
+    resizeBaseWidth: field.width,
+    resizeBaseHeight: field.height,
+    templateId: input.templateId,
+  };
   if (stackEntityIds.length > 1 && field.layout !== "card") {
     return {
-      ...field,
+      ...fieldWithResizeBase,
       entityId: "",
       entries: stackEntityIds.map((entityId, index) => ({
         id: `${field.id} ${index + 1}`,
@@ -1565,7 +1597,7 @@ function createExpertEditorField(input) {
     };
   }
   return {
-    ...field,
+    ...fieldWithResizeBase,
     entries: renameExpertFieldEntries(field, field.id),
   };
 }
