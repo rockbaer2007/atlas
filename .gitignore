@@ -19,6 +19,7 @@ coverage/
 
 # Vite
 .vite/
+docs/.vitepress/dist/
 
 # Vitest
 vitest-results/

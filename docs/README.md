@@ -48,6 +48,22 @@ These documents describe stable project concepts rather than implementation deta
 
 ---
 
+## Integration Documentation
+
+Location:
+
+```text
+docs/project/integrations/
+```
+
+Contains product-facing integration guides.
+
+Start with:
+
+* [Home Assistant integration](project/integrations/homeassistant.md)
+
+---
+
 ## Sprint Documentation
 
 Location:
