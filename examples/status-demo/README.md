@@ -66,7 +66,10 @@ reflects whether it contains Entities, Mushroom or Bubble card code. Copy and
 download use the same export payload and require at least one selected entity.
 The card package export wraps the manifest and serialized card content in a
 portable Atlas JSON envelope that can be imported back through the same HA card
-import control.
+import control. The HACS script filename field controls the JavaScript filename
+stored in the embedded editor plan and normalizes names such as `Energy Kitchen`
+to `energy-kitchen.js`; the exported package download follows the same base
+name.
 When the package is exported from Expert mode, the envelope also carries the
 Expert editor plan so a later import can restore the placed fields and switch
 back to Expert automatically.

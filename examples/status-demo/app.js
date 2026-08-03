@@ -28,6 +28,7 @@ import {
   listHomeAssistantEntityCatalogDomains,
   listHomeAssistantEntityDomainShortcuts,
   listHomeAssistantBubbleButtonTypes,
+  normalizeHomeAssistantCardEditorScriptFilename,
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
@@ -66,6 +67,7 @@ const homeAssistantGroupName = document.querySelector("#home-assistant-group-nam
 const haCardTarget = document.querySelector("#ha-card-target");
 const haCardLayout = document.querySelector("#ha-card-layout");
 const haCardFormat = document.querySelector("#ha-card-format");
+const haCardScriptFilename = document.querySelector("#ha-card-script-filename");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
@@ -138,6 +140,7 @@ const translations = {
     "label.cardTarget": "Card target",
     "label.cardLayout": "Card layout",
     "label.cardFormat": "Card format",
+    "label.scriptFilename": "HACS script filename",
     "label.entityIds": "Entity IDs",
     "label.entityType": "Entity type",
     "label.entitySearch": "Entity search",
@@ -206,6 +209,7 @@ const translations = {
     "layout.horizontal": "Horizontal stack",
     "layout.vertical": "Vertical stack",
     "placeholder.entitySearch": "Filter by name or entity ID",
+    "placeholder.scriptFilename": "energy-kitchen.js",
     "placeholder.expertCardName": "ATLAS Expert card",
     "placeholder.expertTitle": "Use template title when empty",
     "placeholder.expertEntity": "Use current entity when empty",
@@ -310,6 +314,8 @@ const translations = {
     "message.importRejected": "Import rejected: unsupported Home Assistant card artifact.",
     "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
+    "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
+    "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
     "message.atlasPackage": "ATLAS card package",
     "message.haCard": "HA card",
     "dependency.resource": " Resource: {paths}.",
@@ -419,6 +425,7 @@ const translations = {
     "label.cardTarget": "Card-Ziel",
     "label.cardLayout": "Card-Layout",
     "label.cardFormat": "Card-Format",
+    "label.scriptFilename": "HACS-Script-Dateiname",
     "label.entityIds": "Entitaets-IDs",
     "label.entityType": "Entitaetstyp",
     "label.entitySearch": "Entitaet suchen",
@@ -487,6 +494,7 @@ const translations = {
     "layout.horizontal": "Horizontaler Stapel",
     "layout.vertical": "Vertikaler Stapel",
     "placeholder.entitySearch": "Nach Name oder Entitaets-ID filtern",
+    "placeholder.scriptFilename": "energie-kueche.js",
     "placeholder.expertCardName": "ATLAS Expert Card",
     "placeholder.expertTitle": "Template-Titel nutzen, wenn leer",
     "placeholder.expertEntity": "Aktuelle Entitaet nutzen, wenn leer",
@@ -591,6 +599,8 @@ const translations = {
     "message.importRejected": "Import abgelehnt: nicht unterstuetztes Home-Assistant-Card-Artefakt.",
     "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitaeten.",
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
+    "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
+    "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
     "message.atlasPackage": "ATLAS-Card-Paket",
     "message.haCard": "HA-Card",
     "dependency.resource": " Ressource: {paths}.",
@@ -908,6 +918,9 @@ try {
   if (savedConfiguration?.cardFormat === "json" || savedConfiguration?.cardFormat === "yaml") {
     haCardFormat.value = savedConfiguration.cardFormat;
   }
+  if (typeof savedConfiguration?.cardScriptFilename === "string") {
+    haCardScriptFilename.value = savedConfiguration.cardScriptFilename;
+  }
   if (typeof savedConfiguration?.selectedGroup === "string") {
     initialGroupSelection = savedConfiguration.selectedGroup;
   }
@@ -1091,6 +1104,7 @@ function persistConfiguration() {
       cardTarget: haCardTarget.value,
       cardLayout: haCardLayout.value,
       cardFormat: haCardFormat.value,
+      cardScriptFilename: haCardScriptFilename.value,
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       expertTemplateSizing: serializedExpertTemplateSizing(),
@@ -1459,6 +1473,7 @@ function createActiveHaCardConfig() {
 function createActiveCardEditorPlan() {
   return createHomeAssistantCardEditorPackagePlan({
     cardName: currentHaCardExportName(),
+    scriptFilename: currentHaCardScriptFilename(),
     editorMode: activeEditorMode,
     simpleTarget: haCardTarget.value,
     defaultEntityIds: cardPreviewEntityIds(),
@@ -1476,6 +1491,10 @@ function currentHaCardExportName() {
   }
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   return group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS Home Assistant card");
+}
+
+function currentHaCardScriptFilename() {
+  return normalizeHomeAssistantCardEditorScriptFilename(haCardScriptFilename.value.trim() || currentHaCardExportName());
 }
 
 function renderHaCardPreview() {
@@ -3174,6 +3193,10 @@ haCardFormat.addEventListener("change", () => {
   renderHaCardPreview();
   renderExpertEditorPreview();
 });
+haCardScriptFilename.addEventListener("input", () => {
+  persistConfiguration();
+  statusMessage.textContent = t("message.scriptFilenameNormalized", { scriptFilename: currentHaCardScriptFilename() });
+});
 for (const button of editorModeButtons) {
   button.addEventListener("click", () => {
     renderEditorMode(button.dataset.editorMode);
@@ -3295,6 +3318,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardTarget: haCardTarget.value,
     cardLayout: haCardLayout.value,
     cardFormat: haCardFormat.value,
+    cardScriptFilename: haCardScriptFilename.value,
     stackEntityIds: selectedStackEntityIds(),
     expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
     expertTemplateSizing: serializedExpertTemplateSizing(),
@@ -3335,9 +3359,12 @@ exportHaCardPackage.addEventListener("click", () => {
   const cardPackage = createHaCardExportPackage();
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([JSON.stringify(cardPackage, null, 2)], { type: "application/json" }));
-  link.download = cardPackage.manifest.filename.replace(/\.(json|yaml)$/i, ".atlas-card.json");
+  link.download = `${cardPackage.editorPlan?.scriptFilename?.replace(/\.js$/i, "") ?? cardPackage.manifest.filename.replace(/\.(json|yaml)$/i, "")}.atlas-card.json`;
   link.click();
   URL.revokeObjectURL(link.href);
+  statusMessage.textContent = t("message.packageExported", {
+    scriptFilename: cardPackage.editorPlan?.scriptFilename ?? currentHaCardScriptFilename(),
+  });
 });
 copyHaCardConfig.addEventListener("click", async () => {
   if (!canExportHaCard()) {
@@ -3408,6 +3435,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     }
     if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
       haCardFormat.value = pendingImport.cardFormat;
+    }
+    if (typeof pendingImport.cardScriptFilename === "string") {
+      haCardScriptFilename.value = pendingImport.cardScriptFilename;
     }
     if (pendingImport.expertEditorSurfaceSize && typeof pendingImport.expertEditorSurfaceSize === "object") {
       expertEditorSurfaceSize = {
@@ -3491,12 +3521,16 @@ importHaCardConfig.addEventListener("change", async () => {
     haCardTarget.value = summary.target;
     haCardLayout.value = summary.layout;
     haCardFormat.value = summary.format;
+    if (summary.editorPlan?.scriptFilename) {
+      haCardScriptFilename.value = summary.editorPlan.scriptFilename ?? "";
+    }
     syncCardLayoutState();
     renderGroupOptions(id);
     if (summary.editorPlan?.editorMode === "expert") {
       expertEditorFields.splice(0, expertEditorFields.length, ...createHomeAssistantCardEditorPackagePlan(summary.editorPlan).fields);
       selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
       expertCardName.value = summary.editorPlan.cardName;
+      haCardScriptFilename.value = summary.editorPlan.scriptFilename;
       expertFieldEditing = false;
       renderEditorMode("expert");
     } else {

@@ -80,6 +80,9 @@ visible card name separate from the generated JavaScript filename, normalizes
 user-defined filenames such as `Energy Kitchen` to `energy-kitchen.js`, and
 uses demo entities (`binary_sensor.atlas_status`, `sensor.atlas_temperature`)
 with a clear replacement hint for Home Assistant users.
+The status demo exposes that filename as a package-export field, persists it in
+the local configuration and restores it again when an ATLAS card package is
+imported.
 
 The card editor plan separates a simple mode from an expert mode. Simple mode
 is intended for fast button stacks. Expert mode describes a free editor surface
