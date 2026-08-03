@@ -440,7 +440,9 @@ function renderEntityDomainShortcuts(domains) {
 }
 
 function usesStackEntitySelection() {
-  return haCardTarget.value !== "entities" && (haCardLayout.value === "horizontal-stack" || haCardLayout.value === "vertical-stack");
+  return activeEditorMode === "simple"
+    && haCardTarget.value !== "entities"
+    && (haCardLayout.value === "horizontal-stack" || haCardLayout.value === "vertical-stack");
 }
 
 function reconcileStackEntitySelection() {
@@ -522,6 +524,10 @@ function addSelectedEntityFromPicker() {
   }
   if (usesStackEntitySelection()) {
     addEntityForStatusPreview(entityId);
+    return;
+  }
+  if (activeEditorMode === "expert") {
+    applyEntityToSelectedExpertField(entityId);
     return;
   }
   selectPrimaryEntity(entityId);
@@ -813,8 +819,7 @@ function formatEntityIdAsTitle(entityId) {
     .replace(/\b\w/g, character => character.toUpperCase());
 }
 
-function currentExpertEntityTitle() {
-  const entityId = expertEntity.value.trim() || currentEntityId();
+function currentExpertEntityTitle(entityId = expertEntity.value.trim() || currentEntityId()) {
   const entity = entitySnapshots.get(entityId);
   if (entity) {
     return createHomeAssistantEntityPresentation(entity).label;
@@ -841,6 +846,30 @@ function renameExpertFieldEntries(field, title) {
     ...entry,
     id: field.entries.length === 1 ? title : `${title} ${index + 1}`,
   }));
+}
+
+function applyEntityToSelectedExpertField(entityId) {
+  const title = currentExpertEntityTitle(entityId);
+  expertEntity.value = entityId;
+  expertTitle.value = title;
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  if (!field) {
+    statusMessage.textContent = `${entityId} prepared for the next Expert field.`;
+    return false;
+  }
+
+  const entries = (field.layout ?? "card") === "card"
+    ? field.entries
+    : [{ id: title, target: field.target, entityId }];
+  expertEditorFields[selectedExpertFieldIndex] = {
+    ...field,
+    id: title,
+    entityId,
+    entries,
+  };
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${entityId} assigned to ${title}.`;
+  return true;
 }
 
 function renderExpertEditButton() {
@@ -1367,6 +1396,10 @@ function selectPrimaryEntity(entityId) {
 function handleEntityCardSelection(entityId) {
   if (usesStackEntitySelection()) {
     selectStatusPreviewEntity(entityId);
+    return;
+  }
+  if (activeEditorMode === "expert") {
+    applyEntityToSelectedExpertField(entityId);
     return;
   }
 

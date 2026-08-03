@@ -113,6 +113,8 @@ the same grid bounds.
 Placed fields also expose an editable title. That title becomes the generated
 Entities title, Bubble button name or Mushroom primary text. Hosts can copy the
 selected Home Assistant entity name into the title field to prefill card labels.
+When Expert mode is active, selecting an entity in the demo assigns it to the
+currently selected editor field instead of only changing the simple preview.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as
