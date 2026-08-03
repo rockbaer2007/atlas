@@ -130,14 +130,14 @@ describe("Home Assistant entities card configuration", () => {
       label: "Mushroom",
       required: true,
       resourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
-      installPaths: [],
+      installPaths: ["HACS > Frontend > Mushroom", "/hacsfiles/lovelace-mushroom/mushroom.js"],
     });
     expect(inspectHomeAssistantCardDependency(bubble)).toEqual({
       id: "bubble-card",
       label: "Bubble Card",
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-      installPaths: [],
+      installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
     });
   });
 
@@ -240,7 +240,7 @@ describe("Home Assistant entities card configuration", () => {
           label: "Mushroom",
           required: true,
           resourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
-          installPaths: [],
+          installPaths: ["HACS > Frontend > Mushroom", "/hacsfiles/lovelace-mushroom/mushroom.js"],
         },
       },
       {
@@ -252,7 +252,7 @@ describe("Home Assistant entities card configuration", () => {
           label: "Bubble Card",
           required: true,
           resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-          installPaths: [],
+          installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
         },
       },
     ]);
@@ -313,7 +313,7 @@ describe("Home Assistant entities card configuration", () => {
         label: "Bubble Card",
         required: true,
         resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-        installPaths: [],
+        installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
       },
     });
 
@@ -455,7 +455,7 @@ describe("Home Assistant entities card configuration", () => {
         label: "Bubble Card",
         required: true,
         resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-        installPaths: [],
+        installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
       },
     });
   });

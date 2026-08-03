@@ -144,7 +144,7 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
       label: "Mushroom",
       required: true,
       resourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
-      installPaths: [],
+      installPaths: ["HACS > Frontend > Mushroom", "/hacsfiles/lovelace-mushroom/mushroom.js"],
     },
   },
   {
@@ -156,7 +156,7 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
       label: "Bubble Card",
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
-      installPaths: [],
+      installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
     },
   },
 ];
