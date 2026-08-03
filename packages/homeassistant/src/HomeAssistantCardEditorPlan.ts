@@ -1,4 +1,5 @@
-import type { HomeAssistantCardLayout, HomeAssistantCardTarget } from "./HomeAssistantCardConfiguration";
+import type { HomeAssistantCardDependency, HomeAssistantCardLayout, HomeAssistantCardTarget } from "./HomeAssistantCardConfiguration";
+import { inspectHomeAssistantCardDependency } from "./HomeAssistantCardConfiguration";
 
 export type HomeAssistantCardEditorMode = "simple" | "expert";
 
@@ -16,6 +17,7 @@ export interface HomeAssistantCardEditorPackagePlanInput {
   readonly cardName?: string;
   readonly scriptFilename?: string;
   readonly editorMode?: HomeAssistantCardEditorMode;
+  readonly simpleTarget?: HomeAssistantCardTarget;
   readonly defaultEntityIds?: readonly string[];
   readonly supportedLayouts?: readonly HomeAssistantCardLayout[];
   readonly supportedFieldTargets?: readonly HomeAssistantCardTarget[];
@@ -27,12 +29,21 @@ export interface HomeAssistantCardEditorPackagePlan {
   readonly scriptFilename: string;
   readonly resourcePath: string;
   readonly editorMode: HomeAssistantCardEditorMode;
+  readonly simpleTarget: HomeAssistantCardTarget;
   readonly defaultEntityIds: readonly string[];
   readonly supportedLayouts: readonly HomeAssistantCardLayout[];
   readonly supportedFieldTargets: readonly HomeAssistantCardTarget[];
   readonly fields: readonly HomeAssistantCardEditorSurfaceField[];
   readonly layoutMode: "drag-and-drop";
   readonly replacementHint: string;
+}
+
+export interface HomeAssistantCardEditorDependencyPlan {
+  readonly editorPlan: HomeAssistantCardEditorPackagePlan;
+  readonly usedTargets: readonly HomeAssistantCardTarget[];
+  readonly dependencies: readonly HomeAssistantCardDependency[];
+  readonly requiredResourcePaths: readonly string[];
+  readonly installSteps: readonly string[];
 }
 
 export const defaultHomeAssistantCardEditorEntityIds = [
@@ -60,18 +71,38 @@ export function createHomeAssistantCardEditorPackagePlan(
   const defaultEntityIds = dedupeStrings(input.defaultEntityIds ?? defaultHomeAssistantCardEditorEntityIds);
   const supportedLayouts = dedupeLayouts(input.supportedLayouts ?? defaultSupportedCardEditorLayouts);
   const supportedFieldTargets = dedupeCardTargets(input.supportedFieldTargets ?? defaultSupportedFieldTargets);
+  const simpleTarget = input.simpleTarget ?? "entities";
 
   return {
     cardName,
     scriptFilename,
     resourcePath: `/hacsfiles/atlas/${scriptFilename}`,
     editorMode: input.editorMode ?? "simple",
+    simpleTarget,
     defaultEntityIds,
     supportedLayouts,
     supportedFieldTargets,
     fields: (input.fields ?? []).map(normalizeSurfaceField),
     layoutMode: "drag-and-drop",
     replacementHint: "Replace the demo entities with your own Home Assistant entities.",
+  };
+}
+
+export function createHomeAssistantCardEditorDependencyPlan(
+  input: HomeAssistantCardEditorPackagePlanInput = {},
+): HomeAssistantCardEditorDependencyPlan {
+  const editorPlan = createHomeAssistantCardEditorPackagePlan(input);
+  const usedTargets = dedupeCardTargets(editorPlan.editorMode === "expert"
+    ? editorPlan.fields.map(field => field.target)
+    : [editorPlan.simpleTarget]);
+  const dependencies = usedTargets.map(inspectHomeAssistantCardDependency);
+
+  return {
+    editorPlan,
+    usedTargets,
+    dependencies,
+    requiredResourcePaths: dedupeStrings(dependencies.flatMap(dependency => dependency.resourcePaths)),
+    installSteps: dedupeStrings(dependencies.flatMap(dependency => dependency.installPaths)),
   };
 }
 

@@ -84,7 +84,9 @@ with a clear replacement hint for Home Assistant users.
 The card editor plan separates a simple mode from an expert mode. Simple mode
 is intended for fast button stacks. Expert mode describes a free editor surface
 where every positioned field can choose its own card target: built-in Entities,
-Bubble Card or Mushroom template.
+Bubble Card or Mushroom template. The dependency plan can derive the actually
+used card targets from the editor mode and fields, so mixed expert layouts can
+produce one combined list of required HACS resources.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

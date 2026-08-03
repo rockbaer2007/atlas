@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createAtlasFrontendResource,
+  createHomeAssistantCardEditorDependencyPlan,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
@@ -136,6 +137,7 @@ describe("Home Assistant frontend integration planning", () => {
       scriptFilename: "energy-kitchen.js",
       resourcePath: "/hacsfiles/atlas/energy-kitchen.js",
       editorMode: "simple",
+      simpleTarget: "entities",
       defaultEntityIds: [
         "binary_sensor.atlas_status",
         "sensor.atlas_temperature",
@@ -200,6 +202,60 @@ describe("Home Assistant frontend integration planning", () => {
         height: 1,
       },
     ]);
+  });
+
+  it("tracks the selected simple editor card target dependency", () => {
+    expect(createHomeAssistantCardEditorDependencyPlan({
+      editorMode: "simple",
+      simpleTarget: "bubble",
+    })).toMatchObject({
+      usedTargets: ["bubble"],
+      requiredResourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+      installSteps: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
+    });
+  });
+
+  it("combines dependencies from mixed expert editor fields", () => {
+    const dependencyPlan = createHomeAssistantCardEditorDependencyPlan({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "status",
+          target: "entities",
+          entityId: "binary_sensor.atlas_status",
+          column: 0,
+          row: 0,
+          width: 1,
+          height: 1,
+        },
+        {
+          id: "temperature",
+          target: "mushroom-template",
+          entityId: "sensor.atlas_temperature",
+          column: 1,
+          row: 0,
+          width: 1,
+          height: 1,
+        },
+        {
+          id: "door",
+          target: "bubble",
+          entityId: "binary_sensor.atlas_door",
+          column: 0,
+          row: 1,
+          width: 2,
+          height: 1,
+        },
+      ],
+    });
+
+    expect(dependencyPlan.usedTargets).toEqual(["entities", "mushroom-template", "bubble"]);
+    expect(dependencyPlan.requiredResourcePaths).toEqual([
+      "/hacsfiles/lovelace-mushroom/mushroom.js",
+      "/hacsfiles/Bubble-Card/bubble-card.js",
+    ]);
+    expect(dependencyPlan.installSteps).toContain("HACS > Frontend > Mushroom");
+    expect(dependencyPlan.installSteps).toContain("HACS > Frontend > Bubble Card");
   });
 
   it("normalizes user-defined card editor script filenames", () => {
