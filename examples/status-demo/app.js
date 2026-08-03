@@ -71,7 +71,7 @@ const stackSelectionSummary = document.querySelector("#stack-selection-summary")
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
-const emptyEntitySelectionMessage = "Wählen Sie mindestens eine Entität aus.";
+const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 let connection;
 let removeLifecycleListener;
@@ -407,13 +407,13 @@ function renderStackSelectionSummary() {
 
   if (usesStackEntitySelection()) {
     const selectedIds = selectedStackEntityIds();
-    stackSelectionSummary.textContent = `Bei Stapel selektierte Entitäten: ${selectedIds.length}/${entityIds.length}${selectedIds.length ? ` - ${selectedIds.join(", ")}` : ""}`;
+    stackSelectionSummary.textContent = `Stack-selected entities: ${selectedIds.length}/${entityIds.length}${selectedIds.length ? ` - ${selectedIds.join(", ")}` : ""}`;
     return;
   }
 
   stackSelectionSummary.textContent = entityIds[0]
-    ? `Simple nutzt die erste Entität: ${entityIds[0]}`
-    : "Simple nutzt die erste Entität.";
+    ? `Simple uses the first entity: ${entityIds[0]}`
+    : "Simple uses the first entity.";
 }
 
 function renderEntityPickerOptions() {
