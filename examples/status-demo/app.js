@@ -86,6 +86,7 @@ const expertHeight = document.querySelector("#expert-height");
 const addExpertField = document.querySelector("#add-expert-field");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
+const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
 const expertFieldList = document.querySelector("#expert-field-list");
 const expertEditorPreview = document.querySelector("#expert-editor-preview");
@@ -597,6 +598,7 @@ function renderExpertTemplatePalette() {
     item.type = "button";
     item.className = "expert-template-card";
     item.classList.toggle("selected", template.id === expertTemplate.value);
+    item.draggable = true;
     item.dataset.template = template.id;
 
     const title = document.createElement("strong");
@@ -605,11 +607,30 @@ function renderExpertTemplatePalette() {
     detail.textContent = `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${template.target}`;
     const preview = document.createElement("span");
     preview.textContent = template.preview.join(" / ");
+    const availability = document.createElement("span");
+    availability.textContent = formatExpertTemplateAvailability(template.target);
 
-    item.append(title, detail, preview);
+    item.append(title, detail, preview, availability);
     item.addEventListener("click", () => selectExpertTemplate(template.id));
+    item.addEventListener("dragstart", event => {
+      event.dataTransfer?.setData("text/plain", template.id);
+      event.dataTransfer?.setData("application/x-atlas-template", template.id);
+      event.dataTransfer?.setDragImage(item, 12, 12);
+      item.classList.add("dragging");
+    });
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+    });
     expertTemplatePalette.append(item);
   }
+}
+
+function formatExpertTemplateAvailability(target) {
+  const dependency = inspectHomeAssistantCardDependency(target);
+  if (!dependency.required) return "Built-in";
+  if (!lovelaceResourcesChecked) return "Resource unchecked";
+  const availability = inspectHomeAssistantCardDependencyAvailability(target, lovelaceResources);
+  return availability.status === "installed" ? "Resource installed" : "Resource missing";
 }
 
 function selectExpertTemplate(templateId) {
@@ -686,6 +707,11 @@ function addExpertEditorField() {
   expertEntity.value = "";
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} added to the Expert editor preview.`;
+}
+
+function addExpertEditorFieldFromTemplate(templateId) {
+  selectExpertTemplate(templateId);
+  addExpertEditorField();
 }
 
 function createHaCardExportPayload() {
@@ -988,6 +1014,7 @@ function bindSelectedEntity(nextTransport) {
   removeLovelaceResourceListener = undefined;
   lovelaceResources = [];
   lovelaceResourcesChecked = false;
+  renderExpertTemplatePalette();
   activeTransport = nextTransport;
   entitySnapshots.clear();
   if (trackedEntityIds().length === 0) {
@@ -1036,6 +1063,7 @@ function bindSelectedEntity(nextTransport) {
       lovelaceResources = result.resources;
       lovelaceResourcesChecked = result.success;
       renderHaCardPreview();
+      renderExpertTemplatePalette();
       statusMessage.textContent = result.success
         ? `Loaded ${result.resources.length} Lovelace resources from Home Assistant.`
         : `Lovelace resources failed: ${result.reason ?? "Unknown error."}`;
@@ -1191,6 +1219,23 @@ clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;
   renderExpertEditorPreview();
   statusMessage.textContent = "Expert editor preview cleared.";
+});
+expertEditorDropzone.addEventListener("dragover", event => {
+  event.preventDefault();
+  expertEditorDropzone.classList.add("drag-over");
+});
+expertEditorDropzone.addEventListener("dragleave", event => {
+  if (!(event.relatedTarget instanceof Node) || !expertEditorDropzone.contains(event.relatedTarget)) {
+    expertEditorDropzone.classList.remove("drag-over");
+  }
+});
+expertEditorDropzone.addEventListener("drop", event => {
+  event.preventDefault();
+  expertEditorDropzone.classList.remove("drag-over");
+  const templateId = event.dataTransfer?.getData("application/x-atlas-template")
+    || event.dataTransfer?.getData("text/plain")
+    || expertTemplate.value;
+  addExpertEditorFieldFromTemplate(templateId);
 });
 saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();

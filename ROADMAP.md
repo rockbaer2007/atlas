@@ -137,8 +137,11 @@ additional envelope-only contract expansion.
 * Projection from Simple and Expert editor plans into exportable Home Assistant card configurations
 * Nested Expert layout projection with row-based horizontal stacks, page-level vertical stacks and per-field stack mode
 * Nested Home Assistant stack import for real-world vertical-stack and horizontal-stack combinations
+* Import support for Home Assistant grid and conditional cards as nested editor containers
 * Advanced Bubble Card option preservation for modules, styles, grid options, sliders and sub-buttons
 * Template sidebar for visual Button, Switch, State, Entity, vertical-stack and horizontal-stack building blocks
+* Drag-and-drop from the Expert sidebar palette into the editor surface
+* Sidebar availability hints from Home Assistant Lovelace resources for installed custom card families
 * Grid-bounded placement for selected templates on the Expert editor surface
 * Evaluate `studiobts/home-assistant-card-builder` as an AGPL-3.0 external reference without copying source code into ATLAS
 * Plan import/export interoperability with external card-builder artifacts through documented schemas and explicit attribution

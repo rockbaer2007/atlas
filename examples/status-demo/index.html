@@ -332,6 +332,13 @@
         gap: 8px;
       }
 
+      .expert-editor-workbench {
+        display: grid;
+        grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
       .expert-editor-controls .wide {
         grid-column: 1 / -1;
       }
@@ -340,6 +347,10 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 8px;
+      }
+
+      .expert-editor-sidebar .expert-template-palette {
+        grid-template-columns: 1fr;
       }
 
       .expert-template-card {
@@ -366,6 +377,10 @@
         box-shadow: inset 0 0 0 1px #0f766e;
       }
 
+      .expert-template-card.dragging {
+        opacity: 0.6;
+      }
+
       .expert-template-card strong {
         overflow-wrap: anywhere;
       }
@@ -374,6 +389,28 @@
       .expert-template-card span {
         color: #536079;
         font-size: 12px;
+      }
+
+      .expert-editor-surface {
+        display: grid;
+        gap: 10px;
+      }
+
+      .expert-editor-dropzone {
+        display: grid;
+        place-items: center;
+        min-height: 112px;
+        padding: 14px;
+        border: 1px dashed #0f766e;
+        border-radius: 6px;
+        background: #f8fffd;
+        color: #115e59;
+        text-align: center;
+      }
+
+      .expert-editor-dropzone.drag-over {
+        background: #dcfce7;
+        box-shadow: inset 0 0 0 1px #0f766e;
       }
 
       .expert-field-list {
@@ -567,6 +604,12 @@
         margin-top: 12px;
         color: #536079;
       }
+
+      @media (max-width: 720px) {
+        .expert-editor-workbench {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
     <script type="importmap">
       {
@@ -667,32 +710,41 @@
           <pre id="ha-card-preview" aria-live="polite"></pre>
         </div>
         <h2 class="entity-section-title">Expert editor preview</h2>
-        <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
-        <div class="expert-editor-controls">
-          <label for="expert-template">Template</label>
-          <select id="expert-template"></select>
-          <label for="expert-target">Card family</label>
-          <select id="expert-target"></select>
-          <label class="wide" for="expert-entity">Entity</label>
-          <input class="wide" id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
-          <label for="expert-column">Column</label>
-          <input id="expert-column" type="number" min="0" max="11" value="0">
-          <label for="expert-row">Row</label>
-          <input id="expert-row" type="number" min="0" max="11" value="0">
-          <label for="expert-width">Width</label>
-          <input id="expert-width" type="number" min="1" max="12" value="3">
-          <label for="expert-height">Height</label>
-          <input id="expert-height" type="number" min="1" max="12" value="2">
-        </div>
-        <div class="connection-actions">
-          <button id="add-expert-field" type="button">Add template</button>
-          <button id="clear-expert-fields" type="button">Clear expert preview</button>
-        </div>
-        <output id="expert-editor-summary" aria-live="polite"></output>
-        <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
-        <div class="ha-card-preview">
-          <label for="expert-editor-preview">Expert HA card code</label>
-          <pre id="expert-editor-preview" aria-live="polite"></pre>
+        <div class="expert-editor-workbench">
+          <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards">
+            <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
+          </aside>
+          <section class="expert-editor-surface" aria-label="Expert editor surface">
+            <div id="expert-editor-dropzone" class="expert-editor-dropzone">
+              Drag a card from the left into this editor surface.
+            </div>
+            <div class="expert-editor-controls">
+              <label for="expert-template">Template</label>
+              <select id="expert-template"></select>
+              <label for="expert-target">Card family</label>
+              <select id="expert-target"></select>
+              <label class="wide" for="expert-entity">Entity</label>
+              <input class="wide" id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
+              <label for="expert-column">Column</label>
+              <input id="expert-column" type="number" min="0" max="11" value="0">
+              <label for="expert-row">Row</label>
+              <input id="expert-row" type="number" min="0" max="11" value="0">
+              <label for="expert-width">Width</label>
+              <input id="expert-width" type="number" min="1" max="12" value="3">
+              <label for="expert-height">Height</label>
+              <input id="expert-height" type="number" min="1" max="12" value="2">
+            </div>
+            <div class="connection-actions">
+              <button id="add-expert-field" type="button">Add template</button>
+              <button id="clear-expert-fields" type="button">Clear expert preview</button>
+            </div>
+            <output id="expert-editor-summary" aria-live="polite"></output>
+            <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
+            <div class="ha-card-preview">
+              <label for="expert-editor-preview">Expert HA card code</label>
+              <pre id="expert-editor-preview" aria-live="polite"></pre>
+            </div>
+          </section>
         </div>
       </div>
       <h2 class="entity-section-title">ATLAS Status Preview</h2>

@@ -871,6 +871,95 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("parses grid and conditional cards from Home Assistant YAML examples", () => {
+    const parsed = parseHomeAssistantEntitiesCardConfiguration([
+      "type: vertical-stack",
+      "cards:",
+      "  - type: custom:bubble-card",
+      "    card_type: button",
+      "    button_type: name",
+      "    name: NINA",
+      "    icon: mdi:alert",
+      "    show_name: true",
+      "  - type: grid",
+      "    columns: 2",
+      "    square: false",
+      "    cards:",
+      "      - type: conditional",
+      "        conditions:",
+      "          - condition: state",
+      "            entity: >-",
+      "              binary_sensor.nina_warning_1",
+      "            state: \"on\"",
+      "        card:",
+      "          type: vertical-stack",
+      "          cards:",
+      "            - type: custom:bubble-card",
+      "              card_type: separator",
+      "              name: NINA Warnung 1",
+      "            - type: custom:bubble-card",
+      "              card_type: button",
+      "              button_type: state",
+      "              entity: >-",
+      "                sensor.nina_absender_1",
+      "              name: Absender",
+    ].join("\n"));
+
+    expect(parsed.format).toBe("yaml");
+    expect(parsed.target).toBe("bubble");
+    expect(parsed.layout).toBe("vertical-stack");
+    expect(parsed.card).toEqual({
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "custom:bubble-card",
+          card_type: "button",
+          button_type: "name",
+          name: "NINA",
+        },
+        {
+          type: "grid",
+          columns: 2,
+          square: false,
+          cards: [
+            {
+              type: "conditional",
+              conditions: [
+                {
+                  condition: "state",
+                  entity: "binary_sensor.nina_warning_1",
+                  state: "on",
+                },
+              ],
+              card: {
+                type: "vertical-stack",
+                cards: [
+                  {
+                    type: "custom:bubble-card",
+                    card_type: "separator",
+                    name: "NINA Warnung 1",
+                  },
+                  {
+                    type: "custom:bubble-card",
+                    card_type: "button",
+                    button_type: "state",
+                    name: "Absender",
+                    entity: "sensor.nina_absender_1",
+                    show_state: true,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(summarizeHomeAssistantCardImport(serializeHomeAssistantEntitiesCardConfiguration(parsed.card, "json")).entityIds).toEqual([
+      "binary_sensor.nina_warning_1",
+      "sensor.nina_absender_1",
+    ]);
+  });
+
   it("parses Mushroom and Bubble cards", () => {
     expect(parseHomeAssistantEntitiesCardConfiguration([
       "type: custom:mushroom-template-card",

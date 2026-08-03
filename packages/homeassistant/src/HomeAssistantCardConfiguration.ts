@@ -20,11 +20,30 @@ export interface HomeAssistantMushroomTemplateCardConfiguration {
 
 export interface HomeAssistantBubbleCardConfiguration {
   readonly type: "custom:bubble-card";
-  readonly card_type: "button";
-  readonly button_type: "state";
+  readonly card_type: "button" | "separator";
+  readonly button_type?: "name" | "slider" | "state";
   readonly name: string;
-  readonly entity: string;
-  readonly show_state: true;
+  readonly entity?: string;
+  readonly show_state?: true;
+}
+
+export interface HomeAssistantGridCardConfiguration {
+  readonly type: "grid";
+  readonly columns?: number;
+  readonly square?: boolean;
+  readonly cards: readonly HomeAssistantCardConfiguration[];
+}
+
+export interface HomeAssistantConditionalCardCondition {
+  readonly condition: string;
+  readonly entity?: string;
+  readonly state?: string;
+}
+
+export interface HomeAssistantConditionalCardConfiguration {
+  readonly type: "conditional";
+  readonly conditions: readonly HomeAssistantConditionalCardCondition[];
+  readonly card: HomeAssistantCardConfiguration;
 }
 
 export interface HomeAssistantStackCardConfiguration {
@@ -35,7 +54,9 @@ export interface HomeAssistantStackCardConfiguration {
 export type HomeAssistantSingleCardConfiguration =
   | HomeAssistantEntitiesCardConfiguration
   | HomeAssistantMushroomTemplateCardConfiguration
-  | HomeAssistantBubbleCardConfiguration;
+  | HomeAssistantBubbleCardConfiguration
+  | HomeAssistantGridCardConfiguration
+  | HomeAssistantConditionalCardConfiguration;
 
 export type HomeAssistantCustomCardConfiguration =
   | HomeAssistantMushroomTemplateCardConfiguration
@@ -256,6 +277,14 @@ export function serializeHomeAssistantEntitiesCardConfiguration(
     return serializeHomeAssistantStackCardYaml(card);
   }
 
+  if (isHomeAssistantGridCardConfiguration(card)) {
+    return serializeHomeAssistantGridCardYaml(card);
+  }
+
+  if (isHomeAssistantConditionalCardConfiguration(card)) {
+    return serializeHomeAssistantConditionalCardYaml(card);
+  }
+
   if (isHomeAssistantCustomCardConfiguration(card)) {
     return serializeHomeAssistantCustomCardYaml(card);
   }
@@ -400,6 +429,12 @@ export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration)
   if (isHomeAssistantStackCardConfiguration(card)) {
     return card.cards[0] ? getHomeAssistantCardTarget(card.cards[0]) : "entities";
   }
+  if (isHomeAssistantGridCardConfiguration(card)) {
+    return card.cards[0] ? getHomeAssistantCardTarget(card.cards[0]) : "entities";
+  }
+  if (isHomeAssistantConditionalCardConfiguration(card)) {
+    return getHomeAssistantCardTarget(card.card);
+  }
   if (card.type === "custom:mushroom-template-card") return "mushroom-template";
   if (card.type === "custom:bubble-card") return "bubble";
   return "entities";
@@ -408,6 +443,15 @@ export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration)
 export function getHomeAssistantCardEntityIds(card: HomeAssistantCardConfiguration): readonly string[] {
   if (isHomeAssistantStackCardConfiguration(card)) {
     return dedupeEntityIds(card.cards.flatMap(getHomeAssistantCardEntityIds));
+  }
+  if (isHomeAssistantGridCardConfiguration(card)) {
+    return dedupeEntityIds(card.cards.flatMap(getHomeAssistantCardEntityIds));
+  }
+  if (isHomeAssistantConditionalCardConfiguration(card)) {
+    return dedupeEntityIds([
+      ...card.conditions.map(condition => condition.entity ?? ""),
+      ...getHomeAssistantCardEntityIds(card.card),
+    ]);
   }
 
   if (card.type === "entities") {
@@ -420,6 +464,12 @@ export function getHomeAssistantCardEntityIds(card: HomeAssistantCardConfigurati
 export function getHomeAssistantCardTitle(card: HomeAssistantCardConfiguration): string {
   if (isHomeAssistantStackCardConfiguration(card)) {
     return card.cards[0] ? getHomeAssistantCardTitle(card.cards[0]) : "Imported HA card";
+  }
+  if (isHomeAssistantGridCardConfiguration(card)) {
+    return card.cards[0] ? getHomeAssistantCardTitle(card.cards[0]) : "Imported grid card";
+  }
+  if (isHomeAssistantConditionalCardConfiguration(card)) {
+    return getHomeAssistantCardTitle(card.card);
   }
 
   if (card.type === "entities") {
@@ -456,6 +506,44 @@ function normalizeHomeAssistantCardConfiguration(
     };
   }
 
+  if (card.type === "grid" && Array.isArray(card.cards)) {
+    const normalizedCards = card.cards.map(candidate => normalizeHomeAssistantCardConfiguration(candidate).card);
+    if (normalizedCards.length === 0) {
+      throw new Error("Home Assistant grid card has no supported cards.");
+    }
+    const normalizedCard = {
+      type: "grid",
+      columns: typeof card.columns === "number" ? card.columns : undefined,
+      square: typeof card.square === "boolean" ? card.square : undefined,
+      cards: normalizedCards,
+    } satisfies HomeAssistantGridCardConfiguration;
+    return {
+      card: normalizedCard,
+      target: getHomeAssistantCardTarget(normalizedCard),
+      layout: "single",
+    };
+  }
+
+  if (card.type === "conditional" && Array.isArray(card.conditions) && isRecord(card.card)) {
+    const normalizedChild = normalizeHomeAssistantCardConfiguration(card.card).card;
+    const normalizedCard = {
+      type: "conditional",
+      conditions: card.conditions
+        .filter(isRecord)
+        .map(condition => ({
+          condition: typeof condition.condition === "string" ? condition.condition : "state",
+          entity: typeof condition.entity === "string" ? condition.entity.trim() : undefined,
+          state: typeof condition.state === "string" ? condition.state : undefined,
+        })),
+      card: normalizedChild,
+    } satisfies HomeAssistantConditionalCardConfiguration;
+    return {
+      card: normalizedCard,
+      target: getHomeAssistantCardTarget(normalizedCard),
+      layout: "single",
+    };
+  }
+
   if (card.type === "custom:mushroom-template-card") {
     const entity = typeof card.entity === "string" ? card.entity.trim() : "";
     if (!entity) throw new Error("Mushroom card has no entity.");
@@ -473,15 +561,18 @@ function normalizeHomeAssistantCardConfiguration(
 
   if (card.type === "custom:bubble-card") {
     const entity = typeof card.entity === "string" ? card.entity.trim() : "";
-    if (!entity) throw new Error("Bubble card has no entity.");
+    const cardType = card.card_type === "separator" ? "separator" : "button";
+    const buttonType = card.button_type === "name" || card.button_type === "slider" || card.button_type === "state"
+      ? card.button_type
+      : undefined;
     return {
       card: {
         type: "custom:bubble-card",
-        card_type: "button",
-        button_type: "state",
+        card_type: cardType,
+        ...(cardType === "button" ? { button_type: buttonType ?? "state" } : {}),
         name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : "Imported Bubble card",
-        entity,
-        show_state: true,
+        ...(entity ? { entity } : {}),
+        ...(card.show_state === true || entity ? { show_state: true as const } : {}),
       },
       target: "bubble",
       layout: "single",
@@ -525,6 +616,7 @@ function serializeHomeAssistantCustomCardYaml(
   card: HomeAssistantCustomCardConfiguration,
 ): string {
   return Object.entries(card)
+    .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}: ${serializeYamlScalar(value)}`)
     .join("\n");
 }
@@ -540,6 +632,40 @@ function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfigu
       lines.push(index === 0 ? `  - ${line}` : `    ${line}`);
     });
   }
+  return lines.join("\n");
+}
+
+function serializeHomeAssistantGridCardYaml(card: HomeAssistantGridCardConfiguration): string {
+  const lines = [
+    "type: grid",
+  ];
+  if (card.columns !== undefined) lines.push(`columns: ${serializeYamlScalar(card.columns)}`);
+  if (card.square !== undefined) lines.push(`square: ${serializeYamlScalar(card.square)}`);
+  lines.push("cards:");
+  for (const child of card.cards) {
+    const childLines = serializeHomeAssistantEntitiesCardConfiguration(child, "yaml").split("\n");
+    childLines.forEach((line, index) => {
+      lines.push(index === 0 ? `  - ${line}` : `    ${line}`);
+    });
+  }
+  return lines.join("\n");
+}
+
+function serializeHomeAssistantConditionalCardYaml(card: HomeAssistantConditionalCardConfiguration): string {
+  const lines = [
+    "type: conditional",
+    "conditions:",
+  ];
+  for (const condition of card.conditions) {
+    lines.push(`  - condition: ${serializeYamlScalar(condition.condition)}`);
+    if (condition.entity) lines.push(`    entity: ${serializeYamlScalar(condition.entity)}`);
+    if (condition.state) lines.push(`    state: ${serializeYamlScalar(condition.state)}`);
+  }
+  lines.push("card:");
+  const childLines = serializeHomeAssistantEntitiesCardConfiguration(card.card, "yaml").split("\n");
+  childLines.forEach(line => {
+    lines.push(`  ${line}`);
+  });
   return lines.join("\n");
 }
 
@@ -637,11 +763,8 @@ function parseYamlMap(
       continue;
     }
 
-    if (parsed.value === "|") {
-      value[parsed.key] = "";
-      while (cursor.index < lines.length && lines[cursor.index]!.indent > line.indent) {
-        cursor.index += 1;
-      }
+    if (isYamlBlockScalar(parsed.value)) {
+      value[parsed.key] = parseYamlBlockScalar(lines, cursor, line.indent, parsed.value);
       continue;
     }
 
@@ -683,8 +806,10 @@ function parseYamlList(
     }
 
     const item: Record<string, unknown> = {};
-    if (parsed.value === "" || parsed.value === "|") {
-      item[parsed.key] = parsed.value === "|" ? "" : {};
+    if (parsed.value === "" || isYamlBlockScalar(parsed.value)) {
+      item[parsed.key] = isYamlBlockScalar(parsed.value)
+        ? parseYamlBlockScalar(lines, cursor, line.indent, parsed.value)
+        : {};
     } else {
       item[parsed.key] = parseYamlScalar(parsed.value);
     }
@@ -705,6 +830,26 @@ function parseYamlKeyValue(text: string): { readonly key: string; readonly value
     key: text.slice(0, separator).trim(),
     value: text.slice(separator + 1).trim(),
   };
+}
+
+function isYamlBlockScalar(value: string): boolean {
+  return value === "|" || value === "|-" || value === "|+" || value === ">" || value === ">-" || value === ">+";
+}
+
+function parseYamlBlockScalar(
+  lines: readonly ParsedYamlLine[],
+  cursor: { index: number },
+  parentIndent: number,
+  marker: string,
+): string {
+  const values: string[] = [];
+  while (cursor.index < lines.length && lines[cursor.index]!.indent > parentIndent) {
+    values.push(lines[cursor.index]!.text);
+    cursor.index += 1;
+  }
+  return marker.startsWith(">")
+    ? values.join(" ").trim()
+    : values.join("\n");
 }
 
 function serializeYamlScalar(value: unknown): string {
@@ -744,6 +889,18 @@ function isHomeAssistantStackCardConfiguration(
   card: HomeAssistantCardConfiguration,
 ): card is HomeAssistantStackCardConfiguration {
   return card.type === "horizontal-stack" || card.type === "vertical-stack";
+}
+
+function isHomeAssistantGridCardConfiguration(
+  card: HomeAssistantCardConfiguration,
+): card is HomeAssistantGridCardConfiguration {
+  return card.type === "grid";
+}
+
+function isHomeAssistantConditionalCardConfiguration(
+  card: HomeAssistantCardConfiguration,
+): card is HomeAssistantConditionalCardConfiguration {
+  return card.type === "conditional";
 }
 
 function isHomeAssistantCustomCardConfiguration(
