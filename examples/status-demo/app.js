@@ -221,9 +221,9 @@ function renderConnectionLifecycle(lifecycle) {
     : `Connection: ${lifecycle.state}${subscription}`;
   connectButton.disabled = lifecycle.state === "connecting" || lifecycle.state === "authenticating" || lifecycle.state === "connected";
   disconnectButton.disabled = lifecycle.state === "closed" || lifecycle.state === "failed";
-  checkHaCardResources.disabled = lifecycle.state !== "connected" || lifecycle.subscription !== "active";
+  checkHaCardResources.disabled = lifecycle.state !== "connected";
 
-  if (lifecycle.state === "connected" && lifecycle.subscription === "active") {
+  if (lifecycle.state === "connected") {
     reconnectAttempts = 0;
     clearTimeout(reconnectTimer);
     bindSelectedEntity(connection?.getClient()?.transport);
@@ -233,7 +233,7 @@ function renderConnectionLifecycle(lifecycle) {
       scheduleReconnect();
     }
   }
-  refreshHomeAssistantEntities.disabled = lifecycle.state !== "connected" || lifecycle.subscription !== "active";
+  refreshHomeAssistantEntities.disabled = lifecycle.state !== "connected";
 }
 
 function scheduleReconnect() {

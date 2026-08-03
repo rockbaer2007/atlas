@@ -57,9 +57,9 @@ and serialized as JSON or YAML, which lets host UIs offer copy-ready HACS
 resource snippets for Mushroom and Bubble Card. Card import summaries normalize
 raw card text or Atlas packages into title, entity IDs, target, layout, format
 and dependency metadata. The WebSocket client can request `get_states` and
-`lovelace/resources` after the event subscription is active. Lights can receive
-a validated brightness percentage from 1 through 100 when a host explicitly
-invokes the command.
+`lovelace/resources` as soon as authentication succeeds, even while the live
+event subscription is still pending. Lights can receive a validated brightness
+percentage from 1 through 100 when a host explicitly invokes the command.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server

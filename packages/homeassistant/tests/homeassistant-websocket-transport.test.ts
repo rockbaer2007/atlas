@@ -225,17 +225,16 @@ describe("Home Assistant WebSocket transport", () => {
     expect(createHomeAssistantBrightnessCommand("switch.atlas_switch", 55)).toBeUndefined();
   });
 
-  it("requests the Home Assistant entity state list after subscription is active", async () => {
+  it("requests the Home Assistant entity state list after authentication succeeds", async () => {
     const socket = createTestSocket();
     const client = createHomeAssistantWebSocketClient(socket, "test-token");
 
     expect(client.requestEntityStates()).toEqual({
       accepted: false,
-      reason: "Home Assistant event subscription is not active.",
+      reason: "Home Assistant is not connected.",
     });
 
     await socket.emitMessage('{"type":"auth_ok"}');
-    await socket.emitMessage('{"id":1,"type":"result","success":true}');
     const results: Array<{ success: boolean; entities: readonly { entityId: string }[] }> = [];
     client.subscribeEntityStateList(result => results.push(result));
 
@@ -271,17 +270,16 @@ describe("Home Assistant WebSocket transport", () => {
     });
   });
 
-  it("requests Lovelace resources after subscription is active", async () => {
+  it("requests Lovelace resources after authentication succeeds", async () => {
     const socket = createTestSocket();
     const client = createHomeAssistantWebSocketClient(socket, "test-token");
 
     expect(client.requestLovelaceResources()).toEqual({
       accepted: false,
-      reason: "Home Assistant event subscription is not active.",
+      reason: "Home Assistant is not connected.",
     });
 
     await socket.emitMessage('{"type":"auth_ok"}');
-    await socket.emitMessage('{"id":1,"type":"result","success":true}');
     const results: Array<{ success: boolean; resources: readonly { url: string }[] }> = [];
     client.subscribeLovelaceResources(result => results.push(result));
 

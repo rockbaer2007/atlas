@@ -194,10 +194,10 @@ export function createHomeAssistantWebSocketClient(
       return () => lifecycleListeners.delete(listener);
     },
     requestEntityStates(): HomeAssistantEntityStateRequestResult {
-      if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {
+      if (lifecycle.state !== "connected") {
         return {
           accepted: false,
-          reason: "Home Assistant event subscription is not active.",
+          reason: "Home Assistant is not connected.",
         };
       }
 
@@ -212,10 +212,10 @@ export function createHomeAssistantWebSocketClient(
       return () => entityStateListListeners.delete(listener);
     },
     requestLovelaceResources(): HomeAssistantLovelaceResourceRequestResult {
-      if (lifecycle.state !== "connected" || lifecycle.subscription !== "active") {
+      if (lifecycle.state !== "connected") {
         return {
           accepted: false,
-          reason: "Home Assistant event subscription is not active.",
+          reason: "Home Assistant is not connected.",
         };
       }
 
