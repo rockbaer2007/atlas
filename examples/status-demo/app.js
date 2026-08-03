@@ -79,6 +79,7 @@ const importHaCardConfig = document.querySelector("#import-ha-card-config");
 const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
+const diagnosticsPanel = document.querySelector("#diagnostics-panel");
 const selectedEntity = document.querySelector("#selected-entity");
 const editorModeButtons = document.querySelectorAll("[data-editor-mode]");
 const panelGroupControl = document.querySelector("#panel-group-control");
@@ -249,6 +250,9 @@ try {
   }
   if (typeof savedConfiguration?.expertCardName === "string") {
     expertCardName.value = savedConfiguration.expertCardName;
+  }
+  if (savedConfiguration?.diagnosticsOpen === true) {
+    diagnosticsPanel.open = true;
   }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
@@ -442,6 +446,7 @@ function persistConfiguration() {
       expertEditorFields,
       selectedExpertFieldIndex,
       expertCardName: expertCardName.value,
+      diagnosticsOpen: diagnosticsPanel.open,
       editorMode: activeEditorMode,
       groups: panelGroups,
     }));
@@ -2127,7 +2132,7 @@ function selectStatusPreviewEntity(entityId) {
   if (activeTransport === transport) {
     void renderEntityState("on");
   }
-  statusMessage.textContent = `${entityId} shown in the ATLAS Status Preview.`;
+  statusMessage.textContent = `${entityId} selected for the Diagnostics status preview.`;
 }
 
 function addEntityForStatusPreview(entityId) {
@@ -2137,7 +2142,7 @@ function addEntityForStatusPreview(entityId) {
   }
   statusPreviewEntityId = entityId;
   homeAssistantEntity.dispatchEvent(new Event("input"));
-  statusMessage.textContent = `${entityId} shown in the ATLAS Status Preview. Use the checkbox to include it in the stack export.`;
+  statusMessage.textContent = `${entityId} selected for Diagnostics. Use the checkbox to include it in the stack export.`;
 }
 
 function setStackEntitySelected(entityId, selected) {
@@ -2394,6 +2399,7 @@ expertCardName.addEventListener("input", () => {
   persistConfiguration();
   renderExpertEditorPreview();
 });
+diagnosticsPanel.addEventListener("toggle", persistConfiguration);
 haCardTarget.addEventListener("change", () => {
   syncCardLayoutState();
   persistConfiguration();
@@ -2534,6 +2540,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     expertEditorFields,
     selectedExpertFieldIndex,
     expertCardName: expertCardName.value,
+    diagnosticsOpen: diagnosticsPanel.open,
     editorMode: activeEditorMode,
     groups: panelGroups,
   }, null, 2);
@@ -2652,6 +2659,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
       ? Math.max(-1, Math.min(expertEditorFields.length - 1, pendingImport.selectedExpertFieldIndex))
       : -1;
     expertCardName.value = typeof pendingImport.expertCardName === "string" ? pendingImport.expertCardName : "";
+    diagnosticsPanel.open = pendingImport.diagnosticsOpen === true;
     expertFieldEditing = false;
     stackSelectedEntityIds.clear();
     if (Array.isArray(pendingImport.stackEntityIds)) {

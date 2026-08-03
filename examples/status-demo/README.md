@@ -1,6 +1,7 @@
-# ATLAS Status Demo
+# ATLAS Home Assistant Card Editor Demo
 
-The demo renders the active Renderer and Theme integration in a browser.
+The demo renders the Home Assistant card editor workflow together with the
+active Renderer and Theme integration in a browser.
 
 Run `pnpm build`, then start it with:
 
@@ -89,8 +90,11 @@ snippet can be copied as JSON or YAML through the same card format selector.
 It includes the ATLAS frontend resource and, when needed, the selected
 Mushroom or Bubble Card dependency.
 
-The visual status surface below the code block is an ATLAS status preview, not a
-Home Assistant Lovelace renderer.
+The visual status surface is now tucked into the Diagnostics panel. It remains
+available as an ATLAS renderer/theme and entity-state smoke test, but it is no
+longer part of the main card-editor workflow. It is not a Home Assistant
+Lovelace renderer. The Diagnostics open state is stored with the local demo
+configuration.
 
 The demo also exposes the first Expert editor preview behind a Simple/Expert
 mode switch. It renders the shared template palette as a left sidebar, lets a
