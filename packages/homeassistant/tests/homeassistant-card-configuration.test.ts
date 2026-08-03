@@ -7,6 +7,7 @@ import {
   createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
   createHomeAssistantLovelaceResourceReferences,
+  createHomeAssistantCardArtifactReview,
   decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
   inspectHomeAssistantCardArtifact,
@@ -14,6 +15,8 @@ import {
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
+  previewHomeAssistantCardArtifactFields,
+  previewHomeAssistantCardArtifactMapping,
   serializeHomeAssistantLovelaceResourceReferences,
   serializeHomeAssistantEntitiesCardConfiguration,
   summarizeHomeAssistantCardImport,
@@ -507,6 +510,163 @@ describe("Home Assistant entities card configuration", () => {
         kind: "unknown",
         importable: false,
       },
+    });
+  });
+
+  it("creates a compatibility review for external card-builder artifacts", () => {
+    expect(createHomeAssistantCardArtifactReview(JSON.stringify({
+      card_builder_version: "2.6.0",
+      blocks: [
+        { id: "title" },
+        { id: "state" },
+      ],
+      entitySlots: [
+        "main",
+      ],
+    }))).toEqual({
+      inspection: {
+        kind: "external-card-builder-artifact",
+        format: "json",
+        importable: false,
+        requiresReview: true,
+        reason: "The artifact resembles an external card-builder export and needs explicit compatibility mapping before import.",
+      },
+      items: [
+        {
+          id: "license",
+          label: "License boundary",
+          severity: "warning",
+          detail: "External card-builder artifacts require explicit compatibility mapping and attribution review before import.",
+        },
+        {
+          id: "blocks",
+          label: "Block model",
+          severity: "info",
+          detail: "2 possible visual blocks detected.",
+        },
+        {
+          id: "entity-slots",
+          label: "Entity slots",
+          severity: "info",
+          detail: "1 possible entity slots detected.",
+        },
+        {
+          id: "next-step",
+          label: "Next step",
+          severity: "info",
+          detail: "Map the external artifact into ATLAS template fields before enabling import.",
+        },
+      ],
+      recommendedAction: "map-schema",
+    });
+  });
+
+  it("rejects compatibility review for unsupported artifacts", () => {
+    expect(createHomeAssistantCardArtifactReview("type: entities\nentities:\n  - sensor.office")).toMatchObject({
+      inspection: {
+        kind: "home-assistant-card",
+      },
+      items: [
+        {
+          id: "unsupported-review",
+          severity: "blocked",
+        },
+      ],
+      recommendedAction: "reject",
+    });
+  });
+
+  it("previews schema mappings from external blocks to ATLAS templates", () => {
+    expect(previewHomeAssistantCardArtifactMapping(JSON.stringify({
+      card_builder_version: "2.6.0",
+      blocks: [
+        { id: "main", type: "entity-state" },
+        { id: "fan", type: "switch-control" },
+        { id: "row", type: "horizontal-layout" },
+        { id: "custom", type: "chart" },
+      ],
+    }))).toEqual({
+      inspection: {
+        kind: "external-card-builder-artifact",
+        format: "json",
+        importable: false,
+        requiresReview: true,
+        reason: "The artifact resembles an external card-builder export and needs explicit compatibility mapping before import.",
+      },
+      mappings: [
+        {
+          sourceId: "main",
+          sourceType: "entity-state",
+          templateId: "state-button",
+          confidence: "high",
+          reason: "State-like blocks map to the ATLAS state button template.",
+        },
+        {
+          sourceId: "fan",
+          sourceType: "switch-control",
+          templateId: "switch-button",
+          confidence: "high",
+          reason: "Switch-like blocks map to the ATLAS switch button template.",
+        },
+        {
+          sourceId: "row",
+          sourceType: "horizontal-layout",
+          templateId: "horizontal-stack",
+          confidence: "medium",
+          reason: "Horizontal layout blocks can map to an ATLAS horizontal stack template.",
+        },
+      ],
+      unmappedBlocks: ["custom"],
+    });
+  });
+
+  it("does not preview mappings for already supported Home Assistant cards", () => {
+    expect(previewHomeAssistantCardArtifactMapping(JSON.stringify({
+      type: "entities",
+      entities: ["sensor.office"],
+    }))).toMatchObject({
+      inspection: {
+        kind: "home-assistant-card",
+      },
+      mappings: [],
+      unmappedBlocks: [],
+    });
+  });
+
+  it("previews ATLAS editor fields from mapped external blocks", () => {
+    expect(previewHomeAssistantCardArtifactFields(JSON.stringify({
+      card_builder_version: "2.6.0",
+      blocks: [
+        { id: "main", type: "entity-state" },
+        { id: "fan", type: "switch-control" },
+        { id: "unknown", type: "chart" },
+      ],
+    }))).toMatchObject({
+      inspection: {
+        kind: "external-card-builder-artifact",
+      },
+      fields: [
+        {
+          id: "main",
+          target: "bubble",
+          layout: "card",
+          column: 0,
+          row: 0,
+          width: 3,
+          height: 2,
+        },
+        {
+          id: "fan",
+          target: "bubble",
+          layout: "card",
+          column: 6,
+          row: 0,
+          width: 3,
+          height: 2,
+        },
+      ],
+      unmappedBlocks: ["unknown"],
+      requiresReview: true,
     });
   });
 

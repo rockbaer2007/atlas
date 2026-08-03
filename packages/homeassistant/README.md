@@ -123,6 +123,18 @@ mapping exists.
 Hosts can turn that inspection into an import decision: supported artifacts can
 continue directly, external card-builder-shaped files open a compatibility
 review, and unknown content is rejected.
+Compatibility reviews currently report the license boundary, detected visual
+block count, detected entity-slot count and the next mapping step. This gives a
+host UI enough information to show a review dialog before any external artifact
+is converted into ATLAS fields.
+Mapping previews can classify common external block types into ATLAS templates:
+state-like blocks become state buttons, switch-like blocks become switch
+buttons, and horizontal or vertical layout blocks become matching stack
+templates. Unmapped blocks remain visible for manual review.
+ATLAS can also preview editor fields from mapped external blocks. These fields
+are placed onto the expert grid with empty entities and remain marked as
+review-required, so a host can show the conversion result without silently
+importing it.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

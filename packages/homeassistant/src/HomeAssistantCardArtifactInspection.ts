@@ -1,3 +1,6 @@
+import type { HomeAssistantCardEditorSurfaceField } from "./HomeAssistantCardEditorPlan";
+import { createHomeAssistantCardEditorFieldFromTemplate } from "./HomeAssistantCardEditorPlan";
+
 export type HomeAssistantCardArtifactKind =
   | "atlas-card-package"
   | "home-assistant-card"
@@ -21,6 +24,42 @@ export interface HomeAssistantCardArtifactImportDecision {
   readonly action: HomeAssistantCardArtifactImportAction;
   readonly inspection: HomeAssistantCardArtifactInspection;
   readonly message: string;
+}
+
+export type HomeAssistantCardArtifactReviewSeverity = "info" | "warning" | "blocked";
+
+export interface HomeAssistantCardArtifactReviewItem {
+  readonly id: string;
+  readonly label: string;
+  readonly severity: HomeAssistantCardArtifactReviewSeverity;
+  readonly detail: string;
+}
+
+export interface HomeAssistantCardArtifactReview {
+  readonly inspection: HomeAssistantCardArtifactInspection;
+  readonly items: readonly HomeAssistantCardArtifactReviewItem[];
+  readonly recommendedAction: "map-schema" | "reject";
+}
+
+export interface HomeAssistantCardArtifactBlockMapping {
+  readonly sourceId: string;
+  readonly sourceType: string;
+  readonly templateId: "entity-list" | "state-button" | "switch-button" | "vertical-stack" | "horizontal-stack";
+  readonly confidence: "high" | "medium" | "low";
+  readonly reason: string;
+}
+
+export interface HomeAssistantCardArtifactMappingPreview {
+  readonly inspection: HomeAssistantCardArtifactInspection;
+  readonly mappings: readonly HomeAssistantCardArtifactBlockMapping[];
+  readonly unmappedBlocks: readonly string[];
+}
+
+export interface HomeAssistantCardArtifactFieldPreview {
+  readonly inspection: HomeAssistantCardArtifactInspection;
+  readonly fields: readonly HomeAssistantCardEditorSurfaceField[];
+  readonly unmappedBlocks: readonly string[];
+  readonly requiresReview: true;
 }
 
 export function inspectHomeAssistantCardArtifact(text: string): HomeAssistantCardArtifactInspection {
@@ -84,6 +123,103 @@ export function decideHomeAssistantCardArtifactImport(
     action: "reject",
     inspection,
     message: "Reject this artifact because ATLAS cannot identify a safe import path.",
+  };
+}
+
+export function createHomeAssistantCardArtifactReview(text: string): HomeAssistantCardArtifactReview {
+  const inspection = inspectHomeAssistantCardArtifact(text);
+  if (inspection.kind !== "external-card-builder-artifact") {
+    return {
+      inspection,
+      items: [
+        {
+          id: "unsupported-review",
+          label: "No compatibility review available",
+          severity: "blocked",
+          detail: "Only external card-builder-shaped artifacts have a compatibility review path.",
+        },
+      ],
+      recommendedAction: "reject",
+    };
+  }
+
+  const json = parseJsonRecord(text.trim());
+  return {
+    inspection,
+    items: [
+      {
+        id: "license",
+        label: "License boundary",
+        severity: "warning",
+        detail: "External card-builder artifacts require explicit compatibility mapping and attribution review before import.",
+      },
+      {
+        id: "blocks",
+        label: "Block model",
+        severity: "info",
+        detail: `${countArrayValue(json, "blocks")} possible visual blocks detected.`,
+      },
+      {
+        id: "entity-slots",
+        label: "Entity slots",
+        severity: "info",
+        detail: `${countFirstArrayValue(json, ["entity_slots", "entitySlots"])} possible entity slots detected.`,
+      },
+      {
+        id: "next-step",
+        label: "Next step",
+        severity: "info",
+        detail: "Map the external artifact into ATLAS template fields before enabling import.",
+      },
+    ],
+    recommendedAction: "map-schema",
+  };
+}
+
+export function previewHomeAssistantCardArtifactMapping(
+  text: string,
+): HomeAssistantCardArtifactMappingPreview {
+  const inspection = inspectHomeAssistantCardArtifact(text);
+  if (inspection.kind !== "external-card-builder-artifact") {
+    return {
+      inspection,
+      mappings: [],
+      unmappedBlocks: [],
+    };
+  }
+
+  const json = parseJsonRecord(text.trim());
+  const blocks = readExternalBlocks(json);
+  const mappings = blocks
+    .map(mapExternalBlock)
+    .filter((mapping): mapping is HomeAssistantCardArtifactBlockMapping => mapping !== undefined);
+  const mappedIds = new Set(mappings.map(mapping => mapping.sourceId));
+
+  return {
+    inspection,
+    mappings,
+    unmappedBlocks: blocks
+      .filter(block => !mappedIds.has(block.id))
+      .map(block => block.id),
+  };
+}
+
+export function previewHomeAssistantCardArtifactFields(
+  text: string,
+): HomeAssistantCardArtifactFieldPreview {
+  const mappingPreview = previewHomeAssistantCardArtifactMapping(text);
+
+  return {
+    inspection: mappingPreview.inspection,
+    fields: mappingPreview.mappings.map((mapping, index) => createHomeAssistantCardEditorFieldFromTemplate({
+      template: mapping.templateId,
+      id: mapping.sourceId,
+      entityId: "",
+      column: (index % 2) * 6,
+      row: Math.floor(index / 2) * 2,
+    })),
+    unmappedBlocks: mappingPreview.unmappedBlocks,
+    requiresReview: true,
   };
 }
 
@@ -157,6 +293,87 @@ function looksLikeExternalCardBuilderArtifact(value: Record<string, unknown>): b
     || candidateText.includes("entity_slots")
     || candidateText.includes("stylebindings")
     || candidateText.includes("style_bindings");
+}
+
+function countArrayValue(value: Record<string, unknown> | undefined, key: string): number {
+  const candidate = value?.[key];
+  return Array.isArray(candidate) ? candidate.length : 0;
+}
+
+function countFirstArrayValue(value: Record<string, unknown> | undefined, keys: readonly string[]): number {
+  for (const key of keys) {
+    const count = countArrayValue(value, key);
+    if (count > 0) return count;
+  }
+  return 0;
+}
+
+function readExternalBlocks(value: Record<string, unknown> | undefined): Array<{ readonly id: string; readonly type: string }> {
+  const blocks = value?.blocks;
+  if (!Array.isArray(blocks)) return [];
+
+  return blocks
+    .filter(isRecord)
+    .map((block, index) => ({
+      id: typeof block.id === "string" && block.id.trim() ? block.id.trim() : `block-${index + 1}`,
+      type: typeof block.type === "string" ? block.type.trim().toLowerCase() : "unknown",
+    }));
+}
+
+function mapExternalBlock(
+  block: { readonly id: string; readonly type: string },
+): HomeAssistantCardArtifactBlockMapping | undefined {
+  if (block.type.includes("switch")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "switch-button",
+      confidence: "high",
+      reason: "Switch-like blocks map to the ATLAS switch button template.",
+    };
+  }
+
+  if (block.type.includes("state") || block.type.includes("sensor")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "state-button",
+      confidence: "high",
+      reason: "State-like blocks map to the ATLAS state button template.",
+    };
+  }
+
+  if (block.type.includes("entity")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "entity-list",
+      confidence: "medium",
+      reason: "Entity-like blocks can map to an ATLAS entity list template.",
+    };
+  }
+
+  if (block.type.includes("vertical")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "vertical-stack",
+      confidence: "medium",
+      reason: "Vertical layout blocks can map to an ATLAS vertical stack template.",
+    };
+  }
+
+  if (block.type.includes("horizontal")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "horizontal-stack",
+      confidence: "medium",
+      reason: "Horizontal layout blocks can map to an ATLAS horizontal stack template.",
+    };
+  }
+
+  return undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

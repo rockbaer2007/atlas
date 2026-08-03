@@ -142,6 +142,9 @@ additional envelope-only contract expansion.
 * Plan import/export interoperability with external card-builder artifacts through documented schemas and explicit attribution
 * Pre-import artifact inspection for ATLAS packages, raw Home Assistant cards and external card-builder-shaped files
 * Import decisions for supported, review-required and rejected Home Assistant card artifacts
+* Compatibility review items for external card-builder-shaped artifacts before schema mapping
+* Mapping preview from external visual blocks to ATLAS editor templates before enabling import
+* Reviewed field preview for mapped external blocks on the ATLAS Expert editor surface
 * User-defined HACS card script filenames such as `energy-kitchen.js` instead of only `atlas-card.js`
 * HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards

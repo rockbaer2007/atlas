@@ -31,6 +31,17 @@ New work in this run
   - import: supported ATLAS or Home Assistant artifacts
   - review: external card-builder-shaped artifacts
   - reject: unknown or unsafe content
+- Added compatibility-review items for external card-builder-shaped artifacts:
+  - license boundary
+  - visual block count
+  - entity slot count
+  - next schema-mapping step
+- Added mapping previews from external blocks to ATLAS templates:
+  - state-like blocks -> state-button
+  - switch-like blocks -> switch-button
+  - horizontal layout blocks -> horizontal-stack
+  - vertical layout blocks -> vertical-stack
+- Added reviewed field previews for mapped external blocks on the Expert grid.
 - Updated @atlas/homeassistant README.
 - Updated ROADMAP.md.
 - Updated public docs in German and English.
