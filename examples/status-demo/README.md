@@ -136,5 +136,6 @@ visible bottom-right resize handle and can grow by up to five grid steps in
 both directions while keeping the current size as the default. A Reset surface
 size button returns the editor surface to the default footprint.
 The Expert summary reports total fields, populated fields, empty placeholders,
-occupied rows, current surface span, card targets and field layouts before the
-generated HA card code.
+occupied rows, current surface span, overlap count, card targets and field
+layouts before the generated HA card code. Overlapping editor fields are marked
+directly on the surface.

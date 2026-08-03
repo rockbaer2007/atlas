@@ -1410,6 +1410,8 @@ function renderExpertEditorSurface() {
   applyExpertEditorSurfaceSize();
   const grid = document.createElement("div");
   grid.className = "expert-surface-grid";
+  const surfaceAnalysis = analyzeHomeAssistantCardEditorSurface(expertEditorFields);
+  const overlappingFieldIds = new Set(surfaceAnalysis.overlappingFieldIds);
   if (expertEditorFields.length === 0) {
     const empty = document.createElement("p");
     empty.textContent = "Drag a card from the left into this editor surface.";
@@ -1425,8 +1427,10 @@ function renderExpertEditorSurface() {
     tile.className = "expert-surface-field";
     tile.classList.toggle("selected", index === selectedExpertFieldIndex);
     tile.classList.toggle("editing", index === selectedExpertFieldIndex && expertFieldEditing);
+    tile.classList.toggle("conflict", overlappingFieldIds.has(field.id));
     tile.setAttribute("role", "button");
-    tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}`);
+    const conflictLabel = overlappingFieldIds.has(field.id) ? ", overlapping another field" : "";
+    tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
     tile.style.gridColumn = `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
@@ -1576,10 +1580,14 @@ function renderExpertEditorPreview() {
   const emptyText = surfaceAnalysis.emptyFieldCount
     ? `, ${surfaceAnalysis.emptyFieldCount} empty`
     : "";
+  const overlapText = surfaceAnalysis.overlapCount
+    ? `Overlaps: ${surfaceAnalysis.overlapCount}`
+    : "Overlaps: 0";
   expertEditorSummary.textContent = [
     `Expert fields: ${surfaceAnalysis.fieldCount} (${surfaceAnalysis.populatedFieldCount} populated${emptyText})`,
     `Rows: ${surfaceAnalysis.rowCount}`,
     `Surface: ${surfaceAnalysis.usedColumns}x${surfaceAnalysis.usedRows}`,
+    overlapText,
     `Targets: ${surfaceAnalysis.usedTargets.join(", ")}`,
     `Layouts: ${surfaceAnalysis.layouts.join(", ")}`,
   ].join(". ");

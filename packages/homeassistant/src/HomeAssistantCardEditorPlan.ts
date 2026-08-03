@@ -105,16 +105,24 @@ export interface HomeAssistantCardEditorDependencyPlan {
   readonly installSteps: readonly string[];
 }
 
+export interface HomeAssistantCardEditorSurfaceOverlap {
+  readonly firstFieldId: string;
+  readonly secondFieldId: string;
+}
+
 export interface HomeAssistantCardEditorSurfaceAnalysis {
   readonly fieldCount: number;
   readonly populatedFieldCount: number;
   readonly emptyFieldCount: number;
+  readonly overlapCount: number;
   readonly rowCount: number;
   readonly usedColumns: number;
   readonly usedRows: number;
   readonly usedTargets: readonly HomeAssistantCardTarget[];
   readonly layouts: readonly HomeAssistantCardEditorSurfaceFieldLayout[];
   readonly emptyFieldIds: readonly string[];
+  readonly overlappingFieldIds: readonly string[];
+  readonly overlaps: readonly HomeAssistantCardEditorSurfaceOverlap[];
 }
 
 export const defaultHomeAssistantCardEditorEntityIds = [
@@ -353,6 +361,7 @@ export function analyzeHomeAssistantCardEditorSurface(
   const normalizedFields = fields.map(normalizeSurfaceField);
   const populatedFields = normalizedFields.filter(hasSurfaceFieldContent);
   const emptyFields = normalizedFields.filter(field => !hasSurfaceFieldContent(field));
+  const overlaps = listSurfaceFieldOverlaps(normalizedFields);
   const rightEdge = normalizedFields.map(field => field.column + field.width);
   const bottomEdge = normalizedFields.map(field => field.row + field.height);
 
@@ -360,12 +369,15 @@ export function analyzeHomeAssistantCardEditorSurface(
     fieldCount: normalizedFields.length,
     populatedFieldCount: populatedFields.length,
     emptyFieldCount: emptyFields.length,
+    overlapCount: overlaps.length,
     rowCount: new Set(normalizedFields.map(field => field.row)).size,
     usedColumns: rightEdge.length ? Math.max(...rightEdge) : 0,
     usedRows: bottomEdge.length ? Math.max(...bottomEdge) : 0,
     usedTargets: dedupeCardTargets(normalizedFields.flatMap(listSurfaceFieldTargets)),
     layouts: dedupeSurfaceFieldLayouts(normalizedFields.map(field => field.layout ?? "card")),
     emptyFieldIds: emptyFields.map(field => field.id),
+    overlappingFieldIds: dedupeStrings(overlaps.flatMap(overlap => [overlap.firstFieldId, overlap.secondFieldId])),
+    overlaps,
   };
 }
 
@@ -500,6 +512,35 @@ function hasSurfaceFieldContent(field: HomeAssistantCardEditorSurfaceField): boo
   if (field.entityId) return true;
   if (field.target === "link" || field.target === "webpage") return true;
   return (field.entries ?? []).some(entry => Boolean(entry.entityId));
+}
+
+function listSurfaceFieldOverlaps(
+  fields: readonly HomeAssistantCardEditorSurfaceField[],
+): HomeAssistantCardEditorSurfaceOverlap[] {
+  const overlaps: HomeAssistantCardEditorSurfaceOverlap[] = [];
+  for (let firstIndex = 0; firstIndex < fields.length; firstIndex += 1) {
+    for (let secondIndex = firstIndex + 1; secondIndex < fields.length; secondIndex += 1) {
+      const first = fields[firstIndex]!;
+      const second = fields[secondIndex]!;
+      if (surfaceFieldsOverlap(first, second)) {
+        overlaps.push({
+          firstFieldId: first.id,
+          secondFieldId: second.id,
+        });
+      }
+    }
+  }
+  return overlaps;
+}
+
+function surfaceFieldsOverlap(
+  first: HomeAssistantCardEditorSurfaceField,
+  second: HomeAssistantCardEditorSurfaceField,
+): boolean {
+  return first.column < second.column + second.width
+    && first.column + first.width > second.column
+    && first.row < second.row + second.height
+    && first.row + first.height > second.row;
 }
 
 function createSurfaceFieldCardConfiguration(

@@ -365,12 +365,60 @@ describe("Home Assistant frontend integration planning", () => {
       fieldCount: 3,
       populatedFieldCount: 2,
       emptyFieldCount: 1,
+      overlapCount: 0,
       rowCount: 2,
       usedColumns: 12,
       usedRows: 5,
       usedTargets: ["bubble", "mushroom-template", "entities"],
       layouts: ["card", "horizontal-stack"],
       emptyFieldIds: ["Empty field"],
+      overlappingFieldIds: [],
+      overlaps: [],
+    });
+  });
+
+  it("detects overlapping expert editor surface fields", () => {
+    expect(analyzeHomeAssistantCardEditorSurface([
+      {
+        id: "Top left",
+        target: "entities",
+        entityId: "sensor.top_left",
+        column: 0,
+        row: 0,
+        width: 4,
+        height: 2,
+      },
+      {
+        id: "Touching edge",
+        target: "entities",
+        entityId: "sensor.touching_edge",
+        column: 4,
+        row: 0,
+        width: 2,
+        height: 2,
+      },
+      {
+        id: "Overlapping",
+        target: "button",
+        entityId: "light.overlapping",
+        column: 3,
+        row: 1,
+        width: 3,
+        height: 2,
+      },
+    ])).toMatchObject({
+      overlapCount: 2,
+      overlappingFieldIds: ["Top left", "Overlapping", "Touching edge"],
+      overlaps: [
+        {
+          firstFieldId: "Top left",
+          secondFieldId: "Overlapping",
+        },
+        {
+          firstFieldId: "Touching edge",
+          secondFieldId: "Overlapping",
+        },
+      ],
     });
   });
 
