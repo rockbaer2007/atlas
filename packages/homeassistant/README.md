@@ -74,6 +74,13 @@ which Lovelace resource paths are still missing. Hosts can also serialize that
 combined plan as JSON or YAML Lovelace resources, giving the UI one copy action
 for ATLAS plus any selected Mushroom or Bubble Card dependency.
 
+A first HACS card editor package plan is available for the later installable
+custom card workflow. It describes a drag-and-drop layout editor, keeps the
+visible card name separate from the generated JavaScript filename, normalizes
+user-defined filenames such as `Energy Kitchen` to `energy-kitchen.js`, and
+uses demo entities (`binary_sensor.atlas_status`, `sensor.atlas_temperature`)
+with a clear replacement hint for Home Assistant users.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

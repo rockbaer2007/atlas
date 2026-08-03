@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   createAtlasFrontendResource,
+  createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
+  normalizeHomeAssistantCardEditorScriptFilename,
   inspectAtlasFrontendResourceAvailability,
   serializeHomeAssistantAtlasFrontendResourceReferences,
 } from "../src";
@@ -123,5 +125,33 @@ describe("Home Assistant frontend integration planning", () => {
         type: "module",
       },
     ], null, 2));
+  });
+
+  it("plans a HACS card editor package with demo entities and a custom script filename", () => {
+    expect(createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+    })).toEqual({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      resourcePath: "/hacsfiles/atlas/energy-kitchen.js",
+      defaultEntityIds: [
+        "binary_sensor.atlas_status",
+        "sensor.atlas_temperature",
+      ],
+      supportedLayouts: [
+        "single",
+        "horizontal-stack",
+        "vertical-stack",
+      ],
+      layoutMode: "drag-and-drop",
+      replacementHint: "Replace the demo entities with your own Home Assistant entities.",
+    });
+  });
+
+  it("normalizes user-defined card editor script filenames", () => {
+    expect(normalizeHomeAssistantCardEditorScriptFilename("My Fancy Card")).toBe("my-fancy-card.js");
+    expect(normalizeHomeAssistantCardEditorScriptFilename("already-ready.js")).toBe("already-ready.js");
+    expect(normalizeHomeAssistantCardEditorScriptFilename("")).toBe("atlas-card.js");
   });
 });

@@ -130,6 +130,9 @@ additional envelope-only contract expansion.
 * Selectable simple, horizontal-stack and vertical-stack card layouts for Mushroom and Bubble Card exports
 * Bubble Card dependency hints for the case-sensitive HACS resource `/hacsfiles/Bubble-Card/bubble-card.js`
 * HACS-installable custom card export path
+* Drag-and-drop card layout editor with user-defined card names
+* User-defined HACS card script filenames such as `energy-kitchen.js` instead of only `atlas-card.js`
+* HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards
 * Entity abstraction
 * Service integration
