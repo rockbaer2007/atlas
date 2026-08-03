@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createHomeAssistantCardExportManifest,
+  createHomeAssistantCardExportPackage,
   createHomeAssistantCardExportPayload,
   createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
@@ -349,6 +350,43 @@ describe("Home Assistant entities card configuration", () => {
     expect(JSON.parse(payload.content)).toEqual(card);
   });
 
+  it("creates and imports ATLAS Home Assistant card packages", () => {
+    const card = createHomeAssistantCardConfiguration({
+      target: "bubble",
+      title: "Office light",
+      entityIds: ["light.office"],
+    });
+    const cardPackage = createHomeAssistantCardExportPackage({
+      card,
+      format: "yaml",
+      name: "Office Light",
+    });
+
+    expect(cardPackage).toMatchObject({
+      version: 1,
+      kind: "atlas.homeassistant.card",
+      manifest: {
+        filename: "office-light-bubble-single.yaml",
+        format: "yaml",
+        target: "bubble",
+        layout: "single",
+      },
+    });
+    expect(cardPackage.content).toContain("type: \"custom:bubble-card\"");
+
+    expect(summarizeHomeAssistantCardImport(JSON.stringify(cardPackage))).toMatchObject({
+      title: "Office light",
+      entityIds: ["light.office"],
+      format: "yaml",
+      target: "bubble",
+      layout: "single",
+      packaged: true,
+    });
+    expect(summarizeHomeAssistantCardImport(cardPackage.content)).toMatchObject({
+      packaged: false,
+    });
+  });
+
   it("parses Mushroom and Bubble cards", () => {
     expect(parseHomeAssistantEntitiesCardConfiguration([
       "type: custom:mushroom-template-card",
@@ -411,6 +449,7 @@ describe("Home Assistant entities card configuration", () => {
       format: "yaml",
       target: "bubble",
       layout: "horizontal-stack",
+      packaged: false,
       dependency: {
         id: "bubble-card",
         label: "Bubble Card",

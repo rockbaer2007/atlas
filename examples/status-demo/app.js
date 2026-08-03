@@ -3,6 +3,7 @@ import {
 } from "@atlas/theme";
 import {
   createHomeAssistantStatusPanel,
+  createHomeAssistantCardExportPackage,
   createHomeAssistantCardExportPayload,
   createHomeAssistantEntityState,
   createHomeAssistantConnectionConfiguration,
@@ -54,6 +55,7 @@ const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
 const exportHomeAssistantConfig = document.querySelector("#export-home-assistant-config");
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
+const exportHaCardPackage = document.querySelector("#export-ha-card-package");
 const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
 const checkHaCardResources = document.querySelector("#check-ha-card-resources");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
@@ -525,6 +527,15 @@ function renderHaCardPreview() {
 function createHaCardExportPayload() {
   const card = createHaCardConfig();
   return createHomeAssistantCardExportPayload({
+    card,
+    format: haCardFormat.value,
+    name: currentHaCardExportName(),
+  });
+}
+
+function createHaCardExportPackage() {
+  const card = createHaCardConfig();
+  return createHomeAssistantCardExportPackage({
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
@@ -1081,6 +1092,19 @@ exportHaCardConfig.addEventListener("click", () => {
   link.click();
   URL.revokeObjectURL(link.href);
 });
+exportHaCardPackage.addEventListener("click", () => {
+  if (!canExportHaCard()) {
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
+  const cardPackage = createHaCardExportPackage();
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(cardPackage, null, 2)], { type: "application/json" }));
+  link.download = cardPackage.manifest.filename.replace(/\.(json|yaml)$/i, ".atlas-card.json");
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
 copyHaCardConfig.addEventListener("click", async () => {
   if (!canExportHaCard()) {
     statusMessage.textContent = emptyEntitySelectionMessage;
@@ -1164,7 +1188,7 @@ importHaCardConfig.addEventListener("change", async () => {
     renderGroupOptions(id);
     persistConfiguration();
     homeAssistantEntity.dispatchEvent(new Event("input"));
-    statusMessage.textContent = `HA card ${summary.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
+    statusMessage.textContent = `${summary.packaged ? "ATLAS card package" : "HA card"} ${summary.format.toUpperCase()} imported: ${title} with ${entityIds.length} entities.`;
   } catch {
     statusMessage.textContent = "Import failed: invalid Home Assistant entities card JSON or YAML.";
   } finally {

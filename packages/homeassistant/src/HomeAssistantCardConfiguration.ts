@@ -110,6 +110,13 @@ export interface HomeAssistantCardExportPayload {
   readonly content: string;
 }
 
+export interface HomeAssistantCardExportPackage {
+  readonly version: 1;
+  readonly kind: "atlas.homeassistant.card";
+  readonly manifest: HomeAssistantCardExportManifest;
+  readonly content: string;
+}
+
 export interface HomeAssistantCardImportSummary {
   readonly card: HomeAssistantCardConfiguration;
   readonly title: string;
@@ -118,6 +125,7 @@ export interface HomeAssistantCardImportSummary {
   readonly target: HomeAssistantCardTarget;
   readonly layout: HomeAssistantCardLayout;
   readonly dependency: HomeAssistantCardDependency;
+  readonly packaged: boolean;
 }
 
 const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
@@ -276,6 +284,16 @@ export function createHomeAssistantCardExportPayload(
   };
 }
 
+export function createHomeAssistantCardExportPackage(
+  input: HomeAssistantCardExportPayloadInput,
+): HomeAssistantCardExportPackage {
+  return {
+    version: 1,
+    kind: "atlas.homeassistant.card",
+    ...createHomeAssistantCardExportPayload(input),
+  };
+}
+
 export function parseHomeAssistantEntitiesCardConfiguration(
   text: string,
 ): HomeAssistantEntitiesCardParseResult {
@@ -293,12 +311,16 @@ export function parseHomeAssistantEntitiesCardConfiguration(
 }
 
 export function summarizeHomeAssistantCardImport(text: string): HomeAssistantCardImportSummary {
-  const parsed = parseHomeAssistantEntitiesCardConfiguration(text);
+  const packageCandidate = parseHomeAssistantCardExportPackage(text);
+  const parsed = packageCandidate
+    ? parseHomeAssistantEntitiesCardConfiguration(packageCandidate.content)
+    : parseHomeAssistantEntitiesCardConfiguration(text);
   return {
     ...parsed,
     title: getHomeAssistantCardTitle(parsed.card),
     entityIds: getHomeAssistantCardEntityIds(parsed.card),
     dependency: inspectHomeAssistantCardDependency(parsed.card),
+    packaged: packageCandidate !== undefined,
   };
 }
 
@@ -497,6 +519,28 @@ function slugifyHomeAssistantExportName(name: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "atlas-home-assistant-card";
+}
+
+function parseHomeAssistantCardExportPackage(text: string): HomeAssistantCardExportPackage | undefined {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    if (!isRecord(parsed) || parsed.version !== 1 || parsed.kind !== "atlas.homeassistant.card") {
+      return undefined;
+    }
+
+    if (!isRecord(parsed.manifest) || typeof parsed.content !== "string") {
+      return undefined;
+    }
+
+    return {
+      version: 1,
+      kind: "atlas.homeassistant.card",
+      manifest: parsed.manifest as unknown as HomeAssistantCardExportManifest,
+      content: parsed.content,
+    };
+  } catch {
+    return undefined;
+  }
 }
 
 function normalizeHomeAssistantResourcePath(resourcePath: string): string | undefined {

@@ -48,6 +48,9 @@ back into the demo as a new panel group through the shared import summary API.
 HA card exports use target- and layout-specific filenames so the downloaded file
 reflects whether it contains Entities, Mushroom or Bubble card code. Copy and
 download use the same export payload and require at least one selected entity.
+The card package export wraps the manifest and serialized card content in a
+portable Atlas JSON envelope that can be imported back through the same HA card
+import control.
 
 When the demo is connected to Home Assistant, it requests Lovelace resources and
 marks Mushroom or Bubble dependencies as found, missing or not yet checked. The
