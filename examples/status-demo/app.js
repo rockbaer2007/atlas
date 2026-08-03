@@ -81,6 +81,8 @@ const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const selectedEntity = document.querySelector("#selected-entity");
 const editorModeButtons = document.querySelectorAll("[data-editor-mode]");
+const panelGroupControl = document.querySelector("#panel-group-control");
+const groupNameControl = document.querySelector("#group-name-control");
 const cardLayoutControl = document.querySelector("#card-layout-control");
 const simpleCardSection = document.querySelector("#simple-card-section");
 const expertEditorSection = document.querySelector("#expert-editor-section");
@@ -292,6 +294,8 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
 function renderEditorMode(mode = "simple") {
   const expert = mode === "expert";
   activeEditorMode = expert ? "expert" : "simple";
+  panelGroupControl.hidden = expert;
+  groupNameControl.hidden = expert;
   cardLayoutControl.hidden = expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
