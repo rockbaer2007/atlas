@@ -97,6 +97,9 @@ row become a `horizontal-stack`; multiple rows become a wrapping
 Empty expert plans fall back to the safe demo entities, preserving a usable
 export while the user still has to replace them with real Home Assistant
 entities.
+In the demo UI, Expert mode hides the simple card-layout selector and the simple
+HA card code block. Export, package export, copy and resource copy use the
+Expert HA card configuration whenever Expert mode is active.
 
 The expert editor model also exposes a sidebar template palette. Hosts can list
 visual templates for entity lists, state buttons, switch buttons,

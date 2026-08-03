@@ -56,6 +56,9 @@ download use the same export payload and require at least one selected entity.
 The card package export wraps the manifest and serialized card content in a
 portable Atlas JSON envelope that can be imported back through the same HA card
 import control.
+When Expert mode is active, the simple card-layout selector and simple HA card
+code block are hidden. Copy and export actions then use the Expert HA card code
+generated from the editor surface.
 Before the HA card import is parsed, the demo now runs the shared artifact
 inspection. Supported ATLAS packages and raw Home Assistant cards continue
 directly. External card-builder-shaped artifacts pause on a compatibility

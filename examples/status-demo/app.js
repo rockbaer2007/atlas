@@ -77,6 +77,7 @@ const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const selectedEntity = document.querySelector("#selected-entity");
 const editorModeButtons = document.querySelectorAll("[data-editor-mode]");
+const cardLayoutControl = document.querySelector("#card-layout-control");
 const simpleCardSection = document.querySelector("#simple-card-section");
 const expertEditorSection = document.querySelector("#expert-editor-section");
 const expertTemplate = document.querySelector("#expert-template");
@@ -124,6 +125,7 @@ let reconnectTimer;
 let reconnectAttempts = 0;
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
+let activeEditorMode = "simple";
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
 const stackSelectedEntityIds = new Set();
@@ -218,11 +220,16 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
 
 function renderEditorMode(mode = "simple") {
   const expert = mode === "expert";
+  activeEditorMode = expert ? "expert" : "simple";
+  cardLayoutControl.hidden = expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
   for (const button of editorModeButtons) {
-    button.setAttribute("aria-pressed", String(button.dataset.editorMode === mode));
+    button.setAttribute("aria-pressed", String(button.dataset.editorMode === activeEditorMode));
   }
+  exportHaCardConfig.textContent = expert ? "Export Expert HA card" : "Export HA card";
+  copyHaCardConfig.textContent = expert ? "Copy Expert HA card" : "Copy HA card";
+  copyHaCardResources.textContent = expert ? "Copy Expert resources" : "Copy resources";
   renderHaCardPreview();
   renderExpertEditorPreview();
 }
@@ -548,6 +555,18 @@ function createHaCardConfig() {
   });
 }
 
+function createExpertHaCardConfig() {
+  return createHomeAssistantCardEditorConfiguration({
+    cardName: homeAssistantGroupName.value.trim() || "ATLAS Expert card",
+    editorMode: "expert",
+    fields: expertEditorFields,
+  });
+}
+
+function createActiveHaCardConfig() {
+  return activeEditorMode === "expert" ? createExpertHaCardConfig() : createHaCardConfig();
+}
+
 function currentHaCardExportName() {
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   return group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS Home Assistant card");
@@ -564,6 +583,11 @@ function renderHaCardPreview() {
   }
 
   const card = createHaCardConfig();
+  haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+  renderHaCardDependency(card);
+}
+
+function renderHaCardDependency(card) {
   const dependency = inspectHomeAssistantCardDependency(card);
   const availability = inspectHomeAssistantCardDependencyAvailability(card, lovelaceResources);
   const integrationPlan = createHomeAssistantAtlasFrontendIntegrationPlan({
@@ -571,7 +595,6 @@ function renderHaCardPreview() {
     card,
     resources: lovelaceResources,
   });
-  haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   haCardDependency.dataset.required = String(dependency.required);
   haCardDependency.dataset.status = lovelaceResourcesChecked
     ? integrationPlan.ready ? "installed" : "missing"
@@ -815,18 +838,21 @@ function renderExpertEditorPreview() {
   if (expertEditorFields.length === 0) {
     expertEditorSummary.textContent = "Expert fields: 0.";
     expertEditorPreview.textContent = "Add a template field to preview the Expert editor output.";
+    if (activeEditorMode === "expert") {
+      haCardDependency.textContent = "Add a template field before exporting an Expert HA card.";
+      haCardDependency.dataset.required = "false";
+      haCardDependency.dataset.status = "not-required";
+      copyHaCardResources.disabled = true;
+    }
     renderExpertFieldList();
     renderExpertEditorSurface();
     return;
   }
 
-  const card = createHomeAssistantCardEditorConfiguration({
-    cardName: homeAssistantGroupName.value.trim() || "ATLAS Expert card",
-    editorMode: "expert",
-    fields: expertEditorFields,
-  });
+  const card = createExpertHaCardConfig();
   expertEditorSummary.textContent = `Expert fields: ${expertEditorFields.length}.`;
   expertEditorPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+  if (activeEditorMode === "expert") renderHaCardDependency(card);
   renderExpertFieldList();
   renderExpertEditorSurface();
 }
@@ -932,7 +958,7 @@ function moveExpertEditorField(index, placement) {
 }
 
 function createHaCardExportPayload() {
-  const card = createHaCardConfig();
+  const card = createActiveHaCardConfig();
   return createHomeAssistantCardExportPayload({
     card,
     format: haCardFormat.value,
@@ -941,7 +967,7 @@ function createHaCardExportPayload() {
 }
 
 function createHaCardExportPackage() {
-  const card = createHaCardConfig();
+  const card = createActiveHaCardConfig();
   return createHomeAssistantCardExportPackage({
     card,
     format: haCardFormat.value,
@@ -950,7 +976,7 @@ function createHaCardExportPackage() {
 }
 
 function canExportHaCard() {
-  return cardPreviewEntityIds().length > 0;
+  return activeEditorMode === "expert" ? expertEditorFields.length > 0 : cardPreviewEntityIds().length > 0;
 }
 
 async function writeClipboardText(text) {
@@ -1571,7 +1597,7 @@ copyHaCardResources.addEventListener("click", async () => {
     return;
   }
 
-  const card = createHaCardConfig();
+  const card = createActiveHaCardConfig();
   const dependency = inspectHomeAssistantCardDependency(card);
 
   try {
