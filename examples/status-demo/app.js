@@ -831,8 +831,13 @@ function renderExpertTemplatePalette() {
     item.draggable = card.disabled !== true;
     item.tabIndex = 0;
     item.setAttribute("role", "button");
+    item.setAttribute("aria-disabled", String(card.disabled === true));
     item.dataset.paletteCard = card.id;
 
+    const main = document.createElement("div");
+    main.className = "expert-template-main";
+    const meta = document.createElement("div");
+    meta.className = "expert-template-meta";
     const category = document.createElement("span");
     category.className = "palette-category";
     category.textContent = card.category;
@@ -848,7 +853,8 @@ function renderExpertTemplatePalette() {
     const availability = document.createElement("span");
     availability.textContent = card.disabled === true ? "Scanned only" : formatExpertTemplateAvailability(card.target);
 
-    item.append(category, title, detail, preview, availability);
+    main.append(category, title);
+    meta.append(detail, preview, availability);
     if (card.disabled !== true) {
       const sizing = createExpertTemplateSizingControls(template);
       const favorite = document.createElement("label");
@@ -857,13 +863,15 @@ function renderExpertTemplatePalette() {
       favoriteCheckbox.type = "checkbox";
       favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
       favorite.append(favoriteCheckbox, "Favorite");
-      item.append(favorite, sizing);
+      main.append(favorite);
+      meta.append(sizing);
       favorite.addEventListener("click", event => event.stopPropagation());
       favoriteCheckbox.addEventListener("change", event => {
         event.stopPropagation();
         setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
       });
     }
+    item.append(main, meta);
 
     item.addEventListener("click", () => {
       if (card.disabled === true) {

@@ -428,6 +428,10 @@
 
       .expert-editor-sidebar .expert-template-palette {
         grid-template-columns: 1fr;
+        max-height: 520px;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding-right: 4px;
       }
 
       .expert-palette-toolbar {
@@ -458,10 +462,12 @@
 
       .expert-template-card {
         display: grid;
-        gap: 4px;
-        min-height: 84px;
+        grid-template-columns: minmax(0, 1fr) minmax(112px, 0.95fr);
+        align-items: start;
+        gap: 8px;
+        min-height: 44px;
         box-sizing: border-box;
-        padding: 10px;
+        padding: 7px 8px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
         background: #ffffff;
@@ -469,15 +475,26 @@
         text-align: left;
       }
 
+      .expert-template-main,
+      .expert-template-meta {
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+      }
+
+      .expert-template-meta {
+        justify-items: stretch;
+      }
+
       .expert-template-sizing {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 6px;
+        gap: 4px;
       }
 
       .expert-template-sizing select {
-        min-height: 32px;
-        padding: 4px 6px;
+        min-height: 26px;
+        padding: 3px 5px;
         font-size: 12px;
       }
 
@@ -514,7 +531,7 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        min-height: 24px;
+        min-height: 18px;
         color: #536079;
         font-size: 12px;
       }
@@ -533,10 +550,16 @@
         text-transform: uppercase;
       }
 
+      .expert-template-card strong {
+        font-size: 14px;
+        line-height: 1.15;
+      }
+
       .expert-template-card small,
       .expert-template-card span {
         color: #536079;
         font-size: 12px;
+        line-height: 1.25;
       }
 
       .expert-editor-surface {
