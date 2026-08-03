@@ -87,6 +87,7 @@ const cardTargetControl = document.querySelector("#card-target-control");
 const cardLayoutControl = document.querySelector("#card-layout-control");
 const simpleCardSection = document.querySelector("#simple-card-section");
 const expertEditorSection = document.querySelector("#expert-editor-section");
+const expertCardName = document.querySelector("#expert-card-name");
 const expertTemplate = document.querySelector("#expert-template");
 const expertTarget = document.querySelector("#expert-target");
 const expertBubbleTypeControl = document.querySelector("#expert-bubble-type-control");
@@ -246,6 +247,9 @@ try {
   if (savedConfiguration?.editorMode === "expert") {
     initialEditorMode = "expert";
   }
+  if (typeof savedConfiguration?.expertCardName === "string") {
+    expertCardName.value = savedConfiguration.expertCardName;
+  }
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
   }
@@ -299,6 +303,9 @@ function renderEditorMode(mode = "simple") {
   groupNameControl.hidden = expert;
   cardTargetControl.hidden = expert;
   cardLayoutControl.hidden = expert;
+  saveHomeAssistantGroup.hidden = expert;
+  deleteHomeAssistantGroup.hidden = expert;
+  duplicateHomeAssistantGroup.hidden = expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
   for (const button of editorModeButtons) {
@@ -434,6 +441,7 @@ function persistConfiguration() {
       expertEditorSurfaceSize,
       expertEditorFields,
       selectedExpertFieldIndex,
+      expertCardName: expertCardName.value,
       editorMode: activeEditorMode,
       groups: panelGroups,
     }));
@@ -772,7 +780,7 @@ function createHaCardConfig() {
 
 function createExpertHaCardConfig() {
   return createHomeAssistantCardEditorConfiguration({
-    cardName: homeAssistantGroupName.value.trim() || "ATLAS Expert card",
+    cardName: currentExpertCardName(),
     editorMode: "expert",
     fields: expertEditorFields,
   });
@@ -792,7 +800,14 @@ function createActiveCardEditorPlan() {
   });
 }
 
+function currentExpertCardName() {
+  return expertCardName.value.trim() || "ATLAS Expert card";
+}
+
 function currentHaCardExportName() {
+  if (activeEditorMode === "expert") {
+    return currentExpertCardName();
+  }
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   return group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS Home Assistant card");
 }
@@ -2375,6 +2390,10 @@ homeAssistantGroup.addEventListener("change", () => {
   homeAssistantEntity.dispatchEvent(new Event("input"));
 });
 homeAssistantGroupName.addEventListener("input", renderHaCardPreview);
+expertCardName.addEventListener("input", () => {
+  persistConfiguration();
+  renderExpertEditorPreview();
+});
 haCardTarget.addEventListener("change", () => {
   syncCardLayoutState();
   persistConfiguration();
@@ -2514,6 +2533,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     expertEditorSurfaceSize,
     expertEditorFields,
     selectedExpertFieldIndex,
+    expertCardName: expertCardName.value,
     editorMode: activeEditorMode,
     groups: panelGroups,
   }, null, 2);
@@ -2631,6 +2651,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     selectedExpertFieldIndex = Number.isInteger(pendingImport.selectedExpertFieldIndex)
       ? Math.max(-1, Math.min(expertEditorFields.length - 1, pendingImport.selectedExpertFieldIndex))
       : -1;
+    expertCardName.value = typeof pendingImport.expertCardName === "string" ? pendingImport.expertCardName : "";
     expertFieldEditing = false;
     stackSelectedEntityIds.clear();
     if (Array.isArray(pendingImport.stackEntityIds)) {
@@ -2685,11 +2706,13 @@ importHaCardConfig.addEventListener("change", async () => {
     if (summary.editorPlan?.editorMode === "expert") {
       expertEditorFields.splice(0, expertEditorFields.length, ...createHomeAssistantCardEditorPackagePlan(summary.editorPlan).fields);
       selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
+      expertCardName.value = summary.editorPlan.cardName;
       expertFieldEditing = false;
       renderEditorMode("expert");
     } else {
       expertEditorFields.length = 0;
       selectedExpertFieldIndex = -1;
+      expertCardName.value = "";
       expertFieldEditing = false;
       renderEditorMode("simple");
     }
