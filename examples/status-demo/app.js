@@ -151,6 +151,7 @@ const expertFieldMaxResizeDelta = 5;
 const expertEditorSurfaceMaxResizeDelta = 5;
 const expertEditorSurfaceHeightStep = 40;
 let expertEditorSurfaceSize = { columns: 0, rows: 0 };
+let expertDragFieldOffset = { column: 0, row: 0 };
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
@@ -916,6 +917,7 @@ function renderExpertTemplatePalette() {
       event.dataTransfer?.setData("application/x-atlas-template", card.templateId);
       event.dataTransfer?.setData("application/x-atlas-palette-card", card.id);
       event.dataTransfer?.setDragImage(item, 12, 12);
+      expertDragFieldOffset = { column: 0, row: 0 };
       item.classList.add("dragging");
     });
     item.addEventListener("dragend", () => {
@@ -1472,12 +1474,16 @@ function renderExpertEditorSurface() {
         selectExpertEditorField(index);
       }
     });
+    tile.addEventListener("pointerdown", event => {
+      expertDragFieldOffset = calculateExpertFieldPointerOffset(event, tile, field);
+    });
     tile.addEventListener("dragstart", event => {
       event.dataTransfer?.setData("application/x-atlas-field-index", String(index));
       tile.classList.add("dragging");
     });
     tile.addEventListener("dragend", () => {
       tile.classList.remove("dragging");
+      expertDragFieldOffset = { column: 0, row: 0 };
     });
     if (index === selectedExpertFieldIndex && expertFieldEditing) {
       const handle = document.createElement("span");
@@ -1493,6 +1499,22 @@ function renderExpertEditorSurface() {
   });
   expertEditorDropzone.append(grid);
   appendExpertEditorSurfaceResizeHandle();
+}
+
+function calculateExpertFieldPointerOffset(event, tile, field) {
+  const tileBounds = tile.getBoundingClientRect();
+  const gridBounds = expertEditorGridBounds();
+  const cellWidth = Math.max(1, gridBounds.width / expertGridColumns);
+  const cellHeight = Math.max(1, gridBounds.height / expertGridRows);
+  return {
+    column: Math.max(0, Math.min(field.width - 1, Math.floor((event.clientX - tileBounds.left) / cellWidth))),
+    row: Math.max(0, Math.min(field.height - 1, Math.floor((event.clientY - tileBounds.top) / cellHeight))),
+  };
+}
+
+function expertEditorGridBounds() {
+  const grid = expertEditorDropzone.querySelector(".expert-surface-grid");
+  return (grid ?? expertEditorDropzone).getBoundingClientRect();
 }
 
 function startExpertFieldResize(event, index, corner, tile) {
@@ -1732,9 +1754,11 @@ function calculateExpertDropPlacement(event) {
       row: Number(expertRow.value),
     };
   }
-  const bounds = expertEditorDropzone.getBoundingClientRect();
-  const column = Math.max(0, Math.min(expertGridColumns - 1, Math.floor(((event.clientX - bounds.left) / bounds.width) * expertGridColumns)));
-  const row = Math.max(0, Math.min(expertGridRows - 1, Math.floor(((event.clientY - bounds.top) / bounds.height) * expertGridRows)));
+  const bounds = expertEditorGridBounds();
+  const rawColumn = Math.floor(((event.clientX - bounds.left) / bounds.width) * expertGridColumns);
+  const rawRow = Math.floor(((event.clientY - bounds.top) / bounds.height) * expertGridRows);
+  const column = Math.max(0, Math.min(expertGridColumns - 1, rawColumn - expertDragFieldOffset.column));
+  const row = Math.max(0, Math.min(expertGridRows - 1, rawRow - expertDragFieldOffset.row));
   return { column, row };
 }
 
@@ -2307,6 +2331,7 @@ expertEditorDropzone.addEventListener("drop", event => {
   const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
   if (fieldIndex) {
     moveExpertEditorField(Number(fieldIndex), calculateExpertDropPlacement(event));
+    expertDragFieldOffset = { column: 0, row: 0 };
     return;
   }
   const paletteCardId = event.dataTransfer?.getData("application/x-atlas-palette-card");

@@ -87,8 +87,12 @@ the bounded expert grid and renders the resulting nested Home Assistant card
 code. Added fields are shown as movable tiles on the surface and are also listed
 with a remove button so the preview can be adjusted without clearing the whole
 surface. The surface now uses a larger visible 12-column Home Assistant-like
-grid. Each sidebar template exposes its own column and row controls, including
-`full` width and `auto` height. Entity List, State Button, Switch Button,
+grid. Dragging existing fields snaps against the real inner grid and preserves
+the point where the field was grabbed, so fields can be moved upward without
+sideways jumps. The visual grid now sits on the same inner surface as the
+draggable tiles, with a smaller tile gap for closer vertical stacking. Each
+sidebar template exposes its own column and row controls, including `full`
+width and `auto` height. Entity List, State Button, Switch Button,
 horizontal-stack and vertical-stack start from the same default footprint so
 layout adjustments are predictable. The sidebar uses loaded Lovelace resources
 to mark custom card families as installed, missing or unchecked. Surface tiles
