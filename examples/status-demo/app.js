@@ -24,6 +24,7 @@ import {
   filterHomeAssistantEntityCatalog,
   listHomeAssistantEntityCatalogDomains,
   listHomeAssistantEntityDomainShortcuts,
+  listHomeAssistantBubbleButtonTypes,
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
@@ -82,6 +83,8 @@ const simpleCardSection = document.querySelector("#simple-card-section");
 const expertEditorSection = document.querySelector("#expert-editor-section");
 const expertTemplate = document.querySelector("#expert-template");
 const expertTarget = document.querySelector("#expert-target");
+const expertBubbleTypeControl = document.querySelector("#expert-bubble-type-control");
+const expertBubbleButtonType = document.querySelector("#expert-bubble-button-type");
 const expertTitle = document.querySelector("#expert-title");
 const applyExpertTitle = document.querySelector("#apply-expert-title");
 const useEntityNameAsTitle = document.querySelector("#use-entity-name-as-title");
@@ -106,6 +109,7 @@ const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
+const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
 const expertEditorFields = [];
 const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
   template.id,
@@ -257,6 +261,21 @@ function renderExpertEditorOptions() {
     expertTarget.append(option);
   }
   expertTarget.value = "bubble";
+  expertBubbleButtonType.replaceChildren();
+  for (const type of bubbleButtonTypes) {
+    const option = document.createElement("option");
+    option.value = type;
+    option.textContent = type;
+    expertBubbleButtonType.append(option);
+  }
+  expertBubbleButtonType.value = "state";
+  syncExpertBubbleTypeControl();
+}
+
+function syncExpertBubbleTypeControl() {
+  const isBubble = expertTarget.value === "bubble";
+  expertBubbleTypeControl.hidden = !isBubble;
+  expertBubbleButtonType.disabled = !isBubble;
 }
 
 function syncCardLayoutState() {
@@ -758,6 +777,7 @@ function selectExpertTemplate(templateId) {
   expertTemplate.value = template.id;
   syncExpertInputsFromTemplateSizing(template.id);
   expertTarget.value = template.target;
+  syncExpertBubbleTypeControl();
   renderExpertTemplatePalette();
 }
 
@@ -784,7 +804,8 @@ function renderExpertFieldList() {
     item.className = "expert-field-row";
     item.classList.toggle("selected", index === selectedExpertFieldIndex);
     const text = document.createElement("span");
-    text.textContent = `${field.id}: ${field.target}, ${field.layout ?? "card"}, ${field.entityId || "demo entity"}, c${field.column + 1}/r${field.row + 1}`;
+    const bubbleType = field.target === "bubble" ? `, ${field.bubbleButtonType ?? "state"}` : "";
+    text.textContent = `${field.id}: ${field.target}${bubbleType}, ${field.layout ?? "card"}, ${field.entityId || "demo entity"}, c${field.column + 1}/r${field.row + 1}`;
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "icon-button";
@@ -854,7 +875,43 @@ function renameExpertFieldEntries(field, title) {
   return field.entries.map((entry, index) => ({
     ...entry,
     id: field.entries.length === 1 ? title : `${title} ${index + 1}`,
+    ...(entry.target === "bubble" ? { bubbleButtonType: entry.bubbleButtonType ?? "state" } : {}),
   }));
+}
+
+function updateSelectedExpertFieldTarget() {
+  syncExpertBubbleTypeControl();
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  if (!field) return;
+  const nextTarget = expertTarget.value;
+  const nextBubbleButtonType = nextTarget === "bubble" ? expertBubbleButtonType.value : undefined;
+  expertEditorFields[selectedExpertFieldIndex] = {
+    ...field,
+    target: nextTarget,
+    ...(nextBubbleButtonType ? { bubbleButtonType: nextBubbleButtonType } : { bubbleButtonType: undefined }),
+    entries: (field.entries ?? []).map(entry => ({
+      ...entry,
+      target: nextTarget,
+      ...(nextBubbleButtonType ? { bubbleButtonType: nextBubbleButtonType } : { bubbleButtonType: undefined }),
+    })),
+  };
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${field.id} card family updated to ${nextTarget}.`;
+}
+
+function updateSelectedExpertFieldBubbleType() {
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  if (!field || expertTarget.value !== "bubble") return;
+  expertEditorFields[selectedExpertFieldIndex] = {
+    ...field,
+    bubbleButtonType: expertBubbleButtonType.value,
+    entries: (field.entries ?? []).map(entry => ({
+      ...entry,
+      bubbleButtonType: expertBubbleButtonType.value,
+    })),
+  };
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${field.id} Bubble button type set to ${expertBubbleButtonType.value}.`;
 }
 
 function applyEntityToSelectedExpertField(entityId) {
@@ -869,7 +926,7 @@ function applyEntityToSelectedExpertField(entityId) {
 
   const entries = (field.layout ?? "card") === "card"
     ? field.entries
-    : [{ id: title, target: field.target, entityId }];
+    : [{ id: title, target: field.target, bubbleButtonType: field.bubbleButtonType, entityId }];
   expertEditorFields[selectedExpertFieldIndex] = {
     ...field,
     id: title,
@@ -903,6 +960,8 @@ function selectExpertEditorField(index) {
   expertWidth.value = String(field.width);
   expertHeight.value = String(field.height);
   expertTarget.value = field.target;
+  expertBubbleButtonType.value = field.bubbleButtonType ?? "state";
+  syncExpertBubbleTypeControl();
   expertTitle.value = field.id;
   expertEntity.value = field.entityId;
   renderExpertFieldList();
@@ -1115,6 +1174,7 @@ function createExpertEditorField(input) {
   const field = createHomeAssistantCardEditorFieldFromTemplate({
     template: input.templateId,
     target: expertTarget.value,
+    bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
     entityId: input.entityId,
     id: input.title ?? `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
     column: input.column,
@@ -1129,6 +1189,7 @@ function createExpertEditorField(input) {
       entries: stackEntityIds.map((entityId, index) => ({
         id: `${field.id} ${index + 1}`,
         target: expertTarget.value,
+        ...(expertTarget.value === "bubble" ? { bubbleButtonType: expertBubbleButtonType.value } : {}),
         entityId,
       })),
     };
@@ -1705,6 +1766,8 @@ for (const button of editorModeButtons) {
 expertTemplate.addEventListener("change", () => {
   selectExpertTemplate(expertTemplate.value);
 });
+expertTarget.addEventListener("change", updateSelectedExpertFieldTarget);
+expertBubbleButtonType.addEventListener("change", updateSelectedExpertFieldBubbleType);
 applyExpertTitle.addEventListener("click", () => {
   updateSelectedExpertFieldTitle(expertTitle.value);
 });

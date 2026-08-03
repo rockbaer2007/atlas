@@ -149,6 +149,22 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("creates Bubble cards with a selected button type", () => {
+    expect(createHomeAssistantCardConfiguration({
+      target: "bubble",
+      bubbleButtonType: "slider",
+      title: "Dimmer",
+      entityIds: ["light.office"],
+    })).toEqual({
+      type: "custom:bubble-card",
+      card_type: "button",
+      button_type: "slider",
+      name: "Dimmer",
+      entity: "light.office",
+      show_state: true,
+    });
+  });
+
   it("creates stacked Bubble and Mushroom card targets for multiple entities", () => {
     const bubble = createHomeAssistantCardConfiguration({
       target: "bubble",

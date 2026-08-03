@@ -4,6 +4,7 @@ export interface HomeAssistantEntitiesCardEntity {
 
 export type HomeAssistantCardTarget = "entities" | "mushroom-template" | "bubble";
 export type HomeAssistantCardLayout = "single" | "horizontal-stack" | "vertical-stack";
+export type HomeAssistantBubbleButtonType = "name" | "slider" | "state" | "switch";
 
 export interface HomeAssistantEntitiesCardConfiguration {
   readonly type: "entities";
@@ -21,7 +22,7 @@ export interface HomeAssistantMushroomTemplateCardConfiguration {
 export interface HomeAssistantBubbleCardConfiguration {
   readonly type: "custom:bubble-card";
   readonly card_type: "button" | "empty-column" | "separator";
-  readonly button_type?: "name" | "slider" | "state" | "switch";
+  readonly button_type?: HomeAssistantBubbleButtonType;
   readonly name: string;
   readonly entity?: string;
   readonly show_state?: true;
@@ -78,6 +79,7 @@ export type HomeAssistantCardExportFormat = "json" | "yaml";
 export interface HomeAssistantEntitiesCardInput {
   readonly target?: HomeAssistantCardTarget;
   readonly layout?: HomeAssistantCardLayout;
+  readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
   readonly title?: string;
   readonly entityIds: readonly string[];
 }
@@ -193,6 +195,10 @@ export function listHomeAssistantCardTargets(): readonly HomeAssistantCardTarget
   return cardTargetDescriptors;
 }
 
+export function listHomeAssistantBubbleButtonTypes(): readonly HomeAssistantBubbleButtonType[] {
+  return ["state", "switch", "slider", "name"];
+}
+
 export function findHomeAssistantCardTargetDescriptor(
   target: HomeAssistantCardTarget,
 ): HomeAssistantCardTargetDescriptor | undefined {
@@ -213,16 +219,23 @@ export function createHomeAssistantCardConfiguration(
       cards: entityIds.map(entityId => createHomeAssistantSingleCardConfiguration({
         target,
         title: entityId,
+        bubbleButtonType: input.bubbleButtonType,
         entityIds: [entityId],
       })),
     };
   }
 
-  return createHomeAssistantSingleCardConfiguration({ target, title, entityIds });
+  return createHomeAssistantSingleCardConfiguration({
+    target,
+    title,
+    bubbleButtonType: input.bubbleButtonType,
+    entityIds,
+  });
 }
 
 function createHomeAssistantSingleCardConfiguration(
-  input: Required<Pick<HomeAssistantEntitiesCardInput, "target" | "title" | "entityIds">>,
+  input: Required<Pick<HomeAssistantEntitiesCardInput, "target" | "title" | "entityIds">>
+    & Pick<HomeAssistantEntitiesCardInput, "bubbleButtonType">,
 ): HomeAssistantSingleCardConfiguration {
   const entityIds = dedupeEntityIds(input.entityIds);
   const title = input.title;
@@ -241,7 +254,7 @@ function createHomeAssistantSingleCardConfiguration(
     return {
       type: "custom:bubble-card",
       card_type: "button",
-      button_type: "state",
+      button_type: input.bubbleButtonType ?? "state",
       name: title,
       entity: primaryEntity,
       show_state: true,

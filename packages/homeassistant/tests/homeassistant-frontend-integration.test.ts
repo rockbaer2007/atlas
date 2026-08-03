@@ -193,6 +193,7 @@ describe("Home Assistant frontend integration planning", () => {
       {
         id: "main light",
         target: "bubble",
+        bubbleButtonType: "state",
         entityId: "light.kitchen",
         layout: "card",
         entries: [],

@@ -116,6 +116,9 @@ typed title to the selected field or copy the selected Home Assistant entity
 name into the title field to prefill card labels.
 When Expert mode is active, selecting an entity in the demo assigns it to the
 currently selected editor field instead of only changing the simple preview.
+Bubble fields can now carry a selected Bubble button type. The current supported
+values are `state`, `switch`, `slider` and `name`, and the value is emitted as
+`button_type` in the generated Bubble Card YAML or JSON.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as

@@ -1,4 +1,5 @@
 import type {
+  HomeAssistantBubbleButtonType,
   HomeAssistantCardConfiguration,
   HomeAssistantCardDependency,
   HomeAssistantCardLayout,
@@ -34,6 +35,7 @@ export interface HomeAssistantCardEditorTemplate {
 export interface HomeAssistantCardEditorTemplatePlacementInput {
   readonly template: HomeAssistantCardEditorTemplate | HomeAssistantCardEditorTemplateId;
   readonly target?: HomeAssistantCardTarget;
+  readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
   readonly entityId?: string;
   readonly id?: string;
   readonly column: number;
@@ -46,12 +48,14 @@ export interface HomeAssistantCardEditorTemplatePlacementInput {
 export interface HomeAssistantCardEditorSurfaceFieldEntry {
   readonly id: string;
   readonly target: HomeAssistantCardTarget;
+  readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
   readonly entityId: string;
 }
 
 export interface HomeAssistantCardEditorSurfaceField {
   readonly id: string;
   readonly target: HomeAssistantCardTarget;
+  readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
   readonly entityId: string;
   readonly layout?: HomeAssistantCardEditorSurfaceFieldLayout;
   readonly entries?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
@@ -186,15 +190,18 @@ export function createHomeAssistantCardEditorFieldFromTemplate(
   }
 
   const target = input.target ?? template.target;
+  const bubbleButtonType = target === "bubble" ? input.bubbleButtonType ?? "state" : undefined;
   return normalizeSurfaceField({
     id: input.id ?? template.label,
     target,
+    ...(bubbleButtonType ? { bubbleButtonType } : {}),
     entityId: input.entityId ?? "",
     layout: template.layout,
     entries: template.layout === "card" ? [] : [
       {
         id: `${input.id ?? template.label} item`,
         target,
+        ...(bubbleButtonType ? { bubbleButtonType } : {}),
         entityId: input.entityId ?? "",
       },
     ],
@@ -333,6 +340,7 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
   return {
     id: field.id.trim() || `${field.target}-${field.entityId}`,
     target: field.target,
+    ...(field.target === "bubble" ? { bubbleButtonType: normalizeBubbleButtonType(field.bubbleButtonType) } : {}),
     entityId: field.entityId.trim(),
     layout: field.layout ?? "card",
     entries: (field.entries ?? []).map(normalizeSurfaceFieldEntry),
@@ -349,8 +357,13 @@ function normalizeSurfaceFieldEntry(
   return {
     id: entry.id.trim() || `${entry.target}-${entry.entityId}`,
     target: entry.target,
+    ...(entry.target === "bubble" ? { bubbleButtonType: normalizeBubbleButtonType(entry.bubbleButtonType) } : {}),
     entityId: entry.entityId.trim(),
   };
+}
+
+function normalizeBubbleButtonType(value: HomeAssistantBubbleButtonType | undefined): HomeAssistantBubbleButtonType {
+  return value === "name" || value === "slider" || value === "switch" ? value : "state";
 }
 
 function compareSurfaceFields(
@@ -375,6 +388,7 @@ function createSurfaceFieldCardConfiguration(
       type: layout,
       cards: entries.map(entry => createHomeAssistantCardConfiguration({
         target: entry.target,
+        bubbleButtonType: entry.bubbleButtonType,
         title: entry.id,
         entityIds: [entry.entityId],
       })),
@@ -384,6 +398,7 @@ function createSurfaceFieldCardConfiguration(
   if (!field.entityId) return undefined;
   return createHomeAssistantCardConfiguration({
     target: field.target,
+    bubbleButtonType: field.bubbleButtonType,
     title: field.id,
     entityIds: [field.entityId],
   });

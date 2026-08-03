@@ -103,3 +103,6 @@ as a starting point.
 In Expert mode, selecting an entity from the picker or entity list assigns it to
 the currently selected surface field and also prefills the field title from the
 entity name.
+Bubble fields expose a Bubble button type dropdown with the supported
+`state`, `switch`, `slider` and `name` values. The selected type is written into
+the generated Bubble Card configuration.

@@ -380,6 +380,15 @@
         grid-column: 1 / -1;
       }
 
+      .expert-editor-controls .field-pair {
+        display: grid;
+        gap: 6px;
+      }
+
+      .expert-editor-controls .field-pair[hidden] {
+        display: none;
+      }
+
       .expert-title-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto auto;
@@ -910,6 +919,10 @@
               <select id="expert-template"></select>
               <label for="expert-target">Card family</label>
               <select id="expert-target"></select>
+              <div id="expert-bubble-type-control" class="field-pair wide" hidden>
+                <label for="expert-bubble-button-type">Bubble button type</label>
+                <select id="expert-bubble-button-type"></select>
+              </div>
               <label class="wide" for="expert-title">Title</label>
               <div class="expert-title-row wide">
                 <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty">
