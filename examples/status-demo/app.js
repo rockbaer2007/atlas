@@ -9,6 +9,7 @@ import {
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
+  createHomeAssistantAtlasFrontendIntegrationPlan,
   createHomeAssistantEntityPresentation,
   createHomeAssistantCardConfiguration,
   createHomeAssistantPanelGroup,
@@ -509,22 +510,33 @@ function renderHaCardPreview() {
   const card = createHaCardConfig();
   const dependency = inspectHomeAssistantCardDependency(card);
   const availability = inspectHomeAssistantCardDependencyAvailability(card, lovelaceResources);
+  const integrationPlan = createHomeAssistantAtlasFrontendIntegrationPlan({
+    mode: "server",
+    card,
+    resources: lovelaceResources,
+  });
   haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   haCardDependency.dataset.required = String(dependency.required);
-  haCardDependency.dataset.status = dependency.required
-    ? lovelaceResourcesChecked ? availability.status : "unchecked"
-    : "not-required";
+  haCardDependency.dataset.status = lovelaceResourcesChecked
+    ? integrationPlan.ready ? "installed" : "missing"
+    : dependency.required ? "unchecked" : "not-required";
   copyHaCardResources.disabled = !dependency.required;
   const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
   const installHint = dependency.installPaths.length ? ` Install path: ${dependency.installPaths.join(", ")}.` : "";
+  const atlasHint = ` ATLAS frontend: ${integrationPlan.atlasResource.resourcePaths.join(", ")}.`;
   if (!dependency.required) {
-    haCardDependency.textContent = "Uses built-in Home Assistant card.";
+    haCardDependency.textContent = `Uses built-in Home Assistant card.${atlasHint}`;
   } else if (!lovelaceResourcesChecked) {
-    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint} Connect to Home Assistant or check resources.`;
+    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint}${atlasHint} Connect to Home Assistant or check resources.`;
+  } else if (integrationPlan.ready) {
+    haCardDependency.textContent = `${dependency.label} and ATLAS frontend resources found.${resourceHint}${atlasHint}`;
   } else if (availability.status === "installed") {
-    haCardDependency.textContent = `${dependency.label} resource found.${resourceHint}`;
+    haCardDependency.textContent = `${dependency.label} resource found.${resourceHint}${atlasHint} Missing ATLAS frontend: ${integrationPlan.atlasAvailability.missingResourcePaths.join(", ")}.`;
   } else {
-    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint} Missing: ${availability.missingResourcePaths.join(", ")}.`;
+    haCardDependency.textContent = `Requires ${dependency.label}.${resourceHint}${installHint}${atlasHint} Missing: ${[
+      ...integrationPlan.atlasAvailability.missingResourcePaths,
+      ...availability.missingResourcePaths,
+    ].join(", ")}.`;
   }
 }
 

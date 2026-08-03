@@ -1,0 +1,149 @@
+import type {
+  HomeAssistantCardConfiguration,
+  HomeAssistantCardDependencyAvailability,
+  HomeAssistantCardTarget,
+  HomeAssistantLovelaceResource,
+} from "./HomeAssistantCardConfiguration";
+import {
+  inspectHomeAssistantCardDependencyAvailability,
+} from "./HomeAssistantCardConfiguration";
+
+export type HomeAssistantAtlasInstallationMode = "server" | "hacs";
+
+export interface HomeAssistantAtlasFrontendResource {
+  readonly id: "atlas-server" | "atlas-hacs";
+  readonly label: string;
+  readonly required: boolean;
+  readonly resourcePaths: readonly string[];
+  readonly installSteps: readonly string[];
+}
+
+export interface HomeAssistantAtlasFrontendResourceAvailability {
+  readonly resource: HomeAssistantAtlasFrontendResource;
+  readonly status: "not-required" | "installed" | "missing";
+  readonly matchedResourcePaths: readonly string[];
+  readonly missingResourcePaths: readonly string[];
+}
+
+export interface HomeAssistantAtlasFrontendIntegrationPlanInput {
+  readonly mode: HomeAssistantAtlasInstallationMode;
+  readonly cardTarget?: HomeAssistantCardTarget;
+  readonly card?: HomeAssistantCardConfiguration;
+  readonly serverResourcePath?: string;
+  readonly resources?: readonly (HomeAssistantLovelaceResource | string)[];
+}
+
+export interface HomeAssistantAtlasFrontendIntegrationPlan {
+  readonly mode: HomeAssistantAtlasInstallationMode;
+  readonly atlasResource: HomeAssistantAtlasFrontendResource;
+  readonly atlasAvailability: HomeAssistantAtlasFrontendResourceAvailability;
+  readonly cardAvailability: HomeAssistantCardDependencyAvailability;
+  readonly requiredResourcePaths: readonly string[];
+  readonly installSteps: readonly string[];
+  readonly ready: boolean;
+}
+
+const defaultAtlasServerResourcePath = "/local/atlas/atlas-homeassistant-panel.js";
+const atlasHacsResourcePath = "/hacsfiles/atlas/atlas-homeassistant-panel.js";
+
+export function createHomeAssistantAtlasFrontendIntegrationPlan(
+  input: HomeAssistantAtlasFrontendIntegrationPlanInput,
+): HomeAssistantAtlasFrontendIntegrationPlan {
+  const resources = input.resources ?? [];
+  const atlasResource = createAtlasFrontendResource(input.mode, input.serverResourcePath);
+  const atlasAvailability = inspectAtlasFrontendResourceAvailability(atlasResource, resources);
+  const cardAvailability = inspectHomeAssistantCardDependencyAvailability(input.card ?? input.cardTarget ?? "entities", resources);
+  const requiredResourcePaths = dedupeResourcePaths([
+    ...atlasResource.resourcePaths,
+    ...cardAvailability.dependency.resourcePaths,
+  ]);
+
+  return {
+    mode: input.mode,
+    atlasResource,
+    atlasAvailability,
+    cardAvailability,
+    requiredResourcePaths,
+    installSteps: [
+      ...atlasResource.installSteps,
+      ...cardAvailability.dependency.installPaths,
+    ],
+    ready: atlasAvailability.status !== "missing" && cardAvailability.status !== "missing",
+  };
+}
+
+export function createAtlasFrontendResource(
+  mode: HomeAssistantAtlasInstallationMode,
+  serverResourcePath = defaultAtlasServerResourcePath,
+): HomeAssistantAtlasFrontendResource {
+  if (mode === "hacs") {
+    return {
+      id: "atlas-hacs",
+      label: "ATLAS HACS frontend integration",
+      required: true,
+      resourcePaths: [atlasHacsResourcePath],
+      installSteps: [
+        "HACS > Custom repositories > ATLAS",
+        "HACS > Frontend > ATLAS",
+        atlasHacsResourcePath,
+      ],
+    };
+  }
+
+  const normalizedPath = normalizeHomeAssistantResourcePath(serverResourcePath) ?? defaultAtlasServerResourcePath;
+  return {
+    id: "atlas-server",
+    label: "ATLAS self-hosted frontend",
+    required: true,
+    resourcePaths: [normalizedPath],
+    installSteps: [
+      "Serve the ATLAS Home Assistant panel from the ATLAS server",
+      normalizedPath,
+    ],
+  };
+}
+
+export function inspectAtlasFrontendResourceAvailability(
+  resource: HomeAssistantAtlasFrontendResource,
+  resources: readonly (HomeAssistantLovelaceResource | string)[],
+): HomeAssistantAtlasFrontendResourceAvailability {
+  if (!resource.required) {
+    return {
+      resource,
+      status: "not-required",
+      matchedResourcePaths: [],
+      missingResourcePaths: [],
+    };
+  }
+
+  const registeredPaths = resources
+    .map(candidate => typeof candidate === "string" ? candidate : candidate.url)
+    .map(normalizeHomeAssistantResourcePath)
+    .filter((candidate): candidate is string => candidate !== undefined);
+  const matchedResourcePaths = resource.resourcePaths.filter(path => registeredPaths.includes(path));
+  const missingResourcePaths = resource.resourcePaths.filter(path => !matchedResourcePaths.includes(path));
+
+  return {
+    resource,
+    status: missingResourcePaths.length === 0 ? "installed" : "missing",
+    matchedResourcePaths,
+    missingResourcePaths,
+  };
+}
+
+function dedupeResourcePaths(paths: readonly string[]): string[] {
+  return [...new Set(paths.map(path => path.trim()).filter(Boolean))];
+}
+
+function normalizeHomeAssistantResourcePath(resourcePath: string): string | undefined {
+  const trimmed = resourcePath.trim();
+  if (!trimmed) return undefined;
+
+  try {
+    return new URL(trimmed, "http://homeassistant.local").pathname;
+  } catch {
+    const [withoutHash] = trimmed.split("#", 1);
+    const [withoutQuery] = withoutHash.split("?", 1);
+    return withoutQuery || undefined;
+  }
+}

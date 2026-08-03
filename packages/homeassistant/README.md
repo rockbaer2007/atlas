@@ -61,6 +61,14 @@ and dependency metadata. The WebSocket client can request `get_states` and
 a validated brightness percentage from 1 through 100 when a host explicitly
 invokes the command.
 
+Frontend integration plans describe the resource that makes ATLAS itself
+available inside Home Assistant. Hosts can choose the current self-hosted server
+mode, which defaults to `/local/atlas/atlas-homeassistant-panel.js`, or the
+planned HACS mode at `/hacsfiles/atlas/atlas-homeassistant-panel.js`. The same
+plan combines ATLAS frontend availability with the selected card dependency, so
+a host can report whether ATLAS, Mushroom or Bubble Card resources are ready or
+which Lovelace resource paths are still missing.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

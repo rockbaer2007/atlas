@@ -17,3 +17,4 @@ export * from "./HomeAssistantServiceCommand";
 export * from "./HomeAssistantWebSocketTransport";
 export * from "./HomeAssistantBrowserWebSocket";
 export * from "./HomeAssistantRuntimeConnection";
+export * from "./HomeAssistantFrontendIntegration";
