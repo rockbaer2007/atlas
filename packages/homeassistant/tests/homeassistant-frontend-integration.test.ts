@@ -135,6 +135,7 @@ describe("Home Assistant frontend integration planning", () => {
       cardName: "Energy Kitchen",
       scriptFilename: "energy-kitchen.js",
       resourcePath: "/hacsfiles/atlas/energy-kitchen.js",
+      editorMode: "simple",
       defaultEntityIds: [
         "binary_sensor.atlas_status",
         "sensor.atlas_temperature",
@@ -144,9 +145,61 @@ describe("Home Assistant frontend integration planning", () => {
         "horizontal-stack",
         "vertical-stack",
       ],
+      supportedFieldTargets: [
+        "entities",
+        "bubble",
+        "mushroom-template",
+      ],
+      fields: [],
       layoutMode: "drag-and-drop",
       replacementHint: "Replace the demo entities with your own Home Assistant entities.",
     });
+  });
+
+  it("plans expert card editor fields with per-field card targets", () => {
+    expect(createHomeAssistantCardEditorPackagePlan({
+      cardName: "Kitchen Panel",
+      editorMode: "expert",
+      fields: [
+        {
+          id: " main light ",
+          target: "bubble",
+          entityId: " light.kitchen ",
+          column: 1.8,
+          row: -1,
+          width: 2.2,
+          height: 0,
+        },
+        {
+          id: "",
+          target: "mushroom-template",
+          entityId: "sensor.kitchen_temperature",
+          column: 3,
+          row: 1,
+          width: 1,
+          height: 1,
+        },
+      ],
+    }).fields).toEqual([
+      {
+        id: "main light",
+        target: "bubble",
+        entityId: "light.kitchen",
+        column: 1,
+        row: 0,
+        width: 2,
+        height: 1,
+      },
+      {
+        id: "mushroom-template-sensor.kitchen_temperature",
+        target: "mushroom-template",
+        entityId: "sensor.kitchen_temperature",
+        column: 3,
+        row: 1,
+        width: 1,
+        height: 1,
+      },
+    ]);
   });
 
   it("normalizes user-defined card editor script filenames", () => {

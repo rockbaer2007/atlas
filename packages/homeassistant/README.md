@@ -81,6 +81,11 @@ user-defined filenames such as `Energy Kitchen` to `energy-kitchen.js`, and
 uses demo entities (`binary_sensor.atlas_status`, `sensor.atlas_temperature`)
 with a clear replacement hint for Home Assistant users.
 
+The card editor plan separates a simple mode from an expert mode. Simple mode
+is intended for fast button stacks. Expert mode describes a free editor surface
+where every positioned field can choose its own card target: built-in Entities,
+Bubble Card or Mushroom template.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.
