@@ -368,7 +368,7 @@
 
       .expert-editor-controls {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(96px, 1fr));
         gap: 8px;
       }
 
@@ -407,9 +407,14 @@
         grid-column: 1 / -1;
       }
 
+      .expert-editor-controls .span-2 {
+        grid-column: span 2;
+      }
+
       .expert-editor-controls .field-pair {
         display: grid;
         gap: 6px;
+        align-content: start;
       }
 
       .expert-editor-controls .field-pair[hidden] {
@@ -438,6 +443,14 @@
       }
 
       @media (max-width: 720px) {
+        .expert-editor-controls {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .expert-editor-controls .span-2 {
+          grid-column: 1 / -1;
+        }
+
         .expert-title-row {
           grid-template-columns: 1fr;
         }
@@ -1114,13 +1127,19 @@
               Drag a card from the left into this editor surface.
             </div>
             <div class="expert-editor-controls">
-              <label class="wide" for="expert-card-name">Expert card name</label>
-              <input class="wide" id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card">
-              <label for="expert-template">Template</label>
-              <select id="expert-template"></select>
-              <label for="expert-target">Card family</label>
-              <select id="expert-target"></select>
-              <div id="expert-bubble-type-control" class="field-pair wide" hidden>
+              <div class="field-pair span-2">
+                <label for="expert-card-name">Expert card name</label>
+                <input id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card">
+              </div>
+              <div class="field-pair">
+                <label for="expert-template">Template</label>
+                <select id="expert-template"></select>
+              </div>
+              <div class="field-pair">
+                <label for="expert-target">Card family</label>
+                <select id="expert-target"></select>
+              </div>
+              <div id="expert-bubble-type-control" class="field-pair span-2" hidden>
                 <label for="expert-bubble-button-type">Bubble button type</label>
                 <select id="expert-bubble-button-type"></select>
               </div>
@@ -1130,16 +1149,26 @@
                 <button id="apply-expert-title" type="button">Apply title</button>
                 <button id="use-entity-name-as-title" type="button">Use entity name</button>
               </div>
-              <label class="wide" for="expert-entity">Entity</label>
-              <input class="wide" id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
-              <label for="expert-column">Column</label>
-              <input id="expert-column" type="number" min="0" max="11" value="0">
-              <label for="expert-row">Row</label>
-              <input id="expert-row" type="number" min="0" max="11" value="0">
-              <label for="expert-width">Width</label>
-              <input id="expert-width" type="number" min="1" max="12" value="3">
-              <label for="expert-height">Height</label>
-              <input id="expert-height" type="number" min="1" max="12" value="2">
+              <div class="field-pair span-2">
+                <label for="expert-entity">Entity</label>
+                <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
+              </div>
+              <div class="field-pair">
+                <label for="expert-column">Column</label>
+                <input id="expert-column" type="number" min="0" max="11" value="0">
+              </div>
+              <div class="field-pair">
+                <label for="expert-row">Row</label>
+                <input id="expert-row" type="number" min="0" max="11" value="0">
+              </div>
+              <div class="field-pair">
+                <label for="expert-width">Width</label>
+                <input id="expert-width" type="number" min="1" max="12" value="3">
+              </div>
+              <div class="field-pair">
+                <label for="expert-height">Height</label>
+                <input id="expert-height" type="number" min="1" max="12" value="2">
+              </div>
             </div>
             <div class="connection-actions expert-editor-actions">
               <button id="add-expert-field" type="button">Add template</button>
