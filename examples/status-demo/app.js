@@ -817,7 +817,7 @@ function renderHaCardImportDecision(text) {
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
   const visibleCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
-    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id) || card.scanned === true)
+    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
     : expertPaletteCards;
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;

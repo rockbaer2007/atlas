@@ -121,9 +121,10 @@ Core templates include Entity, Entities, Button, Grid, Sensor, Vertical stack,
 Horizontal stack, Thermostat, Link and Webpage. Webpage exports use the Home
 Assistant `iframe` card type.
 When Home Assistant connects, ATLAS requests the same resource list
-automatically and keeps registered `/hacsfiles/` entries visible next to saved
-favorites. Scanned-only HACS and HA resources can also be marked as favorites,
-even before ATLAS has a draggable card mapping for them.
+automatically. Saved favorites hide every non-selected card, including scanned
+`/hacsfiles/` entries, until Show all cards or Reset favorites is used.
+Scanned-only HACS and HA resources can also be marked as favorites, even before
+ATLAS has a draggable card mapping for them.
 Helper resources such as card tools, dashboards, strategies, navigation helpers,
 icon packs and known non-card resources are filtered out of the palette scan.
 The palette itself is scrollable and uses compact two-column template rows:
