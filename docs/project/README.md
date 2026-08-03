@@ -8,7 +8,6 @@ This section contains the long-term project documentation for ATLAS.
     overviews.
 -   **configuration/** -- Configuration philosophy and lifecycle.
 -   **governance/** -- Framework reviews and governance decisions.
--   **integrations/** -- Product-facing integration guides.
 -   **schemas/** -- Formal specifications and schemas.
 -   **specifications/** -- Core project specifications and design rules.
 -   **BUILD_ARTIFACTS.md** -- Build output and generated artifact policy.
@@ -18,7 +17,3 @@ This section contains the long-term project documentation for ATLAS.
 
 These documents describe stable concepts rather than sprint-specific
 implementation details.
-
-## Integrations
-
--   [Home Assistant](integrations/homeassistant.md)

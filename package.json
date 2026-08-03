@@ -9,15 +9,11 @@
     "build": "pnpm -r build",
     "check": "pnpm -r check",
     "test": "pnpm -r test",
-    "clean": "pnpm -r exec rimraf dist",
-    "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "clean": "pnpm -r exec rimraf dist"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.9.2",
-    "vitepress": "^1.6.4",
     "vitest": "^3.2.4"
   }
 }
