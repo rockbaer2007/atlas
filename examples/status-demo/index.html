@@ -25,6 +25,18 @@
         width: min(100%, 1180px);
       }
 
+      .app-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      .app-header p {
+        margin-bottom: 0;
+      }
+
       h1 {
         margin: 0 0 8px;
         font-size: 28px;
@@ -35,6 +47,39 @@
       p {
         margin: 0 0 20px;
         color: #536079;
+      }
+
+      .language-toggle {
+        display: inline-flex;
+        flex: 0 0 auto;
+        gap: 4px;
+        padding: 3px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .language-toggle button {
+        min-width: 44px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: #536079;
+        padding: 6px 8px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .language-toggle button[aria-pressed="true"] {
+        background: #0f766e;
+        color: #ffffff;
+      }
+
+      .language-toggle button:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 2px;
       }
 
       .status-controls {
@@ -975,6 +1020,10 @@
       }
 
       @media (max-width: 720px) {
+        .app-header {
+          display: grid;
+        }
+
         .expert-editor-workbench {
           grid-template-columns: 1fr;
         }
@@ -993,26 +1042,34 @@
   </head>
   <body>
     <main>
-      <h1>ATLAS Home Assistant Card Editor</h1>
-      <p>Build Simple or Expert Home Assistant cards from live or local entities.</p>
+      <div class="app-header">
+        <div>
+          <h1 data-i18n="page.title">ATLAS Home Assistant Card Editor</h1>
+          <p data-i18n="page.subtitle">Build Simple or Expert Home Assistant cards from live or local entities.</p>
+        </div>
+        <div class="language-toggle" role="group" aria-label="Language">
+          <button type="button" data-language="de" aria-pressed="false">DE</button>
+          <button type="button" data-language="en" aria-pressed="true">EN</button>
+        </div>
+      </div>
       <div class="connection-config">
         <div class="field-grid two-column">
           <div class="field-pair">
-            <label for="home-assistant-url">Home Assistant URL</label>
+            <label for="home-assistant-url" data-i18n="label.haUrl">Home Assistant URL</label>
             <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
           </div>
           <div class="field-pair">
-            <label for="home-assistant-token">Access token</label>
+            <label for="home-assistant-token" data-i18n="label.accessToken">Access token</label>
             <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
           </div>
         </div>
         <label class="remember-secret" for="remember-home-assistant-token">
           <input id="remember-home-assistant-token" type="checkbox">
-          Remember token locally
+          <span data-i18n="label.rememberToken">Remember token locally</span>
         </label>
         <div class="connection-actions">
-          <button id="connect-home-assistant" type="button">Connect</button>
-          <button id="disconnect-home-assistant" type="button" disabled>Disconnect</button>
+          <button id="connect-home-assistant" type="button" data-i18n="button.connect">Connect</button>
+          <button id="disconnect-home-assistant" type="button" disabled data-i18n="button.disconnect">Disconnect</button>
         </div>
         <output id="connection-readiness" aria-live="polite"></output>
         <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
@@ -1020,32 +1077,32 @@
       <div class="connection-config">
         <div class="field-grid three-column">
           <div id="panel-group-control" class="field-pair">
-            <label for="home-assistant-group">Panel group</label>
+            <label for="home-assistant-group" data-i18n="label.panelGroup">Panel group</label>
             <select id="home-assistant-group">
-              <option value="overview">Overview</option>
-              <option value="energy">Energy</option>
-              <option value="safety">Safety</option>
-              <option value="custom">Custom</option>
+              <option value="overview" data-i18n="group.overview">Overview</option>
+              <option value="energy" data-i18n="group.energy">Energy</option>
+              <option value="safety" data-i18n="group.safety">Safety</option>
+              <option value="custom" data-i18n="group.custom">Custom</option>
             </select>
           </div>
           <div id="group-name-control" class="field-pair">
-            <label for="home-assistant-group-name">Group name</label>
+            <label for="home-assistant-group-name" data-i18n="label.groupName">Group name</label>
             <input id="home-assistant-group-name" type="text" autocomplete="off">
           </div>
           <div id="card-target-control" class="field-pair">
-            <label for="ha-card-target">Card target</label>
+            <label for="ha-card-target" data-i18n="label.cardTarget">Card target</label>
             <select id="ha-card-target"></select>
           </div>
           <div id="card-layout-control" class="field-pair">
-            <label for="ha-card-layout">Card layout</label>
+            <label for="ha-card-layout" data-i18n="label.cardLayout">Card layout</label>
             <select id="ha-card-layout">
-              <option value="single">Simple</option>
-              <option value="horizontal-stack">Horizontal stack</option>
-              <option value="vertical-stack">Vertical stack</option>
+              <option value="single" data-i18n="layout.single">Simple</option>
+              <option value="horizontal-stack" data-i18n="layout.horizontal">Horizontal stack</option>
+              <option value="vertical-stack" data-i18n="layout.vertical">Vertical stack</option>
             </select>
           </div>
           <div class="field-pair">
-            <label for="ha-card-format">Card format</label>
+            <label for="ha-card-format" data-i18n="label.cardFormat">Card format</label>
             <select id="ha-card-format">
               <option value="json">JSON</option>
               <option value="yaml">YAML</option>
@@ -1054,134 +1111,134 @@
         </div>
         <output id="ha-card-dependency" aria-live="polite"></output>
         <div class="connection-actions">
-          <button id="save-home-assistant-group" type="button">Save group</button>
-          <button id="delete-home-assistant-group" type="button">Delete group</button>
-          <button id="duplicate-home-assistant-group" type="button">Duplicate group</button>
-          <button id="export-home-assistant-config" type="button">Export</button>
-          <button id="export-ha-card-config" type="button">Export HA card</button>
-          <button id="export-ha-card-package" type="button">Export card package</button>
-          <button id="copy-ha-card-config" type="button">Copy HA card</button>
-          <button id="copy-ha-card-resources" type="button" disabled>Copy resources</button>
-          <button id="check-ha-card-resources" type="button" disabled>Check resources</button>
-          <label class="import-button" for="import-home-assistant-config">Import</label>
+          <button id="save-home-assistant-group" type="button" data-i18n="button.saveGroup">Save group</button>
+          <button id="delete-home-assistant-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
+          <button id="duplicate-home-assistant-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
+          <button id="export-home-assistant-config" type="button" data-i18n="button.export">Export</button>
+          <button id="export-ha-card-config" type="button" data-i18n="button.exportHaCard">Export HA card</button>
+          <button id="export-ha-card-package" type="button" data-i18n="button.exportCardPackage">Export card package</button>
+          <button id="copy-ha-card-config" type="button" data-i18n="button.copyHaCard">Copy HA card</button>
+          <button id="copy-ha-card-resources" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
+          <button id="check-ha-card-resources" type="button" disabled data-i18n="button.checkResources">Check resources</button>
+          <label class="import-button" for="import-home-assistant-config" data-i18n="button.import">Import</label>
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
-          <label class="import-button" for="import-ha-card-config">Import HA card</label>
+          <label class="import-button" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
           <input id="import-ha-card-config" type="file" accept="application/json,.json,.yaml,.yml" hidden>
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
         <div class="field-grid two-column">
           <div class="field-pair">
-            <label for="home-assistant-entity">Entity IDs</label>
+            <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
             <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
           </div>
           <div class="field-pair">
-            <label for="home-assistant-entity-domain">Entity type</label>
+            <label for="home-assistant-entity-domain" data-i18n="label.entityType">Entity type</label>
             <select id="home-assistant-entity-domain"></select>
           </div>
         </div>
-        <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts"></div>
+        <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts" data-i18n-aria-label="aria.entityTypeShortcuts"></div>
         <div class="field-grid two-column">
           <div class="field-pair">
-            <label for="home-assistant-entity-search">Entity search</label>
+            <label for="home-assistant-entity-search" data-i18n="label.entitySearch">Entity search</label>
             <div class="entity-search-control">
-              <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID">
-              <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" disabled>&times;</button>
+              <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID" data-i18n-placeholder="placeholder.entitySearch">
+              <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" data-i18n-aria-label="aria.clearEntitySearch" data-i18n-title="aria.clearEntitySearch" disabled>&times;</button>
             </div>
           </div>
           <div class="field-pair">
-            <label for="home-assistant-entity-picker">Entity picker</label>
+            <label for="home-assistant-entity-picker" data-i18n="label.entityPicker">Entity picker</label>
             <select id="home-assistant-entity-picker"></select>
           </div>
         </div>
         <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
         <div class="connection-actions">
-          <button id="add-home-assistant-entity" type="button">Add entity</button>
-          <button id="refresh-home-assistant-entities" type="button">Refresh entities</button>
+          <button id="add-home-assistant-entity" type="button" data-i18n="button.addEntity">Add entity</button>
+          <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
         </div>
         <output id="selected-entity" aria-live="polite"></output>
-        <div class="editor-mode-toggle" role="group" aria-label="Card editor mode">
+        <div class="editor-mode-toggle" role="group" aria-label="Card editor mode" data-i18n-aria-label="aria.cardEditorMode">
           <button type="button" data-editor-mode="simple" aria-pressed="true">Simple</button>
           <button type="button" data-editor-mode="expert" aria-pressed="false">Expert</button>
         </div>
         <div id="simple-card-section" class="ha-card-preview">
-          <label for="ha-card-preview">HA card code</label>
+          <label for="ha-card-preview" data-i18n="label.haCardCode">HA card code</label>
           <pre id="ha-card-preview" aria-live="polite"></pre>
         </div>
         <div id="expert-editor-section" hidden>
-          <h2 class="entity-section-title">Expert editor preview</h2>
+          <h2 class="entity-section-title" data-i18n="heading.expertEditor">Expert editor preview</h2>
           <div class="expert-editor-workbench">
-          <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards">
+          <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards" data-i18n-aria-label="aria.availableCards">
             <div class="expert-palette-toolbar">
-              <strong>Card list</strong>
+              <strong data-i18n="heading.cardList">Card list</strong>
               <div class="expert-palette-actions">
-                <button id="save-expert-palette-favorites" type="button">Save favorites</button>
-                <button id="show-all-expert-palette-cards" type="button">Show all cards</button>
-                <button id="scan-expert-palette-cards" type="button">Scan HA cards</button>
-                <button id="reset-expert-template-sizing" type="button">Reset sizes</button>
-                <button id="reset-expert-palette-favorites" type="button">Reset favorites</button>
+                <button id="save-expert-palette-favorites" type="button" data-i18n="button.saveFavorites">Save favorites</button>
+                <button id="show-all-expert-palette-cards" type="button" data-i18n="button.showAllCards">Show all cards</button>
+                <button id="scan-expert-palette-cards" type="button" data-i18n="button.scanHaCards">Scan HA cards</button>
+                <button id="reset-expert-template-sizing" type="button" data-i18n="button.resetSizes">Reset sizes</button>
+                <button id="reset-expert-palette-favorites" type="button" data-i18n="button.resetFavorites">Reset favorites</button>
               </div>
             </div>
-            <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
+            <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates" data-i18n-aria-label="aria.expertTemplates"></div>
           </aside>
-          <section class="expert-editor-surface" aria-label="Expert editor surface">
+          <section class="expert-editor-surface" aria-label="Expert editor surface" data-i18n-aria-label="aria.expertSurface">
             <div id="expert-editor-dropzone" class="expert-editor-dropzone">
               Drag a card from the left into this editor surface.
             </div>
             <div class="expert-editor-controls">
               <div class="field-pair span-2">
-                <label for="expert-card-name">Expert card name</label>
-                <input id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card">
+                <label for="expert-card-name" data-i18n="label.expertCardName">Expert card name</label>
+                <input id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card" data-i18n-placeholder="placeholder.expertCardName">
               </div>
               <div class="field-pair">
-                <label for="expert-template">Template</label>
+                <label for="expert-template" data-i18n="label.template">Template</label>
                 <select id="expert-template"></select>
               </div>
               <div class="field-pair">
-                <label for="expert-target">Card family</label>
+                <label for="expert-target" data-i18n="label.cardFamily">Card family</label>
                 <select id="expert-target"></select>
               </div>
               <div id="expert-bubble-type-control" class="field-pair span-2" hidden>
-                <label for="expert-bubble-button-type">Bubble button type</label>
+                <label for="expert-bubble-button-type" data-i18n="label.bubbleButtonType">Bubble button type</label>
                 <select id="expert-bubble-button-type"></select>
               </div>
-              <label class="wide" for="expert-title">Title</label>
+              <label class="wide" for="expert-title" data-i18n="label.title">Title</label>
               <div class="expert-title-row wide">
-                <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty">
-                <button id="apply-expert-title" type="button">Apply title</button>
-                <button id="use-entity-name-as-title" type="button">Use entity name</button>
+                <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty" data-i18n-placeholder="placeholder.expertTitle">
+                <button id="apply-expert-title" type="button" data-i18n="button.applyTitle">Apply title</button>
+                <button id="use-entity-name-as-title" type="button" data-i18n="button.useEntityName">Use entity name</button>
               </div>
               <div class="field-pair span-2">
-                <label for="expert-entity">Entity</label>
-                <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
+                <label for="expert-entity" data-i18n="label.entity">Entity</label>
+                <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty" data-i18n-placeholder="placeholder.expertEntity">
               </div>
               <div class="field-pair">
-                <label for="expert-column">Column</label>
+                <label for="expert-column" data-i18n="label.column">Column</label>
                 <input id="expert-column" type="number" min="0" max="11" value="0">
               </div>
               <div class="field-pair">
-                <label for="expert-row">Row</label>
+                <label for="expert-row" data-i18n="label.row">Row</label>
                 <input id="expert-row" type="number" min="0" max="11" value="0">
               </div>
               <div class="field-pair">
-                <label for="expert-width">Width</label>
+                <label for="expert-width" data-i18n="label.width">Width</label>
                 <input id="expert-width" type="number" min="1" max="12" value="3">
               </div>
               <div class="field-pair">
-                <label for="expert-height">Height</label>
+                <label for="expert-height" data-i18n="label.height">Height</label>
                 <input id="expert-height" type="number" min="1" max="12" value="2">
               </div>
             </div>
             <div class="connection-actions expert-editor-actions">
-              <button id="add-expert-field" type="button">Add template</button>
-              <button id="edit-expert-field" type="button">Edit selected</button>
-              <button id="arrange-expert-fields" type="button">Auto arrange</button>
-              <button id="reset-expert-surface-size" type="button">Reset size</button>
-              <button id="clear-expert-fields" type="button">Clear preview</button>
+              <button id="add-expert-field" type="button" data-i18n="button.addTemplate">Add template</button>
+              <button id="edit-expert-field" type="button" data-i18n="button.editSelected">Edit selected</button>
+              <button id="arrange-expert-fields" type="button" data-i18n="button.autoArrange">Auto arrange</button>
+              <button id="reset-expert-surface-size" type="button" data-i18n="button.resetSize">Reset size</button>
+              <button id="clear-expert-fields" type="button" data-i18n="button.clearPreview">Clear preview</button>
             </div>
             <output id="expert-editor-summary" aria-live="polite"></output>
             <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
             <div class="ha-card-preview">
-              <label for="expert-editor-preview">Expert HA card code</label>
+              <label for="expert-editor-preview" data-i18n="label.expertHaCardCode">Expert HA card code</label>
               <pre id="expert-editor-preview" aria-live="polite"></pre>
             </div>
           </section>
@@ -1189,18 +1246,18 @@
         </div>
       </div>
       <details id="diagnostics-panel" class="diagnostics-panel">
-        <summary>Diagnostics</summary>
+        <summary data-i18n="heading.diagnostics">Diagnostics</summary>
         <div class="diagnostics-content">
-          <div class="status-controls" role="group" aria-label="Entity state">
-            <button type="button" data-entity-state="off" aria-pressed="false">Off</button>
-            <button type="button" data-entity-state="on" aria-pressed="true">On</button>
-            <button type="button" data-entity-state="unavailable" aria-pressed="false">Unavailable</button>
+          <div class="status-controls" role="group" aria-label="Entity state" data-i18n-aria-label="aria.entityState">
+            <button type="button" data-entity-state="off" aria-pressed="false" data-i18n="button.off">Off</button>
+            <button type="button" data-entity-state="on" aria-pressed="true" data-i18n="button.on">On</button>
+            <button type="button" data-entity-state="unavailable" aria-pressed="false" data-i18n="button.unavailable">Unavailable</button>
           </div>
-          <h2 class="entity-section-title">ATLAS Status Preview</h2>
+          <h2 class="entity-section-title" data-i18n="heading.statusPreview">ATLAS Status Preview</h2>
           <div id="atlas-status-root" aria-live="polite"></div>
         </div>
       </details>
-      <h2 class="entity-section-title">Selected entities</h2>
+      <h2 class="entity-section-title" data-i18n="heading.selectedEntities">Selected entities</h2>
       <output id="stack-selection-summary" aria-live="polite"></output>
       <output id="group-summary" aria-live="polite"></output>
       <output id="group-issues" aria-live="polite"></output>

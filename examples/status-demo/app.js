@@ -44,6 +44,7 @@ import {
 const statusRoot = document.querySelector("#atlas-status-root");
 const statusMessage = document.querySelector("#status-message");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
+const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
@@ -121,10 +122,432 @@ const stackSelectionSummary = document.querySelector("#stack-selection-summary")
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
-const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
+let currentLanguage = "en";
+const translations = {
+  en: {
+    "page.title": "ATLAS Home Assistant Card Editor",
+    "page.subtitle": "Build Simple or Expert Home Assistant cards from live or local entities.",
+    "label.haUrl": "Home Assistant URL",
+    "label.accessToken": "Access token",
+    "label.rememberToken": "Remember token locally",
+    "label.panelGroup": "Panel group",
+    "label.groupName": "Group name",
+    "label.cardTarget": "Card target",
+    "label.cardLayout": "Card layout",
+    "label.cardFormat": "Card format",
+    "label.entityIds": "Entity IDs",
+    "label.entityType": "Entity type",
+    "label.entitySearch": "Entity search",
+    "label.entityPicker": "Entity picker",
+    "label.haCardCode": "HA card code",
+    "label.expertHaCardCode": "Expert HA card code",
+    "label.expertCardName": "Expert card name",
+    "label.template": "Template",
+    "label.cardFamily": "Card family",
+    "label.bubbleButtonType": "Bubble button type",
+    "label.title": "Title",
+    "label.entity": "Entity",
+    "label.column": "Column",
+    "label.row": "Row",
+    "label.width": "Width",
+    "label.height": "Height",
+    "button.connect": "Connect",
+    "button.disconnect": "Disconnect",
+    "button.saveGroup": "Save group",
+    "button.deleteGroup": "Delete group",
+    "button.duplicateGroup": "Duplicate group",
+    "button.export": "Export",
+    "button.exportHaCard": "Export HA card",
+    "button.exportExpertHaCard": "Export Expert HA card",
+    "button.exportCardPackage": "Export card package",
+    "button.copyHaCard": "Copy HA card",
+    "button.copyExpertHaCard": "Copy Expert HA card",
+    "button.copyResources": "Copy resources",
+    "button.copyExpertResources": "Copy Expert resources",
+    "button.checkResources": "Check resources",
+    "button.import": "Import",
+    "button.importHaCard": "Import HA card",
+    "button.addEntity": "Add entity",
+    "button.refreshEntities": "Refresh entities",
+    "button.saveFavorites": "Save favorites",
+    "button.showAllCards": "Show all cards",
+    "button.showFavorites": "Show favorites",
+    "button.scanHaCards": "Scan HA cards",
+    "button.resetSizes": "Reset sizes",
+    "button.resetFavorites": "Reset favorites",
+    "button.addTemplate": "Add template",
+    "button.editSelected": "Edit selected",
+    "button.stopEditing": "Stop editing",
+    "button.autoArrange": "Auto arrange",
+    "button.resetSize": "Reset size",
+    "button.clearPreview": "Clear preview",
+    "button.applyTitle": "Apply title",
+    "button.useEntityName": "Use entity name",
+    "button.off": "Off",
+    "button.on": "On",
+    "button.unavailable": "Unavailable",
+    "heading.expertEditor": "Expert editor preview",
+    "heading.cardList": "Card list",
+    "heading.diagnostics": "Diagnostics",
+    "heading.statusPreview": "ATLAS Status Preview",
+    "heading.selectedEntities": "Selected entities",
+    "group.overview": "Overview",
+    "group.energy": "Energy",
+    "group.safety": "Safety",
+    "group.custom": "Custom",
+    "layout.single": "Simple",
+    "layout.horizontal": "Horizontal stack",
+    "layout.vertical": "Vertical stack",
+    "placeholder.entitySearch": "Filter by name or entity ID",
+    "placeholder.expertCardName": "ATLAS Expert card",
+    "placeholder.expertTitle": "Use template title when empty",
+    "placeholder.expertEntity": "Use current entity when empty",
+    "aria.entityTypeShortcuts": "Entity type shortcuts",
+    "aria.clearEntitySearch": "Clear entity search",
+    "aria.cardEditorMode": "Card editor mode",
+    "aria.availableCards": "Available Home Assistant cards",
+    "aria.expertTemplates": "Expert editor templates",
+    "aria.expertSurface": "Expert editor surface",
+    "aria.entityState": "Entity state",
+    "message.emptySelection": "Select at least one entity.",
+    "message.noExpertFields": "No expert fields added.",
+    "message.dragCard": "Drag a card from the left into this editor surface.",
+    "message.addTemplatePreview": "Add a template field to preview the Expert editor output.",
+    "message.addTemplateBeforeExport": "Add a template field before exporting an Expert HA card.",
+    "text.allEntityTypes": "All entity types",
+    "text.all": "All",
+    "text.favorite": "Favorite",
+    "text.scannedOnly": "Scanned only",
+    "text.builtIn": "Built-in",
+    "text.resourceUnchecked": "Resource unchecked",
+    "text.resourceInstalled": "Resource installed",
+    "text.resourceMissing": "Resource missing",
+    "text.demoEntity": "demo entity",
+    "text.col": "col",
+    "text.row": "row",
+    "text.full": "full",
+    "text.auto": "auto",
+    "text.categoryCore": "Core",
+    "text.categoryCommunity": "Community",
+    "text.registeredNotMapped": "{category} registered, not mapped yet",
+    "text.paletteDetail": "{layout}, {size}, {target}",
+    "text.scannedCardUnavailable": "{label} is registered in Home Assistant, but ATLAS does not map this custom card yet.",
+    "text.paletteCardSelected": "{label} selected from the card list.",
+    "text.paletteSelectionChanged": "Favorite selection changed. Use Save favorites to apply it.",
+    "text.fullCardListVisible": "Full Core and Community card list is visible for favorite selection.",
+    "text.savedFavoritesVisible": "Saved favorites are visible.",
+    "text.favoritesSaved": "{count} favorite cards saved.",
+    "text.allCardsRemainVisible": "Favorite selection saved. All cards remain visible.",
+    "text.allCardsVisibleAgain": "All Core and Community cards are visible again.",
+    "text.templateSizesReset": "Template sizes reset to their defaults.",
+    "text.removeField": "Remove {field}",
+    "text.fieldRemoved": "{field} removed from the Expert editor preview.",
+    "text.enterTitle": "Enter a title before applying it.",
+    "text.titlePrepared": "{title} prepared for the next Expert field.",
+    "text.titleApplied": "{title} set as Expert field title.",
+    "text.targetUpdated": "{field} card family updated to {target}.",
+    "text.bubbleTypeUpdated": "{field} Bubble button type set to {type}.",
+    "text.entityPrepared": "{entityId} prepared for the next Expert field.",
+    "text.entityAssigned": "{entityId} assigned to {title}.",
+    "text.fieldSelected": "{field} selected on the Expert editor surface.",
+    "text.selectFieldBeforeEditing": "Select an Expert field before editing.",
+    "text.editHandlesEnabled": "{field} editing handles enabled.",
+    "text.editHandlesHidden": "{field} editing handles hidden.",
+    "text.overlappingField": "overlapping another field",
+    "text.expertFieldsSummary": "Expert fields: {count} ({populated} populated{empty})",
+    "text.emptyFieldsSummary": ", {count} empty",
+    "text.rowsSummary": "Rows: {count}",
+    "text.surfaceSummary": "Surface: {columns}x{rows}",
+    "text.overlapsSummary": "Overlaps: {count}",
+    "text.targetsSummary": "Targets: {targets}",
+    "text.layoutsSummary": "Layouts: {layouts}",
+    "text.expertFieldsZero": "Expert fields: 0.",
+    "text.fieldAdded": "{field} added to the Expert editor preview.",
+    "text.fieldPlaced": "{field} placed on the Expert editor surface.",
+    "palette.core-entity": "Entity",
+    "palette.core-entities": "Entities",
+    "palette.core-button": "Button",
+    "palette.core-grid": "Grid",
+    "palette.core-sensor": "Sensor",
+    "palette.core-horizontal-stack": "Horizontal stack",
+    "palette.core-vertical-stack": "Vertical stack",
+    "palette.core-thermostat": "Thermostat",
+    "palette.core-link": "Link",
+    "palette.core-webpage": "Webpage",
+    "palette.community-mushroom-template": "Mushroom template",
+    "palette.community-bubble-state": "Bubble state",
+    "palette.community-bubble-switch": "Bubble switch",
+    "palette.community-bubble-slider": "Bubble slider",
+    "palette.community-bubble-name": "Bubble name",
+    "target.entities": "Entities",
+    "target.entity": "Entity",
+    "target.button": "Button",
+    "target.sensor": "Sensor",
+    "target.thermostat": "Thermostat",
+    "target.link": "Link",
+    "target.webpage": "Webpage",
+    "target.mushroom-template": "Mushroom template",
+    "target.bubble": "Bubble",
+    "template.entity-list": "Entity list",
+    "template.entity-card": "Entity",
+    "template.button-card": "Button",
+    "template.grid": "Grid",
+    "template.sensor-card": "Sensor",
+    "template.horizontal-stack": "Horizontal stack",
+    "template.vertical-stack": "Vertical stack",
+    "template.thermostat-card": "Thermostat",
+    "template.link-card": "Link",
+    "template.webpage-card": "Webpage",
+    "template.state-button": "State button",
+    "template.switch-button": "Switch button",
+  },
+  de: {
+    "page.title": "ATLAS Home Assistant Card Editor",
+    "page.subtitle": "Erstelle Simple- oder Expert-Home-Assistant-Cards aus Live- oder lokalen Entitaeten.",
+    "label.haUrl": "Home Assistant URL",
+    "label.accessToken": "Access Token",
+    "label.rememberToken": "Token lokal merken",
+    "label.panelGroup": "Panel-Gruppe",
+    "label.groupName": "Gruppenname",
+    "label.cardTarget": "Card-Ziel",
+    "label.cardLayout": "Card-Layout",
+    "label.cardFormat": "Card-Format",
+    "label.entityIds": "Entitaets-IDs",
+    "label.entityType": "Entitaetstyp",
+    "label.entitySearch": "Entitaet suchen",
+    "label.entityPicker": "Entitaetsauswahl",
+    "label.haCardCode": "HA-Card-Code",
+    "label.expertHaCardCode": "Expert-HA-Card-Code",
+    "label.expertCardName": "Expert-Card-Name",
+    "label.template": "Template",
+    "label.cardFamily": "Card-Familie",
+    "label.bubbleButtonType": "Bubble-Button-Typ",
+    "label.title": "Titel",
+    "label.entity": "Entitaet",
+    "label.column": "Spalte",
+    "label.row": "Zeile",
+    "label.width": "Breite",
+    "label.height": "Hoehe",
+    "button.connect": "Verbinden",
+    "button.disconnect": "Trennen",
+    "button.saveGroup": "Gruppe speichern",
+    "button.deleteGroup": "Gruppe loeschen",
+    "button.duplicateGroup": "Gruppe duplizieren",
+    "button.export": "Export",
+    "button.exportHaCard": "HA-Card exportieren",
+    "button.exportExpertHaCard": "Expert-HA-Card exportieren",
+    "button.exportCardPackage": "Card-Paket exportieren",
+    "button.copyHaCard": "HA-Card kopieren",
+    "button.copyExpertHaCard": "Expert-HA-Card kopieren",
+    "button.copyResources": "Ressourcen kopieren",
+    "button.copyExpertResources": "Expert-Ressourcen kopieren",
+    "button.checkResources": "Ressourcen pruefen",
+    "button.import": "Import",
+    "button.importHaCard": "HA-Card importieren",
+    "button.addEntity": "Entitaet hinzufuegen",
+    "button.refreshEntities": "Entitaeten aktualisieren",
+    "button.saveFavorites": "Favoriten speichern",
+    "button.showAllCards": "Alle Cards anzeigen",
+    "button.showFavorites": "Favoriten anzeigen",
+    "button.scanHaCards": "HA-Cards scannen",
+    "button.resetSizes": "Groessen zuruecksetzen",
+    "button.resetFavorites": "Favoriten zuruecksetzen",
+    "button.addTemplate": "Template hinzufuegen",
+    "button.editSelected": "Auswahl bearbeiten",
+    "button.stopEditing": "Bearbeitung beenden",
+    "button.autoArrange": "Automatisch anordnen",
+    "button.resetSize": "Groesse zuruecksetzen",
+    "button.clearPreview": "Vorschau leeren",
+    "button.applyTitle": "Titel uebernehmen",
+    "button.useEntityName": "Entitaetsname nutzen",
+    "button.off": "Aus",
+    "button.on": "Ein",
+    "button.unavailable": "Nicht verfuegbar",
+    "heading.expertEditor": "Expert-Editor-Vorschau",
+    "heading.cardList": "Card-Liste",
+    "heading.diagnostics": "Diagnose",
+    "heading.statusPreview": "ATLAS Status Vorschau",
+    "heading.selectedEntities": "Ausgewaehlte Entitaeten",
+    "group.overview": "Uebersicht",
+    "group.energy": "Energie",
+    "group.safety": "Sicherheit",
+    "group.custom": "Benutzerdefiniert",
+    "layout.single": "Einfach",
+    "layout.horizontal": "Horizontaler Stapel",
+    "layout.vertical": "Vertikaler Stapel",
+    "placeholder.entitySearch": "Nach Name oder Entitaets-ID filtern",
+    "placeholder.expertCardName": "ATLAS Expert Card",
+    "placeholder.expertTitle": "Template-Titel nutzen, wenn leer",
+    "placeholder.expertEntity": "Aktuelle Entitaet nutzen, wenn leer",
+    "aria.entityTypeShortcuts": "Entitaetstyp-Schnellauswahl",
+    "aria.clearEntitySearch": "Entitaetssuche loeschen",
+    "aria.cardEditorMode": "Card-Editor-Modus",
+    "aria.availableCards": "Verfuegbare Home Assistant Cards",
+    "aria.expertTemplates": "Expert-Editor-Templates",
+    "aria.expertSurface": "Expert-Editor-Flaeche",
+    "aria.entityState": "Entitaetsstatus",
+    "message.emptySelection": "Waehle mindestens eine Entitaet aus.",
+    "message.noExpertFields": "Keine Expert-Felder hinzugefuegt.",
+    "message.dragCard": "Ziehe eine Card von links in diese Editor-Flaeche.",
+    "message.addTemplatePreview": "Fuege ein Template-Feld hinzu, um die Expert-Ausgabe zu sehen.",
+    "message.addTemplateBeforeExport": "Fuege vor dem Export einer Expert-HA-Card ein Template-Feld hinzu.",
+    "text.allEntityTypes": "Alle Entitaetstypen",
+    "text.all": "Alle",
+    "text.favorite": "Favorit",
+    "text.scannedOnly": "Nur Scan",
+    "text.builtIn": "Eingebaut",
+    "text.resourceUnchecked": "Ressource ungeprueft",
+    "text.resourceInstalled": "Ressource installiert",
+    "text.resourceMissing": "Ressource fehlt",
+    "text.demoEntity": "Demo-Entitaet",
+    "text.col": "Sp.",
+    "text.row": "Zeile",
+    "text.full": "voll",
+    "text.auto": "auto",
+    "text.categoryCore": "Core",
+    "text.categoryCommunity": "Community",
+    "text.registeredNotMapped": "{category} registriert, noch nicht gemappt",
+    "text.paletteDetail": "{layout}, {size}, {target}",
+    "text.scannedCardUnavailable": "{label} ist in Home Assistant registriert, aber ATLAS mappt diese Custom Card noch nicht.",
+    "text.paletteCardSelected": "{label} aus der Card-Liste ausgewaehlt.",
+    "text.paletteSelectionChanged": "Favoritenauswahl geaendert. Nutze Favoriten speichern, um sie anzuwenden.",
+    "text.fullCardListVisible": "Die volle Core- und Community-Card-Liste ist zur Favoritenauswahl sichtbar.",
+    "text.savedFavoritesVisible": "Gespeicherte Favoriten sind sichtbar.",
+    "text.favoritesSaved": "{count} Favoriten-Cards gespeichert.",
+    "text.allCardsRemainVisible": "Favoritenauswahl gespeichert. Alle Cards bleiben sichtbar.",
+    "text.allCardsVisibleAgain": "Alle Core- und Community-Cards sind wieder sichtbar.",
+    "text.templateSizesReset": "Template-Groessen auf Standard zurueckgesetzt.",
+    "text.removeField": "{field} entfernen",
+    "text.fieldRemoved": "{field} aus der Expert-Editor-Vorschau entfernt.",
+    "text.enterTitle": "Gib einen Titel ein, bevor du ihn uebernimmst.",
+    "text.titlePrepared": "{title} fuer das naechste Expert-Feld vorbereitet.",
+    "text.titleApplied": "{title} als Expert-Feld-Titel gesetzt.",
+    "text.targetUpdated": "{field} Card-Familie auf {target} geaendert.",
+    "text.bubbleTypeUpdated": "{field} Bubble-Button-Typ auf {type} gesetzt.",
+    "text.entityPrepared": "{entityId} fuer das naechste Expert-Feld vorbereitet.",
+    "text.entityAssigned": "{entityId} {title} zugewiesen.",
+    "text.fieldSelected": "{field} auf der Expert-Editor-Flaeche ausgewaehlt.",
+    "text.selectFieldBeforeEditing": "Waehle ein Expert-Feld aus, bevor du es bearbeitest.",
+    "text.editHandlesEnabled": "{field} Bearbeitungsanfasser aktiviert.",
+    "text.editHandlesHidden": "{field} Bearbeitungsanfasser ausgeblendet.",
+    "text.overlappingField": "ueberlappt ein anderes Feld",
+    "text.expertFieldsSummary": "Expert-Felder: {count} ({populated} belegt{empty})",
+    "text.emptyFieldsSummary": ", {count} leer",
+    "text.rowsSummary": "Zeilen: {count}",
+    "text.surfaceSummary": "Flaeche: {columns}x{rows}",
+    "text.overlapsSummary": "Ueberlappungen: {count}",
+    "text.targetsSummary": "Ziele: {targets}",
+    "text.layoutsSummary": "Layouts: {layouts}",
+    "text.expertFieldsZero": "Expert-Felder: 0.",
+    "text.fieldAdded": "{field} zur Expert-Editor-Vorschau hinzugefuegt.",
+    "text.fieldPlaced": "{field} auf der Expert-Editor-Flaeche platziert.",
+    "palette.core-entity": "Entitaet",
+    "palette.core-entities": "Entitaeten",
+    "palette.core-button": "Button",
+    "palette.core-grid": "Raster",
+    "palette.core-sensor": "Sensor",
+    "palette.core-horizontal-stack": "Horizontaler Stapel",
+    "palette.core-vertical-stack": "Vertikaler Stapel",
+    "palette.core-thermostat": "Thermostat",
+    "palette.core-link": "Verknuepfung",
+    "palette.core-webpage": "Webseite",
+    "palette.community-mushroom-template": "Mushroom Template",
+    "palette.community-bubble-state": "Bubble Status",
+    "palette.community-bubble-switch": "Bubble Switch",
+    "palette.community-bubble-slider": "Bubble Slider",
+    "palette.community-bubble-name": "Bubble Name",
+    "target.entities": "Entitaeten",
+    "target.entity": "Entitaet",
+    "target.button": "Button",
+    "target.sensor": "Sensor",
+    "target.thermostat": "Thermostat",
+    "target.link": "Verknuepfung",
+    "target.webpage": "Webseite",
+    "target.mushroom-template": "Mushroom Template",
+    "target.bubble": "Bubble",
+    "template.entity-list": "Entitaetenliste",
+    "template.entity-card": "Entitaet",
+    "template.button-card": "Button",
+    "template.grid": "Raster",
+    "template.sensor-card": "Sensor",
+    "template.horizontal-stack": "Horizontaler Stapel",
+    "template.vertical-stack": "Vertikaler Stapel",
+    "template.thermostat-card": "Thermostat",
+    "template.link-card": "Verknuepfung",
+    "template.webpage-card": "Webseite",
+    "template.state-button": "Status-Button",
+    "template.switch-button": "Switch-Button",
+  },
+};
+let emptyEntitySelectionMessage = translations.en["message.emptySelection"];
+
+function t(key, values = {}) {
+  let text = translations[currentLanguage]?.[key] ?? translations.en[key] ?? key;
+  for (const [name, value] of Object.entries(values)) {
+    text = text.replaceAll(`{${name}}`, String(value));
+  }
+  return text;
+}
+
+function applyTranslations() {
+  document.documentElement.lang = currentLanguage;
+  document.title = t("page.title");
+  emptyEntitySelectionMessage = t("message.emptySelection");
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = t(element.dataset.i18n);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-placeholder]")) {
+    element.placeholder = t(element.dataset.i18nPlaceholder);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  }
+  for (const element of document.querySelectorAll("[data-i18n-title]")) {
+    element.title = t(element.dataset.i18nTitle);
+  }
+  for (const button of languageButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
+  }
+}
+
+function setLanguage(language) {
+  currentLanguage = language === "de" ? "de" : "en";
+  applyTranslations();
+  renderCardTargetOptions(haCardTarget.value);
+  renderExpertEditorOptions();
+  renderGroupOptions(homeAssistantGroup.value);
+  renderEntityDomainOptions();
+  renderExpertTemplatePalette();
+  renderEditorMode(activeEditorMode);
+  renderEntityList();
+  renderConnectionReadiness();
+  persistConfiguration();
+}
+
+function maybeTranslate(key, fallback) {
+  return translations[currentLanguage]?.[key] ?? translations.en[key] ?? fallback;
+}
+
+function translateCardTarget(target, fallback = target) {
+  return maybeTranslate(`target.${target}`, fallback);
+}
+
+function translateTemplateLabel(templateId, fallback = templateId) {
+  return maybeTranslate(`template.${templateId}`, fallback);
+}
+
+function translatePaletteCardLabel(card) {
+  return maybeTranslate(`palette.${card.id}`, translateTemplateLabel(card.templateId, card.label));
+}
+
+function translatePaletteCategory(category) {
+  if (category === "Core") return t("text.categoryCore");
+  if (category === "Community") return t("text.categoryCommunity");
+  return category;
+}
 let expertPaletteCards = [
   { id: "core-entity", category: "Core", label: "Entity", templateId: "entity-card", target: "entity", preview: ["type: entity"] },
   { id: "core-entities", category: "Core", label: "Entities", templateId: "entity-list", target: "entities", preview: ["Entity list"] },
@@ -197,6 +620,9 @@ for (const group of panelGroups) {
 
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
+  if (savedConfiguration?.language === "de" || savedConfiguration?.language === "en") {
+    currentLanguage = savedConfiguration.language;
+  }
   if (typeof savedConfiguration?.url === "string") {
     homeAssistantUrl.value = savedConfiguration.url;
   }
@@ -301,7 +727,7 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
   for (const descriptor of cardTargets) {
     const option = document.createElement("option");
     option.value = descriptor.target;
-    option.textContent = descriptor.label;
+    option.textContent = translateCardTarget(descriptor.target, descriptor.label);
     haCardTarget.append(option);
   }
   haCardTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget) ? selectedTarget : "entities";
@@ -323,30 +749,37 @@ function renderEditorMode(mode = "simple") {
   for (const button of editorModeButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.editorMode === activeEditorMode));
   }
-  exportHaCardConfig.textContent = expert ? "Export Expert HA card" : "Export HA card";
-  copyHaCardConfig.textContent = expert ? "Copy Expert HA card" : "Copy HA card";
-  copyHaCardResources.textContent = expert ? "Copy Expert resources" : "Copy resources";
+  exportHaCardConfig.textContent = expert ? t("button.exportExpertHaCard") : t("button.exportHaCard");
+  copyHaCardConfig.textContent = expert ? t("button.copyExpertHaCard") : t("button.copyHaCard");
+  copyHaCardResources.textContent = expert ? t("button.copyExpertResources") : t("button.copyResources");
   renderHaCardPreview();
   renderExpertEditorPreview();
 }
 
 function renderExpertEditorOptions() {
+  const selectedTemplate = expertTemplate.value || cardEditorTemplates[0]?.id || "";
+  const selectedTarget = expertTarget.value || "bubble";
+  const selectedBubbleButtonType = expertBubbleButtonType.value || "state";
+
   expertTemplate.replaceChildren();
   for (const template of cardEditorTemplates) {
     const option = document.createElement("option");
     option.value = template.id;
-    option.textContent = template.label;
+    option.textContent = translateTemplateLabel(template.id, template.label);
     expertTemplate.append(option);
   }
+  expertTemplate.value = cardEditorTemplates.some(template => template.id === selectedTemplate)
+    ? selectedTemplate
+    : cardEditorTemplates[0]?.id || "";
 
   expertTarget.replaceChildren();
   for (const descriptor of cardTargets) {
     const option = document.createElement("option");
     option.value = descriptor.target;
-    option.textContent = descriptor.label;
+    option.textContent = translateCardTarget(descriptor.target, descriptor.label);
     expertTarget.append(option);
   }
-  expertTarget.value = "bubble";
+  expertTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget) ? selectedTarget : "bubble";
   expertBubbleButtonType.replaceChildren();
   for (const type of bubbleButtonTypes) {
     const option = document.createElement("option");
@@ -354,7 +787,7 @@ function renderExpertEditorOptions() {
     option.textContent = type;
     expertBubbleButtonType.append(option);
   }
-  expertBubbleButtonType.value = "state";
+  expertBubbleButtonType.value = bubbleButtonTypes.includes(selectedBubbleButtonType) ? selectedBubbleButtonType : "state";
   syncExpertBubbleTypeControl();
 }
 
@@ -438,6 +871,7 @@ function scheduleReconnect() {
 function persistConfiguration() {
   try {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
+      language: currentLanguage,
       url: homeAssistantUrl.value,
       rememberToken: rememberHomeAssistantToken.checked,
       token: rememberHomeAssistantToken.checked ? homeAssistantToken.value : undefined,
@@ -469,12 +903,12 @@ function renderGroupOptions(selectedId = homeAssistantGroup.value) {
   for (const group of panelGroups) {
     const option = document.createElement("option");
     option.value = group.id;
-    option.textContent = group.title;
+    option.textContent = maybeTranslate(`group.${group.id}`, group.title);
     homeAssistantGroup.append(option);
   }
   const custom = document.createElement("option");
   custom.value = "custom";
-  custom.textContent = "Custom";
+  custom.textContent = t("group.custom");
   homeAssistantGroup.append(custom);
   homeAssistantGroup.value = [...homeAssistantGroup.options].some(option => option.value === selectedId) ? selectedId : "custom";
 }
@@ -525,7 +959,7 @@ function renderEntityDomainOptions() {
   homeAssistantEntityDomain.replaceChildren();
   const allOption = document.createElement("option");
   allOption.value = "all";
-  allOption.textContent = "All entity types";
+  allOption.textContent = t("text.allEntityTypes");
   homeAssistantEntityDomain.append(allOption);
   for (const domain of domains) {
     const option = document.createElement("option");
@@ -546,9 +980,9 @@ function renderEntityDomainShortcuts(domains) {
     const button = document.createElement("button");
     button.type = "button";
     button.dataset.entityDomain = domain;
-    button.textContent = domain === "all" ? "All" : domain;
+    button.textContent = domain === "all" ? t("text.all") : domain;
     button.setAttribute("aria-pressed", String(domain === selected));
-    button.title = domain === "all" ? "Show all entity types" : `Show ${domain} entities`;
+    button.title = domain === "all" ? t("text.allEntityTypes") : `${domain}`;
     homeAssistantEntityDomainShortcuts.append(button);
   }
 }
@@ -898,12 +1332,14 @@ function renderExpertTemplatePalette() {
     : expertPaletteCards;
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;
-  showAllExpertPaletteCards.textContent = expertPaletteShowAllCards ? "Show favorites" : "Show all cards";
+  showAllExpertPaletteCards.textContent = expertPaletteShowAllCards ? t("button.showFavorites") : t("button.showAllCards");
   resetExpertTemplateSizing.disabled = !isExpertTemplateSizingDirty();
   resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
   for (const card of visibleCards) {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
     if (!template) continue;
+    const cardLabel = translatePaletteCardLabel(card);
+    const cardCategory = translatePaletteCategory(card.category);
     const item = document.createElement("article");
     item.className = "expert-template-card";
     item.classList.toggle("selected", isExpertPaletteCardSelected(card));
@@ -920,18 +1356,22 @@ function renderExpertTemplatePalette() {
     meta.className = "expert-template-meta";
     const category = document.createElement("span");
     category.className = "palette-category";
-    category.textContent = card.category;
+    category.textContent = cardCategory;
     const title = document.createElement("strong");
-    title.textContent = card.label;
+    title.textContent = cardLabel;
     const detail = document.createElement("small");
     const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType}` : "";
     detail.textContent = card.disabled === true
-      ? `${card.category} registered, not mapped yet`
-      : `${template.layout}, ${template.defaultWidth}x${template.defaultHeight}, ${card.target}${bubbleType}`;
+      ? t("text.registeredNotMapped", { category: cardCategory })
+      : t("text.paletteDetail", {
+        layout: translateTemplateLabel(template.id, template.layout),
+        size: `${template.defaultWidth}x${template.defaultHeight}`,
+        target: `${translateCardTarget(card.target, card.target)}${bubbleType}`,
+      });
     const preview = document.createElement("span");
     preview.textContent = card.preview.join(" / ");
     const availability = document.createElement("span");
-    availability.textContent = card.disabled === true ? "Scanned only" : formatExpertTemplateAvailability(card.target);
+    availability.textContent = card.disabled === true ? t("text.scannedOnly") : formatExpertTemplateAvailability(card.target);
 
     main.append(category, title);
     meta.append(detail, preview, availability);
@@ -940,7 +1380,7 @@ function renderExpertTemplatePalette() {
     const favoriteCheckbox = document.createElement("input");
     favoriteCheckbox.type = "checkbox";
     favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
-    favorite.append(favoriteCheckbox, "Favorite");
+    favorite.append(favoriteCheckbox, t("text.favorite"));
     main.append(favorite);
     favorite.addEventListener("click", event => event.stopPropagation());
     favoriteCheckbox.addEventListener("change", event => {
@@ -956,7 +1396,7 @@ function renderExpertTemplatePalette() {
 
     item.addEventListener("click", () => {
       if (card.disabled === true) {
-        statusMessage.textContent = `${card.label} is registered in Home Assistant, but ATLAS does not map this custom card yet.`;
+        statusMessage.textContent = t("text.scannedCardUnavailable", { label: cardLabel });
         return;
       }
       selectExpertPaletteCard(card.id);
@@ -965,7 +1405,7 @@ function renderExpertTemplatePalette() {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         if (card.disabled === true) {
-          statusMessage.textContent = `${card.label} is registered in Home Assistant, but ATLAS does not map this custom card yet.`;
+          statusMessage.textContent = t("text.scannedCardUnavailable", { label: cardLabel });
           return;
         }
         selectExpertPaletteCard(card.id);
@@ -1018,15 +1458,15 @@ function setExpertPaletteFavoriteDraft(cardId, favorite) {
     expertPaletteDraftFavoriteIds.delete(cardId);
   }
   renderExpertTemplatePalette();
-  statusMessage.textContent = "Favorite selection changed. Use Save favorites to apply it.";
+  statusMessage.textContent = t("text.paletteSelectionChanged");
 }
 
 function toggleExpertPaletteAllCards() {
   expertPaletteShowAllCards = !expertPaletteShowAllCards;
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteShowAllCards
-    ? "Full Core and Community card list is visible for favorite selection."
-    : "Saved favorites are visible.";
+    ? t("text.fullCardListVisible")
+    : t("text.savedFavoritesVisible");
 }
 
 function saveExpertPaletteFavoriteSelection() {
@@ -1038,8 +1478,8 @@ function saveExpertPaletteFavoriteSelection() {
   persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteFavoriteIds.size
-    ? `${expertPaletteFavoriteIds.size} favorite cards saved.`
-    : "Favorite selection saved. All cards remain visible.";
+    ? t("text.favoritesSaved", { count: expertPaletteFavoriteIds.size })
+    : t("text.allCardsRemainVisible");
 }
 
 function resetExpertPaletteFavoriteSelection() {
@@ -1048,7 +1488,7 @@ function resetExpertPaletteFavoriteSelection() {
   expertPaletteShowAllCards = false;
   persistConfiguration();
   renderExpertTemplatePalette();
-  statusMessage.textContent = "All Core and Community cards are visible again.";
+  statusMessage.textContent = t("text.allCardsVisibleAgain");
 }
 
 function normalizeExpertTemplateSizing(input) {
@@ -1079,7 +1519,7 @@ function resetExpertTemplateSizingSelection() {
   syncExpertInputsFromTemplateSizing(expertTemplate.value);
   persistConfiguration();
   renderExpertTemplatePalette();
-  statusMessage.textContent = "Template sizes reset to their defaults.";
+  statusMessage.textContent = t("text.templateSizesReset");
 }
 
 function createExpertTemplateSizingControls(template) {
@@ -1088,29 +1528,29 @@ function createExpertTemplateSizingControls(template) {
   controls.className = "expert-template-sizing";
 
   const columns = document.createElement("select");
-  columns.setAttribute("aria-label", `${template.label} columns`);
+  columns.setAttribute("aria-label", `${translateTemplateLabel(template.id, template.label)} ${t("label.column")}`);
   for (let index = 1; index <= expertGridColumns; index += 1) {
     const option = document.createElement("option");
     option.value = String(index);
-    option.textContent = `${index} col`;
+    option.textContent = `${index} ${t("text.col")}`;
     columns.append(option);
   }
   const full = document.createElement("option");
   full.value = "full";
-  full.textContent = "full";
+  full.textContent = t("text.full");
   columns.append(full);
   columns.value = sizing.columns;
 
   const rows = document.createElement("select");
-  rows.setAttribute("aria-label", `${template.label} rows`);
+  rows.setAttribute("aria-label", `${translateTemplateLabel(template.id, template.label)} ${t("label.row")}`);
   const auto = document.createElement("option");
   auto.value = "auto";
-  auto.textContent = "auto";
+  auto.textContent = t("text.auto");
   rows.append(auto);
   for (let index = 1; index <= 8; index += 1) {
     const option = document.createElement("option");
     option.value = String(index);
-    option.textContent = `${index} row`;
+    option.textContent = `${index} ${t("text.row")}`;
     rows.append(option);
   }
   rows.value = sizing.rows;
@@ -1140,10 +1580,10 @@ function createExpertTemplateSizingControls(template) {
 
 function formatExpertTemplateAvailability(target) {
   const dependency = inspectHomeAssistantCardDependency(target);
-  if (!dependency.required) return "Built-in";
-  if (!lovelaceResourcesChecked) return "Resource unchecked";
+  if (!dependency.required) return t("text.builtIn");
+  if (!lovelaceResourcesChecked) return t("text.resourceUnchecked");
   const availability = inspectHomeAssistantCardDependencyAvailability(target, lovelaceResources);
-  return availability.status === "installed" ? "Resource installed" : "Resource missing";
+  return availability.status === "installed" ? t("text.resourceInstalled") : t("text.resourceMissing");
 }
 
 function selectExpertTemplate(templateId) {
@@ -1161,7 +1601,7 @@ function selectExpertPaletteCard(cardId) {
   const template = cardEditorTemplates.find(candidate => candidate.id === card?.templateId);
   if (!card || !template) return undefined;
   if (card.disabled === true) {
-    statusMessage.textContent = `${card.label} is registered in Home Assistant, but ATLAS does not map this custom card yet.`;
+    statusMessage.textContent = t("text.scannedCardUnavailable", { label: translatePaletteCardLabel(card) });
     return undefined;
   }
   expertTemplate.value = template.id;
@@ -1170,7 +1610,7 @@ function selectExpertPaletteCard(cardId) {
   expertBubbleButtonType.value = card.bubbleButtonType ?? "state";
   syncExpertBubbleTypeControl();
   renderExpertTemplatePalette();
-  statusMessage.textContent = `${card.label} selected from the card list.`;
+  statusMessage.textContent = t("text.paletteCardSelected", { label: translatePaletteCardLabel(card) });
   return card;
 }
 
@@ -1188,7 +1628,7 @@ function renderExpertFieldList() {
   arrangeExpertFields.disabled = expertEditorFields.length === 0;
   if (expertEditorFields.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "No expert fields added.";
+    empty.textContent = t("message.noExpertFields");
     expertFieldList.append(empty);
     return;
   }
@@ -1199,13 +1639,13 @@ function renderExpertFieldList() {
     item.classList.toggle("selected", index === selectedExpertFieldIndex);
     const text = document.createElement("span");
     const bubbleType = field.target === "bubble" ? `, ${field.bubbleButtonType ?? "state"}` : "";
-    text.textContent = `${field.id}: ${field.target}${bubbleType}, ${field.layout ?? "card"}, ${field.width}x${field.height}, ${field.entityId || "demo entity"}, c${field.column + 1}/r${field.row + 1}`;
+    text.textContent = `${field.id}: ${translateCardTarget(field.target, field.target)}${bubbleType}, ${field.layout ?? "card"}, ${field.width}x${field.height}, ${field.entityId || t("text.demoEntity")}, c${field.column + 1}/r${field.row + 1}`;
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "icon-button";
     remove.textContent = "🗑";
-    remove.title = `Remove ${field.id}`;
-    remove.setAttribute("aria-label", `Remove ${field.id}`);
+    remove.title = t("text.removeField", { field: field.id });
+    remove.setAttribute("aria-label", t("text.removeField", { field: field.id }));
     remove.addEventListener("click", event => {
       event.stopPropagation();
       expertEditorFields.splice(index, 1);
@@ -1217,7 +1657,7 @@ function renderExpertFieldList() {
       }
       persistConfiguration();
       renderExpertEditorPreview();
-      statusMessage.textContent = `${field.id} removed from the Expert editor preview.`;
+      statusMessage.textContent = t("text.fieldRemoved", { field: field.id });
     });
     item.addEventListener("click", () => {
       selectExpertEditorField(index);
@@ -1248,11 +1688,11 @@ function updateSelectedExpertFieldTitle(title) {
   const field = expertEditorFields[selectedExpertFieldIndex];
   const nextTitle = title.trim();
   if (!nextTitle) {
-    statusMessage.textContent = "Enter a title before applying it.";
+    statusMessage.textContent = t("text.enterTitle");
     return false;
   }
   if (!field) {
-    statusMessage.textContent = `${nextTitle} prepared for the next Expert field.`;
+    statusMessage.textContent = t("text.titlePrepared", { title: nextTitle });
     return false;
   }
   expertEditorFields[selectedExpertFieldIndex] = {
@@ -1262,7 +1702,7 @@ function updateSelectedExpertFieldTitle(title) {
   };
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${nextTitle} set as Expert field title.`;
+  statusMessage.textContent = t("text.titleApplied", { title: nextTitle });
   return true;
 }
 
@@ -1293,7 +1733,7 @@ function updateSelectedExpertFieldTarget() {
   };
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${field.id} card family updated to ${nextTarget}.`;
+  statusMessage.textContent = t("text.targetUpdated", { field: field.id, target: translateCardTarget(nextTarget, nextTarget) });
 }
 
 function updateSelectedExpertFieldBubbleType() {
@@ -1309,7 +1749,7 @@ function updateSelectedExpertFieldBubbleType() {
   };
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${field.id} Bubble button type set to ${expertBubbleButtonType.value}.`;
+  statusMessage.textContent = t("text.bubbleTypeUpdated", { field: field.id, type: expertBubbleButtonType.value });
 }
 
 function getExpertFieldResizeBase(field) {
@@ -1469,7 +1909,7 @@ function applyEntityToSelectedExpertField(entityId) {
   expertTitle.value = title;
   const field = expertEditorFields[selectedExpertFieldIndex];
   if (!field) {
-    statusMessage.textContent = `${entityId} prepared for the next Expert field.`;
+    statusMessage.textContent = t("text.entityPrepared", { entityId });
     return false;
   }
 
@@ -1484,20 +1924,20 @@ function applyEntityToSelectedExpertField(entityId) {
   };
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${entityId} assigned to ${title}.`;
+  statusMessage.textContent = t("text.entityAssigned", { entityId, title });
   return true;
 }
 
 function renderExpertEditButton() {
   if (selectedExpertFieldIndex < 0 || !expertEditorFields[selectedExpertFieldIndex]) {
     editExpertField.disabled = true;
-    editExpertField.textContent = "Edit selected";
+    editExpertField.textContent = t("button.editSelected");
     editExpertField.setAttribute("aria-pressed", "false");
     return;
   }
 
   editExpertField.disabled = false;
-  editExpertField.textContent = expertFieldEditing ? "Stop editing" : "Edit selected";
+  editExpertField.textContent = expertFieldEditing ? t("button.stopEditing") : t("button.editSelected");
   editExpertField.setAttribute("aria-pressed", String(expertFieldEditing));
 }
 
@@ -1520,7 +1960,7 @@ function selectExpertEditorField(index) {
   persistConfiguration();
   renderExpertFieldList();
   renderExpertEditorSurface();
-  statusMessage.textContent = `${field.id} selected on the Expert editor surface.`;
+  statusMessage.textContent = t("text.fieldSelected", { field: field.id });
 }
 
 function toggleExpertFieldEditing() {
@@ -1528,7 +1968,7 @@ function toggleExpertFieldEditing() {
   if (!field) {
     expertFieldEditing = false;
     renderExpertEditButton();
-    statusMessage.textContent = "Select an Expert field before editing.";
+    statusMessage.textContent = t("text.selectFieldBeforeEditing");
     return;
   }
 
@@ -1536,8 +1976,8 @@ function toggleExpertFieldEditing() {
   renderExpertEditButton();
   renderExpertEditorSurface();
   statusMessage.textContent = expertFieldEditing
-    ? `${field.id} editing handles enabled.`
-    : `${field.id} editing handles hidden.`;
+    ? t("text.editHandlesEnabled", { field: field.id })
+    : t("text.editHandlesHidden", { field: field.id });
 }
 
 function renderExpertEditorSurface() {
@@ -1549,7 +1989,7 @@ function renderExpertEditorSurface() {
   const overlappingFieldIds = new Set(surfaceAnalysis.overlappingFieldIds);
   if (expertEditorFields.length === 0) {
     const empty = document.createElement("p");
-    empty.textContent = "Drag a card from the left into this editor surface.";
+    empty.textContent = t("message.dragCard");
     grid.append(empty);
     expertEditorDropzone.append(grid);
     appendExpertEditorSurfaceResizeHandle();
@@ -1565,7 +2005,7 @@ function renderExpertEditorSurface() {
     tile.classList.toggle("conflict", overlappingFieldIds.has(field.id));
     tile.dataset.expertFieldIndex = String(index);
     tile.setAttribute("role", "button");
-    const conflictLabel = overlappingFieldIds.has(field.id) ? ", overlapping another field" : "";
+    const conflictLabel = overlappingFieldIds.has(field.id) ? `, ${t("text.overlappingField")}` : "";
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
@@ -1574,9 +2014,9 @@ function renderExpertEditorSurface() {
     const title = document.createElement("strong");
     title.textContent = field.id;
     const target = document.createElement("span");
-    target.textContent = field.target;
+    target.textContent = translateCardTarget(field.target, field.target);
     const entity = document.createElement("small");
-    entity.textContent = field.entityId || "demo entity";
+    entity.textContent = field.entityId || t("text.demoEntity");
     tile.append(title, target, entity);
     tile.addEventListener("click", () => {
       selectExpertEditorField(index);
@@ -1780,10 +2220,10 @@ function startExpertFieldResize(event, index, corner, tile) {
 
 function renderExpertEditorPreview() {
   if (expertEditorFields.length === 0) {
-    expertEditorSummary.textContent = "Expert fields: 0.";
-    expertEditorPreview.textContent = "Add a template field to preview the Expert editor output.";
+    expertEditorSummary.textContent = t("text.expertFieldsZero");
+    expertEditorPreview.textContent = t("message.addTemplatePreview");
     if (activeEditorMode === "expert") {
-      haCardDependency.textContent = "Add a template field before exporting an Expert HA card.";
+      haCardDependency.textContent = t("message.addTemplateBeforeExport");
       haCardDependency.dataset.required = "false";
       haCardDependency.dataset.status = "not-required";
       copyHaCardResources.disabled = true;
@@ -1796,18 +2236,19 @@ function renderExpertEditorPreview() {
   const card = createExpertHaCardConfig();
   const surfaceAnalysis = analyzeHomeAssistantCardEditorSurface(expertEditorFields);
   const emptyText = surfaceAnalysis.emptyFieldCount
-    ? `, ${surfaceAnalysis.emptyFieldCount} empty`
+    ? t("text.emptyFieldsSummary", { count: surfaceAnalysis.emptyFieldCount })
     : "";
-  const overlapText = surfaceAnalysis.overlapCount
-    ? `Overlaps: ${surfaceAnalysis.overlapCount}`
-    : "Overlaps: 0";
   expertEditorSummary.textContent = [
-    `Expert fields: ${surfaceAnalysis.fieldCount} (${surfaceAnalysis.populatedFieldCount} populated${emptyText})`,
-    `Rows: ${surfaceAnalysis.rowCount}`,
-    `Surface: ${surfaceAnalysis.usedColumns}x${surfaceAnalysis.usedRows}`,
-    overlapText,
-    `Targets: ${surfaceAnalysis.usedTargets.join(", ")}`,
-    `Layouts: ${surfaceAnalysis.layouts.join(", ")}`,
+    t("text.expertFieldsSummary", {
+      count: surfaceAnalysis.fieldCount,
+      populated: surfaceAnalysis.populatedFieldCount,
+      empty: emptyText,
+    }),
+    t("text.rowsSummary", { count: surfaceAnalysis.rowCount }),
+    t("text.surfaceSummary", { columns: surfaceAnalysis.usedColumns, rows: surfaceAnalysis.usedRows }),
+    t("text.overlapsSummary", { count: surfaceAnalysis.overlapCount }),
+    t("text.targetsSummary", { targets: surfaceAnalysis.usedTargets.map(target => translateCardTarget(target, target)).join(", ") }),
+    t("text.layoutsSummary", { layouts: surfaceAnalysis.layouts.join(", ") }),
   ].join(". ");
   expertEditorPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   if (activeEditorMode === "expert") renderHaCardDependency(card);
@@ -1835,7 +2276,7 @@ function addExpertEditorField() {
   expertEntity.value = "";
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${field.id} added to the Expert editor preview.`;
+  statusMessage.textContent = t("text.fieldAdded", { field: field.id });
 }
 
 function createExpertEditorField(input) {
@@ -1906,7 +2347,7 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
   expertEntity.value = "";
   persistConfiguration();
   renderExpertEditorPreview();
-  statusMessage.textContent = `${field.id} placed on the Expert editor surface.`;
+  statusMessage.textContent = t("text.fieldPlaced", { field: field.id });
 }
 
 function addExpertEditorFieldFromPaletteCard(cardId, placement = calculateExpertDropPlacement()) {
@@ -2368,6 +2809,8 @@ function disconnectHomeAssistant() {
   connection?.disconnect();
 }
 
+applyTranslations();
+
 const registeredPanel = findHomeAssistantStatusPanel(panelRegistry, panel.id);
 if (!registeredPanel) {
   statusMessage.textContent = "Status panel is not registered.";
@@ -2388,6 +2831,12 @@ if (!registeredPanel) {
 for (const button of buttons) {
   button.addEventListener("click", () => {
     void renderEntityState(button.dataset.entityState);
+  });
+}
+
+for (const button of languageButtons) {
+  button.addEventListener("click", () => {
+    setLanguage(button.dataset.language);
   });
 }
 
