@@ -105,8 +105,8 @@ export function createHomeAssistantWebSocketClient(
     }
 
     if (message.type === "auth_ok") {
-      updateLifecycle({ state: "connected", subscription: "pending" });
       socket.send(JSON.stringify({ id: 1, type: "subscribe_events", event_type: "state_changed" }));
+      updateLifecycle({ state: "connected", subscription: "pending" });
       return;
     }
 

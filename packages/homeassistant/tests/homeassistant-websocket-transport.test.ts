@@ -270,6 +270,26 @@ describe("Home Assistant WebSocket transport", () => {
     });
   });
 
+  it("sends the event subscription before lifecycle listeners can request other data", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    client.subscribeLifecycle(lifecycle => {
+      if (lifecycle.state === "connected") {
+        client.requestEntityStates();
+        client.requestLovelaceResources();
+      }
+    });
+
+    await socket.emitMessage('{"type":"auth_ok"}');
+
+    expect(socket.sent).toEqual([
+      '{"id":1,"type":"subscribe_events","event_type":"state_changed"}',
+      '{"id":2,"type":"get_states"}',
+      '{"id":3,"type":"lovelace/resources"}',
+    ]);
+  });
+
   it("requests Lovelace resources after authentication succeeds", async () => {
     const socket = createTestSocket();
     const client = createHomeAssistantWebSocketClient(socket, "test-token");
