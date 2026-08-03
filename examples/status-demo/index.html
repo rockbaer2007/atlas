@@ -382,7 +382,7 @@
 
       .expert-title-row {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto auto;
         gap: 8px;
       }
 
@@ -399,6 +399,16 @@
         font: inherit;
         cursor: pointer;
         white-space: nowrap;
+      }
+
+      @media (max-width: 720px) {
+        .expert-title-row {
+          grid-template-columns: 1fr;
+        }
+
+        .expert-title-row button {
+          width: 100%;
+        }
       }
 
       .expert-template-palette {
@@ -903,6 +913,7 @@
               <label class="wide" for="expert-title">Title</label>
               <div class="expert-title-row wide">
                 <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty">
+                <button id="apply-expert-title" type="button">Apply title</button>
                 <button id="use-entity-name-as-title" type="button">Use entity name</button>
               </div>
               <label class="wide" for="expert-entity">Entity</label>

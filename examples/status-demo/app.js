@@ -83,6 +83,7 @@ const expertEditorSection = document.querySelector("#expert-editor-section");
 const expertTemplate = document.querySelector("#expert-template");
 const expertTarget = document.querySelector("#expert-target");
 const expertTitle = document.querySelector("#expert-title");
+const applyExpertTitle = document.querySelector("#apply-expert-title");
 const useEntityNameAsTitle = document.querySelector("#use-entity-name-as-title");
 const expertEntity = document.querySelector("#expert-entity");
 const expertColumn = document.querySelector("#expert-column");
@@ -830,7 +831,14 @@ function currentExpertEntityTitle(entityId = expertEntity.value.trim() || curren
 function updateSelectedExpertFieldTitle(title) {
   const field = expertEditorFields[selectedExpertFieldIndex];
   const nextTitle = title.trim();
-  if (!field || !nextTitle) return;
+  if (!nextTitle) {
+    statusMessage.textContent = "Enter a title before applying it.";
+    return false;
+  }
+  if (!field) {
+    statusMessage.textContent = `${nextTitle} prepared for the next Expert field.`;
+    return false;
+  }
   expertEditorFields[selectedExpertFieldIndex] = {
     ...field,
     id: nextTitle,
@@ -838,6 +846,7 @@ function updateSelectedExpertFieldTitle(title) {
   };
   renderExpertEditorPreview();
   statusMessage.textContent = `${nextTitle} set as Expert field title.`;
+  return true;
 }
 
 function renameExpertFieldEntries(field, title) {
@@ -1696,7 +1705,7 @@ for (const button of editorModeButtons) {
 expertTemplate.addEventListener("change", () => {
   selectExpertTemplate(expertTemplate.value);
 });
-expertTitle.addEventListener("input", () => {
+applyExpertTitle.addEventListener("click", () => {
   updateSelectedExpertFieldTitle(expertTitle.value);
 });
 useEntityNameAsTitle.addEventListener("click", () => {

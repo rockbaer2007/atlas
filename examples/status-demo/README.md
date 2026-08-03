@@ -97,8 +97,9 @@ the field inside the 12-column grid. This is still a preview surface, not the
 final drag-and-drop editor.
 Expert field titles are editable from the surface controls. The title is reused
 as the generated Home Assistant card title, Bubble name or Mushroom primary
-text, and the current Home Assistant entity name can be copied into the title
-field as a starting point.
+text. A manual apply button writes the edited title to the selected field, and
+the current Home Assistant entity name can still be copied into the title field
+as a starting point.
 In Expert mode, selecting an entity from the picker or entity list assigns it to
 the currently selected surface field and also prefills the field title from the
 entity name.
