@@ -29,7 +29,8 @@ transport; configuration can already derive its eventual `/api/websocket` URL.
 The current WebSocket client is fully testable through an injected socket. It
 models authentication, subscription confirmation or rejection, state changes,
 close reasons and subscribable lifecycle states. The browser adapter can open a
-connection when explicitly used by a host application; it never persists access
+connection when explicitly used by a host application; it maps normal close
+code `1000` to a user-facing ATLAS close message and never persists access
 tokens.
 
 The client can send explicit `turn_on` and `turn_off` requests only for `light`

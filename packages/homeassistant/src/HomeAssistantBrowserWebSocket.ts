@@ -34,7 +34,7 @@ export function createBrowserHomeAssistantWebSocket(
     }
   };
   socket.onclose = event => {
-    const reason = event.reason || (event.code ? `WebSocket closed with code ${event.code}.` : undefined);
+    const reason = formatHomeAssistantBrowserWebSocketCloseReason(event);
     for (const listener of closeListeners) {
       listener(reason);
     }
@@ -56,4 +56,12 @@ export function createBrowserHomeAssistantWebSocket(
       return () => closeListeners.delete(listener);
     },
   };
+}
+
+function formatHomeAssistantBrowserWebSocketCloseReason(
+  event: HomeAssistantBrowserWebSocketCloseEvent,
+): string | undefined {
+  if (event.reason) return event.reason;
+  if (event.code === 1000) return "ATLAS connection closed normally.";
+  return event.code ? `WebSocket closed with code ${event.code}.` : undefined;
 }

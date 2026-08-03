@@ -35,7 +35,9 @@ active and are not available for other entity domains.
 
 The URL, selected entities and optional token preference are stored only in this
 browser. After an unexpected socket close, the open page retries up to three
-times with its in-memory token; a manual disconnect stops retries.
+times with its in-memory token; a manual disconnect stops retries. A normal
+browser close with code `1000` is shown as a regular ATLAS connection close
+instead of a raw WebSocket code.
 
 The panel-group selector provides quick entity sets for overview, energy and
 safety. Selecting a group only updates the local entity list.

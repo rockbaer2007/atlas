@@ -50,11 +50,19 @@ describe("Home Assistant runtime connection", () => {
       }
     });
     const received: string[] = [];
+    const closeReasons: Array<string | undefined> = [];
     socket.onMessage(data => received.push(data));
+    socket.onClose(reason => closeReasons.push(reason));
 
     browserSocket?.onmessage?.({ data: "message" });
+    browserSocket?.onclose?.({ code: 1000 });
+    browserSocket?.onclose?.({ code: 1006 });
 
     expect(received).toEqual(["message"]);
+    expect(closeReasons).toEqual([
+      "ATLAS connection closed normally.",
+      "WebSocket closed with code 1006.",
+    ]);
   });
 
   it("connects and reconnects through an injected socket factory without retaining tokens", async () => {
