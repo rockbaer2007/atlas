@@ -1,5 +1,11 @@
-import type { HomeAssistantCardDependency, HomeAssistantCardLayout, HomeAssistantCardTarget } from "./HomeAssistantCardConfiguration";
-import { inspectHomeAssistantCardDependency } from "./HomeAssistantCardConfiguration";
+import type {
+  HomeAssistantCardConfiguration,
+  HomeAssistantCardDependency,
+  HomeAssistantCardLayout,
+  HomeAssistantSingleCardConfiguration,
+  HomeAssistantCardTarget,
+} from "./HomeAssistantCardConfiguration";
+import { createHomeAssistantCardConfiguration, inspectHomeAssistantCardDependency } from "./HomeAssistantCardConfiguration";
 
 export type HomeAssistantCardEditorMode = "simple" | "expert";
 
@@ -106,6 +112,46 @@ export function createHomeAssistantCardEditorDependencyPlan(
   };
 }
 
+export function createHomeAssistantCardEditorConfiguration(
+  input: HomeAssistantCardEditorPackagePlanInput = {},
+): HomeAssistantCardConfiguration {
+  const editorPlan = createHomeAssistantCardEditorPackagePlan(input);
+
+  if (editorPlan.editorMode === "simple") {
+    return createHomeAssistantCardConfiguration({
+      target: editorPlan.simpleTarget,
+      title: editorPlan.cardName,
+      entityIds: editorPlan.defaultEntityIds,
+    });
+  }
+
+  const fieldCards = [...editorPlan.fields]
+    .filter(field => field.entityId)
+    .sort(compareSurfaceFields)
+    .map(field => createHomeAssistantCardConfiguration({
+      target: field.target,
+      title: field.id,
+      entityIds: [field.entityId],
+    }));
+
+  if (fieldCards.length === 0) {
+    return createHomeAssistantCardConfiguration({
+      target: "entities",
+      title: editorPlan.cardName,
+      entityIds: editorPlan.defaultEntityIds,
+    });
+  }
+
+  if (fieldCards.length === 1) {
+    return fieldCards[0]!;
+  }
+
+  return {
+    type: "vertical-stack",
+    cards: fieldCards.filter(isSingleCardConfiguration),
+  };
+}
+
 export function normalizeHomeAssistantCardEditorScriptFilename(name: string): string {
   const withoutExtension = name
     .trim()
@@ -138,4 +184,17 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
     width: Math.max(1, Math.floor(field.width)),
     height: Math.max(1, Math.floor(field.height)),
   };
+}
+
+function compareSurfaceFields(
+  first: HomeAssistantCardEditorSurfaceField,
+  second: HomeAssistantCardEditorSurfaceField,
+): number {
+  return first.row - second.row || first.column - second.column || first.id.localeCompare(second.id);
+}
+
+function isSingleCardConfiguration(
+  card: HomeAssistantCardConfiguration,
+): card is HomeAssistantSingleCardConfiguration {
+  return card.type !== "horizontal-stack" && card.type !== "vertical-stack";
 }

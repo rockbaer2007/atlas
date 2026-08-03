@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   createAtlasFrontendResource,
+  createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorDependencyPlan,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantAtlasFrontendResourceReferences,
@@ -256,6 +257,80 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(dependencyPlan.installSteps).toContain("HACS > Frontend > Mushroom");
     expect(dependencyPlan.installSteps).toContain("HACS > Frontend > Bubble Card");
+  });
+
+  it("creates a simple editor card configuration from the selected target and demo entities", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      cardName: "Demo Status",
+      editorMode: "simple",
+      simpleTarget: "entities",
+    })).toEqual({
+      type: "entities",
+      title: "Demo Status",
+      entities: [
+        { entity: "binary_sensor.atlas_status" },
+        { entity: "sensor.atlas_temperature" },
+      ],
+    });
+  });
+
+  it("creates an ordered stack card configuration from expert editor fields", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "Door",
+          target: "bubble",
+          entityId: "binary_sensor.atlas_door",
+          column: 1,
+          row: 1,
+          width: 1,
+          height: 1,
+        },
+        {
+          id: "Temperature",
+          target: "mushroom-template",
+          entityId: "sensor.atlas_temperature",
+          column: 0,
+          row: 0,
+          width: 1,
+          height: 1,
+        },
+      ],
+    })).toEqual({
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "custom:mushroom-template-card",
+          primary: "Temperature",
+          secondary: "sensor.atlas_temperature",
+          entity: "sensor.atlas_temperature",
+        },
+        {
+          type: "custom:bubble-card",
+          card_type: "button",
+          button_type: "state",
+          name: "Door",
+          entity: "binary_sensor.atlas_door",
+          show_state: true,
+        },
+      ],
+    });
+  });
+
+  it("falls back to demo entities when an expert editor plan has no populated fields", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      cardName: "Empty Expert",
+      editorMode: "expert",
+      fields: [],
+    })).toEqual({
+      type: "entities",
+      title: "Empty Expert",
+      entities: [
+        { entity: "binary_sensor.atlas_status" },
+        { entity: "sensor.atlas_temperature" },
+      ],
+    });
   });
 
   it("normalizes user-defined card editor script filenames", () => {

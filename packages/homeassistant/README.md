@@ -88,6 +88,13 @@ Bubble Card or Mushroom template. The dependency plan can derive the actually
 used card targets from the editor mode and fields, so mixed expert layouts can
 produce one combined list of required HACS resources.
 
+Editor plans can now also be projected into Home Assistant card configurations.
+Simple mode creates the selected target from the plan entities. Expert mode
+orders populated surface fields by row and column and emits a `vertical-stack`
+with one Home Assistant card per field. Empty expert plans fall back to the
+safe demo entities, preserving a usable export while the user still has to
+replace them with real Home Assistant entities.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.
