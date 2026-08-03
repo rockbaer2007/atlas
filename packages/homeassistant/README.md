@@ -123,6 +123,10 @@ The demo palette separates Core and Community cards and supports checkbox-based
 favorites. Favorite checkboxes are applied with Save favorites; once one or
 more favorites are saved, the palette hides the rest until the reset control
 shows every card again.
+The package can also analyze an Expert editor surface. The analysis reports
+total and populated fields, empty placeholders, occupied rows, used grid span,
+card targets and field layouts. The demo uses that summary above the Expert HA
+card code so export readiness is visible before copying YAML or JSON.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as

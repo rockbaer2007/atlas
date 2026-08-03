@@ -105,6 +105,18 @@ export interface HomeAssistantCardEditorDependencyPlan {
   readonly installSteps: readonly string[];
 }
 
+export interface HomeAssistantCardEditorSurfaceAnalysis {
+  readonly fieldCount: number;
+  readonly populatedFieldCount: number;
+  readonly emptyFieldCount: number;
+  readonly rowCount: number;
+  readonly usedColumns: number;
+  readonly usedRows: number;
+  readonly usedTargets: readonly HomeAssistantCardTarget[];
+  readonly layouts: readonly HomeAssistantCardEditorSurfaceFieldLayout[];
+  readonly emptyFieldIds: readonly string[];
+}
+
 export const defaultHomeAssistantCardEditorEntityIds = [
   "binary_sensor.atlas_status",
   "sensor.atlas_temperature",
@@ -335,6 +347,28 @@ export function createHomeAssistantCardEditorDependencyPlan(
   };
 }
 
+export function analyzeHomeAssistantCardEditorSurface(
+  fields: readonly HomeAssistantCardEditorSurfaceField[] = [],
+): HomeAssistantCardEditorSurfaceAnalysis {
+  const normalizedFields = fields.map(normalizeSurfaceField);
+  const populatedFields = normalizedFields.filter(hasSurfaceFieldContent);
+  const emptyFields = normalizedFields.filter(field => !hasSurfaceFieldContent(field));
+  const rightEdge = normalizedFields.map(field => field.column + field.width);
+  const bottomEdge = normalizedFields.map(field => field.row + field.height);
+
+  return {
+    fieldCount: normalizedFields.length,
+    populatedFieldCount: populatedFields.length,
+    emptyFieldCount: emptyFields.length,
+    rowCount: new Set(normalizedFields.map(field => field.row)).size,
+    usedColumns: rightEdge.length ? Math.max(...rightEdge) : 0,
+    usedRows: bottomEdge.length ? Math.max(...bottomEdge) : 0,
+    usedTargets: dedupeCardTargets(normalizedFields.flatMap(listSurfaceFieldTargets)),
+    layouts: dedupeSurfaceFieldLayouts(normalizedFields.map(field => field.layout ?? "card")),
+    emptyFieldIds: emptyFields.map(field => field.id),
+  };
+}
+
 export function createHomeAssistantCardEditorConfiguration(
   input: HomeAssistantCardEditorPackagePlanInput = {},
 ): HomeAssistantCardConfiguration {
@@ -414,6 +448,12 @@ function dedupeCardTargets(values: readonly HomeAssistantCardTarget[]): HomeAssi
   return [...new Set(values)];
 }
 
+function dedupeSurfaceFieldLayouts(
+  values: readonly HomeAssistantCardEditorSurfaceFieldLayout[],
+): HomeAssistantCardEditorSurfaceFieldLayout[] {
+  return [...new Set(values)];
+}
+
 function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): HomeAssistantCardEditorSurfaceField {
   return {
     id: field.id.trim() || `${field.target}-${field.entityId}`,
@@ -454,6 +494,12 @@ function compareSurfaceFields(
 function listSurfaceFieldTargets(field: HomeAssistantCardEditorSurfaceField): HomeAssistantCardTarget[] {
   const entryTargets = (field.entries ?? []).map(entry => entry.target);
   return entryTargets.length > 0 ? entryTargets : [field.target];
+}
+
+function hasSurfaceFieldContent(field: HomeAssistantCardEditorSurfaceField): boolean {
+  if (field.entityId) return true;
+  if (field.target === "link" || field.target === "webpage") return true;
+  return (field.entries ?? []).some(entry => Boolean(entry.entityId));
 }
 
 function createSurfaceFieldCardConfiguration(

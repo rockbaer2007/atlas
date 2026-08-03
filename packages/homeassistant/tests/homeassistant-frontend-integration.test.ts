@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  analyzeHomeAssistantCardEditorSurface,
   createAtlasFrontendResource,
   clampSurfaceFieldPlacement,
   createHomeAssistantCardBuilderInteropPlan,
@@ -309,6 +310,67 @@ describe("Home Assistant frontend integration planning", () => {
       row: 1,
       width: 4,
       height: 2,
+    });
+  });
+
+  it("analyzes expert editor surface occupancy and empty fields", () => {
+    expect(analyzeHomeAssistantCardEditorSurface([
+      {
+        id: "Kitchen light",
+        target: "bubble",
+        bubbleButtonType: "switch",
+        entityId: "switch.kitchen_light",
+        layout: "card",
+        entries: [],
+        column: 0,
+        row: 0,
+        width: 4,
+        height: 2,
+      },
+      {
+        id: "Climate links",
+        target: "entities",
+        entityId: "",
+        layout: "horizontal-stack",
+        entries: [
+          {
+            id: "Temperature",
+            target: "mushroom-template",
+            entityId: "sensor.kitchen_temperature",
+          },
+          {
+            id: "Placeholder",
+            target: "bubble",
+            bubbleButtonType: "name",
+            entityId: "",
+          },
+        ],
+        column: 4,
+        row: 0,
+        width: 8,
+        height: 2,
+      },
+      {
+        id: "Empty field",
+        target: "entities",
+        entityId: "",
+        layout: "card",
+        entries: [],
+        column: 0,
+        row: 3,
+        width: 4,
+        height: 2,
+      },
+    ])).toEqual({
+      fieldCount: 3,
+      populatedFieldCount: 2,
+      emptyFieldCount: 1,
+      rowCount: 2,
+      usedColumns: 12,
+      usedRows: 5,
+      usedTargets: ["bubble", "mushroom-template", "entities"],
+      layouts: ["card", "horizontal-stack"],
+      emptyFieldIds: ["Empty field"],
     });
   });
 

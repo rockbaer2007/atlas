@@ -9,6 +9,7 @@ import {
   createHomeAssistantConnectionConfiguration,
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
+  analyzeHomeAssistantCardEditorSurface,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantAtlasFrontendIntegrationPlan,
@@ -95,6 +96,7 @@ const expertWidth = document.querySelector("#expert-width");
 const expertHeight = document.querySelector("#expert-height");
 const addExpertField = document.querySelector("#add-expert-field");
 const editExpertField = document.querySelector("#edit-expert-field");
+const resetExpertSurfaceSize = document.querySelector("#reset-expert-surface-size");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
 const saveExpertPaletteFavorites = document.querySelector("#save-expert-palette-favorites");
@@ -1290,6 +1292,13 @@ function startExpertEditorSurfaceResize(event) {
   window.addEventListener("pointerup", finishResize, { once: true });
 }
 
+function resetExpertEditorSurfaceSize() {
+  expertEditorSurfaceSize = { columns: 0, rows: 0 };
+  applyExpertEditorSurfaceSize();
+  persistConfiguration();
+  statusMessage.textContent = "Expert editor surface size reset to the default.";
+}
+
 function updateSelectedExpertFieldGeometry() {
   const field = expertEditorFields[selectedExpertFieldIndex];
   if (!field) {
@@ -1563,7 +1572,17 @@ function renderExpertEditorPreview() {
   }
 
   const card = createExpertHaCardConfig();
-  expertEditorSummary.textContent = `Expert fields: ${expertEditorFields.length}.`;
+  const surfaceAnalysis = analyzeHomeAssistantCardEditorSurface(expertEditorFields);
+  const emptyText = surfaceAnalysis.emptyFieldCount
+    ? `, ${surfaceAnalysis.emptyFieldCount} empty`
+    : "";
+  expertEditorSummary.textContent = [
+    `Expert fields: ${surfaceAnalysis.fieldCount} (${surfaceAnalysis.populatedFieldCount} populated${emptyText})`,
+    `Rows: ${surfaceAnalysis.rowCount}`,
+    `Surface: ${surfaceAnalysis.usedColumns}x${surfaceAnalysis.usedRows}`,
+    `Targets: ${surfaceAnalysis.usedTargets.join(", ")}`,
+    `Layouts: ${surfaceAnalysis.layouts.join(", ")}`,
+  ].join(". ");
   expertEditorPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   if (activeEditorMode === "expert") renderHaCardDependency(card);
   renderExpertFieldList();
@@ -2229,6 +2248,7 @@ useEntityNameAsTitle.addEventListener("click", () => {
 });
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
+resetExpertSurfaceSize.addEventListener("click", resetExpertEditorSurfaceSize);
 saveExpertPaletteFavorites.addEventListener("click", saveExpertPaletteFavoriteSelection);
 showAllExpertPaletteCards.addEventListener("click", toggleExpertPaletteAllCards);
 scanExpertPaletteCards.addEventListener("click", scanExpertPaletteCardsFromHomeAssistant);
