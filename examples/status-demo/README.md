@@ -91,7 +91,9 @@ grid. Dragging existing fields snaps against the real inner grid and preserves
 the point where the field was grabbed, so fields can be moved upward without
 sideways jumps. The visual grid now sits on the same inner surface as the
 draggable tiles, with a smaller tile gap for closer vertical stacking. Each
-sidebar template exposes its own column and row controls, including `full`
+focused tile can also be nudged by one grid cell with the arrow keys; while
+edit mode is active, Shift plus an arrow resizes the selected field by one cell.
+Each sidebar template exposes its own column and row controls, including `full`
 width and `auto` height. Entity List, State Button, Switch Button,
 horizontal-stack and vertical-stack start from the same default footprint so
 layout adjustments are predictable. The sidebar uses loaded Lovelace resources

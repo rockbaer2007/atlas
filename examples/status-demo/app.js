@@ -1451,6 +1451,7 @@ function renderExpertEditorSurface() {
     tile.classList.toggle("selected", index === selectedExpertFieldIndex);
     tile.classList.toggle("editing", index === selectedExpertFieldIndex && expertFieldEditing);
     tile.classList.toggle("conflict", overlappingFieldIds.has(field.id));
+    tile.dataset.expertFieldIndex = String(index);
     tile.setAttribute("role", "button");
     const conflictLabel = overlappingFieldIds.has(field.id) ? ", overlapping another field" : "";
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
@@ -1469,10 +1470,7 @@ function renderExpertEditorSurface() {
       selectExpertEditorField(index);
     });
     tile.addEventListener("keydown", event => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        selectExpertEditorField(index);
-      }
+      handleExpertSurfaceFieldKeydown(event, index);
     });
     tile.addEventListener("pointerdown", event => {
       expertDragFieldOffset = calculateExpertFieldPointerOffset(event, tile, field);
@@ -1515,6 +1513,69 @@ function calculateExpertFieldPointerOffset(event, tile, field) {
 function expertEditorGridBounds() {
   const grid = expertEditorDropzone.querySelector(".expert-surface-grid");
   return (grid ?? expertEditorDropzone).getBoundingClientRect();
+}
+
+function handleExpertSurfaceFieldKeydown(event, index) {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    selectExpertEditorField(index);
+    focusExpertSurfaceField(index);
+    return;
+  }
+
+  const deltas = {
+    ArrowLeft: { column: -1, row: 0 },
+    ArrowRight: { column: 1, row: 0 },
+    ArrowUp: { column: 0, row: -1 },
+    ArrowDown: { column: 0, row: 1 },
+  };
+  const delta = deltas[event.key];
+  if (!delta) return;
+
+  event.preventDefault();
+  selectExpertEditorField(index);
+  if (event.shiftKey && expertFieldEditing) {
+    resizeExpertEditorFieldBy(index, delta);
+    return;
+  }
+  nudgeExpertEditorField(index, delta);
+}
+
+function focusExpertSurfaceField(index) {
+  const tile = expertEditorDropzone.querySelector(`[data-expert-field-index="${index}"]`);
+  tile?.focus();
+}
+
+function nudgeExpertEditorField(index, delta) {
+  const field = expertEditorFields[index];
+  if (!field) return;
+  moveExpertEditorField(index, {
+    column: field.column + delta.column,
+    row: field.row + delta.row,
+  });
+  focusExpertSurfaceField(index);
+}
+
+function resizeExpertEditorFieldBy(index, delta) {
+  const field = expertEditorFields[index];
+  if (!field) return;
+  const base = getExpertFieldResizeBase(field);
+  const limit = getExpertFieldResizeLimit(field);
+  const nextWidth = clampExpertFieldSpan(field.width + delta.column, field.width, Math.min(limit.width, expertGridColumns - field.column));
+  const nextHeight = clampExpertFieldSpan(field.height + delta.row, field.height, Math.min(limit.height, expertGridRows - field.row));
+  expertEditorFields[index] = {
+    ...field,
+    width: nextWidth,
+    height: nextHeight,
+    resizeBaseWidth: base.width,
+    resizeBaseHeight: base.height,
+  };
+  expertWidth.value = String(nextWidth);
+  expertHeight.value = String(nextHeight);
+  selectedExpertFieldIndex = index;
+  renderExpertEditorPreview();
+  focusExpertSurfaceField(index);
+  statusMessage.textContent = `${field.id} resized to ${nextWidth}x${nextHeight}.`;
 }
 
 function startExpertFieldResize(event, index, corner, tile) {
@@ -1765,12 +1826,16 @@ function calculateExpertDropPlacement(event) {
 function moveExpertEditorField(index, placement) {
   const field = expertEditorFields[index];
   if (!field) return;
+  const column = Math.max(0, Math.min(expertGridColumns - field.width, placement.column));
+  const row = Math.max(0, Math.min(expertGridRows - field.height, placement.row));
   expertEditorFields[index] = {
     ...field,
-    column: Math.max(0, Math.min(expertGridColumns - field.width, placement.column)),
-    row: Math.max(0, Math.min(expertGridRows - field.height, placement.row)),
+    column,
+    row,
   };
   selectedExpertFieldIndex = index;
+  expertColumn.value = String(column);
+  expertRow.value = String(row);
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} moved on the Expert editor surface.`;
 }
