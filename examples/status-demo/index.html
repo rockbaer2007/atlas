@@ -332,6 +332,30 @@
         gap: 8px;
       }
 
+      .editor-mode-toggle {
+        display: inline-flex;
+        gap: 6px;
+        margin: 12px 0;
+      }
+
+      .editor-mode-toggle button {
+        min-width: 92px;
+        border: 1px solid #cbd5e1;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #172033;
+        padding: 8px 10px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .editor-mode-toggle button[aria-pressed="true"] {
+        border-color: #0f766e;
+        background: #e6fffb;
+        color: #0f766e;
+        font-weight: 700;
+      }
+
       .expert-editor-workbench {
         display: grid;
         grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
@@ -397,8 +421,6 @@
       }
 
       .expert-editor-dropzone {
-        display: grid;
-        place-items: center;
         min-height: 112px;
         padding: 14px;
         border: 1px dashed #0f766e;
@@ -406,6 +428,48 @@
         background: #f8fffd;
         color: #115e59;
         text-align: center;
+      }
+
+      .expert-surface-grid {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-rows: repeat(12, minmax(18px, auto));
+        gap: 6px;
+        min-height: 220px;
+      }
+
+      .expert-surface-grid p {
+        grid-column: 1 / -1;
+        place-self: center;
+        margin: 0;
+      }
+
+      .expert-surface-field {
+        display: grid;
+        gap: 3px;
+        min-height: 54px;
+        padding: 8px;
+        border: 1px solid #0f766e;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #172033;
+        text-align: left;
+        cursor: grab;
+      }
+
+      .expert-surface-field.dragging {
+        opacity: 0.65;
+      }
+
+      .expert-surface-field strong,
+      .expert-surface-field small {
+        overflow-wrap: anywhere;
+      }
+
+      .expert-surface-field span {
+        color: #0f766e;
+        font-size: 12px;
+        font-weight: 700;
       }
 
       .expert-editor-dropzone.drag-over {
@@ -705,12 +769,17 @@
           <button id="refresh-home-assistant-entities" type="button">Refresh entities</button>
         </div>
         <output id="selected-entity" aria-live="polite"></output>
-        <div class="ha-card-preview">
+        <div class="editor-mode-toggle" role="group" aria-label="Card editor mode">
+          <button type="button" data-editor-mode="simple" aria-pressed="true">Simple</button>
+          <button type="button" data-editor-mode="expert" aria-pressed="false">Expert</button>
+        </div>
+        <div id="simple-card-section" class="ha-card-preview">
           <label for="ha-card-preview">HA card code</label>
           <pre id="ha-card-preview" aria-live="polite"></pre>
         </div>
-        <h2 class="entity-section-title">Expert editor preview</h2>
-        <div class="expert-editor-workbench">
+        <div id="expert-editor-section" hidden>
+          <h2 class="entity-section-title">Expert editor preview</h2>
+          <div class="expert-editor-workbench">
           <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards">
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates"></div>
           </aside>
@@ -745,6 +814,7 @@
               <pre id="expert-editor-preview" aria-live="polite"></pre>
             </div>
           </section>
+          </div>
         </div>
       </div>
       <h2 class="entity-section-title">ATLAS Status Preview</h2>

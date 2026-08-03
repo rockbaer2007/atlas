@@ -76,6 +76,9 @@ const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const selectedEntity = document.querySelector("#selected-entity");
+const editorModeButtons = document.querySelectorAll("[data-editor-mode]");
+const simpleCardSection = document.querySelector("#simple-card-section");
+const expertEditorSection = document.querySelector("#expert-editor-section");
 const expertTemplate = document.querySelector("#expert-template");
 const expertTarget = document.querySelector("#expert-target");
 const expertEntity = document.querySelector("#expert-entity");
@@ -99,6 +102,8 @@ const emptyEntitySelectionMessage = "Select at least one entity.";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const expertEditorFields = [];
+const expertGridColumns = 12;
+const expertGridRows = 12;
 let connection;
 let removeLifecycleListener;
 let removeServiceResultListener;
@@ -202,6 +207,17 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
   }
   haCardTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget) ? selectedTarget : "entities";
   syncCardLayoutState();
+}
+
+function renderEditorMode(mode = "simple") {
+  const expert = mode === "expert";
+  simpleCardSection.hidden = expert;
+  expertEditorSection.hidden = !expert;
+  for (const button of editorModeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.editorMode === mode));
+  }
+  renderHaCardPreview();
+  renderExpertEditorPreview();
 }
 
 function renderExpertEditorOptions() {
@@ -673,11 +689,59 @@ function renderExpertFieldList() {
   });
 }
 
+function renderExpertEditorSurface() {
+  expertEditorDropzone.replaceChildren();
+  const grid = document.createElement("div");
+  grid.className = "expert-surface-grid";
+  if (expertEditorFields.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "Drag a card from the left into this editor surface.";
+    grid.append(empty);
+    expertEditorDropzone.append(grid);
+    return;
+  }
+
+  expertEditorFields.forEach((field, index) => {
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = "expert-surface-field";
+    tile.draggable = true;
+    tile.style.gridColumn = `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
+    tile.style.gridRow = `${field.row + 1} / span ${Math.min(expertGridRows, field.height)}`;
+    const title = document.createElement("strong");
+    title.textContent = field.id;
+    const target = document.createElement("span");
+    target.textContent = field.target;
+    const entity = document.createElement("small");
+    entity.textContent = field.entityId || "demo entity";
+    tile.append(title, target, entity);
+    tile.addEventListener("click", () => {
+      expertColumn.value = String(field.column);
+      expertRow.value = String(field.row);
+      expertWidth.value = String(field.width);
+      expertHeight.value = String(field.height);
+      expertTarget.value = field.target;
+      expertEntity.value = field.entityId;
+      statusMessage.textContent = `${field.id} selected on the Expert editor surface.`;
+    });
+    tile.addEventListener("dragstart", event => {
+      event.dataTransfer?.setData("application/x-atlas-field-index", String(index));
+      tile.classList.add("dragging");
+    });
+    tile.addEventListener("dragend", () => {
+      tile.classList.remove("dragging");
+    });
+    grid.append(tile);
+  });
+  expertEditorDropzone.append(grid);
+}
+
 function renderExpertEditorPreview() {
   if (expertEditorFields.length === 0) {
     expertEditorSummary.textContent = "Expert fields: 0.";
     expertEditorPreview.textContent = "Add a template field to preview the Expert editor output.";
     renderExpertFieldList();
+    renderExpertEditorSurface();
     return;
   }
 
@@ -689,15 +753,14 @@ function renderExpertEditorPreview() {
   expertEditorSummary.textContent = `Expert fields: ${expertEditorFields.length}.`;
   expertEditorPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   renderExpertFieldList();
+  renderExpertEditorSurface();
 }
 
 function addExpertEditorField() {
   const entityId = expertEntity.value.trim() || currentEntityId();
-  const field = createHomeAssistantCardEditorFieldFromTemplate({
-    template: expertTemplate.value,
-    target: expertTarget.value,
+  const field = createExpertEditorField({
+    templateId: expertTemplate.value,
     entityId,
-    id: `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
     column: Number(expertColumn.value),
     row: Number(expertRow.value),
     width: Number(expertWidth.value),
@@ -709,9 +772,59 @@ function addExpertEditorField() {
   statusMessage.textContent = `${field.id} added to the Expert editor preview.`;
 }
 
-function addExpertEditorFieldFromTemplate(templateId) {
+function createExpertEditorField(input) {
+  const field = createHomeAssistantCardEditorFieldFromTemplate({
+    template: input.templateId,
+    target: expertTarget.value,
+    entityId: input.entityId,
+    id: `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
+    column: input.column,
+    row: input.row,
+    width: input.width,
+    height: input.height,
+  });
+  return field;
+}
+
+function addExpertEditorFieldFromTemplate(templateId, placement = calculateExpertDropPlacement()) {
   selectExpertTemplate(templateId);
-  addExpertEditorField();
+  const field = createExpertEditorField({
+    templateId,
+    entityId: expertEntity.value.trim() || currentEntityId(),
+    column: placement.column,
+    row: placement.row,
+    width: Number(expertWidth.value),
+    height: Number(expertHeight.value),
+  });
+  expertEditorFields.push(field);
+  expertEntity.value = "";
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${field.id} placed on the Expert editor surface.`;
+}
+
+function calculateExpertDropPlacement(event) {
+  if (!event) {
+    return {
+      column: Number(expertColumn.value),
+      row: Number(expertRow.value),
+    };
+  }
+  const bounds = expertEditorDropzone.getBoundingClientRect();
+  const column = Math.max(0, Math.min(expertGridColumns - 1, Math.floor(((event.clientX - bounds.left) / bounds.width) * expertGridColumns)));
+  const row = Math.max(0, Math.min(expertGridRows - 1, Math.floor(((event.clientY - bounds.top) / bounds.height) * expertGridRows)));
+  return { column, row };
+}
+
+function moveExpertEditorField(index, placement) {
+  const field = expertEditorFields[index];
+  if (!field) return;
+  expertEditorFields[index] = {
+    ...field,
+    column: Math.max(0, Math.min(expertGridColumns - field.width, placement.column)),
+    row: Math.max(0, Math.min(expertGridRows - field.height, placement.row)),
+  };
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${field.id} moved on the Expert editor surface.`;
 }
 
 function createHaCardExportPayload() {
@@ -1211,6 +1324,11 @@ haCardFormat.addEventListener("change", () => {
   renderHaCardPreview();
   renderExpertEditorPreview();
 });
+for (const button of editorModeButtons) {
+  button.addEventListener("click", () => {
+    renderEditorMode(button.dataset.editorMode);
+  });
+}
 expertTemplate.addEventListener("change", () => {
   selectExpertTemplate(expertTemplate.value);
 });
@@ -1232,10 +1350,15 @@ expertEditorDropzone.addEventListener("dragleave", event => {
 expertEditorDropzone.addEventListener("drop", event => {
   event.preventDefault();
   expertEditorDropzone.classList.remove("drag-over");
+  const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
+  if (fieldIndex) {
+    moveExpertEditorField(Number(fieldIndex), calculateExpertDropPlacement(event));
+    return;
+  }
   const templateId = event.dataTransfer?.getData("application/x-atlas-template")
     || event.dataTransfer?.getData("text/plain")
     || expertTemplate.value;
-  addExpertEditorFieldFromTemplate(templateId);
+  addExpertEditorFieldFromTemplate(templateId, calculateExpertDropPlacement(event));
 });
 saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();
@@ -1452,9 +1575,8 @@ void renderEntityState("on");
 renderCardTargetOptions(initialCardTarget);
 renderExpertEditorOptions();
 renderExpertTemplatePalette();
-renderExpertEditorPreview();
 syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
-renderHaCardPreview();
+renderEditorMode("simple");

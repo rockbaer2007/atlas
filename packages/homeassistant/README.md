@@ -148,7 +148,8 @@ Imports now accept nested Home Assistant cards as well. A real-world
 `vertical-stack` can contain `horizontal-stack` rows, `grid` containers,
 `conditional` cards and regular cards, and ATLAS will keep the supported
 structure while extracting the involved entities. Bubble header or separator
-cards without an entity are accepted too. Advanced Bubble Card details such as
+cards without an entity are accepted too, as are hand-built Bubble switch
+columns and `empty-column` cards. Advanced Bubble Card details such as
 `modules`, `styles`, `grid_options`, sliders and sub-buttons are planned as a
 later preservation layer.
 

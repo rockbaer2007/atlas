@@ -960,6 +960,85 @@ describe("Home Assistant entities card configuration", () => {
     ]);
   });
 
+  it("parses hand-built Bubble switch columns from Home Assistant YAML", () => {
+    const parsed = parseHomeAssistantEntitiesCardConfiguration([
+      "type: horizontal-stack",
+      "cards:",
+      "  - type: vertical-stack",
+      "    cards:",
+      "      - type: custom:bubble-card",
+      "        card_type: button",
+      "        button_type: switch",
+      "        entity: switch.lampe_gross",
+      "        name: Groß",
+      "        tap_action:",
+      "          action: toggle",
+      "      - type: custom:bubble-card",
+      "        card_type: empty-column",
+      "        button_type: switch",
+      "        entity: switch.licht_werkbank",
+      "        name: Werkbank",
+      "  - type: vertical-stack",
+      "    cards:",
+      "      - type: custom:bubble-card",
+      "        card_type: button",
+      "        button_type: switch",
+      "        entity: switch.sitzplatz_kugel",
+      "        name: Sitzplatz",
+      "title: Garten",
+    ].join("\n"));
+
+    expect(parsed).toEqual({
+      format: "yaml",
+      target: "bubble",
+      layout: "horizontal-stack",
+      card: {
+        type: "horizontal-stack",
+        cards: [
+          {
+            type: "vertical-stack",
+            cards: [
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "switch",
+                name: "Groß",
+                entity: "switch.lampe_gross",
+                show_state: true,
+              },
+              {
+                type: "custom:bubble-card",
+                card_type: "empty-column",
+                button_type: "switch",
+                name: "Werkbank",
+                entity: "switch.licht_werkbank",
+                show_state: true,
+              },
+            ],
+          },
+          {
+            type: "vertical-stack",
+            cards: [
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "switch",
+                name: "Sitzplatz",
+                entity: "switch.sitzplatz_kugel",
+                show_state: true,
+              },
+            ],
+          },
+        ],
+      },
+    });
+    expect(summarizeHomeAssistantCardImport(serializeHomeAssistantEntitiesCardConfiguration(parsed.card, "json")).entityIds).toEqual([
+      "switch.lampe_gross",
+      "switch.licht_werkbank",
+      "switch.sitzplatz_kugel",
+    ]);
+  });
+
   it("parses Mushroom and Bubble cards", () => {
     expect(parseHomeAssistantEntitiesCardConfiguration([
       "type: custom:mushroom-template-card",

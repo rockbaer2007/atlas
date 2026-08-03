@@ -20,8 +20,8 @@ export interface HomeAssistantMushroomTemplateCardConfiguration {
 
 export interface HomeAssistantBubbleCardConfiguration {
   readonly type: "custom:bubble-card";
-  readonly card_type: "button" | "separator";
-  readonly button_type?: "name" | "slider" | "state";
+  readonly card_type: "button" | "empty-column" | "separator";
+  readonly button_type?: "name" | "slider" | "state" | "switch";
   readonly name: string;
   readonly entity?: string;
   readonly show_state?: true;
@@ -561,15 +561,18 @@ function normalizeHomeAssistantCardConfiguration(
 
   if (card.type === "custom:bubble-card") {
     const entity = typeof card.entity === "string" ? card.entity.trim() : "";
-    const cardType = card.card_type === "separator" ? "separator" : "button";
-    const buttonType = card.button_type === "name" || card.button_type === "slider" || card.button_type === "state"
+    const cardType = card.card_type === "separator" || card.card_type === "empty-column" ? card.card_type : "button";
+    const buttonType = card.button_type === "name"
+      || card.button_type === "slider"
+      || card.button_type === "state"
+      || card.button_type === "switch"
       ? card.button_type
       : undefined;
     return {
       card: {
         type: "custom:bubble-card",
         card_type: cardType,
-        ...(cardType === "button" ? { button_type: buttonType ?? "state" } : {}),
+        ...(cardType !== "separator" ? { button_type: buttonType ?? "state" } : {}),
         name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : "Imported Bubble card",
         ...(entity ? { entity } : {}),
         ...(card.show_state === true || entity ? { show_state: true as const } : {}),

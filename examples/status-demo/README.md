@@ -77,11 +77,12 @@ Mushroom or Bubble Card dependency.
 The visual status surface below the code block is an ATLAS status preview, not a
 Home Assistant Lovelace renderer.
 
-The demo also exposes the first Expert editor preview. It renders the shared
-template palette as a left sidebar, lets a host choose or drag a card template
-into the editor surface, places the field on the bounded expert grid and renders
-the resulting nested Home Assistant card code. Added fields are listed with a
-remove button so the preview can be adjusted without clearing the whole surface.
-The sidebar uses loaded Lovelace resources to mark custom card families as
-installed, missing or unchecked. This is still a preview surface, not the final
-drag-and-drop editor.
+The demo also exposes the first Expert editor preview behind a Simple/Expert
+mode switch. It renders the shared template palette as a left sidebar, lets a
+host choose or drag a card template into the editor surface, places the field on
+the bounded expert grid and renders the resulting nested Home Assistant card
+code. Added fields are shown as movable tiles on the surface and are also listed
+with a remove button so the preview can be adjusted without clearing the whole
+surface. The sidebar uses loaded Lovelace resources to mark custom card families
+as installed, missing or unchecked. This is still a preview surface, not the
+final drag-and-drop editor.
