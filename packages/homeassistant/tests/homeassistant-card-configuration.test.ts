@@ -7,7 +7,9 @@ import {
   createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
   createHomeAssistantLovelaceResourceReferences,
+  decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
+  inspectHomeAssistantCardArtifact,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
@@ -406,6 +408,105 @@ describe("Home Assistant entities card configuration", () => {
     });
     expect(summarizeHomeAssistantCardImport(cardPackage.content)).toMatchObject({
       packaged: false,
+    });
+  });
+
+  it("inspects import artifacts before parsing them", () => {
+    const cardPackage = createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "bubble",
+        title: "Door",
+        entityIds: ["binary_sensor.door"],
+      }),
+      format: "json",
+      name: "Door",
+    });
+
+    expect(inspectHomeAssistantCardArtifact(JSON.stringify(cardPackage))).toEqual({
+      kind: "atlas-card-package",
+      format: "json",
+      importable: true,
+      requiresReview: false,
+      reason: "The artifact is an ATLAS Home Assistant card package.",
+    });
+    expect(inspectHomeAssistantCardArtifact(JSON.stringify({
+      type: "custom:bubble-card",
+      entity: "light.office",
+    }))).toMatchObject({
+      kind: "home-assistant-card",
+      format: "json",
+      importable: true,
+      requiresReview: false,
+    });
+    expect(inspectHomeAssistantCardArtifact("type: entities\nentities:\n  - light.office")).toMatchObject({
+      kind: "home-assistant-card",
+      format: "yaml",
+      importable: true,
+      requiresReview: false,
+    });
+  });
+
+  it("flags external card-builder shaped artifacts for explicit review", () => {
+    expect(inspectHomeAssistantCardArtifact(JSON.stringify({
+      name: "Imported Builder Card",
+      blocks: [
+        {
+          id: "state",
+          type: "entity-state",
+        },
+      ],
+      entity_slots: [
+        "main",
+      ],
+    }))).toEqual({
+      kind: "external-card-builder-artifact",
+      format: "json",
+      importable: false,
+      requiresReview: true,
+      reason: "The artifact resembles an external card-builder export and needs explicit compatibility mapping before import.",
+    });
+    expect(inspectHomeAssistantCardArtifact("hello")).toEqual({
+      kind: "unknown",
+      format: "unknown",
+      importable: false,
+      requiresReview: true,
+      reason: "The artifact does not match a supported ATLAS, Home Assistant or known external card-builder shape.",
+    });
+  });
+
+  it("decides whether inspected artifacts can import, require review or must be rejected", () => {
+    expect(decideHomeAssistantCardArtifactImport(JSON.stringify({
+      type: "entities",
+      title: "Office",
+      entities: [
+        "sensor.office",
+      ],
+    }))).toMatchObject({
+      action: "import",
+      message: "Import can continue with the supported ATLAS or Home Assistant card artifact.",
+      inspection: {
+        kind: "home-assistant-card",
+        importable: true,
+      },
+    });
+    expect(decideHomeAssistantCardArtifactImport(JSON.stringify({
+      card_builder_version: "2.6.0",
+      blocks: [],
+    }))).toMatchObject({
+      action: "review",
+      message: "Show a compatibility review before importing this external card-builder artifact.",
+      inspection: {
+        kind: "external-card-builder-artifact",
+        requiresReview: true,
+      },
+    });
+    expect(decideHomeAssistantCardArtifactImport("not a card")).toMatchObject({
+      action: "reject",
+      message: "Reject this artifact because ATLAS cannot identify a safe import path.",
+      inspection: {
+        kind: "unknown",
+        importable: false,
+      },
     });
   });
 

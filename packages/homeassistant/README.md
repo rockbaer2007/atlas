@@ -115,6 +115,15 @@ schema-based import/export evaluation, while direct source copying is explicitly
 blocked unless ATLAS intentionally accepts the derivative-work and AGPL-3.0
 obligations.
 
+Import flows can inspect artifacts before parsing. The inspection classifies
+ATLAS card packages, raw Home Assistant card snippets, possible external
+card-builder exports and unknown content. External card-builder-shaped files
+are deliberately marked as requiring review until an explicit compatibility
+mapping exists.
+Hosts can turn that inspection into an import decision: supported artifacts can
+continue directly, external card-builder-shaped files open a compatibility
+review, and unknown content is rejected.
+
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
 and are not retained by the controller.

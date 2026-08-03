@@ -8,6 +8,7 @@ export * from "./HomeAssistantEntityState";
 export * from "./HomeAssistantEntityPresentation";
 export * from "./HomeAssistantEntityCatalog";
 export * from "./HomeAssistantCardConfiguration";
+export * from "./HomeAssistantCardArtifactInspection";
 export * from "./HomeAssistantCardEditorPlan";
 export * from "./HomeAssistantCardEditorReference";
 export * from "./HomeAssistantPanelGroup";

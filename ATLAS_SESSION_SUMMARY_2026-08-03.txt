@@ -1,0 +1,55 @@
+ATLAS Session Summary - 2026-08-03
+
+Context
+ATLAS continues to move toward a Home Assistant card/editor workflow. The
+current focus is the @atlas/homeassistant package, the status demo and the
+public UGSo documentation in German and English.
+
+Completed before this note
+- Simple and Expert editor modes are modeled.
+- Expert editor fields can use Entities, Bubble Card or Mushroom Template.
+- Expert fields can form row-based horizontal-stacks and page-level
+  vertical-stacks.
+- A single Expert field can itself be a card, horizontal-stack or vertical-stack.
+- A sidebar template palette is modeled for entity lists, state buttons,
+  switch buttons, vertical-stack and horizontal-stack blocks.
+- Template placement is clamped to editor grid bounds.
+- HACS resource planning exists for ATLAS, Bubble Card and Mushroom.
+- User-defined HACS script filenames are supported at the planning level.
+- studiobts/home-assistant-card-builder is tracked as an external AGPL-3.0
+  reference, not copied into ATLAS.
+
+New work in this run
+- Added pre-import artifact inspection for Home Assistant card artifacts.
+- ATLAS can now classify:
+  - ATLAS card packages
+  - raw Home Assistant cards as JSON
+  - raw Home Assistant cards as YAML
+  - external card-builder-shaped JSON artifacts
+  - unknown content
+- Added import decisions for host UIs:
+  - import: supported ATLAS or Home Assistant artifacts
+  - review: external card-builder-shaped artifacts
+  - reject: unknown or unsafe content
+- Updated @atlas/homeassistant README.
+- Updated ROADMAP.md.
+- Updated public docs in German and English.
+
+Important policy decision
+The external home-assistant-card-builder project remains a reference only.
+ATLAS should not copy source code from it unless there is an explicit decision
+to accept AGPL-3.0 obligations, preserve attribution and publish source as
+required. The preferred path is independent ATLAS contracts plus possible
+schema-based import/export compatibility later.
+
+Verification planned for this run
+- pnpm --filter @atlas/homeassistant test
+- pnpm build
+- npm run docs:build in C:\Users\rockb\source\repos\ugso-opensource-docs
+
+Next sensible steps
+- Surface the import inspection in the status demo UI before import.
+- Add a compatibility-review result object for external card-builder artifacts.
+- Add a visual Expert editor prototype panel in the demo.
+- Connect sidebar templates to the demo surface.
+- Later: design HACS package output for an installable ATLAS card package.
