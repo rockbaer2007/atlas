@@ -2,7 +2,16 @@ export interface HomeAssistantEntitiesCardEntity {
   readonly entity: string;
 }
 
-export type HomeAssistantCardTarget = "entities" | "mushroom-template" | "bubble";
+export type HomeAssistantCardTarget =
+  | "entities"
+  | "entity"
+  | "button"
+  | "sensor"
+  | "thermostat"
+  | "link"
+  | "webpage"
+  | "mushroom-template"
+  | "bubble";
 export type HomeAssistantCardLayout = "single" | "horizontal-stack" | "vertical-stack";
 export type HomeAssistantBubbleButtonType = "name" | "slider" | "state" | "switch";
 
@@ -10,6 +19,45 @@ export interface HomeAssistantEntitiesCardConfiguration {
   readonly type: "entities";
   readonly title: string;
   readonly entities: readonly HomeAssistantEntitiesCardEntity[];
+}
+
+export interface HomeAssistantEntityCardConfiguration {
+  readonly type: "entity";
+  readonly name: string;
+  readonly entity: string;
+}
+
+export interface HomeAssistantButtonCardTapAction {
+  readonly action: "toggle" | "more-info" | "navigate" | "url";
+  readonly navigation_path?: string;
+  readonly url_path?: string;
+}
+
+export interface HomeAssistantButtonCardConfiguration {
+  readonly type: "button";
+  readonly name: string;
+  readonly entity?: string;
+  readonly icon?: string;
+  readonly tap_action?: HomeAssistantButtonCardTapAction;
+}
+
+export interface HomeAssistantSensorCardConfiguration {
+  readonly type: "sensor";
+  readonly name: string;
+  readonly entity: string;
+}
+
+export interface HomeAssistantThermostatCardConfiguration {
+  readonly type: "thermostat";
+  readonly name: string;
+  readonly entity: string;
+}
+
+export interface HomeAssistantWebpageCardConfiguration {
+  readonly type: "iframe";
+  readonly title: string;
+  readonly url: string;
+  readonly aspect_ratio: string;
 }
 
 export interface HomeAssistantMushroomTemplateCardConfiguration {
@@ -54,6 +102,11 @@ export interface HomeAssistantStackCardConfiguration {
 
 export type HomeAssistantSingleCardConfiguration =
   | HomeAssistantEntitiesCardConfiguration
+  | HomeAssistantEntityCardConfiguration
+  | HomeAssistantButtonCardConfiguration
+  | HomeAssistantSensorCardConfiguration
+  | HomeAssistantThermostatCardConfiguration
+  | HomeAssistantWebpageCardConfiguration
   | HomeAssistantMushroomTemplateCardConfiguration
   | HomeAssistantBubbleCardConfiguration
   | HomeAssistantGridCardConfiguration
@@ -166,6 +219,42 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
     dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
   },
   {
+    target: "entity",
+    label: "Entity",
+    type: "entity",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
+    target: "button",
+    label: "Button",
+    type: "button",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
+    target: "sensor",
+    label: "Sensor",
+    type: "sensor",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
+    target: "thermostat",
+    label: "Thermostat",
+    type: "thermostat",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
+    target: "link",
+    label: "Link",
+    type: "button",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
+    target: "webpage",
+    label: "Webpage",
+    type: "iframe",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
     target: "mushroom-template",
     label: "Mushroom template",
     type: "custom:mushroom-template-card",
@@ -261,6 +350,62 @@ function createHomeAssistantSingleCardConfiguration(
     };
   }
 
+  if (input.target === "entity") {
+    return {
+      type: "entity",
+      name: title,
+      entity: primaryEntity,
+    };
+  }
+
+  if (input.target === "button") {
+    return {
+      type: "button",
+      name: title,
+      entity: primaryEntity,
+      tap_action: { action: "toggle" },
+    };
+  }
+
+  if (input.target === "sensor") {
+    return {
+      type: "sensor",
+      name: title,
+      entity: primaryEntity,
+    };
+  }
+
+  if (input.target === "thermostat") {
+    return {
+      type: "thermostat",
+      name: title,
+      entity: primaryEntity,
+    };
+  }
+
+  if (input.target === "link") {
+    const navigationPath = primaryEntity.startsWith("/") ? primaryEntity : "/lovelace";
+    return {
+      type: "button",
+      name: title,
+      icon: "mdi:link",
+      tap_action: {
+        action: "navigate",
+        navigation_path: navigationPath,
+      },
+    };
+  }
+
+  if (input.target === "webpage") {
+    const url = /^https?:\/\//i.test(primaryEntity) ? primaryEntity : "https://www.home-assistant.io";
+    return {
+      type: "iframe",
+      title,
+      url,
+      aspect_ratio: "50%",
+    };
+  }
+
   return createHomeAssistantEntitiesCardConfiguration({ title, entityIds });
 }
 
@@ -300,6 +445,10 @@ export function serializeHomeAssistantEntitiesCardConfiguration(
 
   if (isHomeAssistantCustomCardConfiguration(card)) {
     return serializeHomeAssistantCustomCardYaml(card);
+  }
+
+  if (isHomeAssistantCoreSingleCardConfiguration(card)) {
+    return serializeHomeAssistantCoreCardYaml(card);
   }
 
   throw new Error("Unsupported Home Assistant card.");
@@ -450,6 +599,12 @@ export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration)
   }
   if (card.type === "custom:mushroom-template-card") return "mushroom-template";
   if (card.type === "custom:bubble-card") return "bubble";
+  if (card.type === "entity") return "entity";
+  if (card.type === "sensor") return "sensor";
+  if (card.type === "thermostat") return "thermostat";
+  if (card.type === "iframe") return "webpage";
+  if (card.type === "button" && card.tap_action?.action === "navigate") return "link";
+  if (card.type === "button") return "button";
   return "entities";
 }
 
@@ -471,7 +626,7 @@ export function getHomeAssistantCardEntityIds(card: HomeAssistantCardConfigurati
     return dedupeEntityIds(card.entities.map(entity => entity.entity));
   }
 
-  return card.entity ? [card.entity] : [];
+  return "entity" in card && card.entity ? [card.entity] : [];
 }
 
 export function getHomeAssistantCardTitle(card: HomeAssistantCardConfiguration): string {
@@ -493,7 +648,15 @@ export function getHomeAssistantCardTitle(card: HomeAssistantCardConfiguration):
     return card.name;
   }
 
-  return card.primary;
+  if (card.type === "custom:mushroom-template-card") {
+    return card.primary;
+  }
+
+  if (card.type === "iframe") {
+    return card.title;
+  }
+
+  return card.name;
 }
 
 function normalizeHomeAssistantCardConfiguration(
@@ -595,6 +758,58 @@ function normalizeHomeAssistantCardConfiguration(
     };
   }
 
+  if (card.type === "entity" || card.type === "sensor" || card.type === "thermostat") {
+    const entity = typeof card.entity === "string" ? card.entity.trim() : "";
+    if (!entity) throw new Error("Home Assistant core card has no entity.");
+    const normalizedCard = {
+      type: card.type,
+      name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : `Imported ${card.type} card`,
+      entity,
+    } satisfies HomeAssistantEntityCardConfiguration | HomeAssistantSensorCardConfiguration | HomeAssistantThermostatCardConfiguration;
+    return {
+      card: normalizedCard,
+      target: getHomeAssistantCardTarget(normalizedCard),
+      layout: "single",
+    };
+  }
+
+  if (card.type === "button") {
+    const entity = typeof card.entity === "string" ? card.entity.trim() : "";
+    const tapAction = isRecord(card.tap_action) && card.tap_action.action === "navigate"
+      ? {
+        action: "navigate" as const,
+        navigation_path: typeof card.tap_action.navigation_path === "string" ? card.tap_action.navigation_path : "/lovelace",
+      }
+      : undefined;
+    const normalizedCard = {
+      type: "button",
+      name: typeof card.name === "string" && card.name.trim() ? card.name.trim() : "Imported button card",
+      ...(entity ? { entity } : {}),
+      ...(typeof card.icon === "string" ? { icon: card.icon } : {}),
+      ...(tapAction ? { tap_action: tapAction } : {}),
+    } satisfies HomeAssistantButtonCardConfiguration;
+    return {
+      card: normalizedCard,
+      target: getHomeAssistantCardTarget(normalizedCard),
+      layout: "single",
+    };
+  }
+
+  if (card.type === "iframe") {
+    const url = typeof card.url === "string" && card.url.trim() ? card.url.trim() : "https://www.home-assistant.io";
+    const normalizedCard = {
+      type: "iframe",
+      title: typeof card.title === "string" && card.title.trim() ? card.title.trim() : "Imported webpage card",
+      url,
+      aspect_ratio: typeof card.aspect_ratio === "string" && card.aspect_ratio.trim() ? card.aspect_ratio.trim() : "50%",
+    } satisfies HomeAssistantWebpageCardConfiguration;
+    return {
+      card: normalizedCard,
+      target: "webpage",
+      layout: "single",
+    };
+  }
+
   if (card.type !== "entities" || !Array.isArray(card.entities)) {
     throw new Error("Unsupported Home Assistant card.");
   }
@@ -635,6 +850,27 @@ function serializeHomeAssistantCustomCardYaml(
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}: ${serializeYamlScalar(value)}`)
     .join("\n");
+}
+
+function serializeHomeAssistantCoreCardYaml(
+  card: Exclude<HomeAssistantSingleCardConfiguration, HomeAssistantEntitiesCardConfiguration | HomeAssistantCustomCardConfiguration | HomeAssistantGridCardConfiguration | HomeAssistantConditionalCardConfiguration>,
+): string {
+  return serializeHomeAssistantYamlObject({ ...card }).join("\n");
+}
+
+function serializeHomeAssistantYamlObject(value: Record<string, unknown>, indent = 0): string[] {
+  const padding = " ".repeat(indent);
+  const lines: string[] = [];
+  for (const [key, item] of Object.entries(value)) {
+    if (item === undefined) continue;
+    if (isRecord(item)) {
+      lines.push(`${padding}${key}:`);
+      lines.push(...serializeHomeAssistantYamlObject(item, indent + 2));
+      continue;
+    }
+    lines.push(`${padding}${key}: ${serializeYamlScalar(item)}`);
+  }
+  return lines;
 }
 
 function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfiguration): string {
@@ -923,4 +1159,14 @@ function isHomeAssistantCustomCardConfiguration(
   card: HomeAssistantCardConfiguration,
 ): card is HomeAssistantCustomCardConfiguration {
   return card.type === "custom:mushroom-template-card" || card.type === "custom:bubble-card";
+}
+
+function isHomeAssistantCoreSingleCardConfiguration(
+  card: HomeAssistantCardConfiguration,
+): card is Exclude<HomeAssistantSingleCardConfiguration, HomeAssistantEntitiesCardConfiguration | HomeAssistantCustomCardConfiguration | HomeAssistantGridCardConfiguration | HomeAssistantConditionalCardConfiguration> {
+  return card.type === "entity"
+    || card.type === "button"
+    || card.type === "sensor"
+    || card.type === "thermostat"
+    || card.type === "iframe";
 }

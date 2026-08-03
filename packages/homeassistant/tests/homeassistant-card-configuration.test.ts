@@ -166,6 +166,39 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("creates and serializes built-in core card targets", () => {
+    expect(serializeHomeAssistantEntitiesCardConfiguration(createHomeAssistantCardConfiguration({
+      target: "button",
+      title: "Office light",
+      entityIds: ["light.office"],
+    }), "yaml")).toBe([
+      "type: \"button\"",
+      "name: \"Office light\"",
+      "entity: \"light.office\"",
+      "tap_action:",
+      "  action: \"toggle\"",
+    ].join("\n"));
+    expect(createHomeAssistantCardConfiguration({
+      target: "thermostat",
+      title: "Office climate",
+      entityIds: ["climate.office"],
+    })).toEqual({
+      type: "thermostat",
+      name: "Office climate",
+      entity: "climate.office",
+    });
+    expect(serializeHomeAssistantEntitiesCardConfiguration(createHomeAssistantCardConfiguration({
+      target: "webpage",
+      title: "Docs",
+      entityIds: ["https://www.home-assistant.io"],
+    }), "yaml")).toBe([
+      "type: \"iframe\"",
+      "title: \"Docs\"",
+      "url: \"https://www.home-assistant.io\"",
+      "aspect_ratio: \"50%\"",
+    ].join("\n"));
+  });
+
   it("lists supported Bubble button types", () => {
     expect(listHomeAssistantBubbleButtonTypes()).toEqual(["state", "switch", "slider", "name"]);
   });
@@ -253,12 +286,49 @@ describe("Home Assistant entities card configuration", () => {
   });
 
   it("lists supported card targets with dependency metadata", () => {
+    const builtInDependency = { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] };
     expect(listHomeAssistantCardTargets()).toEqual([
       {
         target: "entities",
         label: "Entities",
         type: "entities",
-        dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+        dependency: builtInDependency,
+      },
+      {
+        target: "entity",
+        label: "Entity",
+        type: "entity",
+        dependency: builtInDependency,
+      },
+      {
+        target: "button",
+        label: "Button",
+        type: "button",
+        dependency: builtInDependency,
+      },
+      {
+        target: "sensor",
+        label: "Sensor",
+        type: "sensor",
+        dependency: builtInDependency,
+      },
+      {
+        target: "thermostat",
+        label: "Thermostat",
+        type: "thermostat",
+        dependency: builtInDependency,
+      },
+      {
+        target: "link",
+        label: "Link",
+        type: "button",
+        dependency: builtInDependency,
+      },
+      {
+        target: "webpage",
+        label: "Webpage",
+        type: "iframe",
+        dependency: builtInDependency,
       },
       {
         target: "mushroom-template",

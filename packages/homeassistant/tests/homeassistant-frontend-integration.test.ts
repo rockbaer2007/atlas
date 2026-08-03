@@ -156,6 +156,12 @@ describe("Home Assistant frontend integration planning", () => {
       ],
       supportedFieldTargets: [
         "entities",
+        "entity",
+        "button",
+        "sensor",
+        "thermostat",
+        "link",
+        "webpage",
         "bubble",
         "mushroom-template",
       ],
@@ -219,6 +225,13 @@ describe("Home Assistant frontend integration planning", () => {
   it("lists visual sidebar templates for expert card placement", () => {
     expect(listHomeAssistantCardEditorTemplates().map(template => template.id)).toEqual([
       "entity-list",
+      "entity-card",
+      "button-card",
+      "grid",
+      "sensor-card",
+      "thermostat-card",
+      "link-card",
+      "webpage-card",
       "state-button",
       "switch-button",
       "vertical-stack",
@@ -226,6 +239,13 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(listHomeAssistantCardEditorTemplates().map(template => [template.id, template.defaultWidth, template.defaultHeight])).toEqual([
       ["entity-list", 4, 2],
+      ["entity-card", 4, 2],
+      ["button-card", 4, 2],
+      ["grid", 6, 3],
+      ["sensor-card", 4, 2],
+      ["thermostat-card", 4, 3],
+      ["link-card", 4, 2],
+      ["webpage-card", 8, 4],
       ["state-button", 4, 2],
       ["switch-button", 4, 2],
       ["vertical-stack", 4, 2],

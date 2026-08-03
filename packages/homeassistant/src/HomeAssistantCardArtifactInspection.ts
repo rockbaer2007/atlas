@@ -44,7 +44,19 @@ export interface HomeAssistantCardArtifactReview {
 export interface HomeAssistantCardArtifactBlockMapping {
   readonly sourceId: string;
   readonly sourceType: string;
-  readonly templateId: "entity-list" | "state-button" | "switch-button" | "vertical-stack" | "horizontal-stack";
+  readonly templateId:
+    | "entity-list"
+    | "entity-card"
+    | "state-button"
+    | "switch-button"
+    | "button-card"
+    | "grid"
+    | "sensor-card"
+    | "thermostat-card"
+    | "link-card"
+    | "webpage-card"
+    | "vertical-stack"
+    | "horizontal-stack";
   readonly confidence: "high" | "medium" | "low";
   readonly reason: string;
 }
@@ -291,7 +303,7 @@ function parseJsonRecord(text: string): Record<string, unknown> | undefined {
 }
 
 function looksLikeHomeAssistantCardYaml(text: string): boolean {
-  return /^type:\s*(entities|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card)\b/m.test(text);
+  return /^type:\s*(entities|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card)\b/m.test(text);
 }
 
 function isHomeAssistantCardRecord(value: Record<string, unknown>): boolean {
@@ -351,7 +363,67 @@ function mapExternalBlock(
     };
   }
 
-  if (block.type.includes("state") || block.type.includes("sensor")) {
+  if (block.type.includes("sensor")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "sensor-card",
+      confidence: "high",
+      reason: "Sensor-like blocks map to the ATLAS sensor card template.",
+    };
+  }
+
+  if (block.type.includes("thermostat") || block.type.includes("climate")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "thermostat-card",
+      confidence: "high",
+      reason: "Thermostat-like blocks map to the ATLAS thermostat card template.",
+    };
+  }
+
+  if (block.type.includes("button")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "button-card",
+      confidence: "high",
+      reason: "Button-like blocks map to the ATLAS button card template.",
+    };
+  }
+
+  if (block.type.includes("link")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "link-card",
+      confidence: "medium",
+      reason: "Link-like blocks map to the ATLAS link card template.",
+    };
+  }
+
+  if (block.type.includes("webpage") || block.type.includes("iframe")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "webpage-card",
+      confidence: "medium",
+      reason: "Webpage-like blocks map to the ATLAS webpage card template.",
+    };
+  }
+
+  if (block.type.includes("grid") || block.type.includes("raster")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "grid",
+      confidence: "medium",
+      reason: "Grid-like blocks map to the ATLAS grid template.",
+    };
+  }
+
+  if (block.type.includes("state")) {
     return {
       sourceId: block.id,
       sourceType: block.type,
@@ -365,9 +437,9 @@ function mapExternalBlock(
     return {
       sourceId: block.id,
       sourceType: block.type,
-      templateId: "entity-list",
+      templateId: "entity-card",
       confidence: "medium",
-      reason: "Entity-like blocks can map to an ATLAS entity list template.",
+      reason: "Entity-like blocks can map to an ATLAS entity card template.",
     };
   }
 

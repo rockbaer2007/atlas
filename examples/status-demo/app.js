@@ -115,9 +115,16 @@ const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
 let expertPaletteCards = [
+  { id: "core-entity", category: "Core", label: "Entity", templateId: "entity-card", target: "entity", preview: ["type: entity"] },
   { id: "core-entities", category: "Core", label: "Entities", templateId: "entity-list", target: "entities", preview: ["Entity list"] },
+  { id: "core-button", category: "Core", label: "Button", templateId: "button-card", target: "button", preview: ["type: button"] },
+  { id: "core-grid", category: "Core", label: "Grid", templateId: "grid", target: "entities", preview: ["type: grid"] },
+  { id: "core-sensor", category: "Core", label: "Sensor", templateId: "sensor-card", target: "sensor", preview: ["type: sensor"] },
   { id: "core-horizontal-stack", category: "Core", label: "Horizontal stack", templateId: "horizontal-stack", target: "entities", preview: ["Cards in a row"] },
   { id: "core-vertical-stack", category: "Core", label: "Vertical stack", templateId: "vertical-stack", target: "entities", preview: ["Cards in a column"] },
+  { id: "core-thermostat", category: "Core", label: "Thermostat", templateId: "thermostat-card", target: "thermostat", preview: ["type: thermostat"] },
+  { id: "core-link", category: "Core", label: "Link", templateId: "link-card", target: "link", preview: ["navigate"] },
+  { id: "core-webpage", category: "Core", label: "Webpage", templateId: "webpage-card", target: "webpage", preview: ["type: iframe"] },
   { id: "community-mushroom-template", category: "Community", label: "Mushroom template", templateId: "state-button", target: "mushroom-template", preview: ["Primary / secondary"] },
   { id: "community-bubble-state", category: "Community", label: "Bubble state", templateId: "state-button", target: "bubble", bubbleButtonType: "state", preview: ["button_type: state"] },
   { id: "community-bubble-switch", category: "Community", label: "Bubble switch", templateId: "switch-button", target: "bubble", bubbleButtonType: "switch", preview: ["button_type: switch"] },
@@ -210,7 +217,7 @@ try {
   if (Array.isArray(savedConfiguration?.groups)) {
     panelGroups = savedConfiguration.groups.map(createHomeAssistantPanelGroup);
   }
-  if (savedConfiguration?.cardTarget === "entities" || savedConfiguration?.cardTarget === "mushroom-template" || savedConfiguration?.cardTarget === "bubble") {
+  if (typeof savedConfiguration?.cardTarget === "string" && cardTargets.some(descriptor => descriptor.target === savedConfiguration.cardTarget)) {
     initialCardTarget = savedConfiguration.cardTarget;
   }
   if (savedConfiguration?.cardLayout === "single" || savedConfiguration?.cardLayout === "horizontal-stack" || savedConfiguration?.cardLayout === "vertical-stack") {
@@ -1442,7 +1449,10 @@ function addExpertEditorField() {
 
 function createExpertEditorField(input) {
   const template = cardEditorTemplates.find(candidate => candidate.id === input.templateId);
-  const stackEntityIds = template?.layout === "horizontal-stack" || template?.layout === "vertical-stack"
+  const supportsMultipleEntries = template?.layout === "horizontal-stack"
+    || template?.layout === "vertical-stack"
+    || template?.layout === "grid";
+  const stackEntityIds = supportsMultipleEntries
     ? selectedStackEntityIds()
     : [];
   const width = template?.layout === "horizontal-stack"
@@ -2246,7 +2256,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
       homeAssistantEntitySearch.value = pendingImport.entitySearch;
     }
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
-    if (pendingImport.cardTarget === "entities" || pendingImport.cardTarget === "mushroom-template" || pendingImport.cardTarget === "bubble") {
+    if (typeof pendingImport.cardTarget === "string" && cardTargets.some(descriptor => descriptor.target === pendingImport.cardTarget)) {
       haCardTarget.value = pendingImport.cardTarget;
     }
     if (pendingImport.cardLayout === "single" || pendingImport.cardLayout === "horizontal-stack" || pendingImport.cardLayout === "vertical-stack") {

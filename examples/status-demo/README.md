@@ -115,6 +115,9 @@ be selected in one pass. A Scan HA cards button requests the current Home
 Assistant Lovelace resources and adds recognized installed Community cards such
 as Mushroom and Bubble Card to the palette. Other registered Lovelace resources
 are shown as scanned-only entries until ATLAS has a safe card mapping for them.
+Core templates include Entity, Entities, Button, Grid, Sensor, Vertical stack,
+Horizontal stack, Thermostat, Link and Webpage. Webpage exports use the Home
+Assistant `iframe` card type.
 When Home Assistant connects, ATLAS requests the same resource list
 automatically and keeps registered `/hacsfiles/` entries visible next to saved
 favorites.

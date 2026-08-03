@@ -8,11 +8,18 @@ import type {
 import { createHomeAssistantCardConfiguration, inspectHomeAssistantCardDependency } from "./HomeAssistantCardConfiguration";
 
 export type HomeAssistantCardEditorMode = "simple" | "expert";
-export type HomeAssistantCardEditorSurfaceFieldLayout = "card" | "horizontal-stack" | "vertical-stack";
+export type HomeAssistantCardEditorSurfaceFieldLayout = "card" | "grid" | "horizontal-stack" | "vertical-stack";
 export type HomeAssistantCardEditorTemplateId =
   | "entity-list"
+  | "entity-card"
   | "state-button"
   | "switch-button"
+  | "button-card"
+  | "grid"
+  | "sensor-card"
+  | "thermostat-card"
+  | "link-card"
+  | "webpage-card"
   | "vertical-stack"
   | "horizontal-stack";
 
@@ -111,6 +118,12 @@ const defaultSupportedCardEditorLayouts = [
 
 const defaultSupportedFieldTargets = [
   "entities",
+  "entity",
+  "button",
+  "sensor",
+  "thermostat",
+  "link",
+  "webpage",
   "bubble",
   "mushroom-template",
 ] as const satisfies readonly HomeAssistantCardTarget[];
@@ -129,6 +142,71 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     defaultWidth: 4,
     defaultHeight: 2,
     preview: ["Entity", "Value"],
+  },
+  {
+    id: "entity-card",
+    label: "Entity",
+    layout: "card",
+    target: "entity",
+    defaultWidth: 4,
+    defaultHeight: 2,
+    preview: ["State", "Attributes"],
+  },
+  {
+    id: "button-card",
+    label: "Button",
+    layout: "card",
+    target: "button",
+    defaultWidth: 4,
+    defaultHeight: 2,
+    preview: ["Icon", "Tap action"],
+  },
+  {
+    id: "grid",
+    label: "Grid",
+    layout: "grid",
+    target: "entities",
+    defaultWidth: 6,
+    defaultHeight: 3,
+    preview: ["Card", "Card", "Card"],
+  },
+  {
+    id: "sensor-card",
+    label: "Sensor",
+    layout: "card",
+    target: "sensor",
+    defaultWidth: 4,
+    defaultHeight: 2,
+    defaultEntityDomain: "sensor",
+    preview: ["Graph", "State"],
+  },
+  {
+    id: "thermostat-card",
+    label: "Thermostat",
+    layout: "card",
+    target: "thermostat",
+    defaultWidth: 4,
+    defaultHeight: 3,
+    defaultEntityDomain: "climate",
+    preview: ["Setpoint", "Mode"],
+  },
+  {
+    id: "link-card",
+    label: "Link",
+    layout: "card",
+    target: "link",
+    defaultWidth: 4,
+    defaultHeight: 2,
+    preview: ["Navigation", "Tap"],
+  },
+  {
+    id: "webpage-card",
+    label: "Webpage",
+    layout: "card",
+    target: "webpage",
+    defaultWidth: 8,
+    defaultHeight: 4,
+    preview: ["iframe", "URL"],
   },
   {
     id: "state-button",
@@ -384,6 +462,20 @@ function createSurfaceFieldCardConfiguration(
   const layout = field.layout ?? "card";
   const entries = (field.entries ?? []).filter(entry => entry.entityId);
   if (layout !== "card" && entries.length > 0) {
+    if (layout === "grid") {
+      return {
+        type: "grid",
+        columns: Math.min(4, Math.max(1, entries.length)),
+        square: false,
+        cards: entries.map(entry => createHomeAssistantCardConfiguration({
+          target: entry.target,
+          bubbleButtonType: entry.bubbleButtonType,
+          title: entry.id,
+          entityIds: [entry.entityId],
+        })),
+      };
+    }
+
     return {
       type: layout,
       cards: entries.map(entry => createHomeAssistantCardConfiguration({
@@ -395,13 +487,19 @@ function createSurfaceFieldCardConfiguration(
     };
   }
 
-  if (!field.entityId) return undefined;
+  if (!field.entityId && field.target !== "link" && field.target !== "webpage") return undefined;
   return createHomeAssistantCardConfiguration({
     target: field.target,
     bubbleButtonType: field.bubbleButtonType,
     title: field.id,
-    entityIds: [field.entityId],
+    entityIds: [field.entityId || defaultEntityForTarget(field.target)],
   });
+}
+
+function defaultEntityForTarget(target: HomeAssistantCardTarget): string {
+  if (target === "webpage") return "https://www.home-assistant.io";
+  if (target === "link") return "/lovelace";
+  return "";
 }
 
 function createStackFromSurfaceRows(
