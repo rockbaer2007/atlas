@@ -67,7 +67,9 @@ mode, which defaults to `/local/atlas/atlas-homeassistant-panel.js`, or the
 planned HACS mode at `/hacsfiles/atlas/atlas-homeassistant-panel.js`. The same
 plan combines ATLAS frontend availability with the selected card dependency, so
 a host can report whether ATLAS, Mushroom or Bubble Card resources are ready or
-which Lovelace resource paths are still missing.
+which Lovelace resource paths are still missing. Hosts can also serialize that
+combined plan as JSON or YAML Lovelace resources, giving the UI one copy action
+for ATLAS plus any selected Mushroom or Bubble Card dependency.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call

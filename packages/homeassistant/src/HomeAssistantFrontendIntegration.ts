@@ -1,8 +1,10 @@
 import type {
   HomeAssistantCardConfiguration,
   HomeAssistantCardDependencyAvailability,
+  HomeAssistantCardExportFormat,
   HomeAssistantCardTarget,
   HomeAssistantLovelaceResource,
+  HomeAssistantLovelaceResourceReference,
 } from "./HomeAssistantCardConfiguration";
 import {
   inspectHomeAssistantCardDependencyAvailability,
@@ -131,8 +133,38 @@ export function inspectAtlasFrontendResourceAvailability(
   };
 }
 
+export function createHomeAssistantAtlasFrontendResourceReferences(
+  input: HomeAssistantAtlasFrontendIntegrationPlanInput,
+): readonly HomeAssistantLovelaceResourceReference[] {
+  return createHomeAssistantAtlasFrontendIntegrationPlan(input).requiredResourcePaths.map(url => ({
+    url,
+    type: "module",
+  }));
+}
+
+export function serializeHomeAssistantAtlasFrontendResourceReferences(
+  input: HomeAssistantAtlasFrontendIntegrationPlanInput,
+  format: HomeAssistantCardExportFormat,
+): string {
+  const resources = createHomeAssistantAtlasFrontendResourceReferences(input);
+  if (format === "json") {
+    return JSON.stringify(resources, null, 2);
+  }
+
+  return resources.map(resource => [
+    `- url: ${serializeYamlScalar(resource.url)}`,
+    `  type: ${serializeYamlScalar(resource.type)}`,
+  ].join("\n")).join("\n");
+}
+
 function dedupeResourcePaths(paths: readonly string[]): string[] {
   return [...new Set(paths.map(path => path.trim()).filter(Boolean))];
+}
+
+function serializeYamlScalar(value: unknown): string {
+  if (typeof value === "boolean") return String(value);
+  if (typeof value === "number") return String(value);
+  return JSON.stringify(String(value));
 }
 
 function normalizeHomeAssistantResourcePath(resourcePath: string): string | undefined {

@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 
 import {
   createAtlasFrontendResource,
+  createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   inspectAtlasFrontendResourceAvailability,
+  serializeHomeAssistantAtlasFrontendResourceReferences,
 } from "../src";
 
 describe("Home Assistant frontend integration planning", () => {
@@ -87,5 +89,39 @@ describe("Home Assistant frontend integration planning", () => {
       status: "missing",
       missingResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
     });
+  });
+
+  it("creates copy-ready Lovelace resources for ATLAS and the selected card dependency", () => {
+    const input = {
+      mode: "server" as const,
+      serverResourcePath: "/local/atlas/panel.js",
+      cardTarget: "bubble" as const,
+    };
+
+    expect(createHomeAssistantAtlasFrontendResourceReferences(input)).toEqual([
+      {
+        url: "/local/atlas/panel.js",
+        type: "module",
+      },
+      {
+        url: "/hacsfiles/Bubble-Card/bubble-card.js",
+        type: "module",
+      },
+    ]);
+    expect(serializeHomeAssistantAtlasFrontendResourceReferences(input, "yaml")).toBe([
+      "- url: \"/local/atlas/panel.js\"",
+      "  type: \"module\"",
+      "- url: \"/hacsfiles/Bubble-Card/bubble-card.js\"",
+      "  type: \"module\"",
+    ].join("\n"));
+    expect(serializeHomeAssistantAtlasFrontendResourceReferences({
+      mode: "hacs",
+      cardTarget: "entities",
+    }, "json")).toBe(JSON.stringify([
+      {
+        url: "/hacsfiles/atlas/atlas-homeassistant-panel.js",
+        type: "module",
+      },
+    ], null, 2));
   });
 });

@@ -10,6 +10,7 @@ import {
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
   createHomeAssistantAtlasFrontendIntegrationPlan,
+  serializeHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantEntityPresentation,
   createHomeAssistantCardConfiguration,
   createHomeAssistantPanelGroup,
@@ -19,7 +20,6 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
-  serializeHomeAssistantLovelaceResourceReferences,
   serializeHomeAssistantEntitiesCardConfiguration,
   summarizeHomeAssistantCardImport,
   deriveHomeAssistantWebSocketUrl,
@@ -520,7 +520,7 @@ function renderHaCardPreview() {
   haCardDependency.dataset.status = lovelaceResourcesChecked
     ? integrationPlan.ready ? "installed" : "missing"
     : dependency.required ? "unchecked" : "not-required";
-  copyHaCardResources.disabled = !dependency.required;
+  copyHaCardResources.disabled = false;
   const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
   const installHint = dependency.installPaths.length ? ` Install path: ${dependency.installPaths.join(", ")}.` : "";
   const atlasHint = ` ATLAS frontend: ${integrationPlan.atlasResource.resourcePaths.join(", ")}.`;
@@ -1143,14 +1143,16 @@ copyHaCardResources.addEventListener("click", async () => {
 
   const card = createHaCardConfig();
   const dependency = inspectHomeAssistantCardDependency(card);
-  if (!dependency.required) {
-    statusMessage.textContent = "No custom Lovelace resource is required for this card.";
-    return;
-  }
 
   try {
-    await writeClipboardText(serializeHomeAssistantLovelaceResourceReferences(card, haCardFormat.value));
-    statusMessage.textContent = `${dependency.label} Lovelace resource ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
+    await writeClipboardText(serializeHomeAssistantAtlasFrontendResourceReferences({
+      mode: "server",
+      card,
+      resources: lovelaceResources,
+    }, haCardFormat.value));
+    statusMessage.textContent = dependency.required
+      ? `ATLAS and ${dependency.label} Lovelace resources ${haCardFormat.value.toUpperCase()} copied to clipboard.`
+      : `ATLAS Lovelace resource ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
   } catch {
     statusMessage.textContent = "Copy failed: use the dependency path instead.";
   }
