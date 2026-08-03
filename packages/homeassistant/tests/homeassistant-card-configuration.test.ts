@@ -6,11 +6,13 @@ import {
   createHomeAssistantCardExportPayload,
   createHomeAssistantCardConfiguration,
   createHomeAssistantEntitiesCardConfiguration,
+  createHomeAssistantLovelaceResourceReferences,
   findHomeAssistantCardTargetDescriptor,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
   parseHomeAssistantEntitiesCardConfiguration,
+  serializeHomeAssistantLovelaceResourceReferences,
   serializeHomeAssistantEntitiesCardConfiguration,
   summarizeHomeAssistantCardImport,
 } from "../src";
@@ -287,6 +289,26 @@ describe("Home Assistant entities card configuration", () => {
       matchedResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
       missingResourcePaths: [],
     });
+  });
+
+  it("creates copy-ready Lovelace resource references for custom card targets", () => {
+    expect(createHomeAssistantLovelaceResourceReferences("entities")).toEqual([]);
+    expect(createHomeAssistantLovelaceResourceReferences("bubble")).toEqual([
+      {
+        url: "/hacsfiles/Bubble-Card/bubble-card.js",
+        type: "module",
+      },
+    ]);
+    expect(serializeHomeAssistantLovelaceResourceReferences("bubble", "yaml")).toBe([
+      "- url: \"/hacsfiles/Bubble-Card/bubble-card.js\"",
+      "  type: \"module\"",
+    ].join("\n"));
+    expect(serializeHomeAssistantLovelaceResourceReferences("mushroom-template", "json")).toBe(JSON.stringify([
+      {
+        url: "/hacsfiles/lovelace-mushroom/mushroom.js",
+        type: "module",
+      },
+    ], null, 2));
   });
 
   it("creates export manifests with stable filenames and dependency metadata", () => {

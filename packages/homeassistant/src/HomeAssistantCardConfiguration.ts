@@ -73,6 +73,13 @@ export interface HomeAssistantLovelaceResource {
   readonly url: string;
 }
 
+export type HomeAssistantLovelaceResourceType = "module";
+
+export interface HomeAssistantLovelaceResourceReference {
+  readonly url: string;
+  readonly type: HomeAssistantLovelaceResourceType;
+}
+
 export interface HomeAssistantCardDependencyAvailability {
   readonly dependency: HomeAssistantCardDependency;
   readonly status: "not-required" | "installed" | "missing";
@@ -359,6 +366,34 @@ export function inspectHomeAssistantCardDependencyAvailability(
     matchedResourcePaths,
     missingResourcePaths,
   };
+}
+
+export function createHomeAssistantLovelaceResourceReferences(
+  cardOrTarget: HomeAssistantCardConfiguration | HomeAssistantCardTarget,
+): readonly HomeAssistantLovelaceResourceReference[] {
+  return inspectHomeAssistantCardDependency(cardOrTarget).resourcePaths.map(url => ({
+    url,
+    type: "module",
+  }));
+}
+
+export function serializeHomeAssistantLovelaceResourceReferences(
+  cardOrTarget: HomeAssistantCardConfiguration | HomeAssistantCardTarget,
+  format: HomeAssistantCardExportFormat,
+): string {
+  const resources = createHomeAssistantLovelaceResourceReferences(cardOrTarget);
+  if (format === "json") {
+    return JSON.stringify(resources, null, 2);
+  }
+
+  if (resources.length === 0) {
+    return "[]";
+  }
+
+  return resources.map(resource => [
+    `- url: ${serializeYamlScalar(resource.url)}`,
+    `  type: ${serializeYamlScalar(resource.type)}`,
+  ].join("\n")).join("\n");
 }
 
 export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration): HomeAssistantCardTarget {

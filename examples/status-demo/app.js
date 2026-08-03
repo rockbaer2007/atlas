@@ -18,6 +18,7 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantCardTargets,
+  serializeHomeAssistantLovelaceResourceReferences,
   serializeHomeAssistantEntitiesCardConfiguration,
   summarizeHomeAssistantCardImport,
   deriveHomeAssistantWebSocketUrl,
@@ -57,6 +58,7 @@ const exportHomeAssistantConfig = document.querySelector("#export-home-assistant
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const exportHaCardPackage = document.querySelector("#export-ha-card-package");
 const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
+const copyHaCardResources = document.querySelector("#copy-ha-card-resources");
 const checkHaCardResources = document.querySelector("#check-ha-card-resources");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const importHaCardConfig = document.querySelector("#import-ha-card-config");
@@ -500,6 +502,7 @@ function renderHaCardPreview() {
     haCardDependency.dataset.required = "false";
     haCardDependency.dataset.status = "not-required";
     haCardDependency.textContent = emptyEntitySelectionMessage;
+    copyHaCardResources.disabled = true;
     return;
   }
 
@@ -511,6 +514,7 @@ function renderHaCardPreview() {
   haCardDependency.dataset.status = dependency.required
     ? lovelaceResourcesChecked ? availability.status : "unchecked"
     : "not-required";
+  copyHaCardResources.disabled = !dependency.required;
   const resourceHint = dependency.resourcePaths.length ? ` Resource: ${dependency.resourcePaths.join(", ")}.` : "";
   const installHint = dependency.installPaths.length ? ` Install path: ${dependency.installPaths.join(", ")}.` : "";
   if (!dependency.required) {
@@ -1117,6 +1121,26 @@ copyHaCardConfig.addEventListener("click", async () => {
     statusMessage.textContent = `HA card ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
   } catch {
     statusMessage.textContent = "Copy failed: use the preview text instead.";
+  }
+});
+copyHaCardResources.addEventListener("click", async () => {
+  if (!canExportHaCard()) {
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
+  const card = createHaCardConfig();
+  const dependency = inspectHomeAssistantCardDependency(card);
+  if (!dependency.required) {
+    statusMessage.textContent = "No custom Lovelace resource is required for this card.";
+    return;
+  }
+
+  try {
+    await writeClipboardText(serializeHomeAssistantLovelaceResourceReferences(card, haCardFormat.value));
+    statusMessage.textContent = `${dependency.label} Lovelace resource ${haCardFormat.value.toUpperCase()} copied to clipboard.`;
+  } catch {
+    statusMessage.textContent = "Copy failed: use the dependency path instead.";
   }
 });
 importHomeAssistantConfig.addEventListener("change", async () => {

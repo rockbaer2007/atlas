@@ -51,11 +51,14 @@ formats, MIME types, target, layout and dependency metadata for host UIs. Card
 export payloads pair that manifest metadata with the serialized card content so
 copy and download flows can share one source. Card packages wrap the manifest
 and content in a portable Atlas JSON envelope for round-tripping through editor
-UIs. Card import summaries normalize raw card text or Atlas packages into title,
-entity IDs, target, layout, format and dependency metadata. The WebSocket client
-can request `get_states` and `lovelace/resources` after the event subscription
-is active. Lights can receive a validated brightness percentage from 1 through
-100 when a host explicitly invokes the command.
+UIs. Lovelace resource references can be derived from the selected card target
+and serialized as JSON or YAML, which lets host UIs offer copy-ready HACS
+resource snippets for Mushroom and Bubble Card. Card import summaries normalize
+raw card text or Atlas packages into title, entity IDs, target, layout, format
+and dependency metadata. The WebSocket client can request `get_states` and
+`lovelace/resources` after the event subscription is active. Lights can receive
+a validated brightness percentage from 1 through 100 when a host explicitly
+invokes the command.
 
 A browser-compatible socket adapter and runtime connection controller are
 available for an instance. Tokens are supplied per connect or reconnect call
