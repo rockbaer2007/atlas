@@ -67,8 +67,8 @@ back to Expert automatically.
 When Expert mode is active, the simple card-layout selector and simple HA card
 code block are hidden. Copy and export actions then use the Expert HA card code
 generated from the editor surface.
-The Panel group and Group name controls are also hidden in Expert mode because
-the Expert surface defines the exported card structure directly.
+The Panel group, Group name and Card target controls are also hidden in Expert
+mode because the Expert surface defines the exported card structure directly.
 Before the HA card import is parsed, the demo now runs the shared artifact
 inspection. Supported ATLAS packages and raw Home Assistant cards continue
 directly. External card-builder-shaped artifacts pause on a compatibility
