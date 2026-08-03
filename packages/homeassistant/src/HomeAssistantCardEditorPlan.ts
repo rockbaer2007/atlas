@@ -381,6 +381,23 @@ export function analyzeHomeAssistantCardEditorSurface(
   };
 }
 
+export function arrangeHomeAssistantCardEditorSurfaceFields(
+  fields: readonly HomeAssistantCardEditorSurfaceField[] = [],
+  bounds: HomeAssistantCardEditorGridBounds = defaultGridBounds,
+): HomeAssistantCardEditorSurfaceField[] {
+  const placedFields: HomeAssistantCardEditorSurfaceField[] = [];
+  const sortedFields = fields.map(normalizeSurfaceField).sort(compareSurfaceFields);
+  for (const field of sortedFields) {
+    const placement = findFirstAvailableSurfacePlacement(field, placedFields, bounds)
+      ?? clampSurfaceFieldPlacement(field, bounds);
+    placedFields.push({
+      ...field,
+      ...placement,
+    });
+  }
+  return placedFields;
+}
+
 export function createHomeAssistantCardEditorConfiguration(
   input: HomeAssistantCardEditorPackagePlanInput = {},
 ): HomeAssistantCardConfiguration {
@@ -531,6 +548,35 @@ function listSurfaceFieldOverlaps(
     }
   }
   return overlaps;
+}
+
+function findFirstAvailableSurfacePlacement(
+  field: HomeAssistantCardEditorSurfaceField,
+  placedFields: readonly HomeAssistantCardEditorSurfaceField[],
+  bounds: HomeAssistantCardEditorGridBounds,
+): Pick<HomeAssistantCardEditorSurfaceField, "column" | "row" | "width" | "height"> | undefined {
+  const clamped = clampSurfaceFieldPlacement(field, bounds);
+  const maxColumn = Math.max(0, Math.floor(bounds.columns) - clamped.width);
+  const maxRow = Math.max(0, Math.floor(bounds.rows) - clamped.height);
+  for (let row = 0; row <= maxRow; row += 1) {
+    for (let column = 0; column <= maxColumn; column += 1) {
+      const candidate = {
+        ...field,
+        ...clamped,
+        column,
+        row,
+      };
+      if (!placedFields.some(placedField => surfaceFieldsOverlap(candidate, placedField))) {
+        return {
+          column,
+          row,
+          width: clamped.width,
+          height: clamped.height,
+        };
+      }
+    }
+  }
+  return undefined;
 }
 
 function surfaceFieldsOverlap(

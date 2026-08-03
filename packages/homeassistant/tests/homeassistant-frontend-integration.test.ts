@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   analyzeHomeAssistantCardEditorSurface,
+  arrangeHomeAssistantCardEditorSurfaceFields,
   createAtlasFrontendResource,
   clampSurfaceFieldPlacement,
   createHomeAssistantCardBuilderInteropPlan,
@@ -420,6 +421,48 @@ describe("Home Assistant frontend integration planning", () => {
         },
       ],
     });
+  });
+
+  it("arranges expert editor fields into free grid positions", () => {
+    const arrangedFields = arrangeHomeAssistantCardEditorSurfaceFields([
+      {
+        id: "Second",
+        target: "entities",
+        entityId: "sensor.second",
+        column: 0,
+        row: 0,
+        width: 3,
+        height: 2,
+      },
+      {
+        id: "First",
+        target: "entities",
+        entityId: "sensor.first",
+        column: 0,
+        row: 0,
+        width: 4,
+        height: 2,
+      },
+      {
+        id: "Third",
+        target: "button",
+        entityId: "light.third",
+        column: 2,
+        row: 1,
+        width: 3,
+        height: 2,
+      },
+    ], {
+      columns: 8,
+      rows: 4,
+    });
+
+    expect(arrangedFields.map(field => [field.id, field.column, field.row, field.width, field.height])).toEqual([
+      ["First", 0, 0, 4, 2],
+      ["Second", 4, 0, 3, 2],
+      ["Third", 0, 2, 3, 2],
+    ]);
+    expect(analyzeHomeAssistantCardEditorSurface(arrangedFields).overlapCount).toBe(0);
   });
 
   it("uses custom titles for stack field entries", () => {

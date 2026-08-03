@@ -139,3 +139,5 @@ The Expert summary reports total fields, populated fields, empty placeholders,
 occupied rows, current surface span, overlap count, card targets and field
 layouts before the generated HA card code. Overlapping editor fields are marked
 directly on the surface.
+The Auto arrange action repacks fields into the first available free grid slots
+in row and column order, reducing overlaps while keeping card content intact.

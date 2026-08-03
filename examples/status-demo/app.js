@@ -10,6 +10,7 @@ import {
   createBrowserHomeAssistantWebSocket,
   createHomeAssistantRuntimeConnection,
   analyzeHomeAssistantCardEditorSurface,
+  arrangeHomeAssistantCardEditorSurfaceFields,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantAtlasFrontendIntegrationPlan,
@@ -96,6 +97,7 @@ const expertWidth = document.querySelector("#expert-width");
 const expertHeight = document.querySelector("#expert-height");
 const addExpertField = document.querySelector("#add-expert-field");
 const editExpertField = document.querySelector("#edit-expert-field");
+const arrangeExpertFields = document.querySelector("#arrange-expert-fields");
 const resetExpertSurfaceSize = document.querySelector("#reset-expert-surface-size");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
@@ -1077,6 +1079,7 @@ function syncExpertInputsFromTemplateSizing(templateId) {
 function renderExpertFieldList() {
   expertFieldList.replaceChildren();
   renderExpertEditButton();
+  arrangeExpertFields.disabled = expertEditorFields.length === 0;
   if (expertEditorFields.length === 0) {
     const empty = document.createElement("p");
     empty.textContent = "No expert fields added.";
@@ -1297,6 +1300,24 @@ function resetExpertEditorSurfaceSize() {
   applyExpertEditorSurfaceSize();
   persistConfiguration();
   statusMessage.textContent = "Expert editor surface size reset to the default.";
+}
+
+function arrangeExpertEditorFields() {
+  if (expertEditorFields.length === 0) {
+    statusMessage.textContent = "Add Expert fields before arranging the editor surface.";
+    return;
+  }
+
+  const previousOverlapCount = analyzeHomeAssistantCardEditorSurface(expertEditorFields).overlapCount;
+  const arrangedFields = arrangeHomeAssistantCardEditorSurfaceFields(expertEditorFields, {
+    columns: expertGridColumns,
+    rows: expertGridRows,
+  });
+  expertEditorFields.splice(0, expertEditorFields.length, ...arrangedFields);
+  selectedExpertFieldIndex = Math.min(Math.max(0, selectedExpertFieldIndex), expertEditorFields.length - 1);
+  renderExpertEditorPreview();
+  const nextOverlapCount = analyzeHomeAssistantCardEditorSurface(expertEditorFields).overlapCount;
+  statusMessage.textContent = `Expert fields arranged. Overlaps: ${previousOverlapCount} -> ${nextOverlapCount}.`;
 }
 
 function updateSelectedExpertFieldGeometry() {
@@ -2256,6 +2277,7 @@ useEntityNameAsTitle.addEventListener("click", () => {
 });
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
+arrangeExpertFields.addEventListener("click", arrangeExpertEditorFields);
 resetExpertSurfaceSize.addEventListener("click", resetExpertEditorSurfaceSize);
 saveExpertPaletteFavorites.addEventListener("click", saveExpertPaletteFavoriteSelection);
 showAllExpertPaletteCards.addEventListener("click", toggleExpertPaletteAllCards);

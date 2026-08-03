@@ -128,6 +128,9 @@ total and populated fields, empty placeholders, occupied rows, used grid span,
 overlapping fields, card targets and field layouts. The demo uses that summary
 above the Expert HA card code so export readiness is visible before copying
 YAML or JSON, and marks overlapping tiles directly on the editor surface.
+An arrange helper can repack fields into the first available free grid slots in
+row and column order. The demo exposes this through Auto arrange, which turns
+overlap warnings into a cleaner export layout without changing card content.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as
