@@ -193,7 +193,7 @@ export function createHomeAssistantCardEditorFieldFromTemplate(
     layout: template.layout,
     entries: template.layout === "card" ? [] : [
       {
-        id: `${template.label} item`,
+        id: `${input.id ?? template.label} item`,
         target,
         entityId: input.entityId ?? "",
       },

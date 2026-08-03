@@ -291,6 +291,23 @@ describe("Home Assistant frontend integration planning", () => {
     });
   });
 
+  it("uses custom titles for stack field entries", () => {
+    expect(createHomeAssistantCardEditorFieldFromTemplate({
+      template: "horizontal-stack",
+      target: "mushroom-template",
+      entityId: "sensor.office_temperature",
+      id: "Office temperature",
+      column: 0,
+      row: 0,
+    }).entries).toEqual([
+      {
+        id: "Office temperature item",
+        target: "mushroom-template",
+        entityId: "sensor.office_temperature",
+      },
+    ]);
+  });
+
   it("clamps surface placement inside the editor grid", () => {
     expect(clampSurfaceFieldPlacement({
       column: 8.8,

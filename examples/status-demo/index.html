@@ -376,6 +376,27 @@
         grid-column: 1 / -1;
       }
 
+      .expert-title-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .expert-title-row input {
+        min-width: 0;
+      }
+
+      .expert-title-row button {
+        border: 1px solid #0f766e;
+        border-radius: 4px;
+        background: #0f766e;
+        color: #ffffff;
+        padding: 8px 10px;
+        font: inherit;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
       .expert-template-palette {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -875,6 +896,11 @@
               <select id="expert-template"></select>
               <label for="expert-target">Card family</label>
               <select id="expert-target"></select>
+              <label class="wide" for="expert-title">Title</label>
+              <div class="expert-title-row wide">
+                <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty">
+                <button id="use-entity-name-as-title" type="button">Use entity name</button>
+              </div>
               <label class="wide" for="expert-entity">Entity</label>
               <input class="wide" id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty">
               <label for="expert-column">Column</label>

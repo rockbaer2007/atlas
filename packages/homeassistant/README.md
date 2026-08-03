@@ -110,6 +110,9 @@ fields cannot be dropped outside the valid surface.
 In the demo surface, placed fields can be selected and switched into edit mode.
 Edit mode shows corner handles only for the selected field and resizes it within
 the same grid bounds.
+Placed fields also expose an editable title. That title becomes the generated
+Entities title, Bubble button name or Mushroom primary text. Hosts can copy the
+selected Home Assistant entity name into the title field to prefill card labels.
 
 The visual editor direction is informed by existing Home Assistant projects,
 including `studiobts/home-assistant-card-builder`. That project is tracked as

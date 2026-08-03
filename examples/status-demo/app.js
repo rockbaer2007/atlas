@@ -82,6 +82,8 @@ const simpleCardSection = document.querySelector("#simple-card-section");
 const expertEditorSection = document.querySelector("#expert-editor-section");
 const expertTemplate = document.querySelector("#expert-template");
 const expertTarget = document.querySelector("#expert-target");
+const expertTitle = document.querySelector("#expert-title");
+const useEntityNameAsTitle = document.querySelector("#use-entity-name-as-title");
 const expertEntity = document.querySelector("#expert-entity");
 const expertColumn = document.querySelector("#expert-column");
 const expertRow = document.querySelector("#expert-row");
@@ -802,6 +804,45 @@ function renderExpertFieldList() {
   });
 }
 
+function formatEntityIdAsTitle(entityId) {
+  const localName = entityId.includes(".") ? entityId.split(".").slice(1).join(".") : entityId;
+  return localName
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/\b\w/g, character => character.toUpperCase());
+}
+
+function currentExpertEntityTitle() {
+  const entityId = expertEntity.value.trim() || currentEntityId();
+  const entity = entitySnapshots.get(entityId);
+  if (entity) {
+    return createHomeAssistantEntityPresentation(entity).label;
+  }
+  return formatEntityIdAsTitle(entityId) || entityId;
+}
+
+function updateSelectedExpertFieldTitle(title) {
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  const nextTitle = title.trim();
+  if (!field || !nextTitle) return;
+  expertEditorFields[selectedExpertFieldIndex] = {
+    ...field,
+    id: nextTitle,
+    entries: renameExpertFieldEntries(field, nextTitle),
+  };
+  renderExpertEditorPreview();
+  statusMessage.textContent = `${nextTitle} set as Expert field title.`;
+}
+
+function renameExpertFieldEntries(field, title) {
+  if ((field.layout ?? "card") === "card" || !field.entries?.length) return field.entries;
+  return field.entries.map((entry, index) => ({
+    ...entry,
+    id: field.entries.length === 1 ? title : `${title} ${index + 1}`,
+  }));
+}
+
 function renderExpertEditButton() {
   if (selectedExpertFieldIndex < 0 || !expertEditorFields[selectedExpertFieldIndex]) {
     editExpertField.disabled = true;
@@ -824,6 +865,7 @@ function selectExpertEditorField(index) {
   expertWidth.value = String(field.width);
   expertHeight.value = String(field.height);
   expertTarget.value = field.target;
+  expertTitle.value = field.id;
   expertEntity.value = field.entityId;
   renderExpertFieldList();
   renderExpertEditorSurface();
@@ -1005,9 +1047,11 @@ function renderExpertEditorPreview() {
 function addExpertEditorField() {
   const entityId = expertEntity.value.trim() || currentEntityId();
   const sizing = resolveExpertTemplateSizing(expertTemplate.value);
+  const fieldTitle = expertTitle.value.trim() || undefined;
   const field = createExpertEditorField({
     templateId: expertTemplate.value,
     entityId,
+    title: fieldTitle,
     column: Number(expertColumn.value),
     row: Number(expertRow.value),
     width: sizing.width,
@@ -1016,6 +1060,7 @@ function addExpertEditorField() {
   expertEditorFields.push(field);
   selectedExpertFieldIndex = expertEditorFields.length - 1;
   expertFieldEditing = false;
+  expertTitle.value = field.id;
   expertEntity.value = "";
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} added to the Expert editor preview.`;
@@ -1033,7 +1078,7 @@ function createExpertEditorField(input) {
     template: input.templateId,
     target: expertTarget.value,
     entityId: input.entityId,
-    id: `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
+    id: input.title ?? `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
     column: input.column,
     row: input.row,
     width,
@@ -1044,21 +1089,26 @@ function createExpertEditorField(input) {
       ...field,
       entityId: "",
       entries: stackEntityIds.map((entityId, index) => ({
-        id: `${field.id} item ${index + 1}`,
+        id: `${field.id} ${index + 1}`,
         target: expertTarget.value,
         entityId,
       })),
     };
   }
-  return field;
+  return {
+    ...field,
+    entries: renameExpertFieldEntries(field, field.id),
+  };
 }
 
 function addExpertEditorFieldFromTemplate(templateId, placement = calculateExpertDropPlacement()) {
   selectExpertTemplate(templateId);
   const sizing = resolveExpertTemplateSizing(templateId);
+  const fieldTitle = expertTitle.value.trim() || undefined;
   const field = createExpertEditorField({
     templateId,
     entityId: expertEntity.value.trim() || currentEntityId(),
+    title: fieldTitle,
     column: placement.column,
     row: placement.row,
     width: sizing.width,
@@ -1067,6 +1117,7 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
   expertEditorFields.push(field);
   selectedExpertFieldIndex = expertEditorFields.length - 1;
   expertFieldEditing = false;
+  expertTitle.value = field.id;
   expertEntity.value = "";
   renderExpertEditorPreview();
   statusMessage.textContent = `${field.id} placed on the Expert editor surface.`;
@@ -1612,12 +1663,22 @@ for (const button of editorModeButtons) {
 expertTemplate.addEventListener("change", () => {
   selectExpertTemplate(expertTemplate.value);
 });
+expertTitle.addEventListener("input", () => {
+  updateSelectedExpertFieldTitle(expertTitle.value);
+});
+useEntityNameAsTitle.addEventListener("click", () => {
+  const title = currentExpertEntityTitle();
+  expertTitle.value = title;
+  updateSelectedExpertFieldTitle(title);
+  statusMessage.textContent = `${title} copied from the selected entity.`;
+});
 addExpertField.addEventListener("click", addExpertEditorField);
 editExpertField.addEventListener("click", toggleExpertFieldEditing);
 clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;
   selectedExpertFieldIndex = -1;
   expertFieldEditing = false;
+  expertTitle.value = "";
   renderExpertEditorPreview();
   statusMessage.textContent = "Expert editor preview cleared.";
 });

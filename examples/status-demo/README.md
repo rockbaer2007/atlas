@@ -95,3 +95,7 @@ to mark custom card families as installed, missing or unchecked. Surface tiles
 can be selected and then switched into edit mode, where corner handles resize
 the field inside the 12-column grid. This is still a preview surface, not the
 final drag-and-drop editor.
+Expert field titles are editable from the surface controls. The title is reused
+as the generated Home Assistant card title, Bubble name or Mushroom primary
+text, and the current Home Assistant entity name can be copied into the title
+field as a starting point.
