@@ -12,6 +12,7 @@ import {
   analyzeHomeAssistantCardEditorSurface,
   arrangeHomeAssistantCardEditorSurfaceFields,
   createHomeAssistantCardEditorConfiguration,
+  createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFieldFromTemplate,
@@ -76,6 +77,7 @@ const exportHomeAssistantConfig = document.querySelector("#export-home-assistant
 const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const exportHaCardPackage = document.querySelector("#export-ha-card-package");
 const exportHaCardScript = document.querySelector("#export-ha-card-script");
+const exportHaCardBundle = document.querySelector("#export-ha-card-bundle");
 const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
 const copyHaCardResources = document.querySelector("#copy-ha-card-resources");
 const checkHaCardResources = document.querySelector("#check-ha-card-resources");
@@ -169,6 +171,7 @@ const translations = {
     "button.exportExpertHaCard": "Export Expert HA card",
     "button.exportCardPackage": "Export card package",
     "button.exportCardScript": "Export card script",
+    "button.exportCardBundle": "Export HACS bundle",
     "button.copyHaCard": "Copy HA card",
     "button.copyExpertHaCard": "Copy Expert HA card",
     "button.copyResources": "Copy resources",
@@ -319,6 +322,7 @@ const translations = {
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
     "message.scriptExported": "Card script exported as {scriptFilename}.",
+    "message.bundleExported": "HACS bundle manifest exported with {count} files for {scriptFilename}.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
     "message.atlasPackage": "ATLAS card package",
     "message.haCard": "HA card",
@@ -456,6 +460,7 @@ const translations = {
     "button.exportExpertHaCard": "Expert-HA-Card exportieren",
     "button.exportCardPackage": "Card-Paket exportieren",
     "button.exportCardScript": "Card-Script exportieren",
+    "button.exportCardBundle": "HACS-Bundle exportieren",
     "button.copyHaCard": "HA-Card kopieren",
     "button.copyExpertHaCard": "Expert-HA-Card kopieren",
     "button.copyResources": "Ressourcen kopieren",
@@ -606,6 +611,7 @@ const translations = {
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
     "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
+    "message.bundleExported": "HACS-Bundle-Manifest mit {count} Dateien fuer {scriptFilename} exportiert.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
     "message.atlasPackage": "ATLAS-Card-Paket",
     "message.haCard": "HA-Card",
@@ -3387,6 +3393,23 @@ exportHaCardScript.addEventListener("click", () => {
   link.click();
   URL.revokeObjectURL(link.href);
   statusMessage.textContent = t("message.scriptExported", { scriptFilename: scriptExport.filename });
+});
+exportHaCardBundle.addEventListener("click", () => {
+  if (!canExportHaCard()) {
+    statusMessage.textContent = emptyEntitySelectionMessage;
+    return;
+  }
+
+  const bundle = createHomeAssistantCardEditorHacsBundle(createHaCardExportPackage());
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" }));
+  link.download = `${bundle.scriptFilename.replace(/\.js$/i, "")}.hacs-bundle.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+  statusMessage.textContent = t("message.bundleExported", {
+    count: String(bundle.files.length),
+    scriptFilename: bundle.scriptFilename,
+  });
 });
 copyHaCardConfig.addEventListener("click", async () => {
   if (!canExportHaCard()) {

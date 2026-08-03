@@ -7,11 +7,14 @@ import {
   clampSurfaceFieldPlacement,
   createHomeAssistantCardBuilderInteropPlan,
   createHomeAssistantCardBuilderReference,
+  createHomeAssistantCardConfiguration,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorDependencyPlan,
   createHomeAssistantCardEditorFieldFromTemplate,
+  createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
+  createHomeAssistantCardExportPackage,
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
@@ -863,5 +866,55 @@ describe("Home Assistant frontend integration planning", () => {
     expect(scriptExport.source).toContain("customElements.define(\"energy-kitchen\"");
     expect(normalizeHomeAssistantCustomElementName("Kitchen")).toBe("kitchen-card");
     expect(normalizeHomeAssistantCustomElementName("123 Kitchen")).toBe("atlas-123-kitchen");
+  });
+
+  it("creates a zip-ready HACS card bundle file list from an ATLAS card package", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const cardPackage = createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(cardPackage);
+
+    expect(bundle).toMatchObject({
+      version: 1,
+      kind: "atlas.homeassistant.hacs-card-bundle",
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      customElementName: "energy-kitchen",
+      cardType: "custom:energy-kitchen",
+      resourcePath: "/hacsfiles/atlas/energy-kitchen.js",
+      installSteps: [
+        "Create a HACS frontend repository with these files.",
+        "Install the generated script as energy-kitchen.js.",
+        "Register the Lovelace resource /hacsfiles/atlas/energy-kitchen.js as a JavaScript module.",
+        "Add custom:energy-kitchen to a dashboard view.",
+        "Replace the demo entities with your own Home Assistant entities.",
+      ],
+    });
+    expect(bundle.files.map(file => file.path)).toEqual([
+      "hacs.json",
+      "energy-kitchen.js",
+      "README.md",
+      "examples/lovelace-card.json",
+      "atlas/energy-kitchen.atlas-card.json",
+    ]);
+    expect(JSON.parse(bundle.files.find(file => file.path === "hacs.json")?.content ?? "{}")).toEqual({
+      name: "Energy Kitchen",
+      render_readme: true,
+      filename: "energy-kitchen.js",
+    });
+    expect(bundle.files.find(file => file.path === "energy-kitchen.js")?.content).toContain("customElements.define(\"energy-kitchen\"");
+    expect(bundle.files.find(file => file.path === "README.md")?.content).toContain("/hacsfiles/atlas/energy-kitchen.js");
   });
 });

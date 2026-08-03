@@ -10,6 +10,7 @@ export * from "./HomeAssistantEntityCatalog";
 export * from "./HomeAssistantCardConfiguration";
 export * from "./HomeAssistantCardArtifactInspection";
 export * from "./HomeAssistantCardEditorPlan";
+export * from "./HomeAssistantCardEditorHacsBundle";
 export * from "./HomeAssistantCardEditorReference";
 export * from "./HomeAssistantPanelGroup";
 export * from "./HomeAssistantStatusPanelRegistry";

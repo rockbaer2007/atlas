@@ -73,7 +73,9 @@ name. The package also carries a generated custom-card JavaScript source with a
 matching `custom:<card-name>` type, Home Assistant `getStubConfig()` defaults
 and the demo-entity replacement hint for the later HACS card workflow. The
 same source can also be downloaded directly through the Export card script
-button.
+button. Export HACS bundle downloads a zip-ready JSON manifest that lists the
+future repository files: `hacs.json`, the generated JavaScript card, a README,
+an example Lovelace card and the original Atlas card package.
 When the package is exported from Expert mode, the envelope also carries the
 Expert editor plan so a later import can restore the placed fields and switch
 back to Expert automatically.
