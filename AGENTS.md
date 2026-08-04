@@ -67,7 +67,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Expert mode is for a free editor surface with draggable/resizable fields.
 - Expert mode should generate the Expert HA card code, not the Simple HA card code.
 - Expert fields can use different card families, including built-in Home Assistant cards, Bubble Card, and Mushroom.
-- Bubble Card path must respect Linux case sensitivity:
+- All Home Assistant and HACS resource paths must respect Linux case sensitivity.
+- Bubble Card path:
   - `/hacsfiles/Bubble-Card/bubble-card.js`
 - Mushroom resource path:
   - `/hacsfiles/lovelace-mushroom/mushroom.js`
