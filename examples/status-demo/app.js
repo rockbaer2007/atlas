@@ -837,6 +837,8 @@ let adminConnectionToken = "";
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
+let connectionLifecycleState = "closed";
+let activeConnectionSignature = "";
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let activeEditorMode = "simple";
@@ -1158,6 +1160,10 @@ function requestAdminConnectionHandoff() {
 }
 
 function renderConnectionLifecycle(lifecycle) {
+  connectionLifecycleState = lifecycle.state;
+  if (lifecycle.state === "closed" || lifecycle.state === "failed") {
+    activeConnectionSignature = "";
+  }
   connectionState.dataset.state = lifecycle.state;
   connectionState.textContent = lifecycle.reason
     ? t("message.connectionStateWithReason", { state: lifecycle.state, reason: lifecycle.reason })
@@ -1179,6 +1185,10 @@ function renderConnectionLifecycle(lifecycle) {
     }
   }
   refreshHomeAssistantEntities.disabled = lifecycle.state !== "connected";
+}
+
+function createConnectionSignature(configuration, token) {
+  return `${deriveHomeAssistantWebSocketUrl(configuration)}|${token}`;
 }
 
 function scheduleReconnect() {
@@ -3244,14 +3254,25 @@ async function connectHomeAssistant() {
     return;
   }
 
+  const connectionSignature = createConnectionSignature(configuration, adminConnectionToken);
+  const duplicateActiveConnection =
+    activeConnectionSignature === connectionSignature
+    && ["connecting", "authenticating", "connected"].includes(connectionLifecycleState);
+  if (duplicateActiveConnection) {
+    return;
+  }
+
   removeLifecycleListener?.();
   clearTimeout(reconnectTimer);
   reconnectTimer = undefined;
   reconnectAttempts = 0;
+  reconnectToken = undefined;
   connection?.disconnect();
   connection = createHomeAssistantRuntimeConnection(configuration, createBrowserHomeAssistantWebSocket);
   removeLifecycleListener = connection.subscribeLifecycle(renderConnectionLifecycle);
+  activeConnectionSignature = connectionSignature;
   reconnectToken = adminConnectionToken;
+  renderConnectionLifecycle({ state: "connecting" });
   connection.connect(reconnectToken);
   persistConfiguration();
 }
@@ -3259,6 +3280,7 @@ async function connectHomeAssistant() {
 function disconnectHomeAssistant() {
   reconnectToken = undefined;
   reconnectAttempts = 0;
+  activeConnectionSignature = "";
   clearTimeout(reconnectTimer);
   reconnectTimer = undefined;
   connection?.disconnect();
