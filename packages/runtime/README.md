@@ -33,9 +33,12 @@ Kernel EventBus.
 - `RuntimeModuleStatus`
 - `RuntimePlugin`
 - `RuntimePluginActivationContext`
+- `RuntimePluginCatalog`
+- `RuntimePluginDescriptor`
 - `RuntimePluginManifest`
 - `RuntimeServiceKeys`
 - `createRuntimeModuleFromPlugin`
+- `describeRuntimePlugin`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
 `@atlas/kernel` application and event contracts. Consumers may construct a host
@@ -94,6 +97,11 @@ capabilities, then `createRuntimeModuleFromPlugin()` adapts it into a
 `RuntimeModule`. Activation receives the regular Kernel module context plus the
 original plugin manifest. Optional plugin `deactivate()` and `dispose()` hooks
 are delegated to Runtime module shutdown.
+
+`RuntimePluginCatalog` provides the first discovery surface. It registers
+plugins by id, exposes immutable descriptors, finds plugins by extension point
+or provided capability, and can convert its entries into Runtime modules for
+host startup.
 
 The package-root public API is covered by contract tests. Consumers should
 import Runtime types and values from `@atlas/runtime` rather than deep source
