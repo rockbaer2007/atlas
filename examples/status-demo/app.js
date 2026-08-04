@@ -344,7 +344,7 @@ const translations = {
     "message.bundleExportedWithLanguages": "HACS bundle exported as {filename} with {count} files and languages {languages}.",
     "message.translationProviderReady": "Translation module from Administration: {provider}.",
     "message.translationFallbackNoProvider": "Automatic translation requested, but no translation module is configured. Exporting fallback language files.",
-    "message.translationFallbackProviderPending": "Automatic translation requested with {provider}. Provider execution is not connected yet, so fallback language files are exported for review.",
+    "message.translationFallbackProviderPending": "Automatic translation requested with {provider}. API endpoint prepared: {endpoint}. Provider execution is not connected yet, so fallback language files are exported for review.",
     "message.translationProgress": "Preparing language files: {percent}%.",
     "message.translationComplete": "Language files prepared: {percent}%.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
@@ -646,7 +646,7 @@ const translations = {
     "message.bundleExportedWithLanguages": "HACS-Bundle als {filename} mit {count} Dateien und Sprachen {languages} exportiert.",
     "message.translationProviderReady": "Uebersetzungsmodul aus Administration: {provider}.",
     "message.translationFallbackNoProvider": "Automatische Uebersetzung angefordert, aber kein Uebersetzungsmodul ist konfiguriert. Fallback-Languagefiles werden exportiert.",
-    "message.translationFallbackProviderPending": "Automatische Uebersetzung mit {provider} angefordert. Provider-Ausfuehrung ist noch nicht angebunden, daher werden Fallback-Languagefiles zur Pruefung exportiert.",
+    "message.translationFallbackProviderPending": "Automatische Uebersetzung mit {provider} angefordert. API-Endpunkt vorbereitet: {endpoint}. Provider-Ausfuehrung ist noch nicht angebunden, daher werden Fallback-Languagefiles zur Pruefung exportiert.",
     "message.translationProgress": "Languagefiles werden vorbereitet: {percent}%.",
     "message.translationComplete": "Languagefiles vorbereitet: {percent}%.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
@@ -859,6 +859,7 @@ let activeTransport;
 let removeEntityListListener;
 let adminConnectionToken = "";
 let adminTranslationProvider = "none";
+let adminTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
@@ -1118,6 +1119,19 @@ function normalizeTranslationProvider(value) {
   return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
 }
 
+function normalizeTranslationApiEndpoint(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return "https://api.deepl.com/v2/translate";
+  }
+
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" ? url.toString() : "https://api.deepl.com/v2/translate";
+  } catch {
+    return "https://api.deepl.com/v2/translate";
+  }
+}
+
 function readAdminConnectionCookie() {
   const cookie = document.cookie
     .split("; ")
@@ -1141,6 +1155,7 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
   }
   adminConnectionToken = typeof settings.token === "string" ? settings.token : "";
   adminTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
+  adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(settings.translationApiEndpoint);
   cardTranslationStatus.textContent = t("message.translationProviderReady", { provider: adminTranslationProvider });
   renderConnectionReadiness();
   renderAdminHandoffState();
@@ -2926,11 +2941,12 @@ async function prepareCardExportTranslations(languages) {
   }
 
   const provider = normalizeTranslationProvider(adminTranslationProvider);
+  const translationApiEndpoint = normalizeTranslationApiEndpoint(adminTranslationApiEndpoint);
   cardTranslationProgress.hidden = false;
   cardTranslationProgress.value = 0;
   cardTranslationStatus.textContent = provider === "none"
     ? t("message.translationFallbackNoProvider")
-    : t("message.translationFallbackProviderPending", { provider });
+    : t("message.translationFallbackProviderPending", { provider, endpoint: translationApiEndpoint });
 
   const steps = Math.max(1, languages.length);
   for (let index = 0; index < steps; index += 1) {

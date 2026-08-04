@@ -158,6 +158,20 @@
         outline-offset: 1px;
       }
 
+      .field-pair.wide {
+        grid-column: 1 / -1;
+      }
+
+      .field-hint {
+        color: #52617a;
+        font-size: 12px;
+      }
+
+      .field-hint a {
+        color: #0f766e;
+        font-weight: 700;
+      }
+
       .checkbox-row {
         display: inline-flex;
         align-items: center;
@@ -341,6 +355,14 @@
               <option value="deepl-pro" data-i18n="provider.deeplPro">DeepL API Pro</option>
               <option value="custom-ai" data-i18n="provider.customAi">Custom AI provider</option>
             </select>
+          </div>
+          <div class="field-pair wide">
+            <label for="translation-api-endpoint" data-i18n="label.translationApiEndpoint">Translation API endpoint</label>
+            <input id="translation-api-endpoint" type="url" inputmode="url" value="https://api.deepl.com/v2/translate" autocomplete="off" spellcheck="false">
+            <span class="field-hint">
+              <span data-i18n="message.translationApiEndpointHint">DeepL translate request reference:</span>
+              <a href="https://developers.deepl.com/api-reference/translate/request-translation" target="_blank" rel="noreferrer">developers.deepl.com</a>
+            </span>
           </div>
         </div>
         <label class="checkbox-row" for="remember-admin-token">

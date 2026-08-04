@@ -31,6 +31,9 @@ to the Card Editor, but real provider execution still requires a later backend
 adapter and API-key handling.
 DeepL API planning uses `https://www.deepl.com/de/pro#api` as the reference
 for Free/Pro API options.
+The prepared DeepL translate endpoint defaults to
+`https://api.deepl.com/v2/translate`; request details are tracked at
+`https://developers.deepl.com/api-reference/translate/request-translation`.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The

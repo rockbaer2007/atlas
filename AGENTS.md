@@ -115,6 +115,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Automatic translation for additional Card languages is a future option and must clearly warn that it requires an internet connection when enabled.
 - Atlas Administration should own the Card translation module choice, starting with `none`, `chatgpt`, `deepl-free`, `deepl-pro` and `custom-ai`.
 - DeepL API planning should keep `https://www.deepl.com/de/pro#api` as the reference for Free/Pro API options.
+- DeepL translate adapter planning should default to `https://api.deepl.com/v2/translate` and keep `https://developers.deepl.com/api-reference/translate/request-translation` as the request reference.
 - The Card Editor may expose an automatic-translation checkbox and progress indicator during export, but it must not claim completed machine translation until a real provider adapter has executed.
 - HACS bundle export should create a `.hacs.zip` containing:
   - `hacs.json`

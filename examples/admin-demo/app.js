@@ -16,6 +16,7 @@ const languageButtons = Array.from(document.querySelectorAll("[data-language]"))
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
 const translationProvider = document.querySelector("#translation-provider");
+const translationApiEndpoint = document.querySelector("#translation-api-endpoint");
 const rememberAdminToken = document.querySelector("#remember-admin-token");
 const autoConnectEditor = document.querySelector("#auto-connect-editor");
 const saveAdminSettings = document.querySelector("#save-admin-settings");
@@ -32,6 +33,7 @@ const adminPluginStorageKey = "atlas.administration.importedPlugins";
 const adminPluginStateStorageKey = "atlas.administration.pluginState";
 const adminConnectionCookieName = "atlas_admin_connection";
 const adminConnectionApiPath = "/api/admin-connection";
+const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const editorOrigin = "http://127.0.0.1:4174";
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
@@ -51,6 +53,7 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
     "label.translationProvider": "Translation module",
+    "label.translationApiEndpoint": "Translation API endpoint",
     "label.rememberToken": "Remember token locally for Administration",
     "label.autoConnectEditor": "Auto-connect Card Editor after handoff",
     "label.version": "Version",
@@ -72,6 +75,7 @@ const translations = {
     "provider.customAi": "Custom AI provider",
     "aria.language": "Language",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
+    "message.translationApiEndpointHint": "DeepL translate request reference:",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
     "message.pluginSummary": "{total} plugins, {active} active, {available} available, {disabled} disabled",
     "message.policySummary": "Current approved context: Home Assistant URL {url}, WebSocket path {websocket}.",
@@ -106,6 +110,7 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
     "label.translationProvider": "Uebersetzungsmodul",
+    "label.translationApiEndpoint": "Uebersetzungs-API-Endpunkt",
     "label.rememberToken": "Token lokal fuer die Administration merken",
     "label.autoConnectEditor": "Card Editor nach Uebergabe automatisch verbinden",
     "label.version": "Version",
@@ -127,6 +132,7 @@ const translations = {
     "provider.customAi": "Eigener KI-Anbieter",
     "aria.language": "Sprache",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
+    "message.translationApiEndpointHint": "DeepL-Translate-Request-Referenz:",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
     "message.pluginSummary": "{total} Plugins, {active} aktiv, {available} verfuegbar, {disabled} deaktiviert",
     "message.policySummary": "Aktuell freigegebener Kontext: Home-Assistant-URL {url}, WebSocket-Pfad {websocket}.",
@@ -189,12 +195,26 @@ function normalizeTranslationProvider(value) {
   return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
 }
 
+function normalizeTranslationApiEndpoint(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return defaultTranslationApiEndpoint;
+  }
+
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" ? url.toString() : defaultTranslationApiEndpoint;
+  } catch {
+    return defaultTranslationApiEndpoint;
+  }
+}
+
 function persistConfiguration() {
   const token = homeAssistantToken.value.trim();
   const configuration = {
     language: currentLanguage,
     url: homeAssistantUrl.value,
     translationProvider: normalizeTranslationProvider(translationProvider.value),
+    translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     token: rememberAdminToken.checked ? token : undefined,
@@ -213,6 +233,7 @@ async function persistServerConnectionSettings(configuration) {
       token: configuration.rememberToken ? configuration.token : "",
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
+      translationApiEndpoint: configuration.translationApiEndpoint,
     }),
   });
 }
@@ -229,6 +250,7 @@ function persistSharedConnectionCookie(configuration) {
       token: configuration.token,
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
+      translationApiEndpoint: configuration.translationApiEndpoint,
       updatedAt: new Date().toISOString(),
     }))}`,
     "path=/",
@@ -266,6 +288,9 @@ function restoreConfiguration() {
     }
     if (typeof saved?.translationProvider === "string") {
       translationProvider.value = normalizeTranslationProvider(saved.translationProvider);
+    }
+    if (typeof saved?.translationApiEndpoint === "string") {
+      translationApiEndpoint.value = normalizeTranslationApiEndpoint(saved.translationApiEndpoint);
     }
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
@@ -378,6 +403,7 @@ function createEditorConnectionHandoff() {
     token: homeAssistantToken.value,
     autoConnect: autoConnectEditor.checked,
     translationProvider: normalizeTranslationProvider(translationProvider.value),
+    translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
     sentAt: new Date().toISOString(),
   };
 }
@@ -586,6 +612,7 @@ homeAssistantUrl.addEventListener("input", () => {
 });
 
 translationProvider.addEventListener("change", persistConfiguration);
+translationApiEndpoint.addEventListener("input", persistConfiguration);
 
 homeAssistantToken.addEventListener("input", () => {
   if (rememberAdminToken.checked) {

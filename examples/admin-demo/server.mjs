@@ -4,6 +4,7 @@ import { extname, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
 const port = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
+const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -117,12 +118,26 @@ function normalizeAdminConnectionSettings(settings) {
     token: typeof settings.token === "string" ? settings.token : "",
     autoConnectEditor: settings.autoConnectEditor === true,
     translationProvider: normalizeTranslationProvider(settings.translationProvider),
+    translationApiEndpoint: normalizeTranslationApiEndpoint(settings.translationApiEndpoint),
     updatedAt: new Date().toISOString(),
   };
 }
 
 function normalizeTranslationProvider(value) {
   return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+}
+
+function normalizeTranslationApiEndpoint(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return defaultTranslationApiEndpoint;
+  }
+
+  try {
+    const url = new URL(value.trim());
+    return url.protocol === "https:" ? url.toString() : defaultTranslationApiEndpoint;
+  } catch {
+    return defaultTranslationApiEndpoint;
+  }
 }
 
 function resolveRequestFilePath(requestedFilePath) {
