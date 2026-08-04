@@ -188,6 +188,19 @@
         min-height: 36px;
       }
 
+      .provider-link-row {
+        display: grid;
+        grid-template-columns: minmax(150px, 0.35fr) minmax(220px, 0.65fr);
+        align-items: center;
+        gap: 8px 12px;
+        min-height: 28px;
+        font-size: 13px;
+      }
+
+      .provider-link-row span {
+        grid-column: 2;
+      }
+
       .provider-option {
         display: inline-flex;
         align-items: center;
@@ -333,9 +346,14 @@
         .plugin-header,
         .admin-grid,
         .field-grid,
-        .provider-row {
+        .provider-row,
+        .provider-link-row {
           display: grid;
           grid-template-columns: 1fr;
+        }
+
+        .provider-link-row span {
+          grid-column: 1;
         }
       }
     </style>
@@ -413,6 +431,12 @@
                 </span>
                 <input id="translation-api-key-deepl-free" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.deeplFreeApiKey" placeholder="Free API key later">
               </label>
+              <div class="provider-link-row">
+                <span>
+                  <span data-i18n="message.deeplApiKeyLink">Get DeepL API key:</span>
+                  <a href="https://www.deepl.com/de/pro#api" target="_blank" rel="noreferrer">deepl.com/pro#api</a>
+                </span>
+              </div>
               <label class="provider-row">
                 <span class="provider-option">
                   <input type="radio" name="translation-provider" value="deepl-pro">
