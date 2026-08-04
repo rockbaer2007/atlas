@@ -11,9 +11,15 @@ const mimeTypes = {
   ".json": "application/json; charset=utf-8",
   ".map": "application/json; charset=utf-8",
 };
+let adminConnectionSettings;
 
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", "http://localhost");
+  if (requestUrl.pathname === "/api/admin-connection") {
+    void handleAdminConnectionRequest(request, response);
+    return;
+  }
+
   const requestPath = requestUrl.pathname === "/"
     ? "/examples/admin-demo/index.html"
     : requestUrl.pathname;
@@ -38,6 +44,81 @@ createServer((request, response) => {
 }).listen(port, "127.0.0.1", () => {
   console.log(`ATLAS administration: http://127.0.0.1:${port}/`);
 });
+
+async function handleAdminConnectionRequest(request, response) {
+  writeCorsHeaders(response);
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
+  if (request.method === "GET") {
+    response.writeHead(adminConnectionSettings ? 200 : 404, {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    });
+    response.end(JSON.stringify(adminConnectionSettings ?? { error: "not configured" }));
+    return;
+  }
+
+  if (request.method === "PUT") {
+    const body = await readRequestBody(request);
+    const settings = JSON.parse(body || "{}");
+    adminConnectionSettings = normalizeAdminConnectionSettings(settings);
+    response.writeHead(200, {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    });
+    response.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
+  if (request.method === "DELETE") {
+    adminConnectionSettings = undefined;
+    response.writeHead(200, {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    });
+    response.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
+  response.writeHead(405, { "content-type": "application/json; charset=utf-8" });
+  response.end(JSON.stringify({ error: "method not allowed" }));
+}
+
+function writeCorsHeaders(response) {
+  response.setHeader("access-control-allow-origin", "http://127.0.0.1:4174");
+  response.setHeader("access-control-allow-methods", "GET, PUT, DELETE, OPTIONS");
+  response.setHeader("access-control-allow-headers", "content-type");
+}
+
+function readRequestBody(request) {
+  return new Promise((resolveBody, rejectBody) => {
+    let body = "";
+    request.setEncoding("utf8");
+    request.on("data", chunk => {
+      body += chunk;
+      if (body.length > 8192) {
+        rejectBody(new Error("Request body too large."));
+        request.destroy();
+      }
+    });
+    request.on("end", () => resolveBody(body));
+    request.on("error", rejectBody);
+  });
+}
+
+function normalizeAdminConnectionSettings(settings) {
+  return {
+    url: typeof settings.url === "string" ? settings.url : "",
+    token: typeof settings.token === "string" ? settings.token : "",
+    autoConnectEditor: settings.autoConnectEditor === true,
+    updatedAt: new Date().toISOString(),
+  };
+}
 
 function resolveRequestFilePath(requestedFilePath) {
   if (existsSync(requestedFilePath) && statSync(requestedFilePath).isDirectory()) {

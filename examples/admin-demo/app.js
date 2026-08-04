@@ -23,6 +23,8 @@ const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
 const adminStorageKey = "atlas.administration.configuration";
+const adminConnectionCookieName = "atlas_admin_connection";
+const adminConnectionApiPath = "/api/admin-connection";
 const editorOrigin = "http://127.0.0.1:4174";
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
@@ -153,13 +155,56 @@ function currentWebSocketPath() {
 
 function persistConfiguration() {
   const token = homeAssistantToken.value.trim();
-  localStorage.setItem(adminStorageKey, JSON.stringify({
+  const configuration = {
     language: currentLanguage,
     url: homeAssistantUrl.value,
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     token: rememberAdminToken.checked ? token : undefined,
-  }));
+  };
+  localStorage.setItem(adminStorageKey, JSON.stringify(configuration));
+  persistSharedConnectionCookie(configuration);
+  void persistServerConnectionSettings(configuration);
+}
+
+async function persistServerConnectionSettings(configuration) {
+  if (!configuration.rememberToken || !configuration.token) {
+    await fetch(adminConnectionApiPath, { method: "DELETE" });
+    return;
+  }
+
+  await fetch(adminConnectionApiPath, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      url: configuration.url,
+      token: configuration.token,
+      autoConnectEditor: configuration.autoConnectEditor,
+    }),
+  });
+}
+
+function persistSharedConnectionCookie(configuration) {
+  if (!configuration.rememberToken || !configuration.token) {
+    deleteSharedConnectionCookie();
+    return;
+  }
+
+  document.cookie = [
+    `${adminConnectionCookieName}=${encodeURIComponent(JSON.stringify({
+      url: configuration.url,
+      token: configuration.token,
+      autoConnectEditor: configuration.autoConnectEditor,
+      updatedAt: new Date().toISOString(),
+    }))}`,
+    "path=/",
+    "max-age=2592000",
+    "SameSite=Lax",
+  ].join("; ");
+}
+
+function deleteSharedConnectionCookie() {
+  document.cookie = `${adminConnectionCookieName}=; path=/; max-age=0; SameSite=Lax`;
 }
 
 function saveConnectionSettings() {
@@ -381,6 +426,9 @@ function setLanguage(language) {
 }
 
 restoreConfiguration();
+if (rememberAdminToken.checked && homeAssistantToken.value.trim()) {
+  persistConfiguration();
+}
 applyTranslations();
 renderAdministration();
 

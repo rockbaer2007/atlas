@@ -133,6 +133,8 @@ const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const adminOrigin = "http://127.0.0.1:4175";
+const adminConnectionApiUrl = `${adminOrigin}/api/admin-connection`;
+const adminConnectionCookieName = "atlas_admin_connection";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
@@ -1076,23 +1078,72 @@ function renderAdminHandoffState() {
     : t("message.adminHandoffWaiting");
 }
 
+function readAdminConnectionCookie() {
+  const cookie = document.cookie
+    .split("; ")
+    .find(entry => entry.startsWith(`${adminConnectionCookieName}=`));
+  if (!cookie) return;
+
+  try {
+    return JSON.parse(decodeURIComponent(cookie.slice(adminConnectionCookieName.length + 1)));
+  } catch {
+    return undefined;
+  }
+}
+
+function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
+  if (!settings || typeof settings !== "object") {
+    return false;
+  }
+
+  if (typeof settings.url === "string" && settings.url.trim()) {
+    homeAssistantUrl.value = settings.url.trim();
+  }
+  adminConnectionToken = typeof settings.token === "string" ? settings.token : "";
+  renderConnectionReadiness();
+  renderAdminHandoffState();
+  persistConfiguration();
+
+  if ((autoConnect || settings.autoConnectEditor === true || settings.autoConnect === true) && adminConnectionToken) {
+    connectHomeAssistant();
+  }
+
+  return Boolean(adminConnectionToken);
+}
+
+async function fetchAdminConnectionSettings() {
+  try {
+    const response = await fetch(adminConnectionApiUrl, {
+      cache: "no-store",
+      mode: "cors",
+    });
+    if (!response.ok) {
+      return undefined;
+    }
+    return await response.json();
+  } catch {
+    return undefined;
+  }
+}
+
+async function applyStoredAdminConnectionSettings({ autoConnect = false } = {}) {
+  const applied = applyAdminConnectionSettings(
+    await fetchAdminConnectionSettings() ?? readAdminConnectionCookie(),
+    { autoConnect },
+  );
+  if (applied) {
+    statusMessage.textContent = t("message.adminHandoffReceived");
+  }
+  return applied;
+}
+
 function receiveAdminConnectionHandoff(event) {
   if (event.origin !== adminOrigin || event.data?.type !== "atlas.admin.connection.v1") {
     return;
   }
 
-  if (typeof event.data.url === "string" && event.data.url.trim()) {
-    homeAssistantUrl.value = event.data.url.trim();
-  }
-  adminConnectionToken = typeof event.data.token === "string" ? event.data.token : "";
-  renderConnectionReadiness();
-  renderAdminHandoffState();
-  persistConfiguration();
+  applyAdminConnectionSettings(event.data);
   statusMessage.textContent = t("message.adminHandoffReceived");
-
-  if (event.data.autoConnect === true && adminConnectionToken) {
-    connectHomeAssistant();
-  }
 }
 
 function requestAdminConnectionHandoff() {
@@ -3176,7 +3227,11 @@ function bindSelectedEntity(nextTransport) {
   renderEntityList();
 }
 
-function connectHomeAssistant() {
+async function connectHomeAssistant() {
+  if (!adminConnectionToken) {
+    await applyStoredAdminConnectionSettings();
+  }
+
   const configuration = createHomeAssistantConnectionConfiguration({ url: homeAssistantUrl.value });
   const readiness = inspectHomeAssistantConnectionReadiness(configuration);
   if (!readiness.ready) {
@@ -3749,6 +3804,7 @@ syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
+void applyStoredAdminConnectionSettings();
 renderAdminHandoffState();
 renderEditorMode(initialEditorMode);
 

@@ -21,6 +21,9 @@ Editor with a browser-session handoff, and exports the generated
 in the admin page when the local remember option is selected or when Save
 settings is used with a token in the field. The Card Editor receives the token
 only through `postMessage` for the active browser session.
+The local Administration server also exposes saved connection settings to the
+Card Editor on port `4174`, so reloads and direct editor opens can recover the
+handoff after `Save settings`.
 When the Auto-connect option is enabled, the editor connects immediately after
 receiving the admin handoff.
 Plugins receive only approved context such as URLs, WebSocket paths, resource
