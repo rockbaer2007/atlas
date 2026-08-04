@@ -36,6 +36,7 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   inspectHomeAssistantCardEditorHacsBundleArchive,
+  readHomeAssistantCardEditorHacsBundleArchivePackage,
   listHomeAssistantCardEditorTemplates,
   listHomeAssistantCardTargets,
   serializeHomeAssistantEntitiesCardConfiguration,
@@ -324,7 +325,7 @@ const translations = {
     "message.importRejected": "Import rejected: unsupported Home Assistant card artifact.",
     "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
-    "message.hacsBundleInspected": "HACS bundle checked: {count} files, script {scriptFilename}. Full import is planned next.",
+    "message.hacsBundleInspected": "HACS bundle checked: {count} files, script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS bundle rejected: {reason}",
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
     "message.scriptExported": "Card script exported as {scriptFilename}.",
@@ -616,7 +617,7 @@ const translations = {
     "message.importRejected": "Import abgelehnt: nicht unterstuetztes Home-Assistant-Card-Artefakt.",
     "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitaeten.",
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
-    "message.hacsBundleInspected": "HACS-Bundle geprueft: {count} Dateien, Script {scriptFilename}. Vollimport ist als Naechstes geplant.",
+    "message.hacsBundleInspected": "HACS-Bundle geprueft: {count} Dateien, Script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS-Bundle abgelehnt: {reason}",
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
     "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
@@ -3572,20 +3573,25 @@ importHaCardConfig.addEventListener("change", async () => {
   const file = importHaCardConfig.files?.[0];
   if (!file) return;
   try {
+    let text;
     if (isHacsBundleArchiveFile(file)) {
-      const inspection = inspectHomeAssistantCardEditorHacsBundleArchive(new Uint8Array(await file.arrayBuffer()));
-      haCardImportReview.dataset.action = inspection.importable ? "import" : "reject";
-      haCardImportReview.textContent = inspection.reason;
-      statusMessage.textContent = inspection.importable
+      const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(new Uint8Array(await file.arrayBuffer()));
+      haCardImportReview.dataset.action = packageRead.importable ? "import" : "reject";
+      haCardImportReview.textContent = packageRead.reason;
+      statusMessage.textContent = packageRead.importable
         ? t("message.hacsBundleInspected", {
-          count: String(inspection.fileCount),
-          scriptFilename: inspection.scriptFiles[0] ?? "unknown",
+          count: String(packageRead.inspection.fileCount),
+          scriptFilename: packageRead.inspection.scriptFiles[0] ?? "unknown",
         })
-        : t("message.hacsBundleRejected", { reason: inspection.reason });
-      return;
+        : t("message.hacsBundleRejected", { reason: packageRead.reason });
+      if (!packageRead.importable || !packageRead.packageContent) {
+        return;
+      }
+      text = packageRead.packageContent;
+    } else {
+      text = await file.text();
     }
 
-    const text = await file.text();
     const decision = renderHaCardImportDecision(text);
     if (decision.action !== "import") {
       statusMessage.textContent = decision.action === "review"
