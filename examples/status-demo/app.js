@@ -344,6 +344,7 @@ const translations = {
     "message.packageExportedWithLanguages": "Card package exported with HACS script {scriptFilename} and languages {languages}.",
     "message.bundleExportedWithLanguages": "HACS bundle exported as {filename} with {count} files and languages {languages}.",
     "message.translationProviderReady": "Translation module from Administration: {provider}.",
+    "message.translationProviderNotConfigured": "Translation module from Administration: not configured.",
     "message.translationFallbackNoProvider": "Automatic translation requested, but no translation module is configured. Exporting fallback language files.",
     "message.translationFallbackProviderPending": "Automatic translation requested with {provider}. API endpoint prepared: {endpoint}. Provider execution is not connected yet, so fallback language files are exported for review.",
     "message.translationProviderMissingKey": "Automatic translation requested with {provider}, but no provider API key is configured in Administration. Exporting fallback language files.",
@@ -650,6 +651,7 @@ const translations = {
     "message.packageExportedWithLanguages": "Card-Paket mit HACS-Script {scriptFilename} und Sprachen {languages} exportiert.",
     "message.bundleExportedWithLanguages": "HACS-Bundle als {filename} mit {count} Dateien und Sprachen {languages} exportiert.",
     "message.translationProviderReady": "Uebersetzungsmodul aus Administration: {provider}.",
+    "message.translationProviderNotConfigured": "Uebersetzungsmodul aus Administration: nicht konfiguriert.",
     "message.translationFallbackNoProvider": "Automatische Uebersetzung angefordert, aber kein Uebersetzungsmodul ist konfiguriert. Fallback-Languagefiles werden exportiert.",
     "message.translationFallbackProviderPending": "Automatische Uebersetzung mit {provider} angefordert. API-Endpunkt vorbereitet: {endpoint}. Provider-Ausfuehrung ist noch nicht angebunden, daher werden Fallback-Languagefiles zur Pruefung exportiert.",
     "message.translationProviderMissingKey": "Automatische Uebersetzung mit {provider} angefordert, aber in der Administration ist kein Provider-API-Key konfiguriert. Fallback-Languagefiles werden exportiert.",
@@ -989,6 +991,15 @@ try {
   if (typeof savedConfiguration?.cardAutoTranslate === "boolean") {
     cardAutoTranslate.checked = savedConfiguration.cardAutoTranslate;
   }
+  if (typeof savedConfiguration?.adminTranslationProvider === "string") {
+    adminTranslationProvider = normalizeTranslationProvider(savedConfiguration.adminTranslationProvider);
+  }
+  if (typeof savedConfiguration?.adminTranslationApiEndpoint === "string") {
+    adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(savedConfiguration.adminTranslationApiEndpoint);
+  }
+  if (typeof savedConfiguration?.adminTranslationApiKeyConfigured === "boolean") {
+    adminTranslationApiKeyConfigured = savedConfiguration.adminTranslationApiKeyConfigured;
+  }
   if (typeof savedConfiguration?.selectedGroup === "string") {
     initialGroupSelection = savedConfiguration.selectedGroup;
   }
@@ -1129,7 +1140,7 @@ function renderAdminHandoffState() {
 function renderCardTranslationModuleStatus() {
   const provider = normalizeTranslationProvider(adminTranslationProvider);
   const text = provider === "none"
-    ? ""
+    ? t("message.translationProviderNotConfigured")
     : t("message.translationProviderReady", { provider });
   cardTranslationStatus.textContent = text;
   adminTranslationModuleState.textContent = text;
@@ -1165,6 +1176,28 @@ function readAdminConnectionCookie() {
   }
 }
 
+function hasConfiguredTranslationProvider(settings) {
+  return normalizeTranslationProvider(settings?.translationProvider) !== "none";
+}
+
+function mergeAdminConnectionSettings(primary, fallback) {
+  if (!primary) {
+    return fallback;
+  }
+  if (!fallback) {
+    return primary;
+  }
+
+  const merged = { ...fallback, ...primary };
+  if (!hasConfiguredTranslationProvider(primary) && hasConfiguredTranslationProvider(fallback)) {
+    merged.translationProvider = fallback.translationProvider;
+    merged.translationApiEndpoint = fallback.translationApiEndpoint;
+    merged.translationApiKeyConfigured = fallback.translationApiKeyConfigured;
+    merged.translationApiKeyConfiguredByProvider = fallback.translationApiKeyConfiguredByProvider;
+  }
+  return merged;
+}
+
 function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
   if (!settings || typeof settings !== "object") {
     return false;
@@ -1179,12 +1212,17 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
     adminConnectionToken = settings.token;
     appliedSettings = true;
   }
-  const nextTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
+  const incomingTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
+  const nextTranslationProvider = incomingTranslationProvider === "none" && adminTranslationProvider !== "none"
+    ? adminTranslationProvider
+    : incomingTranslationProvider;
   if (nextTranslationProvider !== adminTranslationProvider) {
     appliedSettings = true;
   }
   adminTranslationProvider = nextTranslationProvider;
-  adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(settings.translationApiEndpoint);
+  if (typeof settings.translationApiEndpoint === "string" || incomingTranslationProvider !== "none") {
+    adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(settings.translationApiEndpoint);
+  }
   if (settings.translationApiKeyConfigured === true || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === true) {
     adminTranslationApiKeyConfigured = true;
     appliedSettings = true;
@@ -1220,8 +1258,10 @@ async function fetchAdminConnectionSettings() {
 }
 
 async function applyStoredAdminConnectionSettings({ autoConnect = false } = {}) {
+  const serverSettings = await fetchAdminConnectionSettings();
+  const cookieSettings = readAdminConnectionCookie();
   const applied = applyAdminConnectionSettings(
-    await fetchAdminConnectionSettings() ?? readAdminConnectionCookie(),
+    mergeAdminConnectionSettings(serverSettings, cookieSettings),
     { autoConnect },
   );
   if (applied) {
@@ -1311,6 +1351,9 @@ function persistConfiguration() {
       cardScriptFilename: haCardScriptFilename.value,
       cardExportLanguages: selectedCardExportLanguages(),
       cardAutoTranslate: cardAutoTranslate.checked,
+      adminTranslationProvider,
+      adminTranslationApiEndpoint,
+      adminTranslationApiKeyConfigured,
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       expertTemplateSizing: serializedExpertTemplateSizing(),

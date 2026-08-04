@@ -645,7 +645,10 @@ async function restoreServerConnectionSettings() {
     if (typeof saved.url === "string" && saved.url) {
       homeAssistantUrl.value = saved.url;
     }
-    if (typeof saved.translationProvider === "string") {
+    if (
+      typeof saved.translationProvider === "string"
+      && (normalizeTranslationProvider(saved.translationProvider) !== "none" || currentTranslationProvider() === "none")
+    ) {
       setTranslationProvider(saved.translationProvider);
     }
     applyTranslationApiKeys(saved.translationApiKeys);
