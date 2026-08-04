@@ -13,4 +13,5 @@ export * from "./RuntimeModuleStatus";
 export * from "./RuntimePlugin";
 export * from "./RuntimePluginAdministration";
 export * from "./RuntimePluginCatalog";
+export * from "./RuntimePluginInstallPackage";
 export * from "./RuntimeServiceKeys";

@@ -10,3 +10,4 @@ A Plugin:
 - may provide optional deactivate and dispose hooks that are called through Runtime shutdown
 - can be registered in a runtime plugin catalog for discovery by extension point or capability
 - can be projected into an administration view with status and management actions
+- can be exported into an install-package description with manifest, README and additional files

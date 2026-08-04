@@ -18,12 +18,16 @@ import type {
   RuntimePluginAdministrationSummary,
   RuntimePluginAdministrationView,
   RuntimePluginDescriptor,
+  RuntimePluginInstallPackage,
+  RuntimePluginInstallPackageFile,
   RuntimePluginManifest,
 } from "../src";
 import {
   createRuntimeModuleFromPlugin,
   createRuntimePluginAdministrationView,
+  createRuntimePluginInstallPackage,
   describeRuntimePlugin,
+  normalizeRuntimePluginPackageName,
   RuntimeConfigurationValidator,
   RuntimeDiagnosticIssueCodes,
   RuntimeHealthStates,
@@ -54,6 +58,8 @@ describe("runtime public API", () => {
     expect(createRuntimeModuleFromPlugin).toBeTypeOf("function");
     expect(createRuntimePluginAdministrationView).toBeTypeOf("function");
     expect(describeRuntimePlugin).toBeTypeOf("function");
+    expect(createRuntimePluginInstallPackage).toBeTypeOf("function");
+    expect(normalizeRuntimePluginPackageName).toBeTypeOf("function");
     expect(RuntimePluginCatalog).toBeTypeOf("function");
   });
 
@@ -129,6 +135,15 @@ describe("runtime public API", () => {
       plugins: [pluginAdministrationEntry],
       summary: pluginAdministrationSummary,
     };
+    const pluginInstallPackageFile: RuntimePluginInstallPackageFile = {
+      path: "atlas-plugin.json",
+      mediaType: "application/json",
+      content: "{}",
+    };
+    const pluginInstallPackage: RuntimePluginInstallPackage = createRuntimePluginInstallPackage({
+      plugin: pluginDescriptor,
+      files: [pluginInstallPackageFile],
+    });
     const pluginContext: RuntimePluginActivationContext = {
       plugin: pluginManifest,
       services: {
@@ -159,6 +174,7 @@ describe("runtime public API", () => {
     expect(runtimeEvent.type).toBe("runtime.diagnostics.changed");
     expect(pluginDescriptor.extensionPoints).toEqual(["runtime.service"]);
     expect(pluginAdministrationView.summary.available).toBe(1);
+    expect(pluginInstallPackage.files.map(file => file.path)).toContain("atlas-plugin.json");
     expect(pluginContext.plugin.provides).toEqual(["api-service"]);
     expect(createRuntimeModuleFromPlugin(runtimePlugin).manifest.id).toBe("api-plugin");
     expect(configuration.modules).toEqual([runtimeModule]);

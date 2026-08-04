@@ -40,11 +40,16 @@ Kernel EventBus.
 - `RuntimePluginAdministrationView`
 - `RuntimePluginCatalog`
 - `RuntimePluginDescriptor`
+- `RuntimePluginInstallPackage`
+- `RuntimePluginInstallPackageFile`
 - `RuntimePluginManifest`
 - `RuntimeServiceKeys`
 - `createRuntimeModuleFromPlugin`
 - `createRuntimePluginAdministrationView`
+- `createRuntimePluginInstallPackage`
 - `describeRuntimePlugin`
+- `normalizeRuntimePluginPackageName`
+- `serializeRuntimePluginInstallManifest`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
 `@atlas/kernel` application and event contracts. Consumers may construct a host
@@ -112,6 +117,11 @@ host startup.
 `createRuntimePluginAdministrationView()` prepares the future Atlas
 Administration surface. It turns Plugin Catalog descriptors into status-aware
 entries with actions such as inspect, activate, deactivate and export-package.
+
+`createRuntimePluginInstallPackage()` provides the first install-package
+contract. It writes an `atlas-plugin.json` manifest, a README and optional
+additional files into a package description that later archive builders or
+administration UIs can turn into a downloadable artifact.
 
 The package-root public API is covered by contract tests. Consumers should
 import Runtime types and values from `@atlas/runtime` rather than deep source
