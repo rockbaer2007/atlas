@@ -12,11 +12,17 @@ import type {
   RuntimeModuleStatus,
   RuntimePlugin,
   RuntimePluginActivationContext,
+  RuntimePluginAdministrationAction,
+  RuntimePluginAdministrationEntry,
+  RuntimePluginAdministrationStatus,
+  RuntimePluginAdministrationSummary,
+  RuntimePluginAdministrationView,
   RuntimePluginDescriptor,
   RuntimePluginManifest,
 } from "../src";
 import {
   createRuntimeModuleFromPlugin,
+  createRuntimePluginAdministrationView,
   describeRuntimePlugin,
   RuntimeConfigurationValidator,
   RuntimeDiagnosticIssueCodes,
@@ -46,6 +52,7 @@ describe("runtime public API", () => {
     expect(RuntimeServiceKeys.events).toBeTypeOf("symbol");
     expect(RuntimeServiceKeys.events.description).toBe("@atlas/runtime/events");
     expect(createRuntimeModuleFromPlugin).toBeTypeOf("function");
+    expect(createRuntimePluginAdministrationView).toBeTypeOf("function");
     expect(describeRuntimePlugin).toBeTypeOf("function");
     expect(RuntimePluginCatalog).toBeTypeOf("function");
   });
@@ -105,6 +112,23 @@ describe("runtime public API", () => {
       manifest: pluginManifest,
       async activate() {},
     });
+    const pluginAdministrationStatus: RuntimePluginAdministrationStatus = "available";
+    const pluginAdministrationAction: RuntimePluginAdministrationAction = "activate";
+    const pluginAdministrationEntry: RuntimePluginAdministrationEntry = {
+      ...pluginDescriptor,
+      status: pluginAdministrationStatus,
+      actions: [pluginAdministrationAction],
+    };
+    const pluginAdministrationSummary: RuntimePluginAdministrationSummary = {
+      total: 1,
+      active: 0,
+      available: 1,
+      disabled: 0,
+    };
+    const pluginAdministrationView: RuntimePluginAdministrationView = {
+      plugins: [pluginAdministrationEntry],
+      summary: pluginAdministrationSummary,
+    };
     const pluginContext: RuntimePluginActivationContext = {
       plugin: pluginManifest,
       services: {
@@ -134,6 +158,7 @@ describe("runtime public API", () => {
 
     expect(runtimeEvent.type).toBe("runtime.diagnostics.changed");
     expect(pluginDescriptor.extensionPoints).toEqual(["runtime.service"]);
+    expect(pluginAdministrationView.summary.available).toBe(1);
     expect(pluginContext.plugin.provides).toEqual(["api-service"]);
     expect(createRuntimeModuleFromPlugin(runtimePlugin).manifest.id).toBe("api-plugin");
     expect(configuration.modules).toEqual([runtimeModule]);

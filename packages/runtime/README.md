@@ -33,11 +33,17 @@ Kernel EventBus.
 - `RuntimeModuleStatus`
 - `RuntimePlugin`
 - `RuntimePluginActivationContext`
+- `RuntimePluginAdministrationAction`
+- `RuntimePluginAdministrationEntry`
+- `RuntimePluginAdministrationStatus`
+- `RuntimePluginAdministrationSummary`
+- `RuntimePluginAdministrationView`
 - `RuntimePluginCatalog`
 - `RuntimePluginDescriptor`
 - `RuntimePluginManifest`
 - `RuntimeServiceKeys`
 - `createRuntimeModuleFromPlugin`
+- `createRuntimePluginAdministrationView`
 - `describeRuntimePlugin`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
@@ -102,6 +108,10 @@ are delegated to Runtime module shutdown.
 plugins by id, exposes immutable descriptors, finds plugins by extension point
 or provided capability, and can convert its entries into Runtime modules for
 host startup.
+
+`createRuntimePluginAdministrationView()` prepares the future Atlas
+Administration surface. It turns Plugin Catalog descriptors into status-aware
+entries with actions such as inspect, activate, deactivate and export-package.
 
 The package-root public API is covered by contract tests. Consumers should
 import Runtime types and values from `@atlas/runtime` rather than deep source
