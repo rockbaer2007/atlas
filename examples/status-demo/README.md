@@ -106,8 +106,8 @@ Bubble Card uses the case-sensitive HACS resource path
 `/hacsfiles/Bubble-Card/bubble-card.js`. Without an active connection, the
 dependency line keeps showing these paths as installation hints. The resource
 snippet can be copied as JSON or YAML through the same card format selector.
-It includes the ATLAS frontend resource and, when needed, the selected
-Mushroom or Bubble Card dependency.
+It includes the ATLAS frontend resource and, in Expert mode, every Mushroom or
+Bubble Card dependency used by the placed fields.
 
 The visual status surface is now tucked into the Diagnostics panel. It remains
 available as an ATLAS renderer/theme and entity-state smoke test, but it is no

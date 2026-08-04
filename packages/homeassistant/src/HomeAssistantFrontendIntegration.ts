@@ -6,9 +6,16 @@ import type {
   HomeAssistantLovelaceResource,
   HomeAssistantLovelaceResourceReference,
 } from "./HomeAssistantCardConfiguration";
+import type {
+  HomeAssistantCardEditorDependencyPlan,
+  HomeAssistantCardEditorPackagePlanInput,
+} from "./HomeAssistantCardEditorPlan";
 import {
   inspectHomeAssistantCardDependencyAvailability,
 } from "./HomeAssistantCardConfiguration";
+import {
+  createHomeAssistantCardEditorDependencyPlan,
+} from "./HomeAssistantCardEditorPlan";
 
 export type HomeAssistantAtlasInstallationMode = "server" | "hacs";
 
@@ -40,6 +47,25 @@ export interface HomeAssistantAtlasFrontendIntegrationPlan {
   readonly atlasResource: HomeAssistantAtlasFrontendResource;
   readonly atlasAvailability: HomeAssistantAtlasFrontendResourceAvailability;
   readonly cardAvailability: HomeAssistantCardDependencyAvailability;
+  readonly requiredResourcePaths: readonly string[];
+  readonly installSteps: readonly string[];
+  readonly ready: boolean;
+}
+
+export interface HomeAssistantCardEditorFrontendIntegrationPlanInput {
+  readonly mode: HomeAssistantAtlasInstallationMode;
+  readonly editorPlan?: HomeAssistantCardEditorPackagePlanInput;
+  readonly serverResourcePath?: string;
+  readonly resources?: readonly (HomeAssistantLovelaceResource | string)[];
+}
+
+export interface HomeAssistantCardEditorFrontendIntegrationPlan {
+  readonly mode: HomeAssistantAtlasInstallationMode;
+  readonly atlasResource: HomeAssistantAtlasFrontendResource;
+  readonly atlasAvailability: HomeAssistantAtlasFrontendResourceAvailability;
+  readonly editorDependencyPlan: HomeAssistantCardEditorDependencyPlan;
+  readonly matchedCardResourcePaths: readonly string[];
+  readonly missingCardResourcePaths: readonly string[];
   readonly requiredResourcePaths: readonly string[];
   readonly installSteps: readonly string[];
   readonly ready: boolean;
@@ -147,6 +173,64 @@ export function serializeHomeAssistantAtlasFrontendResourceReferences(
   format: HomeAssistantCardExportFormat,
 ): string {
   const resources = createHomeAssistantAtlasFrontendResourceReferences(input);
+  if (format === "json") {
+    return JSON.stringify(resources, null, 2);
+  }
+
+  return resources.map(resource => [
+    `- url: ${serializeYamlScalar(resource.url)}`,
+    `  type: ${serializeYamlScalar(resource.type)}`,
+  ].join("\n")).join("\n");
+}
+
+export function createHomeAssistantCardEditorFrontendIntegrationPlan(
+  input: HomeAssistantCardEditorFrontendIntegrationPlanInput,
+): HomeAssistantCardEditorFrontendIntegrationPlan {
+  const resources = input.resources ?? [];
+  const atlasResource = createAtlasFrontendResource(input.mode, input.serverResourcePath);
+  const atlasAvailability = inspectAtlasFrontendResourceAvailability(atlasResource, resources);
+  const editorDependencyPlan = createHomeAssistantCardEditorDependencyPlan(input.editorPlan ?? {});
+  const registeredPaths = resources
+    .map(candidate => typeof candidate === "string" ? candidate : candidate.url)
+    .map(normalizeHomeAssistantResourcePath)
+    .filter((candidate): candidate is string => candidate !== undefined);
+  const matchedCardResourcePaths = editorDependencyPlan.requiredResourcePaths.filter(path => registeredPaths.includes(path));
+  const missingCardResourcePaths = editorDependencyPlan.requiredResourcePaths.filter(path => !matchedCardResourcePaths.includes(path));
+  const requiredResourcePaths = dedupeResourcePaths([
+    ...atlasResource.resourcePaths,
+    ...editorDependencyPlan.requiredResourcePaths,
+  ]);
+
+  return {
+    mode: input.mode,
+    atlasResource,
+    atlasAvailability,
+    editorDependencyPlan,
+    matchedCardResourcePaths,
+    missingCardResourcePaths,
+    requiredResourcePaths,
+    installSteps: [
+      ...atlasResource.installSteps,
+      ...editorDependencyPlan.installSteps,
+    ],
+    ready: atlasAvailability.status !== "missing" && missingCardResourcePaths.length === 0,
+  };
+}
+
+export function createHomeAssistantCardEditorFrontendResourceReferences(
+  input: HomeAssistantCardEditorFrontendIntegrationPlanInput,
+): readonly HomeAssistantLovelaceResourceReference[] {
+  return createHomeAssistantCardEditorFrontendIntegrationPlan(input).requiredResourcePaths.map(url => ({
+    url,
+    type: "module",
+  }));
+}
+
+export function serializeHomeAssistantCardEditorFrontendResourceReferences(
+  input: HomeAssistantCardEditorFrontendIntegrationPlanInput,
+  format: HomeAssistantCardExportFormat,
+): string {
+  const resources = createHomeAssistantCardEditorFrontendResourceReferences(input);
   if (format === "json") {
     return JSON.stringify(resources, null, 2);
   }

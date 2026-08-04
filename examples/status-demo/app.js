@@ -18,8 +18,10 @@ import {
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantAtlasFrontendIntegrationPlan,
+  createHomeAssistantCardEditorFrontendIntegrationPlan,
   decideHomeAssistantCardArtifactImport,
   formatHomeAssistantCardArtifactReviewLines,
+  serializeHomeAssistantCardEditorFrontendResourceReferences,
   serializeHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantEntityPresentation,
   createHomeAssistantEntityCatalog,
@@ -1550,6 +1552,11 @@ function renderHaCardPreview() {
 }
 
 function renderHaCardDependency(card) {
+  if (activeEditorMode === "expert") {
+    renderExpertHaCardDependency();
+    return;
+  }
+
   const dependency = inspectHomeAssistantCardDependency(card);
   const availability = inspectHomeAssistantCardDependencyAvailability(card, lovelaceResources);
   const integrationPlan = createHomeAssistantAtlasFrontendIntegrationPlan({
@@ -1603,6 +1610,67 @@ function renderHaCardDependency(card) {
       ].join(", "),
     });
   }
+}
+
+function renderExpertHaCardDependency() {
+  const integrationPlan = createHomeAssistantCardEditorFrontendIntegrationPlan({
+    mode: "server",
+    editorPlan: createActiveCardEditorPlan(),
+    resources: lovelaceResources,
+  });
+  const requiredDependencies = integrationPlan.editorDependencyPlan.dependencies.filter(dependency => dependency.required);
+  const dependencyLabel = formatDependencyLabels(requiredDependencies);
+  const resourceHint = integrationPlan.editorDependencyPlan.requiredResourcePaths.length
+    ? t("dependency.resource", { paths: integrationPlan.editorDependencyPlan.requiredResourcePaths.join(", ") })
+    : "";
+  const installHint = integrationPlan.editorDependencyPlan.installSteps.length
+    ? t("dependency.installPath", { paths: integrationPlan.editorDependencyPlan.installSteps.join(", ") })
+    : "";
+  const atlasHint = t("dependency.atlasFrontend", { paths: integrationPlan.atlasResource.resourcePaths.join(", ") });
+  haCardDependency.dataset.required = String(requiredDependencies.length > 0);
+  haCardDependency.dataset.status = lovelaceResourcesChecked
+    ? integrationPlan.ready ? "installed" : "missing"
+    : requiredDependencies.length ? "unchecked" : "not-required";
+  copyHaCardResources.disabled = false;
+
+  if (requiredDependencies.length === 0) {
+    haCardDependency.textContent = t("dependency.builtIn", { atlasHint });
+  } else if (!lovelaceResourcesChecked) {
+    haCardDependency.textContent = t("dependency.requiresUnchecked", {
+      dependency: dependencyLabel,
+      resourceHint,
+      installHint,
+      atlasHint,
+    });
+  } else if (integrationPlan.ready) {
+    haCardDependency.textContent = t("dependency.ready", {
+      dependency: dependencyLabel,
+      resourceHint,
+      atlasHint,
+    });
+  } else if (integrationPlan.missingCardResourcePaths.length === 0) {
+    haCardDependency.textContent = t("dependency.cardFoundAtlasMissing", {
+      dependency: dependencyLabel,
+      resourceHint,
+      atlasHint,
+      missing: integrationPlan.atlasAvailability.missingResourcePaths.join(", "),
+    });
+  } else {
+    haCardDependency.textContent = t("dependency.missing", {
+      dependency: dependencyLabel,
+      resourceHint,
+      installHint,
+      atlasHint,
+      missing: [
+        ...integrationPlan.atlasAvailability.missingResourcePaths,
+        ...integrationPlan.missingCardResourcePaths,
+      ].join(", "),
+    });
+  }
+}
+
+function formatDependencyLabels(dependencies) {
+  return [...new Set(dependencies.map(dependency => dependency.label))].join(", ");
 }
 
 function renderHaCardImportDecision(text) {
@@ -3461,10 +3529,30 @@ copyHaCardResources.addEventListener("click", async () => {
     return;
   }
 
-  const card = createActiveHaCardConfig();
-  const dependency = inspectHomeAssistantCardDependency(card);
-
   try {
+    if (activeEditorMode === "expert") {
+      const editorIntegrationPlan = createHomeAssistantCardEditorFrontendIntegrationPlan({
+        mode: "server",
+        editorPlan: createActiveCardEditorPlan(),
+        resources: lovelaceResources,
+      });
+      const requiredDependencies = editorIntegrationPlan.editorDependencyPlan.dependencies.filter(dependency => dependency.required);
+      await writeClipboardText(serializeHomeAssistantCardEditorFrontendResourceReferences({
+        mode: "server",
+        editorPlan: createActiveCardEditorPlan(),
+        resources: lovelaceResources,
+      }, haCardFormat.value));
+      statusMessage.textContent = requiredDependencies.length
+        ? t("message.resourcesCopiedWithDependency", {
+          dependency: formatDependencyLabels(requiredDependencies),
+          format: haCardFormat.value.toUpperCase(),
+        })
+        : t("message.atlasResourceCopied", { format: haCardFormat.value.toUpperCase() });
+      return;
+    }
+
+    const card = createActiveHaCardConfig();
+    const dependency = inspectHomeAssistantCardDependency(card);
     await writeClipboardText(serializeHomeAssistantAtlasFrontendResourceReferences({
       mode: "server",
       card,

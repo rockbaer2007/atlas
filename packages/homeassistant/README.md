@@ -71,11 +71,13 @@ Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server
 mode, which defaults to `/local/atlas/atlas-homeassistant-panel.js`, or the
 planned HACS mode at `/hacsfiles/atlas/atlas-homeassistant-panel.js`. The same
-plan combines ATLAS frontend availability with the selected card dependency, so
-a host can report whether ATLAS, Mushroom or Bubble Card resources are ready or
-which Lovelace resource paths are still missing. Hosts can also serialize that
-combined plan as JSON or YAML Lovelace resources, giving the UI one copy action
-for ATLAS plus any selected Mushroom or Bubble Card dependency.
+plan combines ATLAS frontend availability with the selected card dependency.
+Editor-specific frontend plans can also combine ATLAS with every dependency
+used by Simple or mixed Expert fields, so a host can report whether ATLAS,
+Mushroom or Bubble Card resources are ready or which Lovelace resource paths
+are still missing. Hosts can serialize those combined plans as JSON or YAML
+Lovelace resources, giving the UI one copy action for ATLAS plus all selected
+or placed Mushroom and Bubble Card dependencies.
 
 A first HACS card editor package plan is available for the later installable
 custom card workflow. It describes a drag-and-drop layout editor, keeps the

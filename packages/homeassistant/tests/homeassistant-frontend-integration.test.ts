@@ -15,6 +15,7 @@ import {
   createHomeAssistantCardEditorHacsBundleArchive,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
+  createHomeAssistantCardEditorFrontendIntegrationPlan,
   createHomeAssistantCardExportPackage,
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
@@ -25,6 +26,7 @@ import {
   normalizeHomeAssistantCardEditorScriptFilename,
   readHomeAssistantCardEditorHacsBundleArchivePackage,
   inspectAtlasFrontendResourceAvailability,
+  serializeHomeAssistantCardEditorFrontendResourceReferences,
   serializeHomeAssistantAtlasFrontendResourceReferences,
 } from "../src";
 
@@ -635,6 +637,63 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(dependencyPlan.installSteps).toContain("HACS > Frontend > Mushroom");
     expect(dependencyPlan.installSteps).toContain("HACS > Frontend > Bubble Card");
+  });
+
+  it("creates frontend resource references for mixed expert editor dependencies", () => {
+    const editorPlan = {
+      editorMode: "expert" as const,
+      fields: [
+        {
+          id: "temperature",
+          target: "mushroom-template" as const,
+          entityId: "sensor.atlas_temperature",
+          column: 0,
+          row: 0,
+          width: 2,
+          height: 1,
+        },
+        {
+          id: "door",
+          target: "bubble" as const,
+          entityId: "binary_sensor.atlas_door",
+          column: 2,
+          row: 0,
+          width: 2,
+          height: 1,
+        },
+      ],
+    };
+
+    const integrationPlan = createHomeAssistantCardEditorFrontendIntegrationPlan({
+      mode: "server",
+      editorPlan,
+      resources: [
+        "/local/atlas/atlas-homeassistant-panel.js",
+        "/hacsfiles/lovelace-mushroom/mushroom.js",
+      ],
+    });
+
+    expect(integrationPlan).toMatchObject({
+      requiredResourcePaths: [
+        "/local/atlas/atlas-homeassistant-panel.js",
+        "/hacsfiles/lovelace-mushroom/mushroom.js",
+        "/hacsfiles/Bubble-Card/bubble-card.js",
+      ],
+      matchedCardResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
+      missingCardResourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+      ready: false,
+    });
+    expect(serializeHomeAssistantCardEditorFrontendResourceReferences({
+      mode: "server",
+      editorPlan,
+    }, "yaml")).toBe([
+      "- url: \"/local/atlas/atlas-homeassistant-panel.js\"",
+      "  type: \"module\"",
+      "- url: \"/hacsfiles/lovelace-mushroom/mushroom.js\"",
+      "  type: \"module\"",
+      "- url: \"/hacsfiles/Bubble-Card/bubble-card.js\"",
+      "  type: \"module\"",
+    ].join("\n"));
   });
 
   it("creates a simple editor card configuration from the selected target and demo entities", () => {
