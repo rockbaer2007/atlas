@@ -61,6 +61,7 @@ const translations = {
     "button.deactivate": "Deactivate",
     "button.exportPackage": "Export package",
     "button.importPackage": "Import package",
+    "button.removeImportedPackage": "Remove import",
     "aria.language": "Language",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
@@ -80,6 +81,7 @@ const translations = {
     "message.pluginPackageImported": "{name} plugin package imported.",
     "message.pluginPackageDuplicate": "{name} is already installed.",
     "message.pluginPackageImportFailed": "Plugin package could not be imported.",
+    "message.pluginPackageRemoved": "{name} imported package removed.",
     "policy.token": "The Card Editor receives the token only as a browser session handoff.",
     "policy.paths": "Plugins receive approved URLs, WebSocket paths and resource paths.",
     "policy.capabilities": "Capabilities are declared through the Runtime plugin manifest.",
@@ -108,6 +110,7 @@ const translations = {
     "button.deactivate": "Deaktivieren",
     "button.exportPackage": "Paket exportieren",
     "button.importPackage": "Paket importieren",
+    "button.removeImportedPackage": "Import entfernen",
     "aria.language": "Sprache",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
@@ -127,6 +130,7 @@ const translations = {
     "message.pluginPackageImported": "{name} Plugin-Paket importiert.",
     "message.pluginPackageDuplicate": "{name} ist bereits installiert.",
     "message.pluginPackageImportFailed": "Plugin-Paket konnte nicht importiert werden.",
+    "message.pluginPackageRemoved": "{name} importiertes Paket entfernt.",
     "policy.token": "Der Card Editor erhaelt den Token nur als Browser-Sitzungsuebergabe.",
     "policy.paths": "Plugins erhalten freigegebene URLs, WebSocket-Pfade und Ressourcenpfade.",
     "policy.capabilities": "Faehigkeiten werden ueber das Runtime-Plugin-Manifest deklariert.",
@@ -286,6 +290,10 @@ function currentPluginDescriptors() {
   ];
 }
 
+function isImportedPlugin(pluginId) {
+  return importedPluginDescriptors.some(plugin => plugin.id === pluginId);
+}
+
 function translatePluginStatus(status) {
   if (status === "active") return t("text.pluginStatusActive");
   if (status === "disabled") return t("text.pluginStatusDisabled");
@@ -409,6 +417,18 @@ function handlePluginAction(action, plugin) {
   });
 }
 
+function removeImportedPluginPackage(plugin) {
+  if (!isImportedPlugin(plugin.id)) {
+    return;
+  }
+
+  importedPluginDescriptors = importedPluginDescriptors.filter(entry => entry.id !== plugin.id);
+  activePluginIds.delete(plugin.id);
+  persistImportedPlugins();
+  renderAdministration();
+  adminSaveState.textContent = t("message.pluginPackageRemoved", { name: plugin.name });
+}
+
 async function importSelectedPluginPackage() {
   const file = pluginPackageFile.files?.[0];
   if (!file) {
@@ -482,6 +502,15 @@ function renderAdministration() {
       button.textContent = translatePluginAction(action);
       button.addEventListener("click", () => handlePluginAction(action, plugin));
       actions.append(button);
+    }
+
+    if (isImportedPlugin(plugin.id)) {
+      const removeButton = document.createElement("button");
+      removeButton.type = "button";
+      removeButton.className = "secondary";
+      removeButton.textContent = t("button.removeImportedPackage");
+      removeButton.addEventListener("click", () => removeImportedPluginPackage(plugin));
+      actions.append(removeButton);
     }
 
     item.append(header, details, actions);
