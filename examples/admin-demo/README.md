@@ -25,15 +25,19 @@ from the local import list.
 Plugin activation state is also stored locally so the demo administration view
 survives reloads without turning imported plugins back into a fresh list.
 The administration page also stores the selected Card translation module for
-future exports. Current choices are no automatic translation, ChatGPT/OpenAI,
-DeepL API Free, DeepL API Pro and a custom AI provider. The selection is handed
-to the Card Editor, but real provider execution still requires a later backend
-adapter and API-key handling.
+future exports. Current choices are the default fallback path, ChatGPT/OpenAI,
+Gemini, DeepL API Free, DeepL API Pro and a custom AI provider. The selection is
+handed to the Card Editor, but real provider execution still requires a later
+backend adapter and API-key handling.
 DeepL API planning uses `https://www.deepl.com/de/pro#api` as the reference
 for Free/Pro API options.
 The prepared DeepL translate endpoint defaults to
 `https://api.deepl.com/v2/translate`; request details are tracked at
 `https://developers.deepl.com/api-reference/translate/request-translation`.
+Gemini API-key planning uses `https://ai.google.dev/gemini-api/docs/api-key` as
+the key and security reference. Provider API keys are saved only for the
+Administration/backend preparation path; the Card Editor receives provider,
+endpoint and key-configured status only.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The

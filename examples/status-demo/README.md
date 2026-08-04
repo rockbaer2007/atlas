@@ -106,6 +106,9 @@ than pretending that machine translation completed.
 When DeepL is selected, the Administration can hand over the prepared translate
 endpoint `https://api.deepl.com/v2/translate`; the adapter implementation should
 follow `https://developers.deepl.com/api-reference/translate/request-translation`.
+Gemini is planned as an additional provider option using
+`https://ai.google.dev/gemini-api/docs/api-key` for API-key and security
+guidance. Provider API keys are not handed to the Card Editor.
 Export HACS bundle downloads a real `.hacs.zip` archive containing the future
 repository files: `hacs.json`, the generated JavaScript card, a README, an
 example Lovelace card, the original Atlas card package and the selected

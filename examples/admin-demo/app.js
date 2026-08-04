@@ -15,8 +15,15 @@ import {
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
-const translationProvider = document.querySelector("#translation-provider");
+const translationProviderInputs = Array.from(document.querySelectorAll('input[name="translation-provider"]'));
 const translationApiEndpoint = document.querySelector("#translation-api-endpoint");
+const translationApiKeyInputs = {
+  chatgpt: document.querySelector("#translation-api-key-chatgpt"),
+  gemini: document.querySelector("#translation-api-key-gemini"),
+  "deepl-free": document.querySelector("#translation-api-key-deepl-free"),
+  "deepl-pro": document.querySelector("#translation-api-key-deepl-pro"),
+  "custom-ai": document.querySelector("#translation-api-key-custom-ai"),
+};
 const rememberAdminToken = document.querySelector("#remember-admin-token");
 const autoConnectEditor = document.querySelector("#auto-connect-editor");
 const saveAdminSettings = document.querySelector("#save-admin-settings");
@@ -34,6 +41,7 @@ const adminPluginStateStorageKey = "atlas.administration.pluginState";
 const adminConnectionCookieName = "atlas_admin_connection";
 const adminConnectionApiPath = "/api/admin-connection";
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
+const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const editorOrigin = "http://127.0.0.1:4174";
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
@@ -68,11 +76,17 @@ const translations = {
     "button.exportPackage": "Export package",
     "button.importPackage": "Import package",
     "button.removeImportedPackage": "Remove import",
-    "provider.none": "None / fallback files",
+    "provider.none": "Default / fallback files",
     "provider.chatgpt": "ChatGPT / OpenAI",
+    "provider.gemini": "Gemini",
     "provider.deeplFree": "DeepL API Free",
     "provider.deeplPro": "DeepL API Pro",
     "provider.customAi": "Custom AI provider",
+    "placeholder.chatgptApiKey": "OpenAI API key later",
+    "placeholder.geminiApiKey": "Gemini API key later",
+    "placeholder.deeplFreeApiKey": "Free API key later",
+    "placeholder.deeplProApiKey": "Pro API key later",
+    "placeholder.customAiApiKey": "Custom provider API key later",
     "aria.language": "Language",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
     "message.translationApiEndpointHint": "DeepL translate request reference:",
@@ -125,11 +139,17 @@ const translations = {
     "button.exportPackage": "Paket exportieren",
     "button.importPackage": "Paket importieren",
     "button.removeImportedPackage": "Import entfernen",
-    "provider.none": "Keins / Fallback-Dateien",
+    "provider.none": "Standard / Fallback-Dateien",
     "provider.chatgpt": "ChatGPT / OpenAI",
+    "provider.gemini": "Gemini",
     "provider.deeplFree": "DeepL API Free",
     "provider.deeplPro": "DeepL API Pro",
     "provider.customAi": "Eigener KI-Anbieter",
+    "placeholder.chatgptApiKey": "OpenAI API-Key spaeter",
+    "placeholder.geminiApiKey": "Gemini API-Key spaeter",
+    "placeholder.deeplFreeApiKey": "Kostenloser API-Key spaeter",
+    "placeholder.deeplProApiKey": "Kostenpflichtiger API-Key spaeter",
+    "placeholder.customAiApiKey": "Eigener Provider-API-Key spaeter",
     "aria.language": "Sprache",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
     "message.translationApiEndpointHint": "DeepL-Translate-Request-Referenz:",
@@ -177,6 +197,9 @@ function applyTranslations() {
   for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
     element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
   }
+  for (const element of document.querySelectorAll("[data-i18n-placeholder]")) {
+    element.setAttribute("placeholder", t(element.dataset.i18nPlaceholder));
+  }
   for (const button of languageButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
   }
@@ -192,7 +215,18 @@ function currentWebSocketPath() {
 }
 
 function normalizeTranslationProvider(value) {
-  return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+  return translationProviderValues.includes(value) ? value : "none";
+}
+
+function currentTranslationProvider() {
+  return normalizeTranslationProvider(translationProviderInputs.find(input => input.checked)?.value);
+}
+
+function setTranslationProvider(value) {
+  const normalizedProvider = normalizeTranslationProvider(value);
+  for (const input of translationProviderInputs) {
+    input.checked = input.value === normalizedProvider;
+  }
 }
 
 function normalizeTranslationApiEndpoint(value) {
@@ -208,13 +242,36 @@ function normalizeTranslationApiEndpoint(value) {
   }
 }
 
+function readTranslationApiKeys() {
+  return Object.fromEntries(
+    Object.entries(translationApiKeyInputs).map(([provider, input]) => [provider, input?.value.trim() ?? ""]),
+  );
+}
+
+function applyTranslationApiKeys(keys) {
+  if (!keys || typeof keys !== "object") {
+    return;
+  }
+
+  for (const [provider, input] of Object.entries(translationApiKeyInputs)) {
+    if (input && typeof keys[provider] === "string") {
+      input.value = keys[provider];
+    }
+  }
+}
+
+function hasTranslationApiKey(provider, keys = readTranslationApiKeys()) {
+  return Boolean(keys[normalizeTranslationProvider(provider)]?.trim());
+}
+
 function persistConfiguration() {
   const token = homeAssistantToken.value.trim();
   const configuration = {
     language: currentLanguage,
     url: homeAssistantUrl.value,
-    translationProvider: normalizeTranslationProvider(translationProvider.value),
+    translationProvider: currentTranslationProvider(),
     translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
+    translationApiKeys: readTranslationApiKeys(),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     token: rememberAdminToken.checked ? token : undefined,
@@ -234,6 +291,7 @@ async function persistServerConnectionSettings(configuration) {
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
+      translationApiKeys: configuration.translationApiKeys,
     }),
   });
 }
@@ -251,6 +309,7 @@ function persistSharedConnectionCookie(configuration) {
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
+      translationApiKeyConfigured: hasTranslationApiKey(configuration.translationProvider, configuration.translationApiKeys),
       updatedAt: new Date().toISOString(),
     }))}`,
     "path=/",
@@ -287,11 +346,12 @@ function restoreConfiguration() {
       homeAssistantUrl.value = saved.url;
     }
     if (typeof saved?.translationProvider === "string") {
-      translationProvider.value = normalizeTranslationProvider(saved.translationProvider);
+      setTranslationProvider(saved.translationProvider);
     }
     if (typeof saved?.translationApiEndpoint === "string") {
       translationApiEndpoint.value = normalizeTranslationApiEndpoint(saved.translationApiEndpoint);
     }
+    applyTranslationApiKeys(saved?.translationApiKeys);
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
       if (typeof saved.token === "string") {
@@ -402,8 +462,9 @@ function createEditorConnectionHandoff() {
     url: homeAssistantUrl.value.trim(),
     token: homeAssistantToken.value,
     autoConnect: autoConnectEditor.checked,
-    translationProvider: normalizeTranslationProvider(translationProvider.value),
+    translationProvider: currentTranslationProvider(),
     translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
+    translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider()),
     sentAt: new Date().toISOString(),
   };
 }
@@ -611,8 +672,13 @@ homeAssistantUrl.addEventListener("input", () => {
   persistConfiguration();
 });
 
-translationProvider.addEventListener("change", persistConfiguration);
+for (const input of translationProviderInputs) {
+  input.addEventListener("change", persistConfiguration);
+}
 translationApiEndpoint.addEventListener("input", persistConfiguration);
+for (const input of Object.values(translationApiKeyInputs)) {
+  input?.addEventListener("input", persistConfiguration);
+}
 
 homeAssistantToken.addEventListener("input", () => {
   if (rememberAdminToken.checked) {

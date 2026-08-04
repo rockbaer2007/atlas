@@ -1116,7 +1116,7 @@ function renderAdminHandoffState() {
 }
 
 function normalizeTranslationProvider(value) {
-  return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+  return ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
 }
 
 function normalizeTranslationApiEndpoint(value) {

@@ -172,6 +172,42 @@
         font-weight: 700;
       }
 
+      .provider-list {
+        display: grid;
+        gap: 8px;
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        padding: 10px;
+      }
+
+      .provider-row {
+        display: grid;
+        grid-template-columns: minmax(150px, 0.35fr) minmax(220px, 0.65fr);
+        align-items: center;
+        gap: 8px 12px;
+        min-height: 36px;
+      }
+
+      .provider-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .provider-option input {
+        width: 16px;
+        min-height: 16px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
+      .provider-key {
+        min-height: 32px;
+        font-size: 14px;
+      }
+
       .checkbox-row {
         display: inline-flex;
         align-items: center;
@@ -296,7 +332,8 @@
         .panel-header,
         .plugin-header,
         .admin-grid,
-        .field-grid {
+        .field-grid,
+        .provider-row {
           display: grid;
           grid-template-columns: 1fr;
         }
@@ -346,15 +383,51 @@
             <label for="home-assistant-token" data-i18n="label.accessToken">Access token</label>
             <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
           </div>
-          <div class="field-pair">
-            <label for="translation-provider" data-i18n="label.translationProvider">Translation module</label>
-            <select id="translation-provider">
-              <option value="none" data-i18n="provider.none">None / fallback files</option>
-              <option value="chatgpt" data-i18n="provider.chatgpt">ChatGPT / OpenAI</option>
-              <option value="deepl-free" data-i18n="provider.deeplFree">DeepL API Free</option>
-              <option value="deepl-pro" data-i18n="provider.deeplPro">DeepL API Pro</option>
-              <option value="custom-ai" data-i18n="provider.customAi">Custom AI provider</option>
-            </select>
+          <div class="field-pair wide">
+            <span id="translation-provider-label" data-i18n="label.translationProvider">Translation module</span>
+            <div class="provider-list" role="radiogroup" aria-labelledby="translation-provider-label">
+              <label class="provider-row">
+                <span class="provider-option">
+                  <input type="radio" name="translation-provider" value="none" checked>
+                  <span data-i18n="provider.none">Default / fallback files</span>
+                </span>
+              </label>
+              <label class="provider-row">
+                <span class="provider-option">
+                  <input type="radio" name="translation-provider" value="chatgpt">
+                  <span data-i18n="provider.chatgpt">ChatGPT / OpenAI</span>
+                </span>
+                <input id="translation-api-key-chatgpt" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.chatgptApiKey" placeholder="OpenAI API key later">
+              </label>
+              <label class="provider-row">
+                <span class="provider-option">
+                  <input type="radio" name="translation-provider" value="gemini">
+                  <span data-i18n="provider.gemini">Gemini</span>
+                </span>
+                <input id="translation-api-key-gemini" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.geminiApiKey" placeholder="Gemini API key later">
+              </label>
+              <label class="provider-row">
+                <span class="provider-option">
+                  <input type="radio" name="translation-provider" value="deepl-free">
+                  <span data-i18n="provider.deeplFree">DeepL API Free</span>
+                </span>
+                <input id="translation-api-key-deepl-free" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.deeplFreeApiKey" placeholder="Free API key later">
+              </label>
+              <label class="provider-row">
+                <span class="provider-option">
+                  <input type="radio" name="translation-provider" value="deepl-pro">
+                  <span data-i18n="provider.deeplPro">DeepL API Pro</span>
+                </span>
+                <input id="translation-api-key-deepl-pro" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.deeplProApiKey" placeholder="Pro API key later">
+              </label>
+              <label class="provider-row">
+                <span class="provider-option">
+                  <input type="radio" name="translation-provider" value="custom-ai">
+                  <span data-i18n="provider.customAi">Custom AI provider</span>
+                </span>
+                <input id="translation-api-key-custom-ai" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.customAiApiKey" placeholder="Custom provider API key later">
+              </label>
+            </div>
           </div>
           <div class="field-pair wide">
             <label for="translation-api-endpoint" data-i18n="label.translationApiEndpoint">Translation API endpoint</label>

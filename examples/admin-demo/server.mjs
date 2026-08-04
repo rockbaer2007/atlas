@@ -5,6 +5,7 @@ import { extname, normalize, resolve } from "node:path";
 const root = resolve(import.meta.dirname, "..", "..");
 const port = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
+const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -60,7 +61,7 @@ async function handleAdminConnectionRequest(request, response) {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
     });
-    response.end(JSON.stringify(adminConnectionSettings ?? { error: "not configured" }));
+    response.end(JSON.stringify(adminConnectionSettings ? sanitizeAdminConnectionSettings(adminConnectionSettings) : { error: "not configured" }));
     return;
   }
 
@@ -113,18 +114,22 @@ function readRequestBody(request) {
 }
 
 function normalizeAdminConnectionSettings(settings) {
+  const translationProvider = normalizeTranslationProvider(settings.translationProvider);
+  const translationApiKeys = normalizeTranslationApiKeys(settings.translationApiKeys);
   return {
     url: typeof settings.url === "string" ? settings.url : "",
     token: typeof settings.token === "string" ? settings.token : "",
     autoConnectEditor: settings.autoConnectEditor === true,
-    translationProvider: normalizeTranslationProvider(settings.translationProvider),
+    translationProvider,
     translationApiEndpoint: normalizeTranslationApiEndpoint(settings.translationApiEndpoint),
+    translationApiKeys,
+    translationApiKeyConfigured: hasTranslationApiKey(translationProvider, translationApiKeys),
     updatedAt: new Date().toISOString(),
   };
 }
 
 function normalizeTranslationProvider(value) {
-  return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+  return translationProviderValues.includes(value) ? value : "none";
 }
 
 function normalizeTranslationApiEndpoint(value) {
@@ -138,6 +143,30 @@ function normalizeTranslationApiEndpoint(value) {
   } catch {
     return defaultTranslationApiEndpoint;
   }
+}
+
+function normalizeTranslationApiKeys(keys) {
+  return Object.fromEntries(
+    translationProviderValues
+      .filter(provider => provider !== "none")
+      .map(provider => [provider, typeof keys?.[provider] === "string" ? keys[provider].trim() : ""]),
+  );
+}
+
+function hasTranslationApiKey(provider, keys) {
+  return Boolean(keys?.[normalizeTranslationProvider(provider)]?.trim());
+}
+
+function sanitizeAdminConnectionSettings(settings) {
+  return {
+    url: settings.url,
+    token: settings.token,
+    autoConnectEditor: settings.autoConnectEditor,
+    translationProvider: settings.translationProvider,
+    translationApiEndpoint: settings.translationApiEndpoint,
+    translationApiKeyConfigured: settings.translationApiKeyConfigured,
+    updatedAt: settings.updatedAt,
+  };
 }
 
 function resolveRequestFilePath(requestedFilePath) {
