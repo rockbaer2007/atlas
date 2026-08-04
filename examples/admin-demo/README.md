@@ -38,6 +38,8 @@ Gemini API-key planning uses `https://ai.google.dev/gemini-api/docs/api-key` as
 the key and security reference. Provider API keys are saved only for the
 Administration/backend preparation path; the Card Editor receives provider,
 endpoint and key-configured status only.
+The Administration provider list links directly to that Gemini API-key
+reference next to the Gemini provider row.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The
