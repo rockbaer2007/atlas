@@ -285,6 +285,9 @@
       }
 
       .connection-actions button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         border: 1px solid #0f766e;
         border-radius: 4px;
         background: #0f766e;
@@ -301,6 +304,22 @@
         border-color: #cbd5e1;
         background: #ffffff;
         color: #172033;
+      }
+
+      .connection-actions.uniform-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 184px);
+        gap: 6px;
+        align-items: stretch;
+      }
+
+      .connection-actions.uniform-actions button,
+      .connection-actions.uniform-actions .import-button {
+        width: 184px;
+        min-height: 38px;
+        height: 38px;
+        justify-content: center;
+        text-align: center;
       }
 
       .expert-editor-actions {
@@ -348,6 +367,15 @@
         .connection-actions button,
         .connection-actions .import-button {
           flex: 1 1 140px;
+        }
+
+        .connection-actions.uniform-actions {
+          grid-template-columns: 1fr;
+        }
+
+        .connection-actions.uniform-actions button,
+        .connection-actions.uniform-actions .import-button {
+          width: 100%;
         }
       }
 
@@ -1181,7 +1209,7 @@
           </div>
         </div>
         <output id="ha-card-dependency" aria-live="polite"></output>
-        <div class="connection-actions">
+        <div class="connection-actions uniform-actions">
           <button id="save-home-assistant-group" type="button" data-i18n="button.saveGroup">Save group</button>
           <button id="delete-home-assistant-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
           <button id="duplicate-home-assistant-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
@@ -1224,7 +1252,7 @@
           </div>
         </div>
         <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
-        <div class="connection-actions">
+        <div class="connection-actions uniform-actions">
           <button id="add-home-assistant-entity" type="button" data-i18n="button.addEntity">Add entity</button>
           <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
         </div>
