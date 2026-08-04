@@ -45,6 +45,8 @@ calls the Administration `/api/card-translation` endpoint, and the
 Administration server calls the OpenAI Responses API with the configured
 server-held key. The default model can be overridden with
 `ATLAS_OPENAI_TRANSLATION_MODEL`.
+The Administration provider list links to `https://platform.openai.com/api-keys`
+next to the ChatGPT/OpenAI provider row.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The
