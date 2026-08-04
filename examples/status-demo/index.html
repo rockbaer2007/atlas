@@ -493,6 +493,32 @@
         display: none;
       }
 
+      .expert-number-controls {
+        display: grid;
+        grid-template-columns: repeat(4, 58px);
+        gap: 8px;
+        align-items: end;
+      }
+
+      .expert-number-controls .field-pair {
+        gap: 4px;
+      }
+
+      .expert-number-controls label {
+        overflow: hidden;
+        font-size: 12px;
+        line-height: 1.1;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .expert-number-controls input {
+        width: 58px;
+        min-height: 34px;
+        padding: 6px 4px;
+        text-align: center;
+      }
+
       .expert-title-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto auto;
@@ -521,6 +547,14 @@
 
         .expert-editor-controls .span-2 {
           grid-column: 1 / -1;
+        }
+
+        .expert-number-controls {
+          grid-template-columns: repeat(4, minmax(52px, 1fr));
+        }
+
+        .expert-number-controls input {
+          width: 100%;
         }
 
         .expert-title-row {
@@ -1250,21 +1284,23 @@
                 <label for="expert-entity" data-i18n="label.entity">Entity</label>
                 <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty" data-i18n-placeholder="placeholder.expertEntity">
               </div>
-              <div class="field-pair">
-                <label for="expert-column" data-i18n="label.column">Column</label>
-                <input id="expert-column" type="number" min="0" max="11" value="0">
-              </div>
-              <div class="field-pair">
-                <label for="expert-row" data-i18n="label.row">Row</label>
-                <input id="expert-row" type="number" min="0" max="11" value="0">
-              </div>
-              <div class="field-pair">
-                <label for="expert-width" data-i18n="label.width">Width</label>
-                <input id="expert-width" type="number" min="1" max="12" value="3">
-              </div>
-              <div class="field-pair">
-                <label for="expert-height" data-i18n="label.height">Height</label>
-                <input id="expert-height" type="number" min="1" max="12" value="2">
+              <div class="expert-number-controls span-2">
+                <div class="field-pair">
+                  <label for="expert-column" data-i18n="label.column">Column</label>
+                  <input id="expert-column" type="number" min="0" max="99" value="0">
+                </div>
+                <div class="field-pair">
+                  <label for="expert-row" data-i18n="label.row">Row</label>
+                  <input id="expert-row" type="number" min="0" max="99" value="0">
+                </div>
+                <div class="field-pair">
+                  <label for="expert-width" data-i18n="label.width">Width</label>
+                  <input id="expert-width" type="number" min="1" max="99" value="3">
+                </div>
+                <div class="field-pair">
+                  <label for="expert-height" data-i18n="label.height">Height</label>
+                  <input id="expert-height" type="number" min="1" max="99" value="2">
+                </div>
               </div>
             </div>
             <div class="connection-actions expert-editor-actions">
