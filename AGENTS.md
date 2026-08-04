@@ -14,6 +14,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 - The user speaks German; answer in German unless there is a clear reason to use English.
 - Continue proactively when the user says "weiter", "mach weiter", or asks for automatic next steps.
+- Continue proactively when the user says "weiter 100", "mach 200", the next 100 or 200 steps.
 - Prefer completing a useful end-to-end increment: implement, test, commit, and push when the change is ready.
 - Give short progress updates while working.
 - Keep final reports concise: what changed, what was verified, commit hashes, and anything that did not work.
