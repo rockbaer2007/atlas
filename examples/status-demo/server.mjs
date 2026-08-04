@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import { extname, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
-const port = Number(process.env.ATLAS_DEMO_PORT ?? "4173");
+const port = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
