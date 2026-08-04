@@ -40,11 +40,15 @@ Gemini API-key planning uses `https://ai.google.dev/gemini-api/docs/api-key` as
 the key and security reference. Provider API keys are sent to the local
 Administration server for the active backend session; they are not stored in the
 browser handoff cookie and are not returned to the Card Editor.
-After a page reload, the Administration page restores provider API-key fields
-from an encrypted long-term Admin cookie. The browser-held encryption key stays
-in local Administration storage, so the cookie does not contain plain provider
-keys. The Admin page can also refresh secrets from the running local Admin
-server with `GET /api/admin-connection?includeSecrets=1`.
+After a page reload, the Administration page restores the Home Assistant token
+and provider API-key fields from an encrypted long-term Admin cookie. The
+browser-held encryption key stays in local Administration storage, so the
+cookie does not contain plain provider keys or a plain token. The Admin page can
+also refresh secrets from the running local Admin server with
+`GET /api/admin-connection?includeSecrets=1`.
+The Administration surface can export `atlas-admin-settings.json`; normal
+settings are readable, while the Home Assistant token and provider API keys are
+stored in an AES-GCM `encryptedSecrets` block.
 The Administration provider list links directly to that Gemini API-key
 reference next to the Gemini provider row.
 ChatGPT/OpenAI is the first connected translation adapter path. The Card Editor
@@ -55,10 +59,10 @@ server-held key. The default model can be overridden with
 The Administration provider list links to `https://platform.openai.com/api-keys`
 next to the ChatGPT/OpenAI provider row.
 
-Home Assistant tokens are stored only in the admin page when the local remember
+Home Assistant tokens are restored by the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The
-Card Editor receives the token only through `postMessage` for the active
-browser session.
+Card Editor receives the token only through the active Admin handoff or the
+local Admin server.
 The local Administration server also exposes saved connection settings to the
 Card Editor on port `4174`, so reloads and direct editor opens can recover the
 handoff after `Save settings`.
