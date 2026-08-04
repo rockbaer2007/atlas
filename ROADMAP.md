@@ -182,10 +182,12 @@ additional envelope-only contract expansion.
 * Extension API
 * Provider ecosystem
 * Third-party integrations
+* Dedicated plugin documentation for authoring, lifecycle, extension APIs, examples, and publishing guidance
 
 ### Success Criteria
 
 * Stable plugin architecture
+* Separate plugin documentation is available and maintained
 
 ---
 
