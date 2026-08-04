@@ -109,6 +109,7 @@ const translations = {
     "message.secretsInvalidForDevice": "Saved secrets belong to another Atlas Administration instance and were ignored.",
     "message.autoConnectNeedsToken": "Auto-connect needs a saved access token.",
     "message.editorOpened": "Card Editor opened and connection settings handed over.",
+    "message.editorOpenedWithoutToken": "Card Editor opened. Home Assistant connection still needs a saved access token.",
     "message.editorReady": "Card Editor requested connection settings.",
     "message.editorTokenMissing": "Save or enter an access token before opening the Card Editor.",
     "message.pluginInspected": "{name}: {points} extension points, {capabilities} capabilities.",
@@ -176,6 +177,7 @@ const translations = {
     "message.secretsInvalidForDevice": "Gespeicherte Secrets gehoeren zu einer anderen Atlas-Administration-Instanz und wurden ignoriert.",
     "message.autoConnectNeedsToken": "Auto-connect braucht einen gespeicherten Access Token.",
     "message.editorOpened": "Card Editor geoeffnet und Verbindungseinstellungen uebergeben.",
+    "message.editorOpenedWithoutToken": "Card Editor geoeffnet. Die Home-Assistant-Verbindung braucht noch einen gespeicherten Access Token.",
     "message.editorReady": "Card Editor hat Verbindungseinstellungen angefordert.",
     "message.editorTokenMissing": "Gib zuerst einen Access Token ein oder speichere ihn, bevor du den Card Editor oeffnest.",
     "message.pluginInspected": "{name}: {points} Extension Points, {capabilities} Faehigkeiten.",
@@ -825,7 +827,7 @@ function createEditorConnectionHandoff() {
 }
 
 function postEditorConnectionHandoff(editorWindow) {
-  if (!editorWindow || !homeAssistantToken.value) {
+  if (!editorWindow) {
     return false;
   }
 
@@ -834,11 +836,6 @@ function postEditorConnectionHandoff(editorWindow) {
 }
 
 function openEditorWithConnectionHandoff() {
-  if (!homeAssistantToken.value) {
-    adminSaveState.textContent = t("message.editorTokenMissing");
-    return;
-  }
-
   persistConfiguration();
   lastEditorWindow = window.open(`${editorOrigin}/?atlasAdminHandoff=1`, "atlas-card-editor");
   if (!lastEditorWindow) {
@@ -854,7 +851,9 @@ function openEditorWithConnectionHandoff() {
     }
   }, 350);
 
-  adminSaveState.textContent = t("message.editorOpened");
+  adminSaveState.textContent = homeAssistantToken.value
+    ? t("message.editorOpened")
+    : t("message.editorOpenedWithoutToken");
 }
 
 function receiveEditorReady(event) {

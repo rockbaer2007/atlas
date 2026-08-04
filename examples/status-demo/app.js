@@ -1119,7 +1119,7 @@ function renderConnectionReadiness() {
 }
 
 function renderAdminHandoffState() {
-  adminHandoffState.textContent = adminConnectionToken
+  adminHandoffState.textContent = adminConnectionToken || adminTranslationProvider !== "none"
     ? t("message.adminHandoffReceived")
     : t("message.adminHandoffWaiting");
 }
@@ -1159,16 +1159,27 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
     return false;
   }
 
+  let appliedSettings = false;
   if (typeof settings.url === "string" && settings.url.trim()) {
     homeAssistantUrl.value = settings.url.trim();
+    appliedSettings = true;
   }
-  adminConnectionToken = typeof settings.token === "string" ? settings.token : "";
-  adminTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
+  if (typeof settings.token === "string") {
+    adminConnectionToken = settings.token;
+    appliedSettings = true;
+  }
+  const nextTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
+  if (nextTranslationProvider !== adminTranslationProvider) {
+    appliedSettings = true;
+  }
+  adminTranslationProvider = nextTranslationProvider;
   adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(settings.translationApiEndpoint);
   if (settings.translationApiKeyConfigured === true || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === true) {
     adminTranslationApiKeyConfigured = true;
+    appliedSettings = true;
   } else if (settings.translationApiKeyConfigured === false || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === false) {
     adminTranslationApiKeyConfigured = false;
+    appliedSettings = true;
   }
   cardTranslationStatus.textContent = t("message.translationProviderReady", { provider: adminTranslationProvider });
   renderConnectionReadiness();
@@ -1179,7 +1190,7 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
     connectHomeAssistant();
   }
 
-  return Boolean(adminConnectionToken);
+  return appliedSettings;
 }
 
 async function fetchAdminConnectionSettings() {
