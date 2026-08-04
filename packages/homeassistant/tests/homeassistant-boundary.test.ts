@@ -41,19 +41,17 @@ describe("homeassistant integration boundary", () => {
     });
   });
 
-  it("allows Theme while keeping runtime, direct Renderer and websocket dependencies out", () => {
+  it("allows Runtime and Theme while keeping direct Renderer and websocket dependencies out", () => {
     expect(inspectHomeAssistantDependencyBoundary([
-      "@atlas/core",
+      "@atlas/runtime",
       "@atlas/theme",
     ])).toEqual({ ok: true, forbiddenDependencies: [] });
     expect(inspectHomeAssistantDependencyBoundary([
-      "@atlas/runtime",
       "@atlas/renderer",
       "home-assistant-js-websocket",
     ])).toEqual({
       ok: false,
       forbiddenDependencies: [
-        "@atlas/runtime",
         "@atlas/renderer",
         "home-assistant-js-websocket",
       ],

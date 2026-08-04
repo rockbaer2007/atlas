@@ -30,6 +30,9 @@ importers:
 
   packages/homeassistant:
     dependencies:
+      '@atlas/runtime':
+        specifier: workspace:*
+        version: link:../runtime
       '@atlas/theme':
         specifier: workspace:*
         version: link:../theme

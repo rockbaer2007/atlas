@@ -5,7 +5,6 @@ export interface HomeAssistantDependencyBoundaryReport {
 
 const forbiddenPreActivationDependencies = new Set([
   "@atlas/renderer",
-  "@atlas/runtime",
   "home-assistant-js-websocket",
 ]);
 

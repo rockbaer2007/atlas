@@ -12,9 +12,10 @@ The package provides a themed status panel through the active Renderer and Theme
 surface path, plus narrow Home Assistant runtime helpers for entity state,
 service calls, Lovelace resources and card configuration.
 
-The package root exports the status panel contract and renderer-backed panel
-execution only. Its dependency direction runs through Theme rather than a direct
-Renderer dependency.
+The package root exports the status panel contract, renderer-backed panel
+execution and the first Home Assistant card editor reference plugin. Its UI
+dependency direction runs through Theme rather than a direct Renderer
+dependency, while Runtime is used deliberately for the plugin contract.
 
 Local entity state contracts map `on`, `off`, available non-binary values,
 `unavailable` and `unknown` into panel states. Status panels can be collected
@@ -68,6 +69,14 @@ pending. Lights can receive a validated brightness percentage from 1 through
 The demo keeps the connection controls compact and can reconnect on page load
 when the user explicitly combines local token storage with the auto-connect
 option.
+
+The Home Assistant card editor is now modeled as the first official ATLAS
+reference plugin. `createHomeAssistantCardEditorPlugin()` returns a
+`RuntimePlugin` with extension points for card editing, card targets, entity
+selection, exporters and package building. Runtime activation registers a
+service containing the editor's card targets, palette templates, Bubble button
+types and capabilities, so the future Atlas Administration can discover and
+display the editor through the Plugin Catalog.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server
