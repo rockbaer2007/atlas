@@ -77,6 +77,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Atlas should support a dual deployment direction:
   - standalone/self-hosted Atlas editor or server
   - later Home Assistant/HACS frontend integration
+- Treat the Home Assistant Card Editor as the first official ATLAS reference plugin, not merely as a demo.
 - The user wants entity selection from Home Assistant when Atlas is installed or connected.
 - Access tokens may be remembered locally only when the user selects that option.
 - Auto-connect is allowed when token remembering is enabled and the user selects auto-connect.
@@ -134,6 +135,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Future direction includes using Atlas directly on a server or as a Home Assistant/HACS integration.
 - Future direction includes a separate plugin documentation area for authoring, lifecycle, extension APIs, examples, and publishing guidance.
 - Future direction includes an Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation.
+- Future direction includes using the Home Assistant Card Editor as the first reference plugin for ATLAS plugin architecture, administration and package export.
 - Planned follow-up projects include the UGSo Thread Monitor and the Lovelace UV Card.
 
 ## Known User Preferences

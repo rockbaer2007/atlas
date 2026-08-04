@@ -158,6 +158,7 @@ additional envelope-only contract expansion.
 * Reviewed field preview for mapped external blocks on the ATLAS Expert editor surface
 * Status demo import guard for supported, review-required and rejected HA-card artifacts
 * Status demo Expert editor preview using shared templates and bounded grid placement
+* Home Assistant Card Editor as the first official ATLAS reference plugin
 * User-defined HACS card script filenames such as `energy-kitchen.js` instead of only `atlas-card.js`
 * HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards
@@ -179,6 +180,7 @@ additional envelope-only contract expansion.
 
 * Plugin runtime
 * Plugin discovery
+* Home Assistant Card Editor reference plugin using Runtime plugin contracts and Plugin Catalog discovery
 * Extension API
 * Provider ecosystem
 * Third-party integrations
@@ -188,6 +190,7 @@ additional envelope-only contract expansion.
 ### Success Criteria
 
 * Stable plugin architecture
+* First reference plugin proves plugin lifecycle, discovery, administration and package export
 * Separate plugin documentation is available and maintained
 * Plugins can be managed and packaged through an administration UI
 
