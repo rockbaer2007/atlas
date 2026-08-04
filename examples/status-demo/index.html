@@ -184,6 +184,51 @@
         accent-color: #0f766e;
       }
 
+      .card-export-language-panel {
+        display: grid;
+        gap: 6px;
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 10px;
+      }
+
+      .card-export-language-panel legend {
+        padding: 0 4px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .card-export-language-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+        gap: 6px;
+      }
+
+      .card-export-language-grid label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 28px;
+        color: #172033;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .card-export-language-grid input {
+        width: 15px;
+        min-height: 15px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
+      .card-export-language-hint {
+        margin: 0;
+        color: #536079;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
       .admin-handoff-options {
         justify-content: space-between;
       }
@@ -1219,6 +1264,25 @@
             <input id="ha-card-script-filename" type="text" autocomplete="off" spellcheck="false" placeholder="energy-kitchen.js" data-i18n-placeholder="placeholder.scriptFilename">
           </div>
         </div>
+        <fieldset class="card-export-language-panel">
+          <legend data-i18n="label.cardExportLanguages">Card export languages</legend>
+          <div class="card-export-language-grid">
+            <label><input type="checkbox" data-card-export-language="en" checked disabled> EN English</label>
+            <label><input type="checkbox" data-card-export-language="de" checked> DE Deutsch</label>
+            <label><input type="checkbox" data-card-export-language="fr"> FR Francais</label>
+            <label><input type="checkbox" data-card-export-language="es"> ES Espanol</label>
+            <label><input type="checkbox" data-card-export-language="it"> IT Italiano</label>
+            <label><input type="checkbox" data-card-export-language="nl"> NL Nederlands</label>
+            <label><input type="checkbox" data-card-export-language="sv"> SV Svenska</label>
+            <label><input type="checkbox" data-card-export-language="no"> NO Norsk</label>
+            <label><input type="checkbox" data-card-export-language="da"> DA Dansk</label>
+            <label><input type="checkbox" data-card-export-language="cs"> CS Cesky</label>
+            <label><input type="checkbox" data-card-export-language="pl"> PL Polski</label>
+            <label><input type="checkbox" data-card-export-language="pt"> PT Portugues</label>
+            <label><input type="checkbox" data-card-export-language="fi"> FI Suomi</label>
+          </div>
+          <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
+        </fieldset>
         <output id="ha-card-dependency" aria-live="polite"></output>
         <div class="connection-actions uniform-actions">
           <button id="save-home-assistant-group" type="button" data-i18n="button.saveGroup">Save group</button>

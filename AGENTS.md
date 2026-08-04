@@ -109,12 +109,17 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Export filenames should reflect the actual target or user-defined card/script name.
 - HACS script filenames should be user-defined and normalized, for example `energy-kitchen.js`.
 - Card packages should include safe demo entities and a clear hint to replace them with real Home Assistant entities.
+- Card package and HACS bundle exports should ask for Card languages separately from the Atlas UI language.
+- Atlas UI and docs stay German/English for now; exported Cards may include broader European language files.
+- `en` is the required Card language fallback. Additional Card language files may be generated as English fallbacks and must include a note that they need translation/review before publishing.
+- Automatic translation for additional Card languages is a future option and must clearly warn that it requires an internet connection when enabled.
 - HACS bundle export should create a `.hacs.zip` containing:
   - `hacs.json`
   - generated JavaScript card
   - `README.md`
   - example Lovelace card
   - embedded `atlas/*.atlas-card.json`
+  - selected `locales/*.json` language files
 - HACS bundle import should inspect the ZIP and read the embedded `atlas/*.atlas-card.json` package back into Simple or Expert mode.
 - Raw Home Assistant card import should support nested `vertical-stack`, `horizontal-stack`, `grid`, and `conditional` structures where implemented.
 - External Home Assistant Card Builder artifacts may be evaluated as references, but do not copy source code blindly.

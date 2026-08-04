@@ -180,6 +180,7 @@ export interface HomeAssistantCardExportManifestInput {
   readonly format: HomeAssistantCardExportFormat;
   readonly name?: string;
   readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
+  readonly languages?: readonly string[];
 }
 
 export interface HomeAssistantCardExportManifest {
@@ -190,6 +191,8 @@ export interface HomeAssistantCardExportManifest {
   readonly target: HomeAssistantCardTarget;
   readonly layout: HomeAssistantCardLayout;
   readonly dependency: HomeAssistantCardDependency;
+  readonly languages: readonly string[];
+  readonly fallbackLanguages: readonly string[];
 }
 
 export interface HomeAssistantCardExportPayloadInput extends HomeAssistantCardExportManifestInput {}
@@ -208,8 +211,32 @@ export interface HomeAssistantCardExportPackage {
   readonly kind: "atlas.homeassistant.card";
   readonly manifest: HomeAssistantCardExportManifest;
   readonly content: string;
+  readonly locales: readonly HomeAssistantCardLocaleFile[];
   readonly editorPlan?: HomeAssistantCardEditorPackagePlan;
   readonly script?: HomeAssistantCardEditorScriptExport;
+}
+
+export type HomeAssistantCardLocaleStatus = "manual" | "fallback";
+
+export interface HomeAssistantCardLocaleFile {
+  readonly language: string;
+  readonly path: `locales/${string}.json`;
+  readonly status: HomeAssistantCardLocaleStatus;
+  readonly content: HomeAssistantCardLocaleContent;
+}
+
+export interface HomeAssistantCardLocaleContent {
+  readonly _meta: {
+    readonly language: string;
+    readonly status: HomeAssistantCardLocaleStatus;
+    readonly sourceLanguage: "en";
+    readonly note?: string;
+  };
+  readonly card: {
+    readonly title: string;
+    readonly unavailable: string;
+    readonly replaceDemoEntities: string;
+  };
 }
 
 export interface HomeAssistantCardImportSummary {
@@ -475,6 +502,7 @@ export function createHomeAssistantCardExportManifest(
   const target = getHomeAssistantCardTarget(input.card);
   const layout = isHomeAssistantStackCardConfiguration(input.card) ? input.card.type : "single";
   const slug = slugifyHomeAssistantExportName(`${name}-${target}-${layout}`);
+  const languages = normalizeHomeAssistantCardExportLanguages(input.languages);
 
   return {
     name,
@@ -484,6 +512,8 @@ export function createHomeAssistantCardExportManifest(
     target,
     layout,
     dependency: inspectHomeAssistantCardDependency(input.card),
+    languages,
+    fallbackLanguages: languages.filter(language => language !== "en"),
   };
 }
 
@@ -499,13 +529,62 @@ export function createHomeAssistantCardExportPayload(
 export function createHomeAssistantCardExportPackage(
   input: HomeAssistantCardExportPackageInput,
 ): HomeAssistantCardExportPackage {
+  const payload = createHomeAssistantCardExportPayload(input);
   return {
     version: 1,
     kind: "atlas.homeassistant.card",
-    ...createHomeAssistantCardExportPayload(input),
+    ...payload,
+    locales: createHomeAssistantCardLocaleFiles({
+      title: payload.manifest.name,
+      languages: payload.manifest.languages,
+    }),
     ...(input.editorPlan ? { editorPlan: input.editorPlan } : {}),
     ...(input.script ? { script: input.script } : {}),
   };
+}
+
+export function normalizeHomeAssistantCardExportLanguages(
+  languages: readonly string[] = ["en"],
+): readonly string[] {
+  const normalized = languages
+    .map(language => language.trim().toLowerCase())
+    .filter(language => /^[a-z]{2}$/.test(language));
+  return [...new Set(["en", ...normalized])].sort((left, right) => {
+    if (left === "en") return -1;
+    if (right === "en") return 1;
+    return left.localeCompare(right);
+  });
+}
+
+export function createHomeAssistantCardLocaleFiles(input: {
+  readonly title: string;
+  readonly languages: readonly string[];
+}): readonly HomeAssistantCardLocaleFile[] {
+  return normalizeHomeAssistantCardExportLanguages(input.languages).map(language => {
+    const status: HomeAssistantCardLocaleStatus = language === "en" ? "manual" : "fallback";
+    return {
+      language,
+      path: `locales/${language}.json`,
+      status,
+      content: {
+        _meta: {
+          language,
+          status,
+          sourceLanguage: "en",
+          ...(status === "fallback"
+            ? {
+                note: "This language file contains English fallback text. Please translate and review it before publishing.",
+              }
+            : {}),
+        },
+        card: {
+          title: input.title,
+          unavailable: "Unavailable",
+          replaceDemoEntities: "Replace the demo entities with your own Home Assistant entities before publishing.",
+        },
+      },
+    };
+  });
 }
 
 export function parseHomeAssistantEntitiesCardConfiguration(
@@ -963,6 +1042,12 @@ function parseHomeAssistantCardExportPackage(text: string): HomeAssistantCardExp
       kind: "atlas.homeassistant.card",
       manifest: parsed.manifest as unknown as HomeAssistantCardExportManifest,
       content: parsed.content,
+      locales: Array.isArray(parsed.locales)
+        ? parsed.locales as unknown as readonly HomeAssistantCardLocaleFile[]
+        : createHomeAssistantCardLocaleFiles({
+            title: typeof parsed.manifest.name === "string" ? parsed.manifest.name : "ATLAS Home Assistant card",
+            languages: Array.isArray(parsed.manifest.languages) ? parsed.manifest.languages.filter(language => typeof language === "string") : ["en"],
+          }),
       ...(isRecord(parsed.editorPlan) ? { editorPlan: parsed.editorPlan as unknown as HomeAssistantCardEditorPackagePlan } : {}),
       ...(isRecord(parsed.script) ? { script: parsed.script as unknown as HomeAssistantCardEditorScriptExport } : {}),
     };

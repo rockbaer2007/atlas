@@ -68,6 +68,11 @@ export function createHomeAssistantCardEditorHacsBundle(
   };
   const bundleName = script.filename.replace(/\.js$/i, "");
   const defaultConfig = JSON.stringify(script.defaultConfig, null, 2);
+  const localeFiles = cardPackage.locales.map(locale => ({
+    path: locale.path,
+    mimeType: "application/json" as const,
+    content: `${JSON.stringify(locale.content, null, 2)}\n`,
+  }));
 
   return {
     version: 1,
@@ -95,7 +100,13 @@ export function createHomeAssistantCardEditorHacsBundle(
       {
         path: "README.md",
         mimeType: "text/markdown",
-        content: createHomeAssistantCardEditorBundleReadme(script.defaultConfig.title, script.resourcePath, defaultConfig),
+        content: createHomeAssistantCardEditorBundleReadme(
+          script.defaultConfig.title,
+          script.resourcePath,
+          defaultConfig,
+          cardPackage.manifest.languages,
+          cardPackage.manifest.fallbackLanguages,
+        ),
       },
       {
         path: "examples/lovelace-card.json",
@@ -107,6 +118,7 @@ export function createHomeAssistantCardEditorHacsBundle(
         mimeType: "application/json",
         content: JSON.stringify(packagedCard, null, 2),
       },
+      ...localeFiles,
     ],
     installSteps: [
       "Create a HACS frontend repository with these files.",
@@ -239,6 +251,8 @@ function createHomeAssistantCardEditorBundleReadme(
   cardName: string,
   resourcePath: string,
   defaultConfig: string,
+  languages: readonly string[],
+  fallbackLanguages: readonly string[],
 ): string {
   return [
     `# ${cardName}`,
@@ -259,6 +273,17 @@ function createHomeAssistantCardEditorBundleReadme(
     "```",
     "",
     "Replace the demo entities with your own Home Assistant entities before using this card in production.",
+    "",
+    "## Languages",
+    "",
+    `Included language files: ${languages.join(", ")}.`,
+    ...(fallbackLanguages.length > 0
+      ? [
+          "",
+          `Fallback language files: ${fallbackLanguages.join(", ")}.`,
+          "These files contain English fallback text. Please translate and review the corresponding files in `locales/` before publishing.",
+        ]
+      : []),
     "",
   ].join("\n");
 }

@@ -10,6 +10,7 @@ import {
   createHomeAssistantCardArtifactReview,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
+  createHomeAssistantCardLocaleFiles,
   decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
   formatHomeAssistantCardArtifactReviewLines,
@@ -18,6 +19,7 @@ import {
   inspectHomeAssistantCardDependencyAvailability,
   listHomeAssistantBubbleButtonTypes,
   listHomeAssistantCardTargets,
+  normalizeHomeAssistantCardExportLanguages,
   parseHomeAssistantEntitiesCardConfiguration,
   previewHomeAssistantCardArtifactFields,
   previewHomeAssistantCardArtifactMapping,
@@ -199,6 +201,36 @@ describe("Home Assistant entities card configuration", () => {
       "url: \"https://www.home-assistant.io\"",
       "aspect_ratio: \"50%\"",
     ].join("\n"));
+  });
+
+  it("creates card export locale files with English fallback metadata", () => {
+    expect(normalizeHomeAssistantCardExportLanguages(["de", "en", "sv", "de", "bad-code"])).toEqual([
+      "en",
+      "de",
+      "sv",
+    ]);
+
+    const locales = createHomeAssistantCardLocaleFiles({
+      title: "UV Index",
+      languages: ["de", "fr"],
+    });
+
+    expect(locales.map(locale => locale.path)).toEqual([
+      "locales/en.json",
+      "locales/de.json",
+      "locales/fr.json",
+    ]);
+    expect(locales[0]?.content._meta).toEqual({
+      language: "en",
+      status: "manual",
+      sourceLanguage: "en",
+    });
+    expect(locales[1]?.content._meta).toMatchObject({
+      language: "de",
+      status: "fallback",
+      sourceLanguage: "en",
+      note: "This language file contains English fallback text. Please translate and review it before publishing.",
+    });
   });
 
   it("lists supported Bubble button types", () => {
@@ -443,6 +475,8 @@ describe("Home Assistant entities card configuration", () => {
         resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
         installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
       },
+      languages: ["en"],
+      fallbackLanguages: [],
     });
 
     expect(createHomeAssistantCardExportManifest({
@@ -504,6 +538,7 @@ describe("Home Assistant entities card configuration", () => {
       card,
       format: "yaml",
       name: "Office Light",
+      languages: ["de", "sv"],
       editorPlan,
       script: createHomeAssistantCardEditorScriptExport(editorPlan),
     });
@@ -516,6 +551,8 @@ describe("Home Assistant entities card configuration", () => {
         format: "yaml",
         target: "bubble",
         layout: "single",
+        languages: ["en", "de", "sv"],
+        fallbackLanguages: ["de", "sv"],
       },
       editorPlan: {
         scriptFilename: "office-light-panel.js",
@@ -539,6 +576,12 @@ describe("Home Assistant entities card configuration", () => {
       },
     });
     expect(cardPackage.content).toContain("type: \"custom:bubble-card\"");
+    expect(cardPackage.locales.map(locale => locale.path)).toEqual([
+      "locales/en.json",
+      "locales/de.json",
+      "locales/sv.json",
+    ]);
+    expect(cardPackage.locales.find(locale => locale.language === "de")?.content._meta.status).toBe("fallback");
 
     expect(summarizeHomeAssistantCardImport(JSON.stringify(cardPackage))).toMatchObject({
       title: "Office light",

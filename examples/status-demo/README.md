@@ -92,9 +92,16 @@ name. The package also carries a generated custom-card JavaScript source with a
 matching `custom:<card-name>` type, Home Assistant `getStubConfig()` defaults
 and the demo-entity replacement hint for the later HACS card workflow. The
 same source can also be downloaded directly through the Export card script
-button. Export HACS bundle downloads a real `.hacs.zip` archive containing the
-future repository files: `hacs.json`, the generated JavaScript card, a README,
-an example Lovelace card and the original Atlas card package.
+button. Card package and HACS bundle exports include selected Card language
+files under `locales/`. English is always included as the required fallback;
+additional languages are generated as English fallback files with metadata
+notes that they must be translated and reviewed before publishing. Automatic
+translation is not active in this first version and will require an internet
+connection when added later.
+Export HACS bundle downloads a real `.hacs.zip` archive containing the future
+repository files: `hacs.json`, the generated JavaScript card, a README, an
+example Lovelace card, the original Atlas card package and the selected
+`locales/*.json` files.
 The HA card import control also accepts `.hacs.zip` files now. It inspects the
 archive structure, reports missing bundle files and reads the embedded
 `atlas/*.atlas-card.json` package back into the Simple or Expert editor flow.

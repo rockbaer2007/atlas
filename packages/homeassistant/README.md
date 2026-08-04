@@ -113,7 +113,11 @@ or staged separately before a full HACS bundle is produced.
 For the next packaging step, the package can create a dependency-free `.hacs.zip`
 archive. The archive contains the files a host needs for a frontend repository:
 `hacs.json`, the generated card script, a README, an example Lovelace card
-configuration and the original Atlas card package for round-trip editing.
+configuration, selected `locales/*.json` language files and the original Atlas
+card package for round-trip editing. English is always included as the required
+fallback language. Additional selected languages are generated as English
+fallback files with metadata notes that they must be translated and reviewed
+before publishing.
 Archives can also be inspected again before import. The inspection reads the
 ZIP central directory, checks for `hacs.json`, `README.md`, an example card, a
 root JavaScript card file and the embedded Atlas card package, and the embedded

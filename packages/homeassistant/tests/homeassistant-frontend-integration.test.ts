@@ -967,6 +967,7 @@ describe("Home Assistant frontend integration planning", () => {
       }),
       format: "json",
       name: "Energy Kitchen",
+      languages: ["de", "fr"],
       editorPlan,
     });
     const bundle = createHomeAssistantCardEditorHacsBundle(cardPackage);
@@ -993,6 +994,9 @@ describe("Home Assistant frontend integration planning", () => {
       "README.md",
       "examples/lovelace-card.json",
       "atlas/energy-kitchen.atlas-card.json",
+      "locales/en.json",
+      "locales/de.json",
+      "locales/fr.json",
     ]);
     expect(JSON.parse(bundle.files.find(file => file.path === "hacs.json")?.content ?? "{}")).toEqual({
       name: "Energy Kitchen",
@@ -1001,6 +1005,11 @@ describe("Home Assistant frontend integration planning", () => {
     });
     expect(bundle.files.find(file => file.path === "energy-kitchen.js")?.content).toContain("customElements.define(\"energy-kitchen\"");
     expect(bundle.files.find(file => file.path === "README.md")?.content).toContain("/hacsfiles/atlas/energy-kitchen.js");
+    expect(bundle.files.find(file => file.path === "README.md")?.content).toContain("Fallback language files: de, fr.");
+    expect(JSON.parse(bundle.files.find(file => file.path === "locales/de.json")?.content ?? "{}")._meta).toMatchObject({
+      language: "de",
+      status: "fallback",
+    });
   });
 
   it("materializes a HACS card bundle as a downloadable zip archive", () => {
@@ -1031,6 +1040,7 @@ describe("Home Assistant frontend integration planning", () => {
     expect(archiveText).toContain("hacs.json");
     expect(archiveText).toContain("energy-kitchen.js");
     expect(archiveText).toContain("examples/lovelace-card.json");
+    expect(archiveText).toContain("locales/en.json");
     expect(archive.content.length).toBeGreaterThan(1000);
   });
 
@@ -1054,7 +1064,7 @@ describe("Home Assistant frontend integration planning", () => {
     expect(inspectHomeAssistantCardEditorHacsBundleArchive(archive.content)).toMatchObject({
       kind: "atlas.homeassistant.hacs-card-bundle-archive",
       importable: true,
-      fileCount: 5,
+      fileCount: 6,
       missingFiles: [],
       scriptFiles: ["energy-kitchen.js"],
       atlasPackageFiles: ["atlas/energy-kitchen.atlas-card.json"],

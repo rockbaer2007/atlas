@@ -74,6 +74,7 @@ const haCardTarget = document.querySelector("#ha-card-target");
 const haCardLayout = document.querySelector("#ha-card-layout");
 const haCardFormat = document.querySelector("#ha-card-format");
 const haCardScriptFilename = document.querySelector("#ha-card-script-filename");
+const cardExportLanguageInputs = Array.from(document.querySelectorAll("[data-card-export-language]"));
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
@@ -150,6 +151,7 @@ const translations = {
     "label.cardLayout": "Card layout",
     "label.cardFormat": "Card format",
     "label.scriptFilename": "HACS script filename",
+    "label.cardExportLanguages": "Card export languages",
     "label.entityIds": "Entity IDs",
     "label.entityType": "Entity type",
     "label.entitySearch": "Entity search",
@@ -333,6 +335,9 @@ const translations = {
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
     "message.scriptExported": "Card script exported as {scriptFilename}.",
     "message.bundleExported": "HACS bundle exported as {filename} with {count} files.",
+    "message.cardExportLanguageHint": "EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.",
+    "message.packageExportedWithLanguages": "Card package exported with HACS script {scriptFilename} and languages {languages}.",
+    "message.bundleExportedWithLanguages": "HACS bundle exported as {filename} with {count} files and languages {languages}.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
     "message.atlasPackage": "ATLAS card package",
     "message.haCard": "HA card",
@@ -442,6 +447,7 @@ const translations = {
     "label.cardLayout": "Card-Layout",
     "label.cardFormat": "Card-Format",
     "label.scriptFilename": "HACS-Script-Dateiname",
+    "label.cardExportLanguages": "Card-Export-Sprachen",
     "label.entityIds": "Entitaets-IDs",
     "label.entityType": "Entitaetstyp",
     "label.entitySearch": "Entitaet suchen",
@@ -625,6 +631,9 @@ const translations = {
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
     "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
     "message.bundleExported": "HACS-Bundle als {filename} mit {count} Dateien exportiert.",
+    "message.cardExportLanguageHint": "EN ist der Pflicht-Fallback. Zusaetzliche Sprachen werden aktuell als englische Fallback-Dateien exportiert. Bitte die entsprechenden Languagefiles vor der Veroeffentlichung pruefen und uebersetzen. Automatische Uebersetzung braucht spaeter eine Internetverbindung.",
+    "message.packageExportedWithLanguages": "Card-Paket mit HACS-Script {scriptFilename} und Sprachen {languages} exportiert.",
+    "message.bundleExportedWithLanguages": "HACS-Bundle als {filename} mit {count} Dateien und Sprachen {languages} exportiert.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
     "message.atlasPackage": "ATLAS-Card-Paket",
     "message.haCard": "HA-Card",
@@ -943,6 +952,12 @@ try {
   if (typeof savedConfiguration?.cardScriptFilename === "string") {
     haCardScriptFilename.value = savedConfiguration.cardScriptFilename;
   }
+  if (Array.isArray(savedConfiguration?.cardExportLanguages)) {
+    const selectedLanguages = new Set(savedConfiguration.cardExportLanguages.filter(language => typeof language === "string"));
+    for (const input of cardExportLanguageInputs) {
+      input.checked = input.dataset.cardExportLanguage === "en" || selectedLanguages.has(input.dataset.cardExportLanguage);
+    }
+  }
   if (typeof savedConfiguration?.selectedGroup === "string") {
     initialGroupSelection = savedConfiguration.selectedGroup;
   }
@@ -1218,6 +1233,7 @@ function persistConfiguration() {
       cardLayout: haCardLayout.value,
       cardFormat: haCardFormat.value,
       cardScriptFilename: haCardScriptFilename.value,
+      cardExportLanguages: selectedCardExportLanguages(),
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       expertTemplateSizing: serializedExpertTemplateSizing(),
@@ -2862,6 +2878,15 @@ function createHaCardExportPayload() {
   });
 }
 
+function selectedCardExportLanguages() {
+  return [
+    "en",
+    ...cardExportLanguageInputs
+      .filter(input => input.checked && input.dataset.cardExportLanguage !== "en")
+      .map(input => input.dataset.cardExportLanguage),
+  ];
+}
+
 function createHaCardExportPackage() {
   const card = createActiveHaCardConfig();
   const editorPlan = createActiveCardEditorPlan();
@@ -2869,6 +2894,7 @@ function createHaCardExportPackage() {
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
+    languages: selectedCardExportLanguages(),
     editorPlan,
     script: createHomeAssistantCardEditorScriptExport(editorPlan),
   });
@@ -3388,6 +3414,9 @@ haCardScriptFilename.addEventListener("input", () => {
   persistConfiguration();
   statusMessage.textContent = t("message.scriptFilenameNormalized", { scriptFilename: currentHaCardScriptFilename() });
 });
+for (const input of cardExportLanguageInputs) {
+  input.addEventListener("change", persistConfiguration);
+}
 for (const button of editorModeButtons) {
   button.addEventListener("click", () => {
     renderEditorMode(button.dataset.editorMode);
@@ -3553,8 +3582,9 @@ exportHaCardPackage.addEventListener("click", () => {
   link.download = `${cardPackage.editorPlan?.scriptFilename?.replace(/\.js$/i, "") ?? cardPackage.manifest.filename.replace(/\.(json|yaml)$/i, "")}.atlas-card.json`;
   link.click();
   URL.revokeObjectURL(link.href);
-  statusMessage.textContent = t("message.packageExported", {
+  statusMessage.textContent = t("message.packageExportedWithLanguages", {
     scriptFilename: cardPackage.editorPlan?.scriptFilename ?? currentHaCardScriptFilename(),
+    languages: cardPackage.manifest.languages.join(", "),
   });
 });
 exportHaCardScript.addEventListener("click", () => {
@@ -3584,9 +3614,13 @@ exportHaCardBundle.addEventListener("click", () => {
   link.download = archive.filename;
   link.click();
   URL.revokeObjectURL(link.href);
-  statusMessage.textContent = t("message.bundleExported", {
+  statusMessage.textContent = t("message.bundleExportedWithLanguages", {
     count: String(bundle.files.length),
     filename: archive.filename,
+    languages: bundle.files
+      .filter(file => file.path.startsWith("locales/") && file.path.endsWith(".json"))
+      .map(file => file.path.replace(/^locales\/|\.json$/g, ""))
+      .join(", "),
   });
 });
 copyHaCardConfig.addEventListener("click", async () => {
