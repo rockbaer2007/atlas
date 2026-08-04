@@ -7,7 +7,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Primary repo: `C:\Users\rockb\source\repos\atlas`.
 - Documentation repo: `C:\Users\rockb\source\repos\ugso-opensource-docs`.
 - Current Atlas focus: Home Assistant card editor, Simple/Expert workflows, HACS-oriented export/import, and bilingual documentation.
-- The Atlas demo is usually served locally at `http://127.0.0.1:4173/`.
+- The Atlas demo standard port is fixed to `4174`; serve it at `http://127.0.0.1:4174/`.
 - The external documentation site uses VitePress in `ugso-opensource-docs` and is maintained in German and English.
 
 ## Collaboration Rules
