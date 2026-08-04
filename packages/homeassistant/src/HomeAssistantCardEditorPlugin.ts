@@ -1,4 +1,9 @@
-import type { RuntimePlugin } from "@atlas/runtime";
+import {
+  createRuntimePluginInstallPackage,
+  describeRuntimePlugin,
+  type RuntimePlugin,
+  type RuntimePluginInstallPackage,
+} from "@atlas/runtime";
 
 import {
   listHomeAssistantBubbleButtonTypes,
@@ -71,4 +76,32 @@ export function createHomeAssistantCardEditorPlugin(): RuntimePlugin {
       });
     },
   };
+}
+
+export function createHomeAssistantCardEditorPluginInstallPackage(): RuntimePluginInstallPackage {
+  const plugin = createHomeAssistantCardEditorPlugin();
+
+  return createRuntimePluginInstallPackage({
+    plugin: describeRuntimePlugin(plugin),
+    readme: [
+      "# ATLAS Home Assistant Card Editor",
+      "",
+      "This package describes the first official ATLAS reference plugin.",
+      "",
+      "It provides Simple and Expert Home Assistant card editing, entity picker",
+      "integration, card export and HACS-oriented package export capabilities.",
+      "",
+    ].join("\n"),
+    files: [{
+      path: "examples/homeassistant-card-editor.yaml",
+      mediaType: "application/yaml",
+      content: [
+        "type: custom:atlas-homeassistant-card-editor",
+        "entities:",
+        "  - binary_sensor.atlas_status",
+        "  - sensor.atlas_temperature",
+        "",
+      ].join("\n"),
+    }],
+  });
 }

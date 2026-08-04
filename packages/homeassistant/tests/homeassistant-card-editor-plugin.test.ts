@@ -8,6 +8,7 @@ import {
 
 import {
   createHomeAssistantCardEditorPlugin,
+  createHomeAssistantCardEditorPluginInstallPackage,
   HomeAssistantCardEditorExtensionPoints,
   HomeAssistantCardEditorPluginCapabilities,
   HomeAssistantCardEditorPluginId,
@@ -77,5 +78,32 @@ describe("Home Assistant card editor plugin", () => {
       "slider",
       "name",
     ]);
+  });
+
+  it("creates an install package for the reference plugin", () => {
+    const installPackage = createHomeAssistantCardEditorPluginInstallPackage();
+
+    expect(installPackage).toMatchObject({
+      kind: "atlas.runtime.plugin.install-package",
+      filename: "atlas-plugin-homeassistant-card-editor.atlas-plugin.json",
+      plugin: {
+        id: HomeAssistantCardEditorPluginId,
+      },
+    });
+    expect(installPackage.files.map(file => file.path)).toEqual([
+      "atlas-plugin.json",
+      "README.md",
+      "examples/homeassistant-card-editor.yaml",
+    ]);
+    expect(JSON.parse(installPackage.files[0]!.content)).toMatchObject({
+      id: HomeAssistantCardEditorPluginId,
+      extensionPoints: [
+        "homeassistant.card-editor",
+        "homeassistant.card-target",
+        "homeassistant.entity-picker",
+        "homeassistant.exporter",
+        "atlas.plugin.package-builder",
+      ],
+    });
   });
 });

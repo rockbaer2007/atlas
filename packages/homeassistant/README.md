@@ -77,6 +77,9 @@ selection, exporters and package building. Runtime activation registers a
 service containing the editor's card targets, palette templates, Bubble button
 types and capabilities, so the future Atlas Administration can discover and
 display the editor through the Plugin Catalog.
+`createHomeAssistantCardEditorPluginInstallPackage()` projects the same
+reference plugin into the Runtime install-package contract with a manifest,
+README and example Home Assistant card YAML.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server
