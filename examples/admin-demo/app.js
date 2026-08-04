@@ -16,7 +16,6 @@ const languageButtons = Array.from(document.querySelectorAll("[data-language]"))
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
 const translationProviderInputs = Array.from(document.querySelectorAll('input[name="translation-provider"]'));
-const translationApiEndpoint = document.querySelector("#translation-api-endpoint");
 const translationApiKeyInputs = {
   chatgpt: document.querySelector("#translation-api-key-chatgpt"),
   gemini: document.querySelector("#translation-api-key-gemini"),
@@ -61,7 +60,6 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
     "label.translationProvider": "Translation module",
-    "label.translationApiEndpoint": "Translation API endpoint",
     "label.rememberToken": "Remember token locally for Administration",
     "label.autoConnectEditor": "Auto-connect Card Editor after handoff",
     "label.version": "Version",
@@ -89,7 +87,6 @@ const translations = {
     "placeholder.customAiApiKey": "Custom provider API key later",
     "aria.language": "Language",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
-    "message.translationApiEndpointHint": "DeepL translate request reference:",
     "message.openAiApiKeyLink": "Get OpenAI API key:",
     "message.geminiApiKeyLink": "Get Gemini API key:",
     "message.deeplApiKeyLink": "Get DeepL API key:",
@@ -127,7 +124,6 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
     "label.translationProvider": "Uebersetzungsmodul",
-    "label.translationApiEndpoint": "Uebersetzungs-API-Endpunkt",
     "label.rememberToken": "Token lokal fuer die Administration merken",
     "label.autoConnectEditor": "Card Editor nach Uebergabe automatisch verbinden",
     "label.version": "Version",
@@ -155,7 +151,6 @@ const translations = {
     "placeholder.customAiApiKey": "Eigener Provider-API-Key spaeter",
     "aria.language": "Sprache",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
-    "message.translationApiEndpointHint": "DeepL-Translate-Request-Referenz:",
     "message.openAiApiKeyLink": "OpenAI API-Key erhalten:",
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
     "message.deeplApiKeyLink": "DeepL API-Key erhalten:",
@@ -276,7 +271,7 @@ function persistConfiguration() {
     language: currentLanguage,
     url: homeAssistantUrl.value,
     translationProvider: currentTranslationProvider(),
-    translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
+    translationApiEndpoint: defaultTranslationApiEndpoint,
     translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider()),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
@@ -353,9 +348,6 @@ function restoreConfiguration() {
     if (typeof saved?.translationProvider === "string") {
       setTranslationProvider(saved.translationProvider);
     }
-    if (typeof saved?.translationApiEndpoint === "string") {
-      translationApiEndpoint.value = normalizeTranslationApiEndpoint(saved.translationApiEndpoint);
-    }
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
       if (typeof saved.token === "string") {
@@ -385,9 +377,6 @@ async function restoreServerConnectionSettings() {
     }
     if (typeof saved.translationProvider === "string") {
       setTranslationProvider(saved.translationProvider);
-    }
-    if (typeof saved.translationApiEndpoint === "string") {
-      translationApiEndpoint.value = normalizeTranslationApiEndpoint(saved.translationApiEndpoint);
     }
     applyTranslationApiKeys(saved.translationApiKeys);
     if (saved.autoConnectEditor === true && homeAssistantToken.value.trim()) {
@@ -498,7 +487,7 @@ function createEditorConnectionHandoff() {
     token: homeAssistantToken.value,
     autoConnect: autoConnectEditor.checked,
     translationProvider: provider,
-    translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
+    translationApiEndpoint: defaultTranslationApiEndpoint,
     ...(providerKeyConfigured ? { translationApiKeyConfigured: true } : {}),
     sentAt: new Date().toISOString(),
   };
@@ -711,7 +700,6 @@ homeAssistantUrl.addEventListener("input", () => {
 for (const input of translationProviderInputs) {
   input.addEventListener("change", persistConfiguration);
 }
-translationApiEndpoint.addEventListener("input", persistConfiguration);
 for (const input of Object.values(translationApiKeyInputs)) {
   input?.addEventListener("input", persistConfiguration);
 }

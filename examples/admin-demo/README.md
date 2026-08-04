@@ -34,6 +34,8 @@ for Free/Pro API options.
 The prepared DeepL translate endpoint defaults to
 `https://api.deepl.com/v2/translate`; request details are tracked at
 `https://developers.deepl.com/api-reference/translate/request-translation`.
+The DeepL translate endpoint is internal configuration and is not shown as an
+Administration input field.
 Gemini API-key planning uses `https://ai.google.dev/gemini-api/docs/api-key` as
 the key and security reference. Provider API keys are sent to the local
 Administration server for the active backend session; they are not stored in the
