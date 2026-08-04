@@ -307,15 +307,16 @@
       }
 
       .connection-actions.uniform-actions {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, 184px);
+        display: flex;
+        flex-wrap: wrap;
         gap: 6px;
-        align-items: stretch;
+        align-items: flex-start;
       }
 
       .connection-actions.uniform-actions button,
       .connection-actions.uniform-actions .import-button {
         box-sizing: border-box;
+        flex: 0 0 184px;
         width: 184px;
         min-height: 38px;
         height: 38px;
@@ -324,8 +325,9 @@
       }
 
       .connection-actions.uniform-actions .import-button {
-        justify-self: start;
+        flex-basis: 136px;
         width: 136px;
+        max-width: 136px;
         min-height: 34px;
         height: 34px;
         padding: 5px 9px;
@@ -378,13 +380,11 @@
           flex: 1 1 140px;
         }
 
-        .connection-actions.uniform-actions {
-          grid-template-columns: 1fr;
-        }
-
         .connection-actions.uniform-actions button,
         .connection-actions.uniform-actions .import-button {
+          flex-basis: 100%;
           width: 100%;
+          max-width: none;
         }
       }
 
