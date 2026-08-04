@@ -388,6 +388,13 @@ describe("Home Assistant entities card configuration", () => {
       matchedResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
       missingResourcePaths: [],
     });
+    expect(inspectHomeAssistantCardDependencyAvailability("mushroom-template", [
+      "/hacsfiles/Lovelace-Mushroom/mushroom.js",
+    ])).toMatchObject({
+      status: "missing",
+      matchedResourcePaths: [],
+      missingResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
+    });
   });
 
   it("creates copy-ready Lovelace resource references for custom card targets", () => {

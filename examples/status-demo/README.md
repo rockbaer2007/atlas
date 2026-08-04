@@ -102,8 +102,9 @@ marks Mushroom or Bubble dependencies as found, missing or not yet checked. The
 resource check can also be run manually from the card export controls. The
 export manifest includes both the expected Lovelace resource and a HACS install
 hint for custom cards. Mushroom uses `/hacsfiles/lovelace-mushroom/mushroom.js`.
-Bubble Card uses the case-sensitive HACS resource path
-`/hacsfiles/Bubble-Card/bubble-card.js`. Without an active connection, the
+Bubble Card uses `/hacsfiles/Bubble-Card/bubble-card.js`. All expected
+Home Assistant and HACS resource paths are matched case-sensitively because
+Home Assistant commonly runs on Linux. Without an active connection, the
 dependency line keeps showing these paths as installation hints. The resource
 snippet can be copied as JSON or YAML through the same card format selector.
 It includes the ATLAS frontend resource and, in Expert mode, every Mushroom or

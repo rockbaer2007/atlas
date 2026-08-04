@@ -57,8 +57,10 @@ one source. Card packages wrap the manifest and content in a portable Atlas JSON
 envelope for round-tripping through editor UIs. Lovelace resource references can
 be derived from the selected card target and serialized as JSON or YAML, which
 lets host UIs offer copy-ready HACS resource snippets for Mushroom and Bubble
-Card. Card import summaries normalize raw card text or Atlas packages into
-title, entity IDs, target, layout, format and dependency metadata. The WebSocket
+Card. Resource availability checks intentionally match paths case-sensitively
+because Home Assistant often runs on Linux. Card import summaries normalize raw
+card text or Atlas packages into title, entity IDs, target, layout, format and
+dependency metadata. The WebSocket
 client can request `get_states` and `lovelace/resources` as soon as
 authentication succeeds, even while the live event subscription is still
 pending. Lights can receive a validated brightness percentage from 1 through

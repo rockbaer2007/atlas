@@ -97,6 +97,29 @@ describe("Home Assistant frontend integration planning", () => {
     expect(plan.installSteps).toContain("HACS > Frontend > Bubble Card");
   });
 
+  it("keeps ATLAS and HACS frontend resource path matching case-sensitive", () => {
+    const plan = createHomeAssistantAtlasFrontendIntegrationPlan({
+      mode: "hacs",
+      cardTarget: "bubble",
+      resources: [
+        "/hacsfiles/Atlas/atlas-homeassistant-panel.js",
+        "/hacsfiles/bubble-card/bubble-card.js",
+      ],
+    });
+
+    expect(plan.ready).toBe(false);
+    expect(plan.atlasAvailability).toMatchObject({
+      status: "missing",
+      matchedResourcePaths: [],
+      missingResourcePaths: ["/hacsfiles/atlas/atlas-homeassistant-panel.js"],
+    });
+    expect(plan.cardAvailability).toMatchObject({
+      status: "missing",
+      matchedResourcePaths: [],
+      missingResourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
+    });
+  });
+
   it("reports missing custom card resources even when ATLAS itself is installed", () => {
     const plan = createHomeAssistantAtlasFrontendIntegrationPlan({
       mode: "server",
