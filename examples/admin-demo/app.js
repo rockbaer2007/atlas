@@ -252,18 +252,6 @@ function readTranslationApiKeys() {
   );
 }
 
-function applyTranslationApiKeys(keys) {
-  if (!keys || typeof keys !== "object") {
-    return;
-  }
-
-  for (const [provider, input] of Object.entries(translationApiKeyInputs)) {
-    if (input && typeof keys[provider] === "string") {
-      input.value = keys[provider];
-    }
-  }
-}
-
 function hasTranslationApiKey(provider, keys = readTranslationApiKeys()) {
   return Boolean(keys[normalizeTranslationProvider(provider)]?.trim());
 }
@@ -275,7 +263,7 @@ function persistConfiguration() {
     url: homeAssistantUrl.value,
     translationProvider: currentTranslationProvider(),
     translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
-    translationApiKeys: readTranslationApiKeys(),
+    translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider()),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     token: rememberAdminToken.checked ? token : undefined,
@@ -295,7 +283,7 @@ async function persistServerConnectionSettings(configuration) {
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
-      translationApiKeys: configuration.translationApiKeys,
+      translationApiKeys: readTranslationApiKeys(),
     }),
   });
 }
@@ -313,7 +301,6 @@ function persistSharedConnectionCookie(configuration) {
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
-      translationApiKeyConfigured: hasTranslationApiKey(configuration.translationProvider, configuration.translationApiKeys),
       updatedAt: new Date().toISOString(),
     }))}`,
     "path=/",
@@ -355,7 +342,6 @@ function restoreConfiguration() {
     if (typeof saved?.translationApiEndpoint === "string") {
       translationApiEndpoint.value = normalizeTranslationApiEndpoint(saved.translationApiEndpoint);
     }
-    applyTranslationApiKeys(saved?.translationApiKeys);
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
       if (typeof saved.token === "string") {
@@ -461,14 +447,16 @@ function downloadTextFile(filename, content, type) {
 }
 
 function createEditorConnectionHandoff() {
+  const provider = currentTranslationProvider();
+  const providerKeyConfigured = hasTranslationApiKey(provider);
   return {
     type: "atlas.admin.connection.v1",
     url: homeAssistantUrl.value.trim(),
     token: homeAssistantToken.value,
     autoConnect: autoConnectEditor.checked,
-    translationProvider: currentTranslationProvider(),
+    translationProvider: provider,
     translationApiEndpoint: normalizeTranslationApiEndpoint(translationApiEndpoint.value),
-    translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider()),
+    ...(providerKeyConfigured ? { translationApiKeyConfigured: true } : {}),
     sentAt: new Date().toISOString(),
   };
 }

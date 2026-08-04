@@ -216,7 +216,7 @@ export interface HomeAssistantCardExportPackage {
   readonly script?: HomeAssistantCardEditorScriptExport;
 }
 
-export type HomeAssistantCardLocaleStatus = "manual" | "fallback";
+export type HomeAssistantCardLocaleStatus = "manual" | "fallback" | "machine";
 
 export interface HomeAssistantCardLocaleFile {
   readonly language: string;
@@ -230,6 +230,8 @@ export interface HomeAssistantCardLocaleContent {
     readonly language: string;
     readonly status: HomeAssistantCardLocaleStatus;
     readonly sourceLanguage: "en";
+    readonly provider?: string;
+    readonly model?: string;
     readonly note?: string;
   };
   readonly card: {

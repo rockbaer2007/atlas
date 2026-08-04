@@ -345,6 +345,10 @@ const translations = {
     "message.translationProviderReady": "Translation module from Administration: {provider}.",
     "message.translationFallbackNoProvider": "Automatic translation requested, but no translation module is configured. Exporting fallback language files.",
     "message.translationFallbackProviderPending": "Automatic translation requested with {provider}. API endpoint prepared: {endpoint}. Provider execution is not connected yet, so fallback language files are exported for review.",
+    "message.translationProviderMissingKey": "Automatic translation requested with {provider}, but no provider API key is configured in Administration. Exporting fallback language files.",
+    "message.translationProviderRequest": "Requesting machine translation with {provider}: {percent}%.",
+    "message.translationProviderComplete": "Machine translation completed with {provider}: {languages}. Review before publishing.",
+    "message.translationProviderFailed": "Machine translation failed with {provider}: {reason}. Exporting fallback language files.",
     "message.translationProgress": "Preparing language files: {percent}%.",
     "message.translationComplete": "Language files prepared: {percent}%.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
@@ -647,6 +651,10 @@ const translations = {
     "message.translationProviderReady": "Uebersetzungsmodul aus Administration: {provider}.",
     "message.translationFallbackNoProvider": "Automatische Uebersetzung angefordert, aber kein Uebersetzungsmodul ist konfiguriert. Fallback-Languagefiles werden exportiert.",
     "message.translationFallbackProviderPending": "Automatische Uebersetzung mit {provider} angefordert. API-Endpunkt vorbereitet: {endpoint}. Provider-Ausfuehrung ist noch nicht angebunden, daher werden Fallback-Languagefiles zur Pruefung exportiert.",
+    "message.translationProviderMissingKey": "Automatische Uebersetzung mit {provider} angefordert, aber in der Administration ist kein Provider-API-Key konfiguriert. Fallback-Languagefiles werden exportiert.",
+    "message.translationProviderRequest": "Maschinelle Uebersetzung mit {provider} wird angefragt: {percent}%.",
+    "message.translationProviderComplete": "Maschinelle Uebersetzung mit {provider} abgeschlossen: {languages}. Vor Veroeffentlichung pruefen.",
+    "message.translationProviderFailed": "Maschinelle Uebersetzung mit {provider} fehlgeschlagen: {reason}. Fallback-Languagefiles werden exportiert.",
     "message.translationProgress": "Languagefiles werden vorbereitet: {percent}%.",
     "message.translationComplete": "Languagefiles vorbereitet: {percent}%.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
@@ -860,6 +868,7 @@ let removeEntityListListener;
 let adminConnectionToken = "";
 let adminTranslationProvider = "none";
 let adminTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
+let adminTranslationApiKeyConfigured = false;
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
@@ -1156,6 +1165,11 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
   adminConnectionToken = typeof settings.token === "string" ? settings.token : "";
   adminTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
   adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(settings.translationApiEndpoint);
+  if (settings.translationApiKeyConfigured === true || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === true) {
+    adminTranslationApiKeyConfigured = true;
+  } else if (settings.translationApiKeyConfigured === false || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === false) {
+    adminTranslationApiKeyConfigured = false;
+  }
   cardTranslationStatus.textContent = t("message.translationProviderReady", { provider: adminTranslationProvider });
   renderConnectionReadiness();
   renderAdminHandoffState();
@@ -2932,22 +2946,60 @@ function sleep(milliseconds) {
   return new Promise(resolve => window.setTimeout(resolve, milliseconds));
 }
 
-async function prepareCardExportTranslations(languages) {
+async function prepareCardExportTranslations(cardPackage) {
   if (!cardAutoTranslate.checked) {
     cardTranslationProgress.hidden = true;
     cardTranslationProgress.value = 0;
     cardTranslationStatus.textContent = "";
-    return;
+    return cardPackage;
   }
 
+  const languages = cardPackage.manifest.languages;
+  const targetLanguages = languages.filter(language => language !== "en");
   const provider = normalizeTranslationProvider(adminTranslationProvider);
   const translationApiEndpoint = normalizeTranslationApiEndpoint(adminTranslationApiEndpoint);
   cardTranslationProgress.hidden = false;
   cardTranslationProgress.value = 0;
-  cardTranslationStatus.textContent = provider === "none"
-    ? t("message.translationFallbackNoProvider")
-    : t("message.translationFallbackProviderPending", { provider, endpoint: translationApiEndpoint });
+  if (provider === "none") {
+    cardTranslationStatus.textContent = t("message.translationFallbackNoProvider");
+    return await prepareFallbackCardExportTranslations(languages, cardPackage);
+  }
 
+  if (targetLanguages.length === 0) {
+    cardTranslationProgress.value = 100;
+    statusMessage.textContent = t("message.translationComplete", { percent: 100 });
+    return cardPackage;
+  }
+
+  if (provider !== "chatgpt") {
+    cardTranslationStatus.textContent = t("message.translationFallbackProviderPending", { provider, endpoint: translationApiEndpoint });
+    return await prepareFallbackCardExportTranslations(languages, cardPackage);
+  }
+
+  if (!adminTranslationApiKeyConfigured) {
+    cardTranslationStatus.textContent = t("message.translationProviderMissingKey", { provider });
+    return await prepareFallbackCardExportTranslations(languages, cardPackage);
+  }
+
+  try {
+    cardTranslationProgress.value = 15;
+    statusMessage.textContent = t("message.translationProviderRequest", { provider, percent: 15 });
+    const translatedLocales = await requestCardLocaleTranslations(cardPackage, targetLanguages);
+    cardTranslationProgress.value = 100;
+    statusMessage.textContent = t("message.translationProviderComplete", {
+      provider,
+      languages: translatedLocales.map(locale => locale.language).join(", "),
+    });
+    cardTranslationStatus.textContent = statusMessage.textContent;
+    return mergeTranslatedCardLocales(cardPackage, translatedLocales);
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : "unknown error";
+    cardTranslationStatus.textContent = t("message.translationProviderFailed", { provider, reason });
+    return await prepareFallbackCardExportTranslations(languages, cardPackage);
+  }
+}
+
+async function prepareFallbackCardExportTranslations(languages, cardPackage) {
   const steps = Math.max(1, languages.length);
   for (let index = 0; index < steps; index += 1) {
     const percent = Math.round(((index + 1) / steps) * 100);
@@ -2957,6 +3009,43 @@ async function prepareCardExportTranslations(languages) {
   }
 
   statusMessage.textContent = t("message.translationComplete", { percent: 100 });
+  return cardPackage;
+}
+
+async function requestCardLocaleTranslations(cardPackage, targetLanguages) {
+  const sourceLocale = cardPackage.locales.find(locale => locale.language === "en")?.content;
+  if (!sourceLocale) {
+    throw new Error("source locale missing");
+  }
+
+  const response = await fetch(`${adminOrigin}/api/card-translation`, {
+    method: "POST",
+    mode: "cors",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      provider: adminTranslationProvider,
+      languages: targetLanguages,
+      sourceLocale,
+    }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(body.error ?? `HTTP ${response.status}`);
+  }
+  return Array.isArray(body.locales) ? body.locales : [];
+}
+
+function mergeTranslatedCardLocales(cardPackage, translatedLocales) {
+  const translatedByLanguage = new Map(translatedLocales.map(locale => [locale.language, locale]));
+  const translatedLanguages = new Set(translatedByLanguage.keys());
+  return {
+    ...cardPackage,
+    manifest: {
+      ...cardPackage.manifest,
+      fallbackLanguages: cardPackage.manifest.fallbackLanguages.filter(language => !translatedLanguages.has(language)),
+    },
+    locales: cardPackage.locales.map(locale => translatedByLanguage.get(locale.language) ?? locale),
+  };
 }
 
 function createHaCardExportPackage() {
@@ -3649,8 +3738,7 @@ exportHaCardPackage.addEventListener("click", async () => {
     return;
   }
 
-  await prepareCardExportTranslations(selectedCardExportLanguages());
-  const cardPackage = createHaCardExportPackage();
+  const cardPackage = await prepareCardExportTranslations(createHaCardExportPackage());
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([JSON.stringify(cardPackage, null, 2)], { type: "application/json" }));
   link.download = `${cardPackage.editorPlan?.scriptFilename?.replace(/\.js$/i, "") ?? cardPackage.manifest.filename.replace(/\.(json|yaml)$/i, "")}.atlas-card.json`;
@@ -3681,8 +3769,8 @@ exportHaCardBundle.addEventListener("click", async () => {
     return;
   }
 
-  await prepareCardExportTranslations(selectedCardExportLanguages());
-  const bundle = createHomeAssistantCardEditorHacsBundle(createHaCardExportPackage());
+  const cardPackage = await prepareCardExportTranslations(createHaCardExportPackage());
+  const bundle = createHomeAssistantCardEditorHacsBundle(cardPackage);
   const archive = createHomeAssistantCardEditorHacsBundleArchive(bundle);
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([archive.content], { type: archive.mimeType }));

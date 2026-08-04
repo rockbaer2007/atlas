@@ -103,6 +103,11 @@ also exposes an automatic-translation checkbox with a progress indicator. It
 uses the translation module selected in Atlas Administration, but until a real
 provider adapter is connected it still exports reviewed fallback files rather
 than pretending that machine translation completed.
+ChatGPT/OpenAI is the first connected provider path: when the provider is
+selected, an API key is configured in Atlas Administration and automatic
+translation is enabled, the Card Editor requests translated locale files through
+the Administration `/api/card-translation` endpoint. The raw OpenAI API key is
+not handed to the Card Editor.
 When DeepL is selected, the Administration can hand over the prepared translate
 endpoint `https://api.deepl.com/v2/translate`; the adapter implementation should
 follow `https://developers.deepl.com/api-reference/translate/request-translation`.

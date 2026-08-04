@@ -118,7 +118,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - DeepL translate adapter planning should default to `https://api.deepl.com/v2/translate` and keep `https://developers.deepl.com/api-reference/translate/request-translation` as the request reference.
 - Translation provider API keys belong to Atlas Administration or a later backend adapter. The Card Editor should receive provider, endpoint and key-configured status only, not raw provider API keys.
 - Gemini planning should keep `https://ai.google.dev/gemini-api/docs/api-key` as the API-key/security reference.
-- The Card Editor may expose an automatic-translation checkbox and progress indicator during export, but it must not claim completed machine translation until a real provider adapter has executed.
+- ChatGPT/OpenAI is the first provider adapter path: the Card Editor calls the Atlas Administration `/api/card-translation` endpoint, and the Admin server calls the OpenAI Responses API with the server-held key.
+- The Card Editor may expose an automatic-translation checkbox and progress indicator during export, but it must not claim completed machine translation until a real provider adapter has executed and returned machine-marked locale files.
 - HACS bundle export should create a `.hacs.zip` containing:
   - `hacs.json`
   - generated JavaScript card

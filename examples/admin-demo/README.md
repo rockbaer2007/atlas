@@ -35,11 +35,16 @@ The prepared DeepL translate endpoint defaults to
 `https://api.deepl.com/v2/translate`; request details are tracked at
 `https://developers.deepl.com/api-reference/translate/request-translation`.
 Gemini API-key planning uses `https://ai.google.dev/gemini-api/docs/api-key` as
-the key and security reference. Provider API keys are saved only for the
-Administration/backend preparation path; the Card Editor receives provider,
-endpoint and key-configured status only.
+the key and security reference. Provider API keys are sent to the local
+Administration server for the active backend session; they are not stored in the
+browser handoff cookie and are not returned to the Card Editor.
 The Administration provider list links directly to that Gemini API-key
 reference next to the Gemini provider row.
+ChatGPT/OpenAI is the first connected translation adapter path. The Card Editor
+calls the Administration `/api/card-translation` endpoint, and the
+Administration server calls the OpenAI Responses API with the configured
+server-held key. The default model can be overridden with
+`ATLAS_OPENAI_TRANSLATION_MODEL`.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The
