@@ -58,7 +58,9 @@ const translations = {
     "message.pluginSummary": "{total} plugins, {active} active, {available} available, {disabled} disabled",
     "message.policySummary": "Current approved context: Home Assistant URL {url}, WebSocket path {websocket}.",
     "message.saved": "Settings saved.",
+    "message.savedWithToken": "Settings and access token saved locally.",
     "message.tokenForgotten": "Token forgotten.",
+    "message.autoConnectNeedsToken": "Auto-connect needs a saved access token.",
     "message.editorOpened": "Card Editor opened and connection settings handed over.",
     "message.editorReady": "Card Editor requested connection settings.",
     "message.editorTokenMissing": "Save or enter an access token before opening the Card Editor.",
@@ -99,7 +101,9 @@ const translations = {
     "message.pluginSummary": "{total} Plugins, {active} aktiv, {available} verfuegbar, {disabled} deaktiviert",
     "message.policySummary": "Aktuell freigegebener Kontext: Home-Assistant-URL {url}, WebSocket-Pfad {websocket}.",
     "message.saved": "Einstellungen gespeichert.",
+    "message.savedWithToken": "Einstellungen und Access Token lokal gespeichert.",
     "message.tokenForgotten": "Token vergessen.",
+    "message.autoConnectNeedsToken": "Auto-connect braucht einen gespeicherten Access Token.",
     "message.editorOpened": "Card Editor geoeffnet und Verbindungseinstellungen uebergeben.",
     "message.editorReady": "Card Editor hat Verbindungseinstellungen angefordert.",
     "message.editorTokenMissing": "Gib zuerst einen Access Token ein oder speichere ihn, bevor du den Card Editor oeffnest.",
@@ -148,13 +152,28 @@ function currentWebSocketPath() {
 }
 
 function persistConfiguration() {
+  const token = homeAssistantToken.value.trim();
   localStorage.setItem(adminStorageKey, JSON.stringify({
     language: currentLanguage,
     url: homeAssistantUrl.value,
     rememberToken: rememberAdminToken.checked,
-    autoConnectEditor: autoConnectEditor.checked,
-    token: rememberAdminToken.checked ? homeAssistantToken.value : undefined,
+    autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
+    token: rememberAdminToken.checked ? token : undefined,
   }));
+}
+
+function saveConnectionSettings() {
+  const token = homeAssistantToken.value.trim();
+  if (token) {
+    rememberAdminToken.checked = true;
+  }
+  if (autoConnectEditor.checked && !token) {
+    autoConnectEditor.checked = false;
+    adminSaveState.textContent = t("message.autoConnectNeedsToken");
+  } else {
+    adminSaveState.textContent = token ? t("message.savedWithToken") : t("message.saved");
+  }
+  persistConfiguration();
 }
 
 function restoreConfiguration() {
@@ -172,7 +191,7 @@ function restoreConfiguration() {
         homeAssistantToken.value = saved.token;
       }
     }
-    if (saved?.autoConnectEditor === true) {
+    if (saved?.autoConnectEditor === true && saved?.rememberToken === true && typeof saved.token === "string" && saved.token) {
       autoConnectEditor.checked = true;
     }
   } catch {
@@ -383,24 +402,31 @@ homeAssistantToken.addEventListener("input", () => {
 rememberAdminToken.addEventListener("change", () => {
   if (!rememberAdminToken.checked) {
     homeAssistantToken.value = "";
+    autoConnectEditor.checked = false;
   }
   persistConfiguration();
 });
 
-autoConnectEditor.addEventListener("change", persistConfiguration);
+autoConnectEditor.addEventListener("change", () => {
+  if (autoConnectEditor.checked) {
+    rememberAdminToken.checked = true;
+    if (!homeAssistantToken.value.trim()) {
+      adminSaveState.textContent = t("message.autoConnectNeedsToken");
+    }
+  }
+  persistConfiguration();
+});
 
 window.addEventListener("message", receiveEditorReady);
 
-saveAdminSettings.addEventListener("click", () => {
-  persistConfiguration();
-  adminSaveState.textContent = t("message.saved");
-});
+saveAdminSettings.addEventListener("click", saveConnectionSettings);
 
 openCardEditor.addEventListener("click", openEditorWithConnectionHandoff);
 
 forgetAdminToken.addEventListener("click", () => {
   homeAssistantToken.value = "";
   rememberAdminToken.checked = false;
+  autoConnectEditor.checked = false;
   persistConfiguration();
   adminSaveState.textContent = t("message.tokenForgotten");
 });
