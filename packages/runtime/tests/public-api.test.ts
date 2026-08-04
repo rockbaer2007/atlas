@@ -10,8 +10,12 @@ import type {
   RuntimeModuleHealthReport,
   RuntimeModuleSnapshot,
   RuntimeModuleStatus,
+  RuntimePlugin,
+  RuntimePluginActivationContext,
+  RuntimePluginManifest,
 } from "../src";
 import {
+  createRuntimeModuleFromPlugin,
   RuntimeConfigurationValidator,
   RuntimeDiagnosticIssueCodes,
   RuntimeHealthStates,
@@ -38,6 +42,7 @@ describe("runtime public API", () => {
     expect(RuntimeServiceKeys.application.description).toBe("@atlas/runtime/application");
     expect(RuntimeServiceKeys.events).toBeTypeOf("symbol");
     expect(RuntimeServiceKeys.events.description).toBe("@atlas/runtime/events");
+    expect(createRuntimeModuleFromPlugin).toBeTypeOf("function");
   });
 
   it("exports the Runtime package type surface from the package root", () => {
@@ -84,6 +89,28 @@ describe("runtime public API", () => {
         async initialize() {},
       },
     };
+    const pluginManifest: RuntimePluginManifest = {
+      id: "api-plugin",
+      name: "API plugin",
+      version: "1.0.0",
+      extensionPoints: ["runtime.service"],
+      provides: ["api-service"],
+    };
+    const pluginContext: RuntimePluginActivationContext = {
+      plugin: pluginManifest,
+      services: {
+        add() {},
+        descriptors() {
+          return [];
+        },
+      },
+    };
+    const runtimePlugin: RuntimePlugin = {
+      manifest: pluginManifest,
+      async activate(context) {
+        expect(context.plugin.id).toBe(pluginContext.plugin.id);
+      },
+    };
     const configuration: RuntimeHostConfiguration = {
       application: {
         name: "api",
@@ -97,6 +124,8 @@ describe("runtime public API", () => {
     };
 
     expect(runtimeEvent.type).toBe("runtime.diagnostics.changed");
+    expect(pluginContext.plugin.provides).toEqual(["api-service"]);
+    expect(createRuntimeModuleFromPlugin(runtimePlugin).manifest.id).toBe("api-plugin");
     expect(configuration.modules).toEqual([runtimeModule]);
   });
 });

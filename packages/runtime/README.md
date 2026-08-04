@@ -31,7 +31,11 @@ Kernel EventBus.
 - `RuntimeModuleHealthReport`
 - `RuntimeModuleSnapshot`
 - `RuntimeModuleStatus`
+- `RuntimePlugin`
+- `RuntimePluginActivationContext`
+- `RuntimePluginManifest`
 - `RuntimeServiceKeys`
+- `createRuntimeModuleFromPlugin`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
 `@atlas/kernel` application and event contracts. Consumers may construct a host
@@ -83,6 +87,13 @@ lifecycle event is published.
 Runtime configuration is validated before use. Application names and version
 parts must be present and valid; module manifests must define ids, names,
 versions, dependency arrays and initialize functions.
+
+Plugins use the same lifecycle infrastructure as Runtime modules. A
+`RuntimePlugin` declares plugin metadata, optional extension points and provided
+capabilities, then `createRuntimeModuleFromPlugin()` adapts it into a
+`RuntimeModule`. Activation receives the regular Kernel module context plus the
+original plugin manifest. Optional plugin `deactivate()` and `dispose()` hooks
+are delegated to Runtime module shutdown.
 
 The package-root public API is covered by contract tests. Consumers should
 import Runtime types and values from `@atlas/runtime` rather than deep source

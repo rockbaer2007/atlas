@@ -10,4 +10,5 @@ export * from "./RuntimeModule";
 export * from "./RuntimeModuleHealthReport";
 export * from "./RuntimeModuleSnapshot";
 export * from "./RuntimeModuleStatus";
+export * from "./RuntimePlugin";
 export * from "./RuntimeServiceKeys";
