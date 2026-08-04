@@ -13,13 +13,17 @@ const mimeTypes = {
 };
 
 createServer((request, response) => {
+  const requestUrl = new URL(request.url ?? "/", "http://localhost");
   const requestPath = request.url === "/"
     ? "/examples/admin-demo/index.html"
-    : new URL(request.url ?? "/", "http://localhost").pathname;
+    : requestUrl.pathname;
   const requestedFilePath = resolve(root, `.${normalize(requestPath)}`);
-  const filePath = !existsSync(requestedFilePath) && extname(requestedFilePath) === ""
-    ? `${requestedFilePath}.js`
-    : requestedFilePath;
+  if (existsSync(requestedFilePath) && statSync(requestedFilePath).isDirectory() && !requestPath.endsWith("/")) {
+    response.writeHead(308, { location: `${requestPath}/` });
+    response.end();
+    return;
+  }
+  const filePath = resolveRequestFilePath(requestedFilePath);
 
   if (!filePath.startsWith(root) || !existsSync(filePath) || statSync(filePath).isDirectory()) {
     response.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
@@ -34,3 +38,13 @@ createServer((request, response) => {
 }).listen(port, "127.0.0.1", () => {
   console.log(`ATLAS administration: http://127.0.0.1:${port}/`);
 });
+
+function resolveRequestFilePath(requestedFilePath) {
+  if (existsSync(requestedFilePath) && statSync(requestedFilePath).isDirectory()) {
+    return resolve(requestedFilePath, "index.js");
+  }
+
+  return !existsSync(requestedFilePath) && extname(requestedFilePath) === ""
+    ? `${requestedFilePath}.js`
+    : requestedFilePath;
+}
