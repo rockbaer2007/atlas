@@ -490,6 +490,11 @@
         color: #0f766e;
       }
 
+      .connection-translation-module-state {
+        color: #0f766e;
+        font-weight: 700;
+      }
+
       #selected-entity {
         min-height: 20px;
         color: #536079;
@@ -1260,6 +1265,7 @@
           <output id="admin-handoff-state" aria-live="polite"></output>
           <output id="connection-readiness" aria-live="polite"></output>
           <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
+          <output id="admin-translation-module-state" class="connection-translation-module-state" aria-live="polite"></output>
         </div>
         <div class="connection-options admin-handoff-options">
           <a href="http://127.0.0.1:4175/" data-i18n="link.openAdmin">Open Atlas Administration</a>

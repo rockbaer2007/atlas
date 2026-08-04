@@ -57,6 +57,7 @@ const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
 const adminHandoffState = document.querySelector("#admin-handoff-state");
+const adminTranslationModuleState = document.querySelector("#admin-translation-module-state");
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
@@ -1127,9 +1128,11 @@ function renderAdminHandoffState() {
 
 function renderCardTranslationModuleStatus() {
   const provider = normalizeTranslationProvider(adminTranslationProvider);
-  cardTranslationStatus.textContent = provider === "none"
+  const text = provider === "none"
     ? ""
     : t("message.translationProviderReady", { provider });
+  cardTranslationStatus.textContent = text;
+  adminTranslationModuleState.textContent = text;
 }
 
 function normalizeTranslationProvider(value) {
