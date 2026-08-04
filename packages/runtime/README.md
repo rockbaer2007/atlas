@@ -49,6 +49,7 @@ Kernel EventBus.
 - `createRuntimePluginInstallPackage`
 - `describeRuntimePlugin`
 - `normalizeRuntimePluginPackageName`
+- `parseRuntimePluginInstallPackage`
 - `serializeRuntimePluginInstallManifest`
 
 `RuntimeHost` depends on `@atlas/foundation` lifecycle states and the
@@ -122,6 +123,11 @@ entries with actions such as inspect, activate, deactivate and export-package.
 contract. It writes an `atlas-plugin.json` manifest, a README and optional
 additional files into a package description that later archive builders or
 administration UIs can turn into a downloadable artifact.
+
+`parseRuntimePluginInstallPackage()` reads such a package description back into
+a validated plugin descriptor and file list. It does not execute plugin code;
+administration surfaces can use it to inspect or register imported package
+metadata safely.
 
 The package-root public API is covered by contract tests. Consumers should
 import Runtime types and values from `@atlas/runtime` rather than deep source

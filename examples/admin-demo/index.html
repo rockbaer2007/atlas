@@ -207,6 +207,23 @@
         gap: 10px;
       }
 
+      .plugin-tools {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
       .plugin-status {
         min-width: 82px;
         border-radius: 999px;
@@ -337,6 +354,10 @@
               <p data-i18n="message.pluginsHint">The Home Assistant Card Editor is the first official reference plugin.</p>
             </div>
             <output id="plugin-summary" aria-live="polite"></output>
+          </div>
+          <div class="plugin-tools">
+            <button id="import-plugin-package" type="button" data-i18n="button.importPackage">Import package</button>
+            <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
           </div>
           <div id="plugin-list" class="plugin-list"></div>
         </section>

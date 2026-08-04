@@ -1,5 +1,7 @@
 import {
   createRuntimePluginAdministrationView,
+  createRuntimePluginInstallPackage,
+  parseRuntimePluginInstallPackage,
   RuntimePluginCatalog,
 } from "@atlas/runtime";
 import {
@@ -18,11 +20,14 @@ const autoConnectEditor = document.querySelector("#auto-connect-editor");
 const saveAdminSettings = document.querySelector("#save-admin-settings");
 const forgetAdminToken = document.querySelector("#forget-admin-token");
 const openCardEditor = document.querySelector("#open-card-editor");
+const importPluginPackage = document.querySelector("#import-plugin-package");
+const pluginPackageFile = document.querySelector("#plugin-package-file");
 const adminSaveState = document.querySelector("#admin-save-state");
 const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
 const adminStorageKey = "atlas.administration.configuration";
+const adminPluginStorageKey = "atlas.administration.importedPlugins";
 const adminConnectionCookieName = "atlas_admin_connection";
 const adminConnectionApiPath = "/api/admin-connection";
 const editorOrigin = "http://127.0.0.1:4174";
@@ -31,6 +36,7 @@ pluginCatalog.register(createHomeAssistantCardEditorPlugin());
 
 let currentLanguage = "en";
 let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
+let importedPluginDescriptors = [];
 let lastEditorWindow;
 
 const translations = {
@@ -54,6 +60,7 @@ const translations = {
     "button.activate": "Activate",
     "button.deactivate": "Deactivate",
     "button.exportPackage": "Export package",
+    "button.importPackage": "Import package",
     "aria.language": "Language",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
@@ -70,6 +77,9 @@ const translations = {
     "message.pluginActivated": "{name} activated.",
     "message.pluginDeactivated": "{name} deactivated.",
     "message.pluginPackageExported": "{name} plugin package exported.",
+    "message.pluginPackageImported": "{name} plugin package imported.",
+    "message.pluginPackageDuplicate": "{name} is already installed.",
+    "message.pluginPackageImportFailed": "Plugin package could not be imported.",
     "policy.token": "The Card Editor receives the token only as a browser session handoff.",
     "policy.paths": "Plugins receive approved URLs, WebSocket paths and resource paths.",
     "policy.capabilities": "Capabilities are declared through the Runtime plugin manifest.",
@@ -97,6 +107,7 @@ const translations = {
     "button.activate": "Aktivieren",
     "button.deactivate": "Deaktivieren",
     "button.exportPackage": "Paket exportieren",
+    "button.importPackage": "Paket importieren",
     "aria.language": "Sprache",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
@@ -113,6 +124,9 @@ const translations = {
     "message.pluginActivated": "{name} aktiviert.",
     "message.pluginDeactivated": "{name} deaktiviert.",
     "message.pluginPackageExported": "{name} Plugin-Paket exportiert.",
+    "message.pluginPackageImported": "{name} Plugin-Paket importiert.",
+    "message.pluginPackageDuplicate": "{name} ist bereits installiert.",
+    "message.pluginPackageImportFailed": "Plugin-Paket konnte nicht importiert werden.",
     "policy.token": "Der Card Editor erhaelt den Token nur als Browser-Sitzungsuebergabe.",
     "policy.paths": "Plugins erhalten freigegebene URLs, WebSocket-Pfade und Ressourcenpfade.",
     "policy.capabilities": "Faehigkeiten werden ueber das Runtime-Plugin-Manifest deklariert.",
@@ -244,6 +258,34 @@ function restoreConfiguration() {
   }
 }
 
+function restoreImportedPlugins() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(adminPluginStorageKey) ?? "[]");
+    importedPluginDescriptors = Array.isArray(saved)
+      ? saved.filter(plugin =>
+        plugin
+        && typeof plugin.id === "string"
+        && typeof plugin.name === "string"
+        && typeof plugin.version === "string",
+      )
+      : [];
+  } catch {
+    importedPluginDescriptors = [];
+    localStorage.removeItem(adminPluginStorageKey);
+  }
+}
+
+function persistImportedPlugins() {
+  localStorage.setItem(adminPluginStorageKey, JSON.stringify(importedPluginDescriptors));
+}
+
+function currentPluginDescriptors() {
+  return [
+    ...pluginCatalog.list(),
+    ...importedPluginDescriptors,
+  ];
+}
+
 function translatePluginStatus(status) {
   if (status === "active") return t("text.pluginStatusActive");
   if (status === "disabled") return t("text.pluginStatusDisabled");
@@ -352,7 +394,9 @@ function handlePluginAction(action, plugin) {
   }
 
   if (action === "export-package") {
-    const pluginPackage = createHomeAssistantCardEditorPluginInstallPackage();
+    const pluginPackage = plugin.id === HomeAssistantCardEditorPluginId
+      ? createHomeAssistantCardEditorPluginInstallPackage()
+      : createRuntimePluginInstallPackage({ plugin });
     downloadTextFile(pluginPackage.filename, JSON.stringify(pluginPackage, null, 2), "application/json");
     adminSaveState.textContent = t("message.pluginPackageExported", { name: plugin.name });
     return;
@@ -365,9 +409,36 @@ function handlePluginAction(action, plugin) {
   });
 }
 
+async function importSelectedPluginPackage() {
+  const file = pluginPackageFile.files?.[0];
+  if (!file) {
+    return;
+  }
+
+  try {
+    const installPackage = parseRuntimePluginInstallPackage(await file.text());
+    const plugin = installPackage.plugin;
+    const existing = currentPluginDescriptors().find(entry => entry.id === plugin.id);
+
+    if (existing) {
+      adminSaveState.textContent = t("message.pluginPackageDuplicate", { name: existing.name });
+      return;
+    }
+
+    importedPluginDescriptors = [...importedPluginDescriptors, plugin];
+    persistImportedPlugins();
+    renderAdministration();
+    adminSaveState.textContent = t("message.pluginPackageImported", { name: plugin.name });
+  } catch {
+    adminSaveState.textContent = t("message.pluginPackageImportFailed");
+  } finally {
+    pluginPackageFile.value = "";
+  }
+}
+
 function renderAdministration() {
   const view = createRuntimePluginAdministrationView({
-    plugins: pluginCatalog,
+    plugins: currentPluginDescriptors(),
     activePluginIds: [...activePluginIds],
   });
   pluginSummary.textContent = t("message.pluginSummary", view.summary);
@@ -426,6 +497,7 @@ function setLanguage(language) {
 }
 
 restoreConfiguration();
+restoreImportedPlugins();
 if (rememberAdminToken.checked && homeAssistantToken.value.trim()) {
   persistConfiguration();
 }
@@ -470,6 +542,8 @@ window.addEventListener("message", receiveEditorReady);
 saveAdminSettings.addEventListener("click", saveConnectionSettings);
 
 openCardEditor.addEventListener("click", openEditorWithConnectionHandoff);
+importPluginPackage.addEventListener("click", () => pluginPackageFile.click());
+pluginPackageFile.addEventListener("change", importSelectedPluginPackage);
 
 forgetAdminToken.addEventListener("click", () => {
   homeAssistantToken.value = "";

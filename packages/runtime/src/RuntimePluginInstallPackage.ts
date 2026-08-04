@@ -56,6 +56,25 @@ export function serializeRuntimePluginInstallManifest(
   }, null, 2)}\n`;
 }
 
+export function parseRuntimePluginInstallPackage(value: string | unknown): RuntimePluginInstallPackage {
+  const packageValue = typeof value === "string" ? parseJson(value) : value;
+
+  if (!isRecord(packageValue)) {
+    throw new Error("Runtime plugin install package must be an object.");
+  }
+
+  if (packageValue.kind !== "atlas.runtime.plugin.install-package") {
+    throw new Error("Runtime plugin install package kind is invalid.");
+  }
+
+  return {
+    kind: "atlas.runtime.plugin.install-package",
+    filename: readOptionalString(packageValue.filename) ?? "atlas-plugin.atlas-plugin.json",
+    plugin: readRuntimePluginDescriptor(packageValue.plugin),
+    files: readInstallPackageFiles(packageValue.files),
+  };
+}
+
 export function normalizeRuntimePluginPackageName(value: string): string {
   const normalized = value
     .trim()
@@ -64,6 +83,112 @@ export function normalizeRuntimePluginPackageName(value: string): string {
     .replace(/^-+|-+$/g, "");
 
   return normalized || "atlas-plugin";
+}
+
+function parseJson(value: string): unknown {
+  try {
+    return JSON.parse(value);
+  } catch {
+    throw new Error("Runtime plugin install package JSON is invalid.");
+  }
+}
+
+function readRuntimePluginDescriptor(value: unknown): RuntimePluginDescriptor {
+  if (!isRecord(value)) {
+    throw new Error("Runtime plugin install package plugin descriptor is invalid.");
+  }
+
+  return {
+    id: readRequiredString(value.id, "Runtime plugin id is required."),
+    name: readRequiredString(value.name, "Runtime plugin name is required."),
+    version: readRequiredString(value.version, "Runtime plugin version is required."),
+    description: readOptionalString(value.description),
+    dependencies: readDependencies(value.dependencies),
+    extensionPoints: readStringList(value.extensionPoints),
+    provides: readStringList(value.provides),
+  };
+}
+
+function readInstallPackageFiles(value: unknown): readonly RuntimePluginInstallPackageFile[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error("Runtime plugin install package files must be an array.");
+  }
+
+  return value.map(file => {
+    if (!isRecord(file)) {
+      throw new Error("Runtime plugin install package file is invalid.");
+    }
+
+    return {
+      path: readRequiredString(file.path, "Runtime plugin package file path is required."),
+      mediaType: readRequiredString(file.mediaType, "Runtime plugin package file media type is required."),
+      content: readRequiredString(file.content, "Runtime plugin package file content is required."),
+    };
+  });
+}
+
+function readDependencies(value: unknown): RuntimePluginDescriptor["dependencies"] {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error("Runtime plugin dependencies must be an array.");
+  }
+
+  return value.map(dependency => {
+    if (!isRecord(dependency)) {
+      throw new Error("Runtime plugin dependency is invalid.");
+    }
+
+    return {
+      id: readRequiredString(dependency.id, "Runtime plugin dependency id is required."),
+      version: readRequiredString(dependency.version, "Runtime plugin dependency version is required."),
+      optional: typeof dependency.optional === "boolean" ? dependency.optional : undefined,
+    };
+  });
+}
+
+function readStringList(value: unknown): readonly string[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error("Runtime plugin descriptor lists must be arrays.");
+  }
+
+  return value.map(entry =>
+    readRequiredString(entry, "Runtime plugin descriptor list entries must be strings."),
+  );
+}
+
+function readRequiredString(value: unknown, message: string): string {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(message);
+  }
+
+  return value.trim();
+}
+
+function readOptionalString(value: unknown): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (typeof value !== "string") {
+    throw new Error("Runtime plugin optional text fields must be strings.");
+  }
+
+  return value.trim() || undefined;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function defaultRuntimePluginReadme(plugin: RuntimePluginDescriptor): string {

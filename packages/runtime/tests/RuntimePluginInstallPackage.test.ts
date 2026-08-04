@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createRuntimePluginInstallPackage,
   normalizeRuntimePluginPackageName,
+  parseRuntimePluginInstallPackage,
   serializeRuntimePluginInstallManifest,
   type RuntimePluginDescriptor,
 } from "../src";
@@ -57,5 +58,43 @@ describe("RuntimePluginInstallPackage", () => {
     expect(normalizeRuntimePluginPackageName(" ATLAS Plugin: Home Assistant Card Editor! "))
       .toBe("atlas-plugin-home-assistant-card-editor");
     expect(normalizeRuntimePluginPackageName(" ")).toBe("atlas-plugin");
+  });
+
+  it("parses an install package without executing plugin code", () => {
+    const parsed = parseRuntimePluginInstallPackage(JSON.stringify({
+      kind: "atlas.runtime.plugin.install-package",
+      filename: "atlas-plugin-homeassistant-card-editor.atlas-plugin.json",
+      plugin: {
+        ...plugin,
+        dependencies: [{ id: "atlas.runtime", version: "^0.2.0", optional: true }],
+      },
+      files: [{
+        path: "atlas-plugin.json",
+        mediaType: "application/json",
+        content: serializeRuntimePluginInstallManifest(plugin),
+      }],
+    }));
+
+    expect(parsed.plugin).toMatchObject({
+      id: "atlas.plugin.homeassistant-card-editor",
+      name: "ATLAS Home Assistant Card Editor",
+      version: "0.2.0-alpha.1",
+      dependencies: [{ id: "atlas.runtime", version: "^0.2.0", optional: true }],
+    });
+    expect(parsed.files).toHaveLength(1);
+  });
+
+  it("rejects invalid install packages", () => {
+    expect(() => parseRuntimePluginInstallPackage("{")).toThrow(
+      "Runtime plugin install package JSON is invalid.",
+    );
+    expect(() => parseRuntimePluginInstallPackage({
+      kind: "atlas.runtime.plugin.install-package",
+      plugin: { name: "Missing id", version: "1.0.0" },
+    })).toThrow("Runtime plugin id is required.");
+    expect(() => parseRuntimePluginInstallPackage({
+      kind: "other",
+      plugin,
+    })).toThrow("Runtime plugin install package kind is invalid.");
   });
 });
