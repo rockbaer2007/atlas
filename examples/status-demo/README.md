@@ -23,6 +23,14 @@ On desktop-sized screens the connection, card setup and entity-picker controls
 use compact panel styling plus two- and three-column grids so related inputs
 and actions sit together instead of stretching across the full page width.
 
+The demo now includes a minimal Atlas Administration panel. It reads the
+Runtime plugin catalog, shows the Home Assistant Card Editor as the first
+reference plugin, exposes inspect/activate/export-package actions and exports
+the generated `.atlas-plugin.json` package descriptor. The administration panel
+also documents the intended credential boundary: Home Assistant tokens stay in
+the central admin/connection area, while plugins receive only approved context
+such as Home Assistant URL, WebSocket path and declared capabilities.
+
 Enter one or more comma-separated Entity IDs before connecting, or use the
 domain-filtered entity picker to add known demo entities. Once a live event
 subscription is active, the demo requests Home Assistant `get_states` and

@@ -190,6 +190,135 @@
         outline-offset: 1px;
       }
 
+      .atlas-admin-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .atlas-admin-header h2 {
+        margin: 0 0 4px;
+        font-size: 18px;
+        letter-spacing: 0;
+      }
+
+      .atlas-admin-header p {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      #atlas-admin-summary {
+        flex: 0 0 auto;
+        color: #0f766e;
+        font-size: 13px;
+        font-weight: 700;
+        text-align: right;
+      }
+
+      .atlas-admin-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(240px, 0.45fr);
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .atlas-admin-plugin-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .atlas-admin-plugin,
+      .atlas-admin-policy {
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 12px;
+      }
+
+      .atlas-admin-plugin-header {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .atlas-admin-plugin h3,
+      .atlas-admin-policy h3 {
+        margin: 0 0 6px;
+        font-size: 15px;
+        letter-spacing: 0;
+      }
+
+      .atlas-admin-plugin p,
+      .atlas-admin-policy p {
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .atlas-plugin-status {
+        min-width: 82px;
+        border-radius: 999px;
+        background: #e6fffb;
+        color: #0f766e;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 700;
+        text-align: center;
+      }
+
+      .atlas-admin-details {
+        display: grid;
+        gap: 6px;
+        margin: 10px 0;
+        font-size: 13px;
+      }
+
+      .atlas-admin-detail-label {
+        color: #536079;
+        font-weight: 700;
+      }
+
+      .atlas-chip-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 4px;
+      }
+
+      .atlas-chip-list span {
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #172033;
+        padding: 3px 7px;
+        font-size: 12px;
+      }
+
+      .atlas-admin-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+        gap: 6px;
+      }
+
+      .atlas-admin-actions button {
+        min-height: 34px;
+        border: 1px solid #0f766e;
+        border-radius: 4px;
+        background: #0f766e;
+        color: #ffffff;
+        padding: 6px 10px;
+        font: inherit;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .atlas-admin-actions button:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 2px;
+      }
+
       .entity-domain-shortcuts {
         display: flex;
         flex-wrap: wrap;
@@ -364,6 +493,16 @@
       @media (max-width: 480px) {
         .connection-config .field-grid.two-column {
           grid-template-columns: 1fr;
+        }
+
+        .atlas-admin-header,
+        .atlas-admin-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        #atlas-admin-summary {
+          text-align: left;
         }
 
         .connection-actions button,
@@ -1131,6 +1270,7 @@
         "imports": {
           "@atlas/core": "/packages/core/dist/index.js",
           "@atlas/renderer": "/packages/renderer/dist/index.js",
+          "@atlas/runtime": "/packages/runtime/dist/index.js",
           "@atlas/theme": "/packages/theme/dist/index.js",
           "@atlas/homeassistant": "/packages/homeassistant/dist/index.js"
         }
@@ -1177,6 +1317,22 @@
         <output id="connection-readiness" aria-live="polite"></output>
         <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
       </div>
+      <section class="connection-config compact-panel atlas-admin-panel" aria-labelledby="atlas-admin-heading">
+        <div class="atlas-admin-header">
+          <div>
+            <h2 id="atlas-admin-heading" data-i18n="heading.atlasAdministration">Atlas Administration</h2>
+            <p data-i18n="message.adminSubtitle">Manage installed ATLAS plugins and central Home Assistant access.</p>
+          </div>
+          <output id="atlas-admin-summary" aria-live="polite"></output>
+        </div>
+        <div class="atlas-admin-grid">
+          <div id="atlas-admin-plugin-list" class="atlas-admin-plugin-list"></div>
+          <aside class="atlas-admin-policy">
+            <h3 data-i18n="heading.adminCredentialScope">Credential scope</h3>
+            <p id="atlas-admin-token-policy"></p>
+          </aside>
+        </div>
+      </section>
       <div class="connection-config">
         <div class="field-grid three-column">
           <div id="panel-group-control" class="field-pair">
