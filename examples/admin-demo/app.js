@@ -44,6 +44,7 @@ const adminSecretsKeyStorageKey = "atlas.administration.secretsCookieKey";
 const legacyAdminTranslationApiKeysCookieName = "atlas_admin_translation_api_keys";
 const legacyAdminTranslationApiKeysKeyStorageKey = "atlas.administration.translationApiKeysCookieKey";
 const adminConnectionApiPath = "/api/admin-connection";
+const adminDeviceApiPath = "/api/admin-device";
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const editorOrigin = "http://127.0.0.1:4174";
@@ -55,6 +56,7 @@ let currentLanguage = "en";
 let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let importedPluginDescriptors = [];
 let lastEditorWindow;
+let currentAdminDeviceBinding;
 
 const translations = {
   en: {
@@ -104,6 +106,7 @@ const translations = {
     "message.savedWithToken": "Token saved.",
     "message.tokenForgotten": "Token forgotten.",
     "message.settingsExported": "Settings exported.",
+    "message.secretsInvalidForDevice": "Saved secrets belong to another Atlas Administration instance and were ignored.",
     "message.autoConnectNeedsToken": "Auto-connect needs a saved access token.",
     "message.editorOpened": "Card Editor opened and connection settings handed over.",
     "message.editorReady": "Card Editor requested connection settings.",
@@ -170,6 +173,7 @@ const translations = {
     "message.savedWithToken": "Token gespeichert.",
     "message.tokenForgotten": "Token vergessen.",
     "message.settingsExported": "Einstellungen exportiert.",
+    "message.secretsInvalidForDevice": "Gespeicherte Secrets gehoeren zu einer anderen Atlas-Administration-Instanz und wurden ignoriert.",
     "message.autoConnectNeedsToken": "Auto-connect braucht einen gespeicherten Access Token.",
     "message.editorOpened": "Card Editor geoeffnet und Verbindungseinstellungen uebergeben.",
     "message.editorReady": "Card Editor hat Verbindungseinstellungen angefordert.",
@@ -298,6 +302,52 @@ function hasAnyAdminSecret(secrets) {
   return Boolean(secrets?.token?.trim()) || hasAnyTranslationApiKey(secrets?.translationApiKeys);
 }
 
+async function fetchAdminDeviceBinding() {
+  try {
+    const response = await fetch(adminDeviceApiPath, { cache: "no-store" });
+    if (!response.ok) {
+      return undefined;
+    }
+    const binding = await response.json();
+    return normalizeAdminDeviceBinding(binding);
+  } catch {
+    return undefined;
+  }
+}
+
+function normalizeAdminDeviceBinding(binding) {
+  if (
+    !binding
+    || typeof binding !== "object"
+    || binding.version !== 1
+    || typeof binding.installationId !== "string"
+    || typeof binding.bindingFingerprint !== "string"
+  ) {
+    return undefined;
+  }
+
+  return {
+    version: 1,
+    installationId: binding.installationId,
+    bindingFingerprint: binding.bindingFingerprint,
+    source: typeof binding.source === "string" ? binding.source : "unknown",
+  };
+}
+
+async function restoreAdminDeviceBinding() {
+  currentAdminDeviceBinding = await fetchAdminDeviceBinding();
+}
+
+function validateAdminSecretsDeviceBinding(secrets) {
+  const binding = normalizeAdminDeviceBinding(secrets?.deviceBinding);
+  if (!binding) {
+    return true;
+  }
+
+  return Boolean(currentAdminDeviceBinding)
+    && binding.bindingFingerprint === currentAdminDeviceBinding.bindingFingerprint;
+}
+
 function persistConfiguration() {
   const token = homeAssistantToken.value.trim();
   const secrets = readAdminSecrets();
@@ -422,14 +472,27 @@ async function encryptAdminSecrets(secrets) {
   if (!cryptoKey) {
     return "";
   }
+  if (!currentAdminDeviceBinding) {
+    await restoreAdminDeviceBinding();
+  }
 
   const iv = new Uint8Array(12);
   crypto.getRandomValues(iv);
-  const payload = new TextEncoder().encode(JSON.stringify(secrets));
+  const payload = new TextEncoder().encode(JSON.stringify({
+    ...secrets,
+    deviceBinding: currentAdminDeviceBinding,
+  }));
   const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, payload);
   return JSON.stringify({
     v: 1,
     alg: "A256GCM",
+    binding: currentAdminDeviceBinding
+      ? {
+          version: currentAdminDeviceBinding.version,
+          fingerprint: currentAdminDeviceBinding.bindingFingerprint,
+          source: currentAdminDeviceBinding.source,
+        }
+      : undefined,
     iv: encodeBase64(iv),
     data: encodeBase64(new Uint8Array(encrypted)),
     updatedAt: new Date().toISOString(),
@@ -453,6 +516,9 @@ async function decryptAdminSecrets(value, { legacy = false } = {}) {
     decodeBase64(payload.data),
   );
   const secrets = JSON.parse(new TextDecoder().decode(decrypted));
+  if (!validateAdminSecretsDeviceBinding(secrets)) {
+    throw new Error("Admin secrets belong to another Atlas Administration instance.");
+  }
   return secrets && typeof secrets === "object" ? secrets : undefined;
 }
 
@@ -486,6 +552,7 @@ async function restoreEncryptedAdminSecretsCookie() {
       return;
     } catch {
       deleteCookie(adminSecretsCookieName);
+      adminSaveState.textContent = t("message.secretsInvalidForDevice");
     }
   }
 
@@ -705,7 +772,14 @@ async function createAdminSettingsExport() {
       secrets: encryptedSecrets
         ? "aes-gcm-browser-local-admin-key"
         : "none",
-      note: "Encrypted secrets can be restored by the same browser profile while the local Admin encryption key exists.",
+      deviceBinding: currentAdminDeviceBinding
+        ? {
+            version: currentAdminDeviceBinding.version,
+            fingerprint: currentAdminDeviceBinding.bindingFingerprint,
+            source: currentAdminDeviceBinding.source,
+          }
+        : undefined,
+      note: "Encrypted secrets can be restored by the same browser profile while the local Admin encryption key and Atlas Admin instance binding match.",
     },
     settings: {
       language: currentLanguage,
@@ -939,6 +1013,7 @@ void initializeAdministration();
 
 async function initializeAdministration() {
   restoreConfiguration();
+  await restoreAdminDeviceBinding();
   await restoreEncryptedAdminSecretsCookie();
   restoreImportedPlugins();
   restorePluginState();

@@ -1,6 +1,8 @@
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { createReadStream, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
-import { extname, normalize, resolve } from "node:path";
+import { homedir } from "node:os";
+import { dirname, extname, join, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
 const port = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
@@ -8,6 +10,9 @@ const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const openAiTranslationModel = process.env.ATLAS_OPENAI_TRANSLATION_MODEL ?? "gpt-5.6-luna";
 const editorOrigin = "http://127.0.0.1:4174";
+const adminDeviceFilePath = process.env.ATLAS_ADMIN_DEVICE_FILE
+  ? resolve(process.env.ATLAS_ADMIN_DEVICE_FILE)
+  : join(homedir(), ".atlas", "admin-device.json");
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -16,6 +21,7 @@ const mimeTypes = {
   ".map": "application/json; charset=utf-8",
 };
 let adminConnectionSettings;
+let adminDeviceBinding;
 
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", "http://localhost");
@@ -25,6 +31,10 @@ createServer((request, response) => {
   }
   if (requestUrl.pathname === "/api/card-translation") {
     void handleCardTranslationRequest(request, response);
+    return;
+  }
+  if (requestUrl.pathname === "/api/admin-device") {
+    void handleAdminDeviceRequest(request, response);
     return;
   }
 
@@ -54,6 +64,7 @@ createServer((request, response) => {
 });
 
 async function handleAdminConnectionRequest(request, response) {
+  const requestUrl = new URL(request.url ?? "/", "http://localhost");
   writeCorsHeaders(response);
 
   if (request.method === "OPTIONS") {
@@ -99,6 +110,28 @@ async function handleAdminConnectionRequest(request, response) {
 
   response.writeHead(405, { "content-type": "application/json; charset=utf-8" });
   response.end(JSON.stringify({ error: "method not allowed" }));
+}
+
+async function handleAdminDeviceRequest(request, response) {
+  writeCorsHeaders(response);
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
+  if (request.method !== "GET") {
+    response.writeHead(405, { "content-type": "application/json; charset=utf-8" });
+    response.end(JSON.stringify({ error: "method not allowed" }));
+    return;
+  }
+
+  response.writeHead(200, {
+    "content-type": "application/json; charset=utf-8",
+    "cache-control": "no-store",
+  });
+  response.end(JSON.stringify(getAdminDeviceBinding()));
 }
 
 async function handleCardTranslationRequest(request, response) {
@@ -171,6 +204,57 @@ function writeCorsHeaders(response) {
   response.setHeader("access-control-allow-origin", editorOrigin);
   response.setHeader("access-control-allow-methods", "GET, PUT, DELETE, OPTIONS");
   response.setHeader("access-control-allow-headers", "content-type");
+}
+
+function getAdminDeviceBinding() {
+  if (adminDeviceBinding) {
+    return adminDeviceBinding;
+  }
+
+  const installationId = readOrCreateAdminInstallationId();
+  adminDeviceBinding = {
+    version: 1,
+    installationId,
+    bindingFingerprint: createHash("sha256")
+      .update(`atlas-admin-device:${installationId}`)
+      .digest("hex"),
+    source: process.env.ATLAS_INSTANCE_ID ? "env" : "local-data",
+  };
+  return adminDeviceBinding;
+}
+
+function readOrCreateAdminInstallationId() {
+  if (process.env.ATLAS_INSTANCE_ID?.trim()) {
+    return process.env.ATLAS_INSTANCE_ID.trim();
+  }
+
+  try {
+    if (existsSync(adminDeviceFilePath)) {
+      const saved = JSON.parse(readFileSync(adminDeviceFilePath, "utf8"));
+      if (typeof saved.installationId === "string" && saved.installationId.trim()) {
+        return saved.installationId.trim();
+      }
+    }
+  } catch {
+    // A broken local identity file is replaced with a new installation identity.
+  }
+
+  const installationId = randomUUID();
+  try {
+    mkdirSync(dirname(adminDeviceFilePath), { recursive: true });
+    writeFileSync(
+      adminDeviceFilePath,
+      JSON.stringify({
+        version: 1,
+        installationId,
+        createdAt: new Date().toISOString(),
+      }, null, 2),
+      "utf8",
+    );
+  } catch {
+    // If local data is unavailable, the runtime-only identity still keeps copied secrets from silently loading elsewhere.
+  }
+  return installationId;
 }
 
 function readRequestBody(request) {

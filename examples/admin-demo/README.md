@@ -48,7 +48,12 @@ also refresh secrets from the running local Admin server with
 `GET /api/admin-connection?includeSecrets=1`.
 The Administration surface can export `atlas-admin-settings.json`; normal
 settings are readable, while the Home Assistant token and provider API keys are
-stored in an AES-GCM `encryptedSecrets` block.
+stored in an AES-GCM `encryptedSecrets` block. Encrypted secrets are also bound
+to the local Atlas Administration installation identity. The Admin server keeps
+that identity in local user data outside the repository, or uses
+`ATLAS_INSTANCE_ID` when a Docker/server deployment needs an explicit stable
+identity. If a server folder or exported settings file is copied to another
+installation, Atlas treats the encrypted secrets as invalid.
 The Administration provider list links directly to that Gemini API-key
 reference next to the Gemini provider row.
 ChatGPT/OpenAI is the first connected translation adapter path. The Card Editor

@@ -119,6 +119,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Translation provider API keys belong to Atlas Administration or a later backend adapter. The Card Editor should receive provider, endpoint and key-configured status only, not raw provider API keys.
 - Home Assistant tokens and provider API keys may be stored by Atlas Administration in an encrypted long-term Admin cookie and restored after a page reload. The browser-held encryption key stays in local Administration storage. Raw tokens and provider API keys must not be written to shared cookies or Card Editor handoff payloads.
 - Admin settings export may include an AES-GCM-encrypted secrets block for the Home Assistant token and provider API keys, but must not include raw secrets.
+- Encrypted Admin secrets must be bound to the local Atlas Administration installation identity. A copied server folder or exported settings file on a different installation must treat secrets as invalid unless a later explicit migration/passphrase flow is implemented.
+- The Admin server may use `ATLAS_INSTANCE_ID` for deliberate Docker/server identity pinning; otherwise it stores a generated installation ID in local user data outside the repo.
 - Gemini planning should keep `https://ai.google.dev/gemini-api/docs/api-key` as the API-key/security reference.
 - ChatGPT/OpenAI is the first provider adapter path: the Card Editor calls the Atlas Administration `/api/card-translation` endpoint, and the Admin server calls the OpenAI Responses API with the server-held key.
 - The Card Editor may expose an automatic-translation checkbox and progress indicator during export, but it must not claim completed machine translation until a real provider adapter has executed and returned machine-marked locale files.
