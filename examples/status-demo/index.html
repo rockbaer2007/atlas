@@ -230,10 +230,9 @@
       }
 
       .card-export-translation-controls {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px 14px;
-        align-items: center;
+        display: grid;
+        gap: 8px;
+        align-items: start;
       }
 
       .card-export-translation-controls label {
@@ -252,6 +251,13 @@
         accent-color: #0f766e;
       }
 
+      .card-translation-module-status {
+        min-height: 20px;
+        color: #0f766e;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
       .card-export-translation-progress {
         width: min(280px, 100%);
         height: 12px;
@@ -259,13 +265,26 @@
       }
 
       .admin-handoff-options {
-        justify-content: space-between;
+        justify-content: flex-end;
       }
 
       .admin-handoff-options a {
         color: #0f766e;
         font-size: 14px;
         font-weight: 700;
+      }
+
+      .connection-status-stack {
+        display: grid;
+        gap: 6px;
+        align-items: start;
+      }
+
+      .connection-status-stack output {
+        min-height: 20px;
+        color: #536079;
+        font-size: 14px;
+        line-height: 1.35;
       }
 
       .connection-config input:focus,
@@ -461,12 +480,6 @@
           width: 100%;
           max-width: none;
         }
-      }
-
-      #connection-readiness {
-        min-height: 20px;
-        color: #536079;
-        font-size: 14px;
       }
 
       #connection-state[data-state="failed"] {
@@ -1243,16 +1256,18 @@
             <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
           </div>
         </div>
-        <div class="connection-options admin-handoff-options">
+        <div class="connection-status-stack">
           <output id="admin-handoff-state" aria-live="polite"></output>
+          <output id="connection-readiness" aria-live="polite"></output>
+          <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
+        </div>
+        <div class="connection-options admin-handoff-options">
           <a href="http://127.0.0.1:4175/" data-i18n="link.openAdmin">Open Atlas Administration</a>
         </div>
         <div class="connection-actions">
           <button id="connect-home-assistant" type="button" data-i18n="button.connect">Connect</button>
           <button id="disconnect-home-assistant" type="button" disabled data-i18n="button.disconnect">Disconnect</button>
         </div>
-        <output id="connection-readiness" aria-live="polite"></output>
-        <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
       </div>
       <div class="connection-config">
         <div class="field-grid three-column">
@@ -1312,12 +1327,12 @@
             <label><input type="checkbox" data-card-export-language="fi"> FI Suomi</label>
           </div>
           <div class="card-export-translation-controls">
+            <output id="card-translation-status" class="card-translation-module-status" aria-live="polite"></output>
             <label for="card-auto-translate">
               <input id="card-auto-translate" type="checkbox">
               <span data-i18n="label.autoTranslateCardLanguages">Run automatic translation on export</span>
             </label>
             <progress id="card-translation-progress" class="card-export-translation-progress" max="100" value="0" hidden></progress>
-            <output id="card-translation-status" aria-live="polite"></output>
           </div>
           <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
         </fieldset>
