@@ -7,6 +7,7 @@ const port = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const openAiTranslationModel = process.env.ATLAS_OPENAI_TRANSLATION_MODEL ?? "gpt-5.6-luna";
+const editorOrigin = "http://127.0.0.1:4174";
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -66,7 +67,11 @@ async function handleAdminConnectionRequest(request, response) {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
     });
-    response.end(JSON.stringify(adminConnectionSettings ? sanitizeAdminConnectionSettings(adminConnectionSettings) : { error: "not configured" }));
+    response.end(JSON.stringify(adminConnectionSettings
+      ? sanitizeAdminConnectionSettings(adminConnectionSettings, {
+          includeSecrets: canReadAdminConnectionSecrets(request, requestUrl),
+        })
+      : { error: "not configured" }));
     return;
   }
 
@@ -163,7 +168,7 @@ function writeJsonResponse(response, statusCode, body) {
 }
 
 function writeCorsHeaders(response) {
-  response.setHeader("access-control-allow-origin", "http://127.0.0.1:4174");
+  response.setHeader("access-control-allow-origin", editorOrigin);
   response.setHeader("access-control-allow-methods", "GET, PUT, DELETE, OPTIONS");
   response.setHeader("access-control-allow-headers", "content-type");
 }
@@ -232,7 +237,12 @@ function hasTranslationApiKey(provider, keys) {
   return Boolean(keys?.[normalizeTranslationProvider(provider)]?.trim());
 }
 
-function sanitizeAdminConnectionSettings(settings) {
+function canReadAdminConnectionSecrets(request, requestUrl) {
+  return requestUrl.searchParams.get("includeSecrets") === "1"
+    && request.headers.origin !== editorOrigin;
+}
+
+function sanitizeAdminConnectionSettings(settings, { includeSecrets = false } = {}) {
   return {
     url: settings.url,
     token: settings.token,
@@ -245,6 +255,7 @@ function sanitizeAdminConnectionSettings(settings) {
         .filter(provider => provider !== "none")
         .map(provider => [provider, hasTranslationApiKey(provider, settings.translationApiKeys)]),
     ),
+    ...(includeSecrets ? { translationApiKeys: settings.translationApiKeys } : {}),
     updatedAt: settings.updatedAt,
   };
 }

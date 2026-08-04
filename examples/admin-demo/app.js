@@ -254,6 +254,18 @@ function readTranslationApiKeys() {
   );
 }
 
+function applyTranslationApiKeys(keys) {
+  if (!keys || typeof keys !== "object") {
+    return;
+  }
+
+  for (const [provider, input] of Object.entries(translationApiKeyInputs)) {
+    if (input && typeof keys[provider] === "string") {
+      input.value = keys[provider];
+    }
+  }
+}
+
 function hasTranslationApiKey(provider, keys = readTranslationApiKeys()) {
   return Boolean(keys[normalizeTranslationProvider(provider)]?.trim());
 }
@@ -355,6 +367,35 @@ function restoreConfiguration() {
     }
   } catch {
     localStorage.removeItem(adminStorageKey);
+  }
+}
+
+async function restoreServerConnectionSettings() {
+  try {
+    const response = await fetch(`${adminConnectionApiPath}?includeSecrets=1`, {
+      cache: "no-store",
+    });
+    if (!response.ok) {
+      return;
+    }
+
+    const saved = await response.json();
+    if (typeof saved.url === "string" && saved.url) {
+      homeAssistantUrl.value = saved.url;
+    }
+    if (typeof saved.translationProvider === "string") {
+      setTranslationProvider(saved.translationProvider);
+    }
+    if (typeof saved.translationApiEndpoint === "string") {
+      translationApiEndpoint.value = normalizeTranslationApiEndpoint(saved.translationApiEndpoint);
+    }
+    applyTranslationApiKeys(saved.translationApiKeys);
+    if (saved.autoConnectEditor === true && homeAssistantToken.value.trim()) {
+      autoConnectEditor.checked = true;
+    }
+    renderAdministration();
+  } catch {
+    // The Admin server may not have saved settings yet; local settings remain usable.
   }
 }
 
@@ -656,6 +697,7 @@ if (rememberAdminToken.checked && homeAssistantToken.value.trim()) {
 }
 applyTranslations();
 renderAdministration();
+void restoreServerConnectionSettings();
 
 for (const button of languageButtons) {
   button.addEventListener("click", () => setLanguage(button.dataset.language));
