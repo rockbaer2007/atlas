@@ -161,6 +161,7 @@ additional envelope-only contract expansion.
 * User-defined HACS card script filenames such as `energy-kitchen.js` instead of only `atlas-card.js`
 * HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards
+* Lovelace UV Card follow-up project for UV index, protection status, thresholds and visual Home Assistant dashboard output
 * Entity abstraction
 * Service integration
 
