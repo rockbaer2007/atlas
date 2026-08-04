@@ -14,7 +14,7 @@ const mimeTypes = {
 
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", "http://localhost");
-  const requestPath = request.url === "/"
+  const requestPath = requestUrl.pathname === "/"
     ? "/examples/status-demo/index.html"
     : requestUrl.pathname;
   const requestedFilePath = resolve(root, `.${normalize(requestPath)}`);
