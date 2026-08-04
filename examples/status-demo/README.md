@@ -76,6 +76,9 @@ same source can also be downloaded directly through the Export card script
 button. Export HACS bundle downloads a real `.hacs.zip` archive containing the
 future repository files: `hacs.json`, the generated JavaScript card, a README,
 an example Lovelace card and the original Atlas card package.
+The HA card import control also accepts `.hacs.zip` files now. It inspects the
+archive structure, reports missing bundle files and deliberately stops before
+full ZIP content import, which remains the next workflow step.
 When the package is exported from Expert mode, the envelope also carries the
 Expert editor plan so a later import can restore the placed fields and switch
 back to Expert automatically.

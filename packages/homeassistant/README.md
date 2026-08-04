@@ -95,6 +95,10 @@ For the next packaging step, the package can create a dependency-free `.hacs.zip
 archive. The archive contains the files a host needs for a frontend repository:
 `hacs.json`, the generated card script, a README, an example Lovelace card
 configuration and the original Atlas card package for round-trip editing.
+Archives can also be inspected again before import. The inspection reads the
+ZIP central directory, checks for `hacs.json`, `README.md`, an example card, a
+root JavaScript card file and the embedded Atlas card package, and reports
+whether the archive is ready for a later full import flow.
 
 The card editor plan separates a simple mode from an expert mode. Simple mode
 is intended for fast button stacks. Expert mode describes a free editor surface

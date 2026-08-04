@@ -25,6 +25,25 @@ export interface HomeAssistantCardEditorHacsBundleArchive {
   readonly content: Uint8Array;
 }
 
+export interface HomeAssistantCardEditorHacsBundleArchiveEntry {
+  readonly path: string;
+  readonly compressionMethod: "store" | "deflate" | "unsupported";
+  readonly compressedSize: number;
+  readonly uncompressedSize: number;
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveInspection {
+  readonly kind: "atlas.homeassistant.hacs-card-bundle-archive";
+  readonly importable: boolean;
+  readonly fileCount: number;
+  readonly files: readonly HomeAssistantCardEditorHacsBundleArchiveEntry[];
+  readonly requiredFiles: readonly string[];
+  readonly missingFiles: readonly string[];
+  readonly scriptFiles: readonly string[];
+  readonly atlasPackageFiles: readonly string[];
+  readonly reason: string;
+}
+
 export function createHomeAssistantCardEditorHacsBundle(
   cardPackage: HomeAssistantCardExportPackage,
 ): HomeAssistantCardEditorHacsBundle {
@@ -90,6 +109,54 @@ export function createHomeAssistantCardEditorHacsBundle(
   };
 }
 
+export function inspectHomeAssistantCardEditorHacsBundleArchive(
+  content: Uint8Array,
+): HomeAssistantCardEditorHacsBundleArchiveInspection {
+  const requiredFiles = [
+    "hacs.json",
+    "README.md",
+    "examples/lovelace-card.json",
+  ];
+
+  try {
+    const files = readZipCentralDirectoryEntries(content);
+    const paths = files.map(file => file.path);
+    const scriptFiles = paths.filter(path => !path.includes("/") && path.endsWith(".js"));
+    const atlasPackageFiles = paths.filter(path => path.startsWith("atlas/") && path.endsWith(".atlas-card.json"));
+    const missingFiles = [
+      ...requiredFiles.filter(path => !paths.includes(path)),
+      ...(scriptFiles.length > 0 ? [] : ["*.js"]),
+      ...(atlasPackageFiles.length > 0 ? [] : ["atlas/*.atlas-card.json"]),
+    ];
+
+    return {
+      kind: "atlas.homeassistant.hacs-card-bundle-archive",
+      importable: missingFiles.length === 0,
+      fileCount: files.length,
+      files,
+      requiredFiles,
+      missingFiles,
+      scriptFiles,
+      atlasPackageFiles,
+      reason: missingFiles.length === 0
+        ? "The archive contains the required ATLAS HACS card bundle files."
+        : `The archive is missing required ATLAS HACS card bundle files: ${missingFiles.join(", ")}.`,
+    };
+  } catch {
+    return {
+      kind: "atlas.homeassistant.hacs-card-bundle-archive",
+      importable: false,
+      fileCount: 0,
+      files: [],
+      requiredFiles,
+      missingFiles: requiredFiles,
+      scriptFiles: [],
+      atlasPackageFiles: [],
+      reason: "The archive is not a readable ZIP file.",
+    };
+  }
+}
+
 export function createHomeAssistantCardEditorHacsBundleArchive(
   input: HomeAssistantCardEditorHacsBundle | HomeAssistantCardExportPackage,
 ): HomeAssistantCardEditorHacsBundleArchive {
@@ -130,11 +197,69 @@ function createHomeAssistantCardEditorBundleReadme(
   ].join("\n");
 }
 
+interface ZipEndOfCentralDirectory {
+  readonly fileCount: number;
+  readonly centralDirectoryOffset: number;
+}
+
 interface ZipCentralDirectoryRecord {
   readonly fileName: Uint8Array;
   readonly crc32: number;
   readonly size: number;
   readonly localHeaderOffset: number;
+}
+
+function readZipCentralDirectoryEntries(content: Uint8Array): HomeAssistantCardEditorHacsBundleArchiveEntry[] {
+  const endOfCentralDirectory = readZipEndOfCentralDirectory(content);
+  const entries: HomeAssistantCardEditorHacsBundleArchiveEntry[] = [];
+  let offset = endOfCentralDirectory.centralDirectoryOffset;
+  const decoder = new TextDecoder();
+
+  for (let index = 0; index < endOfCentralDirectory.fileCount; index += 1) {
+    const view = new DataView(content.buffer, content.byteOffset + offset);
+    if (view.getUint32(0, true) !== 0x02014b50) {
+      throw new Error("Invalid ZIP central directory.");
+    }
+
+    const compressionMethod = view.getUint16(10, true);
+    const compressedSize = view.getUint32(20, true);
+    const uncompressedSize = view.getUint32(24, true);
+    const fileNameLength = view.getUint16(28, true);
+    const extraFieldLength = view.getUint16(30, true);
+    const commentLength = view.getUint16(32, true);
+    const fileName = content.slice(offset + 46, offset + 46 + fileNameLength);
+    entries.push({
+      path: decoder.decode(fileName),
+      compressionMethod: normalizeZipCompressionMethod(compressionMethod),
+      compressedSize,
+      uncompressedSize,
+    });
+    offset += 46 + fileNameLength + extraFieldLength + commentLength;
+  }
+
+  return entries;
+}
+
+function readZipEndOfCentralDirectory(content: Uint8Array): ZipEndOfCentralDirectory {
+  const minimumSize = 22;
+  const maximumCommentSize = 0xffff;
+  const searchStart = Math.max(0, content.length - minimumSize - maximumCommentSize);
+  for (let offset = content.length - minimumSize; offset >= searchStart; offset -= 1) {
+    const view = new DataView(content.buffer, content.byteOffset + offset, minimumSize);
+    if (view.getUint32(0, true) === 0x06054b50) {
+      return {
+        fileCount: view.getUint16(10, true),
+        centralDirectoryOffset: view.getUint32(16, true),
+      };
+    }
+  }
+  throw new Error("ZIP end of central directory not found.");
+}
+
+function normalizeZipCompressionMethod(value: number): HomeAssistantCardEditorHacsBundleArchiveEntry["compressionMethod"] {
+  if (value === 0) return "store";
+  if (value === 8) return "deflate";
+  return "unsupported";
 }
 
 function createStoredZipArchive(files: readonly HomeAssistantCardEditorHacsBundleFile[]): Uint8Array {

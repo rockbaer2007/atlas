@@ -35,6 +35,7 @@ import {
   createInMemoryHomeAssistantEntityStateTransport,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
+  inspectHomeAssistantCardEditorHacsBundleArchive,
   listHomeAssistantCardEditorTemplates,
   listHomeAssistantCardTargets,
   serializeHomeAssistantEntitiesCardConfiguration,
@@ -321,6 +322,8 @@ const translations = {
     "message.importRejected": "Import rejected: unsupported Home Assistant card artifact.",
     "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
+    "message.hacsBundleInspected": "HACS bundle checked: {count} files, script {scriptFilename}. Full import is planned next.",
+    "message.hacsBundleRejected": "HACS bundle rejected: {reason}",
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
     "message.scriptExported": "Card script exported as {scriptFilename}.",
     "message.bundleExported": "HACS bundle exported as {filename} with {count} files.",
@@ -610,6 +613,8 @@ const translations = {
     "message.importRejected": "Import abgelehnt: nicht unterstuetztes Home-Assistant-Card-Artefakt.",
     "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitaeten.",
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
+    "message.hacsBundleInspected": "HACS-Bundle geprueft: {count} Dateien, Script {scriptFilename}. Vollimport ist als Naechstes geplant.",
+    "message.hacsBundleRejected": "HACS-Bundle abgelehnt: {reason}",
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
     "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
     "message.bundleExported": "HACS-Bundle als {filename} mit {count} Dateien exportiert.",
@@ -1366,6 +1371,10 @@ function createLovelaceResourcePaletteId(url, index) {
 
 function isHacsLovelaceResourceUrl(url) {
   return url.includes("/hacsfiles/");
+}
+
+function isHacsBundleArchiveFile(file) {
+  return file.name.toLowerCase().endsWith(".zip") || file.type === "application/zip";
 }
 
 const ignoredLovelaceResourceTerms = [
@@ -3545,6 +3554,19 @@ importHaCardConfig.addEventListener("change", async () => {
   const file = importHaCardConfig.files?.[0];
   if (!file) return;
   try {
+    if (isHacsBundleArchiveFile(file)) {
+      const inspection = inspectHomeAssistantCardEditorHacsBundleArchive(new Uint8Array(await file.arrayBuffer()));
+      haCardImportReview.dataset.action = inspection.importable ? "import" : "reject";
+      haCardImportReview.textContent = inspection.reason;
+      statusMessage.textContent = inspection.importable
+        ? t("message.hacsBundleInspected", {
+          count: String(inspection.fileCount),
+          scriptFilename: inspection.scriptFiles[0] ?? "unknown",
+        })
+        : t("message.hacsBundleRejected", { reason: inspection.reason });
+      return;
+    }
+
     const text = await file.text();
     const decision = renderHaCardImportDecision(text);
     if (decision.action !== "import") {

@@ -19,6 +19,7 @@ import {
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
+  inspectHomeAssistantCardEditorHacsBundleArchive,
   listHomeAssistantCardEditorTemplates,
   normalizeHomeAssistantCustomElementName,
   normalizeHomeAssistantCardEditorScriptFilename,
@@ -948,5 +949,37 @@ describe("Home Assistant frontend integration planning", () => {
     expect(archiveText).toContain("energy-kitchen.js");
     expect(archiveText).toContain("examples/lovelace-card.json");
     expect(archive.content.length).toBeGreaterThan(1000);
+  });
+
+  it("inspects generated HACS card zip archives before import", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const archive = createHomeAssistantCardEditorHacsBundleArchive(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+
+    expect(inspectHomeAssistantCardEditorHacsBundleArchive(archive.content)).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-archive",
+      importable: true,
+      fileCount: 5,
+      missingFiles: [],
+      scriptFiles: ["energy-kitchen.js"],
+      atlasPackageFiles: ["atlas/energy-kitchen.atlas-card.json"],
+    });
+    expect(inspectHomeAssistantCardEditorHacsBundleArchive(new Uint8Array([1, 2, 3]))).toMatchObject({
+      importable: false,
+      fileCount: 0,
+      reason: "The archive is not a readable ZIP file.",
+    });
   });
 });
