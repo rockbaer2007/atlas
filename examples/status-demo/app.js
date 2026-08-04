@@ -799,6 +799,7 @@ function setLanguage(language) {
   renderEditorMode(activeEditorMode);
   renderEntityList();
   renderConnectionReadiness();
+  renderCardTranslationModuleStatus();
   persistConfiguration();
 }
 
@@ -1124,6 +1125,13 @@ function renderAdminHandoffState() {
     : t("message.adminHandoffWaiting");
 }
 
+function renderCardTranslationModuleStatus() {
+  const provider = normalizeTranslationProvider(adminTranslationProvider);
+  cardTranslationStatus.textContent = provider === "none"
+    ? ""
+    : t("message.translationProviderReady", { provider });
+}
+
 function normalizeTranslationProvider(value) {
   return ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
 }
@@ -1181,7 +1189,7 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
     adminTranslationApiKeyConfigured = false;
     appliedSettings = true;
   }
-  cardTranslationStatus.textContent = t("message.translationProviderReady", { provider: adminTranslationProvider });
+  renderCardTranslationModuleStatus();
   renderConnectionReadiness();
   renderAdminHandoffState();
   persistConfiguration();
@@ -2961,7 +2969,7 @@ async function prepareCardExportTranslations(cardPackage) {
   if (!cardAutoTranslate.checked) {
     cardTranslationProgress.hidden = true;
     cardTranslationProgress.value = 0;
-    cardTranslationStatus.textContent = "";
+    renderCardTranslationModuleStatus();
     return cardPackage;
   }
 
@@ -4036,6 +4044,7 @@ renderEntityPickerOptions();
 renderConnectionReadiness();
 void applyStoredAdminConnectionSettings();
 renderAdminHandoffState();
+renderCardTranslationModuleStatus();
 renderEditorMode(initialEditorMode);
 
 let adminHandoffRequestAttempts = 0;
