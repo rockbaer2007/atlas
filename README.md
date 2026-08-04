@@ -49,4 +49,10 @@ pnpm test
 
 ---
 
+## License
+
+MIT License. See [LICENSE](LICENSE).
+
+---
+
 © ATLAS Framework
