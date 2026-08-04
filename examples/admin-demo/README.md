@@ -15,8 +15,10 @@ The Home Assistant Card Editor demo remains separate on
 `http://127.0.0.1:4174/`.
 
 The admin surface currently shows the Home Assistant Card Editor as the first
-reference plugin, renders Runtime plugin status and capabilities, and exports
-the generated `.atlas-plugin.json` package descriptor. Home Assistant tokens are
-stored only in the admin page when the local remember option is selected.
+reference plugin, renders Runtime plugin status and capabilities, opens the Card
+Editor with a browser-session handoff, and exports the generated
+`.atlas-plugin.json` package descriptor. Home Assistant tokens are stored only
+in the admin page when the local remember option is selected. The Card Editor
+receives the token only through `postMessage` for the active browser session.
 Plugins receive only approved context such as URLs, WebSocket paths, resource
 paths and declared capabilities.

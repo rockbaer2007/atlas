@@ -22,12 +22,11 @@ Open `http://127.0.0.1:4175/` to manage reference plugins, plugin packages and
 central Home Assistant connection settings.
 
 The Home Assistant controls validate a connection target, show the derived
-WebSocket endpoint and can connect to an instance. The supplied access token is
-cleared from the form immediately after starting the connection unless the
-local remember option is selected. Remembered tokens stay in browser storage
-only and are not logged by the demo. Auto connect can be enabled only together
-with the local token option; when both are saved, the page reconnects after a
-reload without another button press.
+WebSocket endpoint and can connect to an instance after Atlas Administration
+has handed over the connection settings. The Card Editor no longer contains a
+token field and does not store Home Assistant tokens. Tokens are managed on the
+separate Administration surface and handed to the current editor browser session
+through `postMessage`.
 On desktop-sized screens the connection, card setup and entity-picker controls
 use compact panel styling plus two- and three-column grids so related inputs
 and actions sit together instead of stretching across the full page width.
@@ -37,8 +36,8 @@ Home Assistant Card Editor as the first reference plugin, exposes
 inspect/activate/export-package actions and exports the generated
 `.atlas-plugin.json` package descriptor. It also documents the intended
 credential boundary: Home Assistant tokens stay in the central admin area,
-while plugins receive only approved context such as Home Assistant URL,
-WebSocket path and declared capabilities.
+while the editor receives a session-only handoff. Plugins receive only approved
+context such as Home Assistant URL, WebSocket path and declared capabilities.
 
 Enter one or more comma-separated Entity IDs before connecting, or use the
 domain-filtered entity picker to add known demo entities. Once a live event

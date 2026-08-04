@@ -56,9 +56,7 @@ const languageButtons = Array.from(document.querySelectorAll("[data-language]"))
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
-const homeAssistantToken = document.querySelector("#home-assistant-token");
-const rememberHomeAssistantToken = document.querySelector("#remember-home-assistant-token");
-const autoConnectHomeAssistant = document.querySelector("#auto-connect-home-assistant");
+const adminHandoffState = document.querySelector("#admin-handoff-state");
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
@@ -134,6 +132,7 @@ const stackSelectionSummary = document.querySelector("#stack-selection-summary")
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
+const adminOrigin = "http://127.0.0.1:4175";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
@@ -143,9 +142,6 @@ const translations = {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Build Simple or Expert Home Assistant cards from live or local entities.",
     "label.haUrl": "Home Assistant URL",
-    "label.accessToken": "Access token",
-    "label.rememberToken": "Remember token locally",
-    "label.autoConnect": "Auto connect on page load",
     "label.panelGroup": "Panel group",
     "label.groupName": "Group name",
     "label.cardTarget": "Card target",
@@ -209,6 +205,7 @@ const translations = {
     "button.expertMode": "Expert",
     "button.turnOn": "Turn on",
     "button.turnOff": "Turn off",
+    "link.openAdmin": "Open Atlas Administration",
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
     "heading.diagnostics": "Diagnostics",
@@ -304,7 +301,9 @@ const translations = {
     "message.demoEntityTarget": "Demo entity: {entityId}",
     "message.waitingForUpdates": "Waiting for updates from {entityId}.",
     "message.demoControlsTarget": "Demo controls target {entityId}.",
-    "message.tokenRequired": "An access token is required to connect.",
+    "message.tokenRequired": "Open Atlas Administration on port 4175 and hand over the connection settings before connecting.",
+    "message.adminHandoffWaiting": "Waiting for connection settings from Atlas Administration.",
+    "message.adminHandoffReceived": "Connection settings received from Atlas Administration.",
     "message.entityStateUpdated": "Entity state updated: {state}.",
     "message.titleCopied": "{title} copied from the selected entity.",
     "message.expertPreviewCleared": "Expert editor preview cleared.",
@@ -435,9 +434,6 @@ const translations = {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Erstelle Simple- oder Expert-Home-Assistant-Cards aus Live- oder lokalen Entitaeten.",
     "label.haUrl": "Home Assistant URL",
-    "label.accessToken": "Access Token",
-    "label.rememberToken": "Token lokal merken",
-    "label.autoConnect": "Beim Laden automatisch verbinden",
     "label.panelGroup": "Panel-Gruppe",
     "label.groupName": "Gruppenname",
     "label.cardTarget": "Card-Ziel",
@@ -501,6 +497,7 @@ const translations = {
     "button.expertMode": "Expert",
     "button.turnOn": "Einschalten",
     "button.turnOff": "Ausschalten",
+    "link.openAdmin": "Atlas Administration oeffnen",
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
     "heading.diagnostics": "Diagnose",
@@ -596,7 +593,9 @@ const translations = {
     "message.demoEntityTarget": "Demo-Entitaet: {entityId}",
     "message.waitingForUpdates": "Warte auf Updates von {entityId}.",
     "message.demoControlsTarget": "Demo-Controls steuern {entityId}.",
-    "message.tokenRequired": "Zum Verbinden wird ein Access Token benoetigt.",
+    "message.tokenRequired": "Oeffne zuerst die Atlas Administration auf Port 4175 und uebergib die Verbindungseinstellungen.",
+    "message.adminHandoffWaiting": "Warte auf Verbindungseinstellungen aus der Atlas Administration.",
+    "message.adminHandoffReceived": "Verbindungseinstellungen aus der Atlas Administration empfangen.",
     "message.entityStateUpdated": "Entitaetsstatus aktualisiert: {state}.",
     "message.titleCopied": "{title} aus der ausgewaehlten Entitaet kopiert.",
     "message.expertPreviewCleared": "Expert-Editor-Vorschau geleert.",
@@ -832,6 +831,7 @@ let removeLovelaceResourceListener;
 let panelBinding;
 let activeTransport;
 let removeEntityListListener;
+let adminConnectionToken = "";
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
@@ -867,15 +867,6 @@ try {
   }
   if (typeof savedConfiguration?.url === "string") {
     homeAssistantUrl.value = savedConfiguration.url;
-  }
-  if (savedConfiguration?.rememberToken === true) {
-    rememberHomeAssistantToken.checked = true;
-    if (typeof savedConfiguration?.token === "string") {
-      homeAssistantToken.value = savedConfiguration.token;
-    }
-  }
-  if (savedConfiguration?.autoConnect === true && savedConfiguration?.rememberToken === true && typeof savedConfiguration?.token === "string" && savedConfiguration.token) {
-    autoConnectHomeAssistant.checked = true;
   }
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
@@ -1079,6 +1070,31 @@ function renderConnectionReadiness() {
     : readiness.reason;
 }
 
+function renderAdminHandoffState() {
+  adminHandoffState.textContent = adminConnectionToken
+    ? t("message.adminHandoffReceived")
+    : t("message.adminHandoffWaiting");
+}
+
+function receiveAdminConnectionHandoff(event) {
+  if (event.origin !== adminOrigin || event.data?.type !== "atlas.admin.connection.v1") {
+    return;
+  }
+
+  if (typeof event.data.url === "string" && event.data.url.trim()) {
+    homeAssistantUrl.value = event.data.url.trim();
+  }
+  adminConnectionToken = typeof event.data.token === "string" ? event.data.token : "";
+  renderConnectionReadiness();
+  renderAdminHandoffState();
+  persistConfiguration();
+  statusMessage.textContent = t("message.adminHandoffReceived");
+
+  if (event.data.autoConnect === true && adminConnectionToken) {
+    connectHomeAssistant();
+  }
+}
+
 function renderConnectionLifecycle(lifecycle) {
   connectionState.dataset.state = lifecycle.state;
   connectionState.textContent = lifecycle.reason
@@ -1122,9 +1138,6 @@ function persistConfiguration() {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
       language: currentLanguage,
       url: homeAssistantUrl.value,
-      rememberToken: rememberHomeAssistantToken.checked,
-      autoConnect: rememberHomeAssistantToken.checked && autoConnectHomeAssistant.checked,
-      token: rememberHomeAssistantToken.checked ? homeAssistantToken.value : undefined,
       entities: homeAssistantEntity.value,
       entityDomain: homeAssistantEntityDomain.value,
       entitySearch: homeAssistantEntitySearch.value,
@@ -1147,13 +1160,6 @@ function persistConfiguration() {
   } catch {
     // Connection configuration remains session-only when storage is unavailable.
   }
-}
-
-function syncAutoConnectPreference() {
-  if (!rememberHomeAssistantToken.checked) {
-    autoConnectHomeAssistant.checked = false;
-  }
-  autoConnectHomeAssistant.disabled = !rememberHomeAssistantToken.checked;
 }
 
 function renderGroupOptions(selectedId = homeAssistantGroup.value) {
@@ -3167,7 +3173,7 @@ function connectHomeAssistant() {
     return;
   }
 
-  if (!homeAssistantToken.value) {
+  if (!adminConnectionToken) {
     renderConnectionLifecycle({ state: "failed", reason: t("message.tokenRequired") });
     return;
   }
@@ -3179,11 +3185,8 @@ function connectHomeAssistant() {
   connection?.disconnect();
   connection = createHomeAssistantRuntimeConnection(configuration, createBrowserHomeAssistantWebSocket);
   removeLifecycleListener = connection.subscribeLifecycle(renderConnectionLifecycle);
-  reconnectToken = homeAssistantToken.value;
+  reconnectToken = adminConnectionToken;
   connection.connect(reconnectToken);
-  if (!rememberHomeAssistantToken.checked) {
-    homeAssistantToken.value = "";
-  }
   persistConfiguration();
 }
 
@@ -3230,18 +3233,7 @@ homeAssistantUrl.addEventListener("input", () => {
   renderConnectionReadiness();
   persistConfiguration();
 });
-homeAssistantToken.addEventListener("input", () => {
-  if (rememberHomeAssistantToken.checked) {
-    persistConfiguration();
-  }
-});
-rememberHomeAssistantToken.addEventListener("change", () => {
-  syncAutoConnectPreference();
-  persistConfiguration();
-});
-autoConnectHomeAssistant.addEventListener("change", () => {
-  persistConfiguration();
-});
+window.addEventListener("message", receiveAdminConnectionHandoff);
 homeAssistantEntity.addEventListener("input", () => {
   persistConfiguration();
   renderEntityPickerOptions();
@@ -3746,8 +3738,5 @@ syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
+renderAdminHandoffState();
 renderEditorMode(initialEditorMode);
-syncAutoConnectPreference();
-if (autoConnectHomeAssistant.checked && homeAssistantToken.value) {
-  window.setTimeout(connectHomeAssistant, 0);
-}

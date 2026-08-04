@@ -184,6 +184,16 @@
         accent-color: #0f766e;
       }
 
+      .admin-handoff-options {
+        justify-content: space-between;
+      }
+
+      .admin-handoff-options a {
+        color: #0f766e;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
       .connection-config input:focus,
       .connection-config select:focus {
         outline: 2px solid #0f766e;
@@ -1155,20 +1165,10 @@
             <label for="home-assistant-url" data-i18n="label.haUrl">Home Assistant URL</label>
             <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
           </div>
-          <div class="field-pair">
-            <label for="home-assistant-token" data-i18n="label.accessToken">Access token</label>
-            <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
-          </div>
         </div>
-        <div class="connection-options">
-          <label class="remember-secret" for="remember-home-assistant-token">
-            <input id="remember-home-assistant-token" type="checkbox">
-            <span data-i18n="label.rememberToken">Remember token locally</span>
-          </label>
-          <label class="remember-secret" for="auto-connect-home-assistant">
-            <input id="auto-connect-home-assistant" type="checkbox">
-            <span data-i18n="label.autoConnect">Auto connect on page load</span>
-          </label>
+        <div class="connection-options admin-handoff-options">
+          <output id="admin-handoff-state" aria-live="polite"></output>
+          <a href="http://127.0.0.1:4175/" data-i18n="link.openAdmin">Open Atlas Administration</a>
         </div>
         <div class="connection-actions">
           <button id="connect-home-assistant" type="button" data-i18n="button.connect">Connect</button>

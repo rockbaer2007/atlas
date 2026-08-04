@@ -80,8 +80,9 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
   - later Home Assistant/HACS frontend integration
 - Treat the Home Assistant Card Editor as the first official ATLAS reference plugin, not merely as a demo.
 - The user wants entity selection from Home Assistant when Atlas is installed or connected.
-- Access tokens may be remembered locally only when the user selects that option.
-- Auto-connect is allowed when token remembering is enabled and the user selects auto-connect.
+- Access tokens are managed by Atlas Administration, not by the Card Editor.
+- The Card Editor may receive the Home Assistant token only as a session handoff from Administration.
+- Plugins should receive approved URLs, resource paths and capabilities, but not raw access tokens.
 
 ## Expert Editor Rules
 
