@@ -38,10 +38,13 @@ const adminStorageKey = "atlas.administration.configuration";
 const adminPluginStorageKey = "atlas.administration.importedPlugins";
 const adminPluginStateStorageKey = "atlas.administration.pluginState";
 const adminConnectionCookieName = "atlas_admin_connection";
+const adminTranslationApiKeysCookieName = "atlas_admin_translation_api_keys";
+const adminTranslationApiKeysKeyStorageKey = "atlas.administration.translationApiKeysCookieKey";
 const adminConnectionApiPath = "/api/admin-connection";
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const editorOrigin = "http://127.0.0.1:4174";
+const longTermCookieMaxAge = 31536000;
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
 
@@ -267,20 +270,24 @@ function hasTranslationApiKey(provider, keys = readTranslationApiKeys()) {
 
 function persistConfiguration() {
   const token = homeAssistantToken.value.trim();
+  const translationApiKeys = readTranslationApiKeys();
   const configuration = {
     language: currentLanguage,
     url: homeAssistantUrl.value,
     translationProvider: currentTranslationProvider(),
     translationApiEndpoint: defaultTranslationApiEndpoint,
-    translationApiKeys: readTranslationApiKeys(),
-    translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider()),
+    translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider(), translationApiKeys),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     token: rememberAdminToken.checked ? token : undefined,
   };
   localStorage.setItem(adminStorageKey, JSON.stringify(configuration));
+  void persistEncryptedTranslationApiKeysCookie(translationApiKeys);
   persistSharedConnectionCookie(configuration);
-  void persistServerConnectionSettings(configuration);
+  void persistServerConnectionSettings({
+    ...configuration,
+    translationApiKeys,
+  });
 }
 
 async function persistServerConnectionSettings(configuration) {
@@ -323,6 +330,122 @@ function deleteSharedConnectionCookie() {
   document.cookie = `${adminConnectionCookieName}=; path=/; max-age=0; SameSite=Lax`;
 }
 
+function hasAnyTranslationApiKey(keys) {
+  return Object.values(keys ?? {}).some(value => typeof value === "string" && value.trim());
+}
+
+function readCookieValue(name) {
+  const cookie = document.cookie
+    .split("; ")
+    .find(entry => entry.startsWith(`${name}=`));
+  return cookie ? decodeURIComponent(cookie.slice(name.length + 1)) : "";
+}
+
+function deleteCookie(name) {
+  document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+}
+
+function encodeBase64(bytes) {
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function decodeBase64(value) {
+  const binary = atob(value);
+  return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
+async function getTranslationApiKeysCryptoKey() {
+  if (!globalThis.crypto?.subtle) {
+    return undefined;
+  }
+
+  let keyBytes;
+  const savedKey = localStorage.getItem(adminTranslationApiKeysKeyStorageKey);
+  if (savedKey) {
+    keyBytes = decodeBase64(savedKey);
+  } else {
+    keyBytes = new Uint8Array(32);
+    crypto.getRandomValues(keyBytes);
+    localStorage.setItem(adminTranslationApiKeysKeyStorageKey, encodeBase64(keyBytes));
+  }
+
+  return crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["encrypt", "decrypt"]);
+}
+
+async function encryptTranslationApiKeys(keys) {
+  const cryptoKey = await getTranslationApiKeysCryptoKey();
+  if (!cryptoKey) {
+    return "";
+  }
+
+  const iv = new Uint8Array(12);
+  crypto.getRandomValues(iv);
+  const payload = new TextEncoder().encode(JSON.stringify(keys));
+  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, payload);
+  return JSON.stringify({
+    v: 1,
+    alg: "A256GCM",
+    iv: encodeBase64(iv),
+    data: encodeBase64(new Uint8Array(encrypted)),
+    updatedAt: new Date().toISOString(),
+  });
+}
+
+async function decryptTranslationApiKeys(value) {
+  const payload = JSON.parse(value);
+  if (payload?.v !== 1 || payload.alg !== "A256GCM" || typeof payload.iv !== "string" || typeof payload.data !== "string") {
+    return undefined;
+  }
+
+  const cryptoKey = await getTranslationApiKeysCryptoKey();
+  if (!cryptoKey) {
+    return undefined;
+  }
+
+  const decrypted = await crypto.subtle.decrypt(
+    { name: "AES-GCM", iv: decodeBase64(payload.iv) },
+    cryptoKey,
+    decodeBase64(payload.data),
+  );
+  const keys = JSON.parse(new TextDecoder().decode(decrypted));
+  return keys && typeof keys === "object" ? keys : undefined;
+}
+
+async function persistEncryptedTranslationApiKeysCookie(keys) {
+  if (!hasAnyTranslationApiKey(keys)) {
+    deleteCookie(adminTranslationApiKeysCookieName);
+    return;
+  }
+
+  try {
+    const encryptedKeys = await encryptTranslationApiKeys(keys);
+    if (!encryptedKeys) {
+      return;
+    }
+    document.cookie = [
+      `${adminTranslationApiKeysCookieName}=${encodeURIComponent(encryptedKeys)}`,
+      "path=/",
+      `max-age=${longTermCookieMaxAge}`,
+      "SameSite=Lax",
+    ].join("; ");
+  } catch {
+    // Keep the current in-memory fields usable if the browser blocks Web Crypto or cookies.
+  }
+}
+
+async function restoreEncryptedTranslationApiKeysCookie() {
+  const encryptedKeys = readCookieValue(adminTranslationApiKeysCookieName);
+  if (!encryptedKeys) {
+    return;
+  }
+
+  try {
+    applyTranslationApiKeys(await decryptTranslationApiKeys(encryptedKeys));
+  } catch {
+    deleteCookie(adminTranslationApiKeysCookieName);
+  }
+}
+
 function saveConnectionSettings() {
   const token = homeAssistantToken.value.trim();
   if (token) {
@@ -349,7 +472,12 @@ function restoreConfiguration() {
     if (typeof saved?.translationProvider === "string") {
       setTranslationProvider(saved.translationProvider);
     }
-    applyTranslationApiKeys(saved?.translationApiKeys);
+    if (saved?.translationApiKeys && typeof saved.translationApiKeys === "object") {
+      applyTranslationApiKeys(saved.translationApiKeys);
+      void persistEncryptedTranslationApiKeysCookie(saved.translationApiKeys);
+      delete saved.translationApiKeys;
+      localStorage.setItem(adminStorageKey, JSON.stringify(saved));
+    }
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
       if (typeof saved.token === "string") {
@@ -381,6 +509,7 @@ async function restoreServerConnectionSettings() {
       setTranslationProvider(saved.translationProvider);
     }
     applyTranslationApiKeys(saved.translationApiKeys);
+    void persistEncryptedTranslationApiKeysCookie(readTranslationApiKeys());
     if (saved.autoConnectEditor === true && homeAssistantToken.value.trim()) {
       autoConnectEditor.checked = true;
     }
@@ -680,15 +809,23 @@ function setLanguage(language) {
   persistConfiguration();
 }
 
-restoreConfiguration();
-restoreImportedPlugins();
-restorePluginState();
-if (rememberAdminToken.checked && homeAssistantToken.value.trim()) {
-  persistConfiguration();
+void initializeAdministration();
+
+async function initializeAdministration() {
+  restoreConfiguration();
+  await restoreEncryptedTranslationApiKeysCookie();
+  restoreImportedPlugins();
+  restorePluginState();
+  if (
+    (rememberAdminToken.checked && homeAssistantToken.value.trim())
+    || hasAnyTranslationApiKey(readTranslationApiKeys())
+  ) {
+    persistConfiguration();
+  }
+  applyTranslations();
+  renderAdministration();
+  void restoreServerConnectionSettings();
 }
-applyTranslations();
-renderAdministration();
-void restoreServerConnectionSettings();
 
 for (const button of languageButtons) {
   button.addEventListener("click", () => setLanguage(button.dataset.language));
