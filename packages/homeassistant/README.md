@@ -91,11 +91,10 @@ their own Home Assistant entities.
 The status demo exposes this source as a direct script download next to the
 portable card package export, so the generated `.js` artifact can be inspected
 or staged separately before a full HACS bundle is produced.
-For the next packaging step, the package can create a zip-ready HACS bundle
-manifest. It lists the files a host has to materialize for a frontend
-repository: `hacs.json`, the generated card script, a README, an example
-Lovelace card configuration and the original Atlas card package for round-trip
-editing.
+For the next packaging step, the package can create a dependency-free `.hacs.zip`
+archive. The archive contains the files a host needs for a frontend repository:
+`hacs.json`, the generated card script, a README, an example Lovelace card
+configuration and the original Atlas card package for round-trip editing.
 
 The card editor plan separates a simple mode from an expert mode. Simple mode
 is intended for fast button stacks. Expert mode describes a free editor surface

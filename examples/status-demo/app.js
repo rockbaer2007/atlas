@@ -13,6 +13,7 @@ import {
   arrangeHomeAssistantCardEditorSurfaceFields,
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorHacsBundle,
+  createHomeAssistantCardEditorHacsBundleArchive,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFieldFromTemplate,
@@ -322,7 +323,7 @@ const translations = {
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
     "message.scriptExported": "Card script exported as {scriptFilename}.",
-    "message.bundleExported": "HACS bundle manifest exported with {count} files for {scriptFilename}.",
+    "message.bundleExported": "HACS bundle exported as {filename} with {count} files.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
     "message.atlasPackage": "ATLAS card package",
     "message.haCard": "HA card",
@@ -611,7 +612,7 @@ const translations = {
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
     "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
-    "message.bundleExported": "HACS-Bundle-Manifest mit {count} Dateien fuer {scriptFilename} exportiert.",
+    "message.bundleExported": "HACS-Bundle als {filename} mit {count} Dateien exportiert.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
     "message.atlasPackage": "ATLAS-Card-Paket",
     "message.haCard": "HA-Card",
@@ -3401,14 +3402,15 @@ exportHaCardBundle.addEventListener("click", () => {
   }
 
   const bundle = createHomeAssistantCardEditorHacsBundle(createHaCardExportPackage());
+  const archive = createHomeAssistantCardEditorHacsBundleArchive(bundle);
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json" }));
-  link.download = `${bundle.scriptFilename.replace(/\.js$/i, "")}.hacs-bundle.json`;
+  link.href = URL.createObjectURL(new Blob([archive.content], { type: archive.mimeType }));
+  link.download = archive.filename;
   link.click();
   URL.revokeObjectURL(link.href);
   statusMessage.textContent = t("message.bundleExported", {
     count: String(bundle.files.length),
-    scriptFilename: bundle.scriptFilename,
+    filename: archive.filename,
   });
 });
 copyHaCardConfig.addEventListener("click", async () => {

@@ -19,6 +19,12 @@ export interface HomeAssistantCardEditorHacsBundle {
   readonly installSteps: readonly string[];
 }
 
+export interface HomeAssistantCardEditorHacsBundleArchive {
+  readonly filename: string;
+  readonly mimeType: "application/zip";
+  readonly content: Uint8Array;
+}
+
 export function createHomeAssistantCardEditorHacsBundle(
   cardPackage: HomeAssistantCardExportPackage,
 ): HomeAssistantCardEditorHacsBundle {
@@ -84,6 +90,18 @@ export function createHomeAssistantCardEditorHacsBundle(
   };
 }
 
+export function createHomeAssistantCardEditorHacsBundleArchive(
+  input: HomeAssistantCardEditorHacsBundle | HomeAssistantCardExportPackage,
+): HomeAssistantCardEditorHacsBundleArchive {
+  const bundle = "files" in input ? input : createHomeAssistantCardEditorHacsBundle(input);
+  const filename = `${bundle.scriptFilename.replace(/\.js$/i, "")}.hacs.zip`;
+  return {
+    filename,
+    mimeType: "application/zip",
+    content: createStoredZipArchive(bundle.files),
+  };
+}
+
 function createHomeAssistantCardEditorBundleReadme(
   cardName: string,
   resourcePath: string,
@@ -110,4 +128,134 @@ function createHomeAssistantCardEditorBundleReadme(
     "Replace the demo entities with your own Home Assistant entities before using this card in production.",
     "",
   ].join("\n");
+}
+
+interface ZipCentralDirectoryRecord {
+  readonly fileName: Uint8Array;
+  readonly crc32: number;
+  readonly size: number;
+  readonly localHeaderOffset: number;
+}
+
+function createStoredZipArchive(files: readonly HomeAssistantCardEditorHacsBundleFile[]): Uint8Array {
+  const chunks: Uint8Array[] = [];
+  const centralDirectoryRecords: ZipCentralDirectoryRecord[] = [];
+  let offset = 0;
+
+  for (const file of files) {
+    const fileName = encodeUtf8(file.path);
+    const content = encodeUtf8(file.content);
+    const crc32 = calculateCrc32(content);
+    const localHeader = createZipLocalFileHeader(fileName, crc32, content.length);
+    chunks.push(localHeader, content);
+    centralDirectoryRecords.push({
+      fileName,
+      crc32,
+      size: content.length,
+      localHeaderOffset: offset,
+    });
+    offset += localHeader.length + content.length;
+  }
+
+  const centralDirectoryOffset = offset;
+  for (const record of centralDirectoryRecords) {
+    const centralDirectoryHeader = createZipCentralDirectoryHeader(record);
+    chunks.push(centralDirectoryHeader);
+    offset += centralDirectoryHeader.length;
+  }
+
+  const centralDirectorySize = offset - centralDirectoryOffset;
+  chunks.push(createZipEndOfCentralDirectoryRecord(
+    centralDirectoryRecords.length,
+    centralDirectorySize,
+    centralDirectoryOffset,
+  ));
+
+  return concatUint8Arrays(chunks);
+}
+
+function createZipLocalFileHeader(fileName: Uint8Array, crc32: number, size: number): Uint8Array {
+  const header = new Uint8Array(30 + fileName.length);
+  const view = new DataView(header.buffer);
+  view.setUint32(0, 0x04034b50, true);
+  view.setUint16(4, 20, true);
+  view.setUint16(6, 0x0800, true);
+  view.setUint16(8, 0, true);
+  view.setUint16(10, 0, true);
+  view.setUint16(12, 0x0021, true);
+  view.setUint32(14, crc32, true);
+  view.setUint32(18, size, true);
+  view.setUint32(22, size, true);
+  view.setUint16(26, fileName.length, true);
+  view.setUint16(28, 0, true);
+  header.set(fileName, 30);
+  return header;
+}
+
+function createZipCentralDirectoryHeader(record: ZipCentralDirectoryRecord): Uint8Array {
+  const header = new Uint8Array(46 + record.fileName.length);
+  const view = new DataView(header.buffer);
+  view.setUint32(0, 0x02014b50, true);
+  view.setUint16(4, 20, true);
+  view.setUint16(6, 20, true);
+  view.setUint16(8, 0x0800, true);
+  view.setUint16(10, 0, true);
+  view.setUint16(12, 0, true);
+  view.setUint16(14, 0x0021, true);
+  view.setUint32(16, record.crc32, true);
+  view.setUint32(20, record.size, true);
+  view.setUint32(24, record.size, true);
+  view.setUint16(28, record.fileName.length, true);
+  view.setUint16(30, 0, true);
+  view.setUint16(32, 0, true);
+  view.setUint16(34, 0, true);
+  view.setUint16(36, 0, true);
+  view.setUint32(38, 0, true);
+  view.setUint32(42, record.localHeaderOffset, true);
+  header.set(record.fileName, 46);
+  return header;
+}
+
+function createZipEndOfCentralDirectoryRecord(
+  fileCount: number,
+  centralDirectorySize: number,
+  centralDirectoryOffset: number,
+): Uint8Array {
+  const record = new Uint8Array(22);
+  const view = new DataView(record.buffer);
+  view.setUint32(0, 0x06054b50, true);
+  view.setUint16(4, 0, true);
+  view.setUint16(6, 0, true);
+  view.setUint16(8, fileCount, true);
+  view.setUint16(10, fileCount, true);
+  view.setUint32(12, centralDirectorySize, true);
+  view.setUint32(16, centralDirectoryOffset, true);
+  view.setUint16(20, 0, true);
+  return record;
+}
+
+function calculateCrc32(content: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of content) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function concatUint8Arrays(chunks: readonly Uint8Array[]): Uint8Array {
+  const totalLength = chunks.reduce((length, chunk) => length + chunk.length, 0);
+  const output = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    output.set(chunk, offset);
+    offset += chunk.length;
+  }
+  return output;
+}
+
+function encodeUtf8(value: string): Uint8Array {
+  return new TextEncoder().encode(value);
 }
