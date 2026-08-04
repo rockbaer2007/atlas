@@ -130,6 +130,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Future direction includes Bubble, Mushroom, built-in Entity/Entities, Button, Sensor, Grid, Thermostat, Link, Webpage, vertical-stack, and horizontal-stack options.
 - Future direction includes detecting installed Home Assistant resources and offering relevant card/entity choices.
 - Future direction includes using Atlas directly on a server or as a Home Assistant/HACS integration.
+- Planned follow-up projects include the UGSo Thread Monitor and the Lovelace UV Card.
 
 ## Known User Preferences
 
