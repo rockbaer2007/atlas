@@ -9,8 +9,17 @@ Run `pnpm build`, then start it with:
 node examples/status-demo/server.mjs
 ```
 
-Open `http://127.0.0.1:4173/` and use the status controls to verify that each
+Open `http://127.0.0.1:4174/` and use the status controls to verify that each
 selection replaces the current surface output while retaining the theme tokens.
+
+The Atlas Administration surface runs separately on port `4175`:
+
+```sh
+node examples/admin-demo/server.mjs
+```
+
+Open `http://127.0.0.1:4175/` to manage reference plugins, plugin packages and
+central Home Assistant connection settings.
 
 The Home Assistant controls validate a connection target, show the derived
 WebSocket endpoint and can connect to an instance. The supplied access token is
@@ -23,13 +32,13 @@ On desktop-sized screens the connection, card setup and entity-picker controls
 use compact panel styling plus two- and three-column grids so related inputs
 and actions sit together instead of stretching across the full page width.
 
-The demo now includes a minimal Atlas Administration panel. It reads the
-Runtime plugin catalog, shows the Home Assistant Card Editor as the first
-reference plugin, exposes inspect/activate/export-package actions and exports
-the generated `.atlas-plugin.json` package descriptor. The administration panel
-also documents the intended credential boundary: Home Assistant tokens stay in
-the central admin/connection area, while plugins receive only approved context
-such as Home Assistant URL, WebSocket path and declared capabilities.
+The separate Administration demo reads the Runtime plugin catalog, shows the
+Home Assistant Card Editor as the first reference plugin, exposes
+inspect/activate/export-package actions and exports the generated
+`.atlas-plugin.json` package descriptor. It also documents the intended
+credential boundary: Home Assistant tokens stay in the central admin area,
+while plugins receive only approved context such as Home Assistant URL,
+WebSocket path and declared capabilities.
 
 Enter one or more comma-separated Entity IDs before connecting, or use the
 domain-filtered entity picker to add known demo entities. Once a live event

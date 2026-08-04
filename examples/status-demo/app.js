@@ -2,10 +2,6 @@ import {
   createThemeTokens,
 } from "@atlas/theme";
 import {
-  createRuntimePluginAdministrationView,
-  RuntimePluginCatalog,
-} from "@atlas/runtime";
-import {
   createHomeAssistantStatusPanel,
   createHomeAssistantCardExportPackage,
   createHomeAssistantCardExportPayload,
@@ -51,9 +47,6 @@ import {
   findHomeAssistantStatusPanel,
   inspectHomeAssistantConnectionReadiness,
   bindHomeAssistantEntityStatusPanel,
-  createHomeAssistantCardEditorPlugin,
-  createHomeAssistantCardEditorPluginInstallPackage,
-  HomeAssistantCardEditorPluginId,
 } from "@atlas/homeassistant";
 
 const statusRoot = document.querySelector("#atlas-status-root");
@@ -140,15 +133,10 @@ const entityList = document.querySelector("#atlas-entity-list");
 const stackSelectionSummary = document.querySelector("#stack-selection-summary");
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
-const atlasAdminPluginList = document.querySelector("#atlas-admin-plugin-list");
-const atlasAdminSummary = document.querySelector("#atlas-admin-summary");
-const atlasAdminTokenPolicy = document.querySelector("#atlas-admin-token-policy");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
-const atlasPluginCatalog = new RuntimePluginCatalog();
-atlasPluginCatalog.register(createHomeAssistantCardEditorPlugin());
 let currentLanguage = "en";
 const translations = {
   en: {
@@ -180,9 +168,6 @@ const translations = {
     "label.row": "Row",
     "label.width": "Width",
     "label.height": "Height",
-    "label.extensionPoints": "Extension points",
-    "label.capabilities": "Capabilities",
-    "label.pluginVersion": "Version",
     "button.connect": "Connect",
     "button.disconnect": "Disconnect",
     "button.saveGroup": "Save group",
@@ -209,10 +194,6 @@ const translations = {
     "button.scanHaCards": "Scan HA cards",
     "button.resetSizes": "Reset sizes",
     "button.resetFavorites": "Reset favorites",
-    "button.inspect": "Inspect",
-    "button.activate": "Activate",
-    "button.deactivate": "Deactivate",
-    "button.exportPackage": "Export package",
     "button.addTemplate": "Add template",
     "button.editSelected": "Edit selected",
     "button.stopEditing": "Stop editing",
@@ -233,8 +214,6 @@ const translations = {
     "heading.diagnostics": "Diagnostics",
     "heading.statusPreview": "ATLAS Status Preview",
     "heading.selectedEntities": "Selected entities",
-    "heading.atlasAdministration": "Atlas Administration",
-    "heading.adminCredentialScope": "Credential scope",
     "group.overview": "Overview",
     "group.energy": "Energy",
     "group.safety": "Safety",
@@ -262,13 +241,6 @@ const translations = {
     "aria.useEntityInStack": "Use {entityId} in stack export",
     "aria.entityState": "Entity state",
     "message.emptySelection": "Select at least one entity.",
-    "message.adminSubtitle": "Manage installed ATLAS plugins and central Home Assistant access.",
-    "message.adminSummary": "{total} plugins, {active} active, {available} available, {disabled} disabled",
-    "message.adminTokenPolicy": "Admin owns the Home Assistant token. Plugins receive approved context only: Home Assistant URL {url}, WebSocket path {websocket} and declared capabilities, but no raw access token.",
-    "message.adminPluginInspected": "{name}: {points} extension points, {capabilities} capabilities.",
-    "message.adminPluginActivated": "{name} activated.",
-    "message.adminPluginDeactivated": "{name} deactivated.",
-    "message.adminPluginPackageExported": "{name} plugin package exported.",
     "message.noExpertFields": "No expert fields added.",
     "message.dragCard": "Drag a card from the left into this editor surface.",
     "message.addTemplatePreview": "Add a template field to preview the Expert editor output.",
@@ -397,9 +369,6 @@ const translations = {
     "text.favoritesSaved": "{count} favorite cards saved.",
     "text.allCardsRemainVisible": "Favorite selection saved. All cards remain visible.",
     "text.allCardsVisibleAgain": "All Core and Community cards are visible again.",
-    "text.pluginStatusAvailable": "Available",
-    "text.pluginStatusActive": "Active",
-    "text.pluginStatusDisabled": "Disabled",
     "text.templateSizesReset": "Template sizes reset to their defaults.",
     "text.removeField": "Remove {field}",
     "text.fieldRemoved": "{field} removed from the Expert editor preview.",
@@ -491,9 +460,6 @@ const translations = {
     "label.row": "Zeile",
     "label.width": "Breite",
     "label.height": "Hoehe",
-    "label.extensionPoints": "Extension Points",
-    "label.capabilities": "Faehigkeiten",
-    "label.pluginVersion": "Version",
     "button.connect": "Verbinden",
     "button.disconnect": "Trennen",
     "button.saveGroup": "Gruppe speichern",
@@ -520,10 +486,6 @@ const translations = {
     "button.scanHaCards": "HA-Cards scannen",
     "button.resetSizes": "Groessen zuruecksetzen",
     "button.resetFavorites": "Favoriten zuruecksetzen",
-    "button.inspect": "Pruefen",
-    "button.activate": "Aktivieren",
-    "button.deactivate": "Deaktivieren",
-    "button.exportPackage": "Paket exportieren",
     "button.addTemplate": "Template hinzufuegen",
     "button.editSelected": "Auswahl bearbeiten",
     "button.stopEditing": "Bearbeitung beenden",
@@ -544,8 +506,6 @@ const translations = {
     "heading.diagnostics": "Diagnose",
     "heading.statusPreview": "ATLAS Status Vorschau",
     "heading.selectedEntities": "Ausgewaehlte Entitaeten",
-    "heading.atlasAdministration": "Atlas Administration",
-    "heading.adminCredentialScope": "Zugriffsbereich",
     "group.overview": "Uebersicht",
     "group.energy": "Energie",
     "group.safety": "Sicherheit",
@@ -573,13 +533,6 @@ const translations = {
     "aria.useEntityInStack": "{entityId} im Stapel-Export nutzen",
     "aria.entityState": "Entitaetsstatus",
     "message.emptySelection": "Waehle mindestens eine Entitaet aus.",
-    "message.adminSubtitle": "Installierte ATLAS-Plugins und zentralen Home-Assistant-Zugriff verwalten.",
-    "message.adminSummary": "{total} Plugins, {active} aktiv, {available} verfuegbar, {disabled} deaktiviert",
-    "message.adminTokenPolicy": "Die Administration besitzt den Home-Assistant-Token. Plugins erhalten nur freigegebenen Kontext: Home-Assistant-URL {url}, WebSocket-Pfad {websocket} und deklarierte Faehigkeiten, aber keinen rohen Access Token.",
-    "message.adminPluginInspected": "{name}: {points} Extension Points, {capabilities} Faehigkeiten.",
-    "message.adminPluginActivated": "{name} aktiviert.",
-    "message.adminPluginDeactivated": "{name} deaktiviert.",
-    "message.adminPluginPackageExported": "{name} Plugin-Paket exportiert.",
     "message.noExpertFields": "Keine Expert-Felder hinzugefuegt.",
     "message.dragCard": "Ziehe eine Card von links in diese Editor-Flaeche.",
     "message.addTemplatePreview": "Fuege ein Template-Feld hinzu, um die Expert-Ausgabe zu sehen.",
@@ -708,9 +661,6 @@ const translations = {
     "text.favoritesSaved": "{count} Favoriten-Cards gespeichert.",
     "text.allCardsRemainVisible": "Favoritenauswahl gespeichert. Alle Cards bleiben sichtbar.",
     "text.allCardsVisibleAgain": "Alle Core- und Community-Cards sind wieder sichtbar.",
-    "text.pluginStatusAvailable": "Verfuegbar",
-    "text.pluginStatusActive": "Aktiv",
-    "text.pluginStatusDisabled": "Deaktiviert",
     "text.templateSizesReset": "Template-Groessen auf Standard zurueckgesetzt.",
     "text.removeField": "{field} entfernen",
     "text.fieldRemoved": "{field} aus der Expert-Editor-Vorschau entfernt.",
@@ -816,7 +766,6 @@ function setLanguage(language) {
   renderEditorMode(activeEditorMode);
   renderEntityList();
   renderConnectionReadiness();
-  renderAtlasAdministration();
   persistConfiguration();
 }
 
@@ -840,137 +789,6 @@ function translatePaletteCategory(category) {
   if (category === "Core") return t("text.categoryCore");
   if (category === "Community") return t("text.categoryCommunity");
   return category;
-}
-
-function translatePluginStatus(status) {
-  if (status === "active") return t("text.pluginStatusActive");
-  if (status === "disabled") return t("text.pluginStatusDisabled");
-  return t("text.pluginStatusAvailable");
-}
-
-function translatePluginAction(action) {
-  if (action === "activate") return t("button.activate");
-  if (action === "deactivate") return t("button.deactivate");
-  if (action === "export-package") return t("button.exportPackage");
-  return t("button.inspect");
-}
-
-function currentHomeAssistantWebSocketPath() {
-  try {
-    const configuration = createHomeAssistantConnectionConfiguration({ url: homeAssistantUrl.value });
-    return deriveHomeAssistantWebSocketUrl(configuration);
-  } catch {
-    return "-";
-  }
-}
-
-function downloadTextFile(filename, content, type) {
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(new Blob([content], { type }));
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
-function createAtlasPluginDetail(label, values) {
-  const detail = document.createElement("div");
-  const caption = document.createElement("div");
-  const chips = document.createElement("div");
-  caption.className = "atlas-admin-detail-label";
-  chips.className = "atlas-chip-list";
-  caption.textContent = label;
-
-  for (const value of values) {
-    const chip = document.createElement("span");
-    chip.textContent = value;
-    chips.append(chip);
-  }
-
-  detail.append(caption, chips);
-  return detail;
-}
-
-function handleAtlasPluginAction(action, plugin) {
-  if (action === "activate") {
-    activeAtlasPluginIds.add(plugin.id);
-    statusMessage.textContent = t("message.adminPluginActivated", { name: plugin.name });
-    renderAtlasAdministration();
-    return;
-  }
-
-  if (action === "deactivate") {
-    activeAtlasPluginIds.delete(plugin.id);
-    statusMessage.textContent = t("message.adminPluginDeactivated", { name: plugin.name });
-    renderAtlasAdministration();
-    return;
-  }
-
-  if (action === "export-package") {
-    const pluginPackage = createHomeAssistantCardEditorPluginInstallPackage();
-    downloadTextFile(pluginPackage.filename, JSON.stringify(pluginPackage, null, 2), "application/json");
-    statusMessage.textContent = t("message.adminPluginPackageExported", { name: plugin.name });
-    return;
-  }
-
-  statusMessage.textContent = t("message.adminPluginInspected", {
-    name: plugin.name,
-    points: plugin.extensionPoints.length,
-    capabilities: plugin.provides.length,
-  });
-}
-
-function renderAtlasAdministration() {
-  const view = createRuntimePluginAdministrationView({
-    plugins: atlasPluginCatalog,
-    activePluginIds: [...activeAtlasPluginIds],
-  });
-
-  atlasAdminSummary.textContent = t("message.adminSummary", view.summary);
-  atlasAdminTokenPolicy.textContent = t("message.adminTokenPolicy", {
-    url: homeAssistantUrl.value.trim() || "-",
-    websocket: currentHomeAssistantWebSocketPath(),
-  });
-  atlasAdminPluginList.replaceChildren();
-
-  for (const plugin of view.plugins) {
-    const item = document.createElement("article");
-    const header = document.createElement("div");
-    const titleGroup = document.createElement("div");
-    const title = document.createElement("h3");
-    const description = document.createElement("p");
-    const status = document.createElement("span");
-    const details = document.createElement("div");
-    const actions = document.createElement("div");
-
-    item.className = "atlas-admin-plugin";
-    header.className = "atlas-admin-plugin-header";
-    status.className = "atlas-plugin-status";
-    details.className = "atlas-admin-details";
-    actions.className = "atlas-admin-actions";
-
-    title.textContent = plugin.name;
-    description.textContent = plugin.description ?? plugin.id;
-    status.textContent = translatePluginStatus(plugin.status);
-    titleGroup.append(title, description);
-    header.append(titleGroup, status);
-
-    details.append(
-      createAtlasPluginDetail(t("label.pluginVersion"), [plugin.version]),
-      createAtlasPluginDetail(t("label.extensionPoints"), plugin.extensionPoints),
-      createAtlasPluginDetail(t("label.capabilities"), plugin.provides),
-    );
-
-    for (const action of plugin.actions) {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = translatePluginAction(action);
-      button.addEventListener("click", () => handleAtlasPluginAction(action, plugin));
-      actions.append(button);
-    }
-
-    item.append(header, details, actions);
-    atlasAdminPluginList.append(item);
-  }
 }
 let expertPaletteCards = [
   { id: "core-entity", category: "Core", label: "Entity", templateId: "entity-card", target: "entity", preview: ["type: entity"] },
@@ -1031,7 +849,6 @@ let pendingImport;
 let initialEditorMode = "simple";
 let initialGroupSelection = "overview";
 let initialCardTarget = "entities";
-let activeAtlasPluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let panelGroups = [
   createHomeAssistantPanelGroup({ id: "overview", title: "Overview", entityIds: ["binary_sensor.atlas_status", "sensor.atlas_temperature"] }),
   createHomeAssistantPanelGroup({ id: "energy", title: "Energy", entityIds: ["sensor.atlas_power", "sensor.atlas_energy"] }),
@@ -3411,7 +3228,6 @@ for (const button of languageButtons) {
 
 homeAssistantUrl.addEventListener("input", () => {
   renderConnectionReadiness();
-  renderAtlasAdministration();
   persistConfiguration();
 });
 homeAssistantToken.addEventListener("input", () => {
@@ -3930,7 +3746,6 @@ syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
-renderAtlasAdministration();
 renderEditorMode(initialEditorMode);
 syncAutoConnectPreference();
 if (autoConnectHomeAssistant.checked && homeAssistantToken.value) {
