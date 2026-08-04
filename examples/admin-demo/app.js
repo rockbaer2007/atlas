@@ -28,6 +28,7 @@ const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
 const adminStorageKey = "atlas.administration.configuration";
 const adminPluginStorageKey = "atlas.administration.importedPlugins";
+const adminPluginStateStorageKey = "atlas.administration.pluginState";
 const adminConnectionCookieName = "atlas_admin_connection";
 const adminConnectionApiPath = "/api/admin-connection";
 const editorOrigin = "http://127.0.0.1:4174";
@@ -283,6 +284,25 @@ function persistImportedPlugins() {
   localStorage.setItem(adminPluginStorageKey, JSON.stringify(importedPluginDescriptors));
 }
 
+function restorePluginState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(adminPluginStateStorageKey) ?? "null");
+    const savedPluginIds = Array.isArray(saved?.activePluginIds)
+      ? saved.activePluginIds.filter(pluginId => typeof pluginId === "string")
+      : undefined;
+    activePluginIds = new Set(savedPluginIds ?? [HomeAssistantCardEditorPluginId]);
+  } catch {
+    activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
+    localStorage.removeItem(adminPluginStateStorageKey);
+  }
+}
+
+function persistPluginState() {
+  localStorage.setItem(adminPluginStateStorageKey, JSON.stringify({
+    activePluginIds: [...activePluginIds],
+  }));
+}
+
 function currentPluginDescriptors() {
   return [
     ...pluginCatalog.list(),
@@ -389,6 +409,7 @@ function receiveEditorReady(event) {
 function handlePluginAction(action, plugin) {
   if (action === "activate") {
     activePluginIds.add(plugin.id);
+    persistPluginState();
     adminSaveState.textContent = t("message.pluginActivated", { name: plugin.name });
     renderAdministration();
     return;
@@ -396,6 +417,7 @@ function handlePluginAction(action, plugin) {
 
   if (action === "deactivate") {
     activePluginIds.delete(plugin.id);
+    persistPluginState();
     adminSaveState.textContent = t("message.pluginDeactivated", { name: plugin.name });
     renderAdministration();
     return;
@@ -425,6 +447,7 @@ function removeImportedPluginPackage(plugin) {
   importedPluginDescriptors = importedPluginDescriptors.filter(entry => entry.id !== plugin.id);
   activePluginIds.delete(plugin.id);
   persistImportedPlugins();
+  persistPluginState();
   renderAdministration();
   adminSaveState.textContent = t("message.pluginPackageRemoved", { name: plugin.name });
 }
@@ -527,6 +550,7 @@ function setLanguage(language) {
 
 restoreConfiguration();
 restoreImportedPlugins();
+restorePluginState();
 if (rememberAdminToken.checked && homeAssistantToken.value.trim()) {
   persistConfiguration();
 }

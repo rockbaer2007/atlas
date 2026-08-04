@@ -22,6 +22,8 @@ packages back into the local administration list as validated descriptors. The
 import path does not execute plugin code; it only reads package metadata so the
 plugin can be inspected, activated in the demo state, exported again or removed
 from the local import list.
+Plugin activation state is also stored locally so the demo administration view
+survives reloads without turning imported plugins back into a fresh list.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The
