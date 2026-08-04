@@ -26,7 +26,8 @@ WebSocket endpoint and can connect to an instance after Atlas Administration
 has handed over the connection settings. The Card Editor no longer contains a
 token field and does not store Home Assistant tokens. Tokens are managed on the
 separate Administration surface and handed to the current editor browser session
-through `postMessage`.
+through `postMessage`. When enabled in Administration, the editor connects
+automatically after receiving that handoff.
 On desktop-sized screens the connection, card setup and entity-picker controls
 use compact panel styling plus two- and three-column grids so related inputs
 and actions sit together instead of stretching across the full page width.

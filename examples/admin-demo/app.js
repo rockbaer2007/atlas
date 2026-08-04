@@ -14,6 +14,7 @@ const languageButtons = Array.from(document.querySelectorAll("[data-language]"))
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
 const rememberAdminToken = document.querySelector("#remember-admin-token");
+const autoConnectEditor = document.querySelector("#auto-connect-editor");
 const saveAdminSettings = document.querySelector("#save-admin-settings");
 const forgetAdminToken = document.querySelector("#forget-admin-token");
 const openCardEditor = document.querySelector("#open-card-editor");
@@ -28,6 +29,7 @@ pluginCatalog.register(createHomeAssistantCardEditorPlugin());
 
 let currentLanguage = "en";
 let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
+let lastEditorWindow;
 
 const translations = {
   en: {
@@ -39,6 +41,7 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
     "label.rememberToken": "Remember token locally for Administration",
+    "label.autoConnectEditor": "Auto-connect Card Editor after handoff",
     "label.version": "Version",
     "label.extensionPoints": "Extension points",
     "label.capabilities": "Capabilities",
@@ -57,6 +60,7 @@ const translations = {
     "message.saved": "Settings saved.",
     "message.tokenForgotten": "Token forgotten.",
     "message.editorOpened": "Card Editor opened and connection settings handed over.",
+    "message.editorReady": "Card Editor requested connection settings.",
     "message.editorTokenMissing": "Save or enter an access token before opening the Card Editor.",
     "message.pluginInspected": "{name}: {points} extension points, {capabilities} capabilities.",
     "message.pluginActivated": "{name} activated.",
@@ -78,6 +82,7 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
     "label.rememberToken": "Token lokal fuer die Administration merken",
+    "label.autoConnectEditor": "Card Editor nach Uebergabe automatisch verbinden",
     "label.version": "Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
@@ -96,6 +101,7 @@ const translations = {
     "message.saved": "Einstellungen gespeichert.",
     "message.tokenForgotten": "Token vergessen.",
     "message.editorOpened": "Card Editor geoeffnet und Verbindungseinstellungen uebergeben.",
+    "message.editorReady": "Card Editor hat Verbindungseinstellungen angefordert.",
     "message.editorTokenMissing": "Gib zuerst einen Access Token ein oder speichere ihn, bevor du den Card Editor oeffnest.",
     "message.pluginInspected": "{name}: {points} Extension Points, {capabilities} Faehigkeiten.",
     "message.pluginActivated": "{name} aktiviert.",
@@ -146,6 +152,7 @@ function persistConfiguration() {
     language: currentLanguage,
     url: homeAssistantUrl.value,
     rememberToken: rememberAdminToken.checked,
+    autoConnectEditor: autoConnectEditor.checked,
     token: rememberAdminToken.checked ? homeAssistantToken.value : undefined,
   }));
 }
@@ -164,6 +171,9 @@ function restoreConfiguration() {
       if (typeof saved.token === "string") {
         homeAssistantToken.value = saved.token;
       }
+    }
+    if (saved?.autoConnectEditor === true) {
+      autoConnectEditor.checked = true;
     }
   } catch {
     localStorage.removeItem(adminStorageKey);
@@ -214,9 +224,18 @@ function createEditorConnectionHandoff() {
     type: "atlas.admin.connection.v1",
     url: homeAssistantUrl.value.trim(),
     token: homeAssistantToken.value,
-    autoConnect: false,
+    autoConnect: autoConnectEditor.checked,
     sentAt: new Date().toISOString(),
   };
+}
+
+function postEditorConnectionHandoff(editorWindow) {
+  if (!editorWindow || !homeAssistantToken.value) {
+    return false;
+  }
+
+  editorWindow.postMessage(createEditorConnectionHandoff(), editorOrigin);
+  return true;
 }
 
 function openEditorWithConnectionHandoff() {
@@ -226,22 +245,31 @@ function openEditorWithConnectionHandoff() {
   }
 
   persistConfiguration();
-  const editorWindow = window.open(`${editorOrigin}/?atlasAdminHandoff=1`, "atlas-card-editor");
-  if (!editorWindow) {
+  lastEditorWindow = window.open(`${editorOrigin}/?atlasAdminHandoff=1`, "atlas-card-editor");
+  if (!lastEditorWindow) {
     return;
   }
 
-  const handoff = createEditorConnectionHandoff();
   let attempts = 0;
   const timer = window.setInterval(() => {
     attempts += 1;
-    editorWindow.postMessage(handoff, editorOrigin);
+    postEditorConnectionHandoff(lastEditorWindow);
     if (attempts >= 12) {
       window.clearInterval(timer);
     }
   }, 350);
 
   adminSaveState.textContent = t("message.editorOpened");
+}
+
+function receiveEditorReady(event) {
+  if (event.origin !== editorOrigin || event.data?.type !== "atlas.editor.ready.v1") {
+    return;
+  }
+
+  lastEditorWindow = event.source;
+  adminSaveState.textContent = t("message.editorReady");
+  postEditorConnectionHandoff(lastEditorWindow);
 }
 
 function handlePluginAction(action, plugin) {
@@ -358,6 +386,10 @@ rememberAdminToken.addEventListener("change", () => {
   }
   persistConfiguration();
 });
+
+autoConnectEditor.addEventListener("change", persistConfiguration);
+
+window.addEventListener("message", receiveEditorReady);
 
 saveAdminSettings.addEventListener("click", () => {
   persistConfiguration();

@@ -82,6 +82,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - The user wants entity selection from Home Assistant when Atlas is installed or connected.
 - Access tokens are managed by Atlas Administration, not by the Card Editor.
 - The Card Editor may receive the Home Assistant token only as a session handoff from Administration.
+- Auto-connect belongs to Atlas Administration and may be sent as part of the session handoff.
 - Plugins should receive approved URLs, resource paths and capabilities, but not raw access tokens.
 
 ## Expert Editor Rules

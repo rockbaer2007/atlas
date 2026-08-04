@@ -1095,6 +1095,17 @@ function receiveAdminConnectionHandoff(event) {
   }
 }
 
+function requestAdminConnectionHandoff() {
+  if (!window.opener || window.opener.closed) {
+    return;
+  }
+
+  window.opener.postMessage({
+    type: "atlas.editor.ready.v1",
+    sentAt: new Date().toISOString(),
+  }, adminOrigin);
+}
+
 function renderConnectionLifecycle(lifecycle) {
   connectionState.dataset.state = lifecycle.state;
   connectionState.textContent = lifecycle.reason
@@ -3740,3 +3751,12 @@ renderEntityPickerOptions();
 renderConnectionReadiness();
 renderAdminHandoffState();
 renderEditorMode(initialEditorMode);
+
+let adminHandoffRequestAttempts = 0;
+const adminHandoffRequestTimer = window.setInterval(() => {
+  adminHandoffRequestAttempts += 1;
+  requestAdminConnectionHandoff();
+  if (adminConnectionToken || adminHandoffRequestAttempts >= 8) {
+    window.clearInterval(adminHandoffRequestTimer);
+  }
+}, 300);
