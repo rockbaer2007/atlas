@@ -55,6 +55,7 @@ const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
 const rememberHomeAssistantToken = document.querySelector("#remember-home-assistant-token");
+const autoConnectHomeAssistant = document.querySelector("#auto-connect-home-assistant");
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
@@ -141,6 +142,7 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
     "label.rememberToken": "Remember token locally",
+    "label.autoConnect": "Auto connect on page load",
     "label.panelGroup": "Panel group",
     "label.groupName": "Group name",
     "label.cardTarget": "Card target",
@@ -432,6 +434,7 @@ const translations = {
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
     "label.rememberToken": "Token lokal merken",
+    "label.autoConnect": "Beim Laden automatisch verbinden",
     "label.panelGroup": "Panel-Gruppe",
     "label.groupName": "Gruppenname",
     "label.cardTarget": "Card-Ziel",
@@ -868,6 +871,9 @@ try {
       homeAssistantToken.value = savedConfiguration.token;
     }
   }
+  if (savedConfiguration?.autoConnect === true && savedConfiguration?.rememberToken === true && typeof savedConfiguration?.token === "string" && savedConfiguration.token) {
+    autoConnectHomeAssistant.checked = true;
+  }
   if (typeof savedConfiguration?.entities === "string") {
     homeAssistantEntity.value = savedConfiguration.entities;
     initialGroupSelection = "custom";
@@ -1114,6 +1120,7 @@ function persistConfiguration() {
       language: currentLanguage,
       url: homeAssistantUrl.value,
       rememberToken: rememberHomeAssistantToken.checked,
+      autoConnect: rememberHomeAssistantToken.checked && autoConnectHomeAssistant.checked,
       token: rememberHomeAssistantToken.checked ? homeAssistantToken.value : undefined,
       entities: homeAssistantEntity.value,
       entityDomain: homeAssistantEntityDomain.value,
@@ -1137,6 +1144,13 @@ function persistConfiguration() {
   } catch {
     // Connection configuration remains session-only when storage is unavailable.
   }
+}
+
+function syncAutoConnectPreference() {
+  if (!rememberHomeAssistantToken.checked) {
+    autoConnectHomeAssistant.checked = false;
+  }
+  autoConnectHomeAssistant.disabled = !rememberHomeAssistantToken.checked;
 }
 
 function renderGroupOptions(selectedId = homeAssistantGroup.value) {
@@ -3153,6 +3167,10 @@ homeAssistantToken.addEventListener("input", () => {
   }
 });
 rememberHomeAssistantToken.addEventListener("change", () => {
+  syncAutoConnectPreference();
+  persistConfiguration();
+});
+autoConnectHomeAssistant.addEventListener("change", () => {
   persistConfiguration();
 });
 homeAssistantEntity.addEventListener("input", () => {
@@ -3635,3 +3653,7 @@ renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
 renderEditorMode(initialEditorMode);
+syncAutoConnectPreference();
+if (autoConnectHomeAssistant.checked && homeAssistantToken.value) {
+  window.setTimeout(connectHomeAssistant, 0);
+}

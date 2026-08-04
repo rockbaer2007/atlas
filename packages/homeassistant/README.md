@@ -63,6 +63,9 @@ client can request `get_states` and `lovelace/resources` as soon as
 authentication succeeds, even while the live event subscription is still
 pending. Lights can receive a validated brightness percentage from 1 through
 100 when a host explicitly invokes the command.
+The demo keeps the connection controls compact and can reconnect on page load
+when the user explicitly combines local token storage with the auto-connect
+option.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server

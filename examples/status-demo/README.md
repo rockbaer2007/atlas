@@ -16,10 +16,12 @@ The Home Assistant controls validate a connection target, show the derived
 WebSocket endpoint and can connect to an instance. The supplied access token is
 cleared from the form immediately after starting the connection unless the
 local remember option is selected. Remembered tokens stay in browser storage
-only and are not logged by the demo.
+only and are not logged by the demo. Auto connect can be enabled only together
+with the local token option; when both are saved, the page reconnects after a
+reload without another button press.
 On desktop-sized screens the connection, card setup and entity-picker controls
-use compact two- and three-column grids so related inputs sit next to each other
-instead of stretching across the full page width.
+use compact panel styling plus two- and three-column grids so related inputs
+and actions sit together instead of stretching across the full page width.
 
 Enter one or more comma-separated Entity IDs before connecting, or use the
 domain-filtered entity picker to add known demo entities. Once a live event
