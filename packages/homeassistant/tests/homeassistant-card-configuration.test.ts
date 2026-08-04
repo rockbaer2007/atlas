@@ -204,9 +204,10 @@ describe("Home Assistant entities card configuration", () => {
   });
 
   it("creates card export locale files with English fallback metadata", () => {
-    expect(normalizeHomeAssistantCardExportLanguages(["de", "en", "sv", "de", "bad-code"])).toEqual([
+    expect(normalizeHomeAssistantCardExportLanguages(["de", "en", "sv", "ru", "de", "bad-code"])).toEqual([
       "en",
       "de",
+      "ru",
       "sv",
     ]);
 

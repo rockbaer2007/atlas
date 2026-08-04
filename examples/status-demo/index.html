@@ -229,6 +229,35 @@
         line-height: 1.4;
       }
 
+      .card-export-translation-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 14px;
+        align-items: center;
+      }
+
+      .card-export-translation-controls label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #172033;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .card-export-translation-controls input {
+        width: 15px;
+        min-height: 15px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
+      .card-export-translation-progress {
+        width: min(280px, 100%);
+        height: 12px;
+        accent-color: #0f766e;
+      }
+
       .admin-handoff-options {
         justify-content: space-between;
       }
@@ -1277,9 +1306,18 @@
             <label><input type="checkbox" data-card-export-language="no"> NO Norsk</label>
             <label><input type="checkbox" data-card-export-language="da"> DA Dansk</label>
             <label><input type="checkbox" data-card-export-language="cs"> CS Cesky</label>
+            <label><input type="checkbox" data-card-export-language="ru"> RU Russkiy</label>
             <label><input type="checkbox" data-card-export-language="pl"> PL Polski</label>
             <label><input type="checkbox" data-card-export-language="pt"> PT Portugues</label>
             <label><input type="checkbox" data-card-export-language="fi"> FI Suomi</label>
+          </div>
+          <div class="card-export-translation-controls">
+            <label for="card-auto-translate">
+              <input id="card-auto-translate" type="checkbox">
+              <span data-i18n="label.autoTranslateCardLanguages">Run automatic translation on export</span>
+            </label>
+            <progress id="card-translation-progress" class="card-export-translation-progress" max="100" value="0" hidden></progress>
+            <output id="card-translation-status" aria-live="polite"></output>
           </div>
           <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
         </fieldset>

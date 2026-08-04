@@ -24,6 +24,11 @@ plugin can be inspected, activated in the demo state, exported again or removed
 from the local import list.
 Plugin activation state is also stored locally so the demo administration view
 survives reloads without turning imported plugins back into a fresh list.
+The administration page also stores the selected Card translation module for
+future exports. Current choices are no automatic translation, ChatGPT/OpenAI,
+DeepL API Free, DeepL API Pro and a custom AI provider. The selection is handed
+to the Card Editor, but real provider execution still requires a later backend
+adapter and API-key handling.
 
 Home Assistant tokens are stored only in the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The

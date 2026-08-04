@@ -75,6 +75,9 @@ const haCardLayout = document.querySelector("#ha-card-layout");
 const haCardFormat = document.querySelector("#ha-card-format");
 const haCardScriptFilename = document.querySelector("#ha-card-script-filename");
 const cardExportLanguageInputs = Array.from(document.querySelectorAll("[data-card-export-language]"));
+const cardAutoTranslate = document.querySelector("#card-auto-translate");
+const cardTranslationProgress = document.querySelector("#card-translation-progress");
+const cardTranslationStatus = document.querySelector("#card-translation-status");
 const saveHomeAssistantGroup = document.querySelector("#save-home-assistant-group");
 const deleteHomeAssistantGroup = document.querySelector("#delete-home-assistant-group");
 const duplicateHomeAssistantGroup = document.querySelector("#duplicate-home-assistant-group");
@@ -152,6 +155,7 @@ const translations = {
     "label.cardFormat": "Card format",
     "label.scriptFilename": "HACS script filename",
     "label.cardExportLanguages": "Card export languages",
+    "label.autoTranslateCardLanguages": "Run automatic translation on export",
     "label.entityIds": "Entity IDs",
     "label.entityType": "Entity type",
     "label.entitySearch": "Entity search",
@@ -338,6 +342,11 @@ const translations = {
     "message.cardExportLanguageHint": "EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.",
     "message.packageExportedWithLanguages": "Card package exported with HACS script {scriptFilename} and languages {languages}.",
     "message.bundleExportedWithLanguages": "HACS bundle exported as {filename} with {count} files and languages {languages}.",
+    "message.translationProviderReady": "Translation module from Administration: {provider}.",
+    "message.translationFallbackNoProvider": "Automatic translation requested, but no translation module is configured. Exporting fallback language files.",
+    "message.translationFallbackProviderPending": "Automatic translation requested with {provider}. Provider execution is not connected yet, so fallback language files are exported for review.",
+    "message.translationProgress": "Preparing language files: {percent}%.",
+    "message.translationComplete": "Language files prepared: {percent}%.",
     "message.scriptFilenameNormalized": "HACS script filename will be exported as {scriptFilename}.",
     "message.atlasPackage": "ATLAS card package",
     "message.haCard": "HA card",
@@ -448,6 +457,7 @@ const translations = {
     "label.cardFormat": "Card-Format",
     "label.scriptFilename": "HACS-Script-Dateiname",
     "label.cardExportLanguages": "Card-Export-Sprachen",
+    "label.autoTranslateCardLanguages": "Automatische Uebersetzung beim Export ausfuehren",
     "label.entityIds": "Entitaets-IDs",
     "label.entityType": "Entitaetstyp",
     "label.entitySearch": "Entitaet suchen",
@@ -634,6 +644,11 @@ const translations = {
     "message.cardExportLanguageHint": "EN ist der Pflicht-Fallback. Zusaetzliche Sprachen werden aktuell als englische Fallback-Dateien exportiert. Bitte die entsprechenden Languagefiles vor der Veroeffentlichung pruefen und uebersetzen. Automatische Uebersetzung braucht spaeter eine Internetverbindung.",
     "message.packageExportedWithLanguages": "Card-Paket mit HACS-Script {scriptFilename} und Sprachen {languages} exportiert.",
     "message.bundleExportedWithLanguages": "HACS-Bundle als {filename} mit {count} Dateien und Sprachen {languages} exportiert.",
+    "message.translationProviderReady": "Uebersetzungsmodul aus Administration: {provider}.",
+    "message.translationFallbackNoProvider": "Automatische Uebersetzung angefordert, aber kein Uebersetzungsmodul ist konfiguriert. Fallback-Languagefiles werden exportiert.",
+    "message.translationFallbackProviderPending": "Automatische Uebersetzung mit {provider} angefordert. Provider-Ausfuehrung ist noch nicht angebunden, daher werden Fallback-Languagefiles zur Pruefung exportiert.",
+    "message.translationProgress": "Languagefiles werden vorbereitet: {percent}%.",
+    "message.translationComplete": "Languagefiles vorbereitet: {percent}%.",
     "message.scriptFilenameNormalized": "HACS-Script-Dateiname wird als {scriptFilename} exportiert.",
     "message.atlasPackage": "ATLAS-Card-Paket",
     "message.haCard": "HA-Card",
@@ -843,6 +858,7 @@ let panelBinding;
 let activeTransport;
 let removeEntityListListener;
 let adminConnectionToken = "";
+let adminTranslationProvider = "none";
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
@@ -957,6 +973,9 @@ try {
     for (const input of cardExportLanguageInputs) {
       input.checked = input.dataset.cardExportLanguage === "en" || selectedLanguages.has(input.dataset.cardExportLanguage);
     }
+  }
+  if (typeof savedConfiguration?.cardAutoTranslate === "boolean") {
+    cardAutoTranslate.checked = savedConfiguration.cardAutoTranslate;
   }
   if (typeof savedConfiguration?.selectedGroup === "string") {
     initialGroupSelection = savedConfiguration.selectedGroup;
@@ -1095,6 +1114,10 @@ function renderAdminHandoffState() {
     : t("message.adminHandoffWaiting");
 }
 
+function normalizeTranslationProvider(value) {
+  return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+}
+
 function readAdminConnectionCookie() {
   const cookie = document.cookie
     .split("; ")
@@ -1117,6 +1140,8 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
     homeAssistantUrl.value = settings.url.trim();
   }
   adminConnectionToken = typeof settings.token === "string" ? settings.token : "";
+  adminTranslationProvider = normalizeTranslationProvider(settings.translationProvider);
+  cardTranslationStatus.textContent = t("message.translationProviderReady", { provider: adminTranslationProvider });
   renderConnectionReadiness();
   renderAdminHandoffState();
   persistConfiguration();
@@ -1234,6 +1259,7 @@ function persistConfiguration() {
       cardFormat: haCardFormat.value,
       cardScriptFilename: haCardScriptFilename.value,
       cardExportLanguages: selectedCardExportLanguages(),
+      cardAutoTranslate: cardAutoTranslate.checked,
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       expertTemplateSizing: serializedExpertTemplateSizing(),
@@ -2887,6 +2913,36 @@ function selectedCardExportLanguages() {
   ];
 }
 
+function sleep(milliseconds) {
+  return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+}
+
+async function prepareCardExportTranslations(languages) {
+  if (!cardAutoTranslate.checked) {
+    cardTranslationProgress.hidden = true;
+    cardTranslationProgress.value = 0;
+    cardTranslationStatus.textContent = "";
+    return;
+  }
+
+  const provider = normalizeTranslationProvider(adminTranslationProvider);
+  cardTranslationProgress.hidden = false;
+  cardTranslationProgress.value = 0;
+  cardTranslationStatus.textContent = provider === "none"
+    ? t("message.translationFallbackNoProvider")
+    : t("message.translationFallbackProviderPending", { provider });
+
+  const steps = Math.max(1, languages.length);
+  for (let index = 0; index < steps; index += 1) {
+    const percent = Math.round(((index + 1) / steps) * 100);
+    cardTranslationProgress.value = percent;
+    statusMessage.textContent = t("message.translationProgress", { percent });
+    await sleep(60);
+  }
+
+  statusMessage.textContent = t("message.translationComplete", { percent: 100 });
+}
+
 function createHaCardExportPackage() {
   const card = createActiveHaCardConfig();
   const editorPlan = createActiveCardEditorPlan();
@@ -3417,6 +3473,7 @@ haCardScriptFilename.addEventListener("input", () => {
 for (const input of cardExportLanguageInputs) {
   input.addEventListener("change", persistConfiguration);
 }
+cardAutoTranslate.addEventListener("change", persistConfiguration);
 for (const button of editorModeButtons) {
   button.addEventListener("click", () => {
     renderEditorMode(button.dataset.editorMode);
@@ -3570,12 +3627,13 @@ exportHaCardConfig.addEventListener("click", () => {
   link.click();
   URL.revokeObjectURL(link.href);
 });
-exportHaCardPackage.addEventListener("click", () => {
+exportHaCardPackage.addEventListener("click", async () => {
   if (!canExportHaCard()) {
     statusMessage.textContent = emptyEntitySelectionMessage;
     return;
   }
 
+  await prepareCardExportTranslations(selectedCardExportLanguages());
   const cardPackage = createHaCardExportPackage();
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([JSON.stringify(cardPackage, null, 2)], { type: "application/json" }));
@@ -3601,12 +3659,13 @@ exportHaCardScript.addEventListener("click", () => {
   URL.revokeObjectURL(link.href);
   statusMessage.textContent = t("message.scriptExported", { scriptFilename: scriptExport.filename });
 });
-exportHaCardBundle.addEventListener("click", () => {
+exportHaCardBundle.addEventListener("click", async () => {
   if (!canExportHaCard()) {
     statusMessage.textContent = emptyEntitySelectionMessage;
     return;
   }
 
+  await prepareCardExportTranslations(selectedCardExportLanguages());
   const bundle = createHomeAssistantCardEditorHacsBundle(createHaCardExportPackage());
   const archive = createHomeAssistantCardEditorHacsBundleArchive(bundle);
   const link = document.createElement("a");

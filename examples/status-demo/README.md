@@ -98,6 +98,11 @@ additional languages are generated as English fallback files with metadata
 notes that they must be translated and reviewed before publishing. Automatic
 translation is not active in this first version and will require an internet
 connection when added later.
+Russian (`ru`) is included in the selectable Card export languages. The editor
+also exposes an automatic-translation checkbox with a progress indicator. It
+uses the translation module selected in Atlas Administration, but until a real
+provider adapter is connected it still exports reviewed fallback files rather
+than pretending that machine translation completed.
 Export HACS bundle downloads a real `.hacs.zip` archive containing the future
 repository files: `hacs.json`, the generated JavaScript card, a README, an
 example Lovelace card, the original Atlas card package and the selected

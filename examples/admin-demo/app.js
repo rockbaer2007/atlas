@@ -15,6 +15,7 @@ import {
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
+const translationProvider = document.querySelector("#translation-provider");
 const rememberAdminToken = document.querySelector("#remember-admin-token");
 const autoConnectEditor = document.querySelector("#auto-connect-editor");
 const saveAdminSettings = document.querySelector("#save-admin-settings");
@@ -49,6 +50,7 @@ const translations = {
     "heading.policy": "Plugin access policy",
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
+    "label.translationProvider": "Translation module",
     "label.rememberToken": "Remember token locally for Administration",
     "label.autoConnectEditor": "Auto-connect Card Editor after handoff",
     "label.version": "Version",
@@ -63,6 +65,11 @@ const translations = {
     "button.exportPackage": "Export package",
     "button.importPackage": "Import package",
     "button.removeImportedPackage": "Remove import",
+    "provider.none": "None / fallback files",
+    "provider.chatgpt": "ChatGPT / OpenAI",
+    "provider.deeplFree": "DeepL API Free",
+    "provider.deeplPro": "DeepL API Pro",
+    "provider.customAi": "Custom AI provider",
     "aria.language": "Language",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
@@ -98,6 +105,7 @@ const translations = {
     "heading.policy": "Plugin-Zugriffsregel",
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
+    "label.translationProvider": "Uebersetzungsmodul",
     "label.rememberToken": "Token lokal fuer die Administration merken",
     "label.autoConnectEditor": "Card Editor nach Uebergabe automatisch verbinden",
     "label.version": "Version",
@@ -112,6 +120,11 @@ const translations = {
     "button.exportPackage": "Paket exportieren",
     "button.importPackage": "Paket importieren",
     "button.removeImportedPackage": "Import entfernen",
+    "provider.none": "Keins / Fallback-Dateien",
+    "provider.chatgpt": "ChatGPT / OpenAI",
+    "provider.deeplFree": "DeepL API Free",
+    "provider.deeplPro": "DeepL API Pro",
+    "provider.customAi": "Eigener KI-Anbieter",
     "aria.language": "Sprache",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
@@ -172,11 +185,16 @@ function currentWebSocketPath() {
   }
 }
 
+function normalizeTranslationProvider(value) {
+  return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+}
+
 function persistConfiguration() {
   const token = homeAssistantToken.value.trim();
   const configuration = {
     language: currentLanguage,
     url: homeAssistantUrl.value,
+    translationProvider: normalizeTranslationProvider(translationProvider.value),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     token: rememberAdminToken.checked ? token : undefined,
@@ -187,18 +205,14 @@ function persistConfiguration() {
 }
 
 async function persistServerConnectionSettings(configuration) {
-  if (!configuration.rememberToken || !configuration.token) {
-    await fetch(adminConnectionApiPath, { method: "DELETE" });
-    return;
-  }
-
   await fetch(adminConnectionApiPath, {
     method: "PUT",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       url: configuration.url,
-      token: configuration.token,
+      token: configuration.rememberToken ? configuration.token : "",
       autoConnectEditor: configuration.autoConnectEditor,
+      translationProvider: configuration.translationProvider,
     }),
   });
 }
@@ -214,6 +228,7 @@ function persistSharedConnectionCookie(configuration) {
       url: configuration.url,
       token: configuration.token,
       autoConnectEditor: configuration.autoConnectEditor,
+      translationProvider: configuration.translationProvider,
       updatedAt: new Date().toISOString(),
     }))}`,
     "path=/",
@@ -248,6 +263,9 @@ function restoreConfiguration() {
     }
     if (typeof saved?.url === "string") {
       homeAssistantUrl.value = saved.url;
+    }
+    if (typeof saved?.translationProvider === "string") {
+      translationProvider.value = normalizeTranslationProvider(saved.translationProvider);
     }
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
@@ -359,6 +377,7 @@ function createEditorConnectionHandoff() {
     url: homeAssistantUrl.value.trim(),
     token: homeAssistantToken.value,
     autoConnect: autoConnectEditor.checked,
+    translationProvider: normalizeTranslationProvider(translationProvider.value),
     sentAt: new Date().toISOString(),
   };
 }
@@ -565,6 +584,8 @@ homeAssistantUrl.addEventListener("input", () => {
   renderAdministration();
   persistConfiguration();
 });
+
+translationProvider.addEventListener("change", persistConfiguration);
 
 homeAssistantToken.addEventListener("input", () => {
   if (rememberAdminToken.checked) {

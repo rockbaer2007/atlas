@@ -116,8 +116,13 @@ function normalizeAdminConnectionSettings(settings) {
     url: typeof settings.url === "string" ? settings.url : "",
     token: typeof settings.token === "string" ? settings.token : "",
     autoConnectEditor: settings.autoConnectEditor === true,
+    translationProvider: normalizeTranslationProvider(settings.translationProvider),
     updatedAt: new Date().toISOString(),
   };
+}
+
+function normalizeTranslationProvider(value) {
+  return ["none", "chatgpt", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
 }
 
 function resolveRequestFilePath(requestedFilePath) {
