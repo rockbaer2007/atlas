@@ -18,6 +18,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Prefer completing a useful end-to-end increment: implement, test, commit, and push when the change is ready.
 - Give short progress updates while working.
 - Keep final reports concise: what changed, what was verified, commit hashes, and anything that did not work.
+- End final reports with the current ATLAS sprint number, derived from the highest numbered `docs/sprints/Sprint-G2.5.*.md` file unless another active sprint is explicitly documented.
 - If the user asks for only a short answer, keep it short.
 
 ## Git Rules
@@ -132,6 +133,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Future direction includes detecting installed Home Assistant resources and offering relevant card/entity choices.
 - Future direction includes using Atlas directly on a server or as a Home Assistant/HACS integration.
 - Future direction includes a separate plugin documentation area for authoring, lifecycle, extension APIs, examples, and publishing guidance.
+- Future direction includes an Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation.
 - Planned follow-up projects include the UGSo Thread Monitor and the Lovelace UV Card.
 
 ## Known User Preferences
