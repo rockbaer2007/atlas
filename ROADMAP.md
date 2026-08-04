@@ -183,11 +183,13 @@ additional envelope-only contract expansion.
 * Provider ecosystem
 * Third-party integrations
 * Dedicated plugin documentation for authoring, lifecycle, extension APIs, examples, and publishing guidance
+* Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation
 
 ### Success Criteria
 
 * Stable plugin architecture
 * Separate plugin documentation is available and maintained
+* Plugins can be managed and packaged through an administration UI
 
 ---
 
