@@ -272,6 +272,7 @@ function persistConfiguration() {
     url: homeAssistantUrl.value,
     translationProvider: currentTranslationProvider(),
     translationApiEndpoint: defaultTranslationApiEndpoint,
+    translationApiKeys: readTranslationApiKeys(),
     translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider()),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
@@ -292,7 +293,7 @@ async function persistServerConnectionSettings(configuration) {
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
-      translationApiKeys: readTranslationApiKeys(),
+      translationApiKeys: configuration.translationApiKeys,
     }),
   });
 }
@@ -348,6 +349,7 @@ function restoreConfiguration() {
     if (typeof saved?.translationProvider === "string") {
       setTranslationProvider(saved.translationProvider);
     }
+    applyTranslationApiKeys(saved?.translationApiKeys);
     if (saved?.rememberToken === true) {
       rememberAdminToken.checked = true;
       if (typeof saved.token === "string") {

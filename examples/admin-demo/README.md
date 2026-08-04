@@ -40,8 +40,9 @@ Gemini API-key planning uses `https://ai.google.dev/gemini-api/docs/api-key` as
 the key and security reference. Provider API keys are sent to the local
 Administration server for the active backend session; they are not stored in the
 browser handoff cookie and are not returned to the Card Editor.
-After a page reload, the Administration page can restore provider API-key fields
-from the running local Admin server with `GET /api/admin-connection?includeSecrets=1`.
+After a page reload, the Administration page restores provider API-key fields
+from the local Administration configuration and can also refresh them from the
+running local Admin server with `GET /api/admin-connection?includeSecrets=1`.
 The Administration provider list links directly to that Gemini API-key
 reference next to the Gemini provider row.
 ChatGPT/OpenAI is the first connected translation adapter path. The Card Editor
