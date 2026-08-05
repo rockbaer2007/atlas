@@ -163,6 +163,7 @@ additional envelope-only contract expansion.
 * HACS card package defaults with demo entities and a clear hint to replace them with real Home Assistant entities
 * In-Home-Assistant entity picker for installed ATLAS cards
 * Lovelace UV Card follow-up project for UV index, protection status, thresholds and visual Home Assistant dashboard output
+* Maybe / decision later: evaluate a parcel-tracking Home Assistant integration inspired by `TA2k/ioBroker.parcel`, including a possible Node.js bridge or Home Assistant add-on that hands normalized parcel data to a Python integration
 * Entity abstraction
 * Service integration
 
