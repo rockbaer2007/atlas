@@ -29,6 +29,9 @@ vitest-results/
 npm-debug.log*
 pnpm-debug.log*
 
+# Local Codex session notes
+ATLAS_SESSION_NOTE_*.md
+
 # IDE
 .vscode/settings.json
 
