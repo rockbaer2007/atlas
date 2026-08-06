@@ -21,8 +21,8 @@ describe("RuntimePluginAdministration", () => {
     });
     catalog.register({
       manifest: {
-        id: "atlas.plugin.thread-monitor",
-        name: "Thread Monitor",
+        id: "atlas.plugin.diagnostics-panel",
+        name: "Diagnostics Panel",
         version: "1.0.0",
       },
       async activate() {},
@@ -31,7 +31,7 @@ describe("RuntimePluginAdministration", () => {
     const view = createRuntimePluginAdministrationView({
       plugins: catalog,
       activePluginIds: ["atlas.plugin.editor"],
-      disabledPluginIds: ["atlas.plugin.thread-monitor"],
+      disabledPluginIds: ["atlas.plugin.diagnostics-panel"],
     });
 
     expect(view.summary).toEqual({
@@ -47,7 +47,7 @@ describe("RuntimePluginAdministration", () => {
         actions: ["inspect", "deactivate", "export-package"],
       },
       {
-        id: "atlas.plugin.thread-monitor",
+        id: "atlas.plugin.diagnostics-panel",
         status: "disabled",
         actions: ["inspect", "activate"],
       },
