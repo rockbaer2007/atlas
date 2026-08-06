@@ -156,7 +156,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Future direction includes a separate plugin documentation area for authoring, lifecycle, extension APIs, examples, and publishing guidance.
 - Future direction includes an Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation.
 - Future direction includes using the Home Assistant Card Editor as the first reference plugin for ATLAS plugin architecture, administration and package export.
-- Planned follow-up projects include the UGSo Thread Monitor and the Lovelace UV Card.
+- The UGSo Thread Monitor / Thread Card is no longer an active ATLAS follow-up TODO because Home Assistant 2026.8 covers the needed Thread/Matter overview in the Matter Server.
+- Planned follow-up projects still include the Lovelace UV Card.
 - Lovelace UV Card inspiration source to preserve: `https://github.com/filipnet/haos-uv-index`.
 - The Lovelace UV Card should be an original UGSo/ATLAS implementation, using the external UV card only as inspiration for UV-index sensor handling, risk colors, WHO-style protection recommendations, Mushroom-compatible presentation and optional notification automation ideas.
 
