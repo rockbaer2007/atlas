@@ -140,6 +140,7 @@ const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const adminOrigin = "http://127.0.0.1:4175";
 const adminConnectionApiUrl = `${adminOrigin}/api/admin-connection`;
 const adminConnectionCookieName = "atlas_admin_connection";
+const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
@@ -873,6 +874,7 @@ let adminConnectionToken = "";
 let adminTranslationProvider = "none";
 let adminTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 let adminTranslationApiKeyConfigured = false;
+let adminTranslationApiKeyConfiguredByProvider = {};
 let reconnectToken;
 let reconnectTimer;
 let reconnectAttempts = 0;
@@ -997,8 +999,23 @@ try {
   if (typeof savedConfiguration?.adminTranslationApiEndpoint === "string") {
     adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(savedConfiguration.adminTranslationApiEndpoint);
   }
+  if (savedConfiguration?.adminTranslationApiKeyConfiguredByProvider && typeof savedConfiguration.adminTranslationApiKeyConfiguredByProvider === "object") {
+    adminTranslationApiKeyConfiguredByProvider = normalizeTranslationApiKeyConfiguredByProvider(
+      savedConfiguration.adminTranslationApiKeyConfiguredByProvider,
+    );
+  }
   if (typeof savedConfiguration?.adminTranslationApiKeyConfigured === "boolean") {
-    adminTranslationApiKeyConfigured = savedConfiguration.adminTranslationApiKeyConfigured;
+    adminTranslationApiKeyConfigured = getProviderApiKeyConfigured(
+      adminTranslationProvider,
+      adminTranslationApiKeyConfiguredByProvider,
+      savedConfiguration.adminTranslationApiKeyConfigured,
+    );
+  } else {
+    adminTranslationApiKeyConfigured = getProviderApiKeyConfigured(
+      adminTranslationProvider,
+      adminTranslationApiKeyConfiguredByProvider,
+      adminTranslationApiKeyConfigured,
+    );
   }
   if (typeof savedConfiguration?.selectedGroup === "string") {
     initialGroupSelection = savedConfiguration.selectedGroup;
@@ -1147,7 +1164,7 @@ function renderCardTranslationModuleStatus() {
 }
 
 function normalizeTranslationProvider(value) {
-  return ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"].includes(value) ? value : "none";
+  return translationProviderValues.includes(value) ? value : "none";
 }
 
 function normalizeTranslationApiEndpoint(value) {
@@ -1161,6 +1178,29 @@ function normalizeTranslationApiEndpoint(value) {
   } catch {
     return "https://api.deepl.com/v2/translate";
   }
+}
+
+function normalizeTranslationApiKeyConfiguredByProvider(value) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  return Object.fromEntries(
+    translationProviderValues
+      .filter(provider => provider !== "none" && typeof value[provider] === "boolean")
+      .map(provider => [provider, value[provider]]),
+  );
+}
+
+function hasProviderApiKeyConfiguredEntry(provider, configuredByProvider) {
+  return Object.prototype.hasOwnProperty.call(configuredByProvider, normalizeTranslationProvider(provider));
+}
+
+function getProviderApiKeyConfigured(provider, configuredByProvider, fallback = false) {
+  const normalizedProvider = normalizeTranslationProvider(provider);
+  return hasProviderApiKeyConfiguredEntry(normalizedProvider, configuredByProvider)
+    ? configuredByProvider[normalizedProvider] === true
+    : fallback;
 }
 
 function readAdminConnectionCookie() {
@@ -1223,11 +1263,25 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
   if (typeof settings.translationApiEndpoint === "string" || incomingTranslationProvider !== "none") {
     adminTranslationApiEndpoint = normalizeTranslationApiEndpoint(settings.translationApiEndpoint);
   }
-  if (settings.translationApiKeyConfigured === true || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === true) {
-    adminTranslationApiKeyConfigured = true;
+
+  const incomingConfiguredByProvider = normalizeTranslationApiKeyConfiguredByProvider(settings.translationApiKeyConfiguredByProvider);
+  if (Object.keys(incomingConfiguredByProvider).length) {
+    adminTranslationApiKeyConfiguredByProvider = {
+      ...adminTranslationApiKeyConfiguredByProvider,
+      ...incomingConfiguredByProvider,
+    };
+    adminTranslationApiKeyConfigured = getProviderApiKeyConfigured(
+      adminTranslationProvider,
+      adminTranslationApiKeyConfiguredByProvider,
+      settings.translationApiKeyConfigured === true,
+    );
     appliedSettings = true;
-  } else if (settings.translationApiKeyConfigured === false || settings.translationApiKeyConfiguredByProvider?.[adminTranslationProvider] === false) {
-    adminTranslationApiKeyConfigured = false;
+  } else if (typeof settings.translationApiKeyConfigured === "boolean") {
+    adminTranslationApiKeyConfigured = settings.translationApiKeyConfigured;
+    adminTranslationApiKeyConfiguredByProvider = {
+      ...adminTranslationApiKeyConfiguredByProvider,
+      [adminTranslationProvider]: settings.translationApiKeyConfigured,
+    };
     appliedSettings = true;
   }
   renderCardTranslationModuleStatus();
@@ -1354,6 +1408,7 @@ function persistConfiguration() {
       adminTranslationProvider,
       adminTranslationApiEndpoint,
       adminTranslationApiKeyConfigured,
+      adminTranslationApiKeyConfiguredByProvider,
       stackEntityIds: selectedStackEntityIds(),
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
       expertTemplateSizing: serializedExpertTemplateSizing(),

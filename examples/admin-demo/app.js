@@ -281,6 +281,14 @@ function hasTranslationApiKey(provider, keys = readTranslationApiKeys()) {
   return Boolean(keys[normalizeTranslationProvider(provider)]?.trim());
 }
 
+function createTranslationApiKeyConfiguredByProvider(keys = readTranslationApiKeys()) {
+  return Object.fromEntries(
+    translationProviderValues
+      .filter(provider => provider !== "none")
+      .map(provider => [provider, hasTranslationApiKey(provider, keys)]),
+  );
+}
+
 function readAdminSecrets() {
   return {
     token: rememberAdminToken.checked ? homeAssistantToken.value.trim() : "",
@@ -360,6 +368,7 @@ function persistConfiguration() {
     translationProvider: currentTranslationProvider(),
     translationApiEndpoint: defaultTranslationApiEndpoint,
     translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider(), translationApiKeys),
+    translationApiKeyConfiguredByProvider: createTranslationApiKeyConfiguredByProvider(translationApiKeys),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     tokenConfigured: rememberAdminToken.checked && Boolean(token),
@@ -401,6 +410,8 @@ function persistSharedConnectionCookie(configuration) {
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
+      translationApiKeyConfigured: configuration.translationApiKeyConfigured,
+      translationApiKeyConfiguredByProvider: configuration.translationApiKeyConfiguredByProvider,
       tokenConfigured: configuration.tokenConfigured,
       updatedAt: new Date().toISOString(),
     }))}`,
@@ -816,7 +827,7 @@ async function exportAdministrationSettings() {
 
 function createEditorConnectionHandoff() {
   const provider = currentTranslationProvider();
-  const providerKeyConfigured = hasTranslationApiKey(provider);
+  const translationApiKeyConfiguredByProvider = createTranslationApiKeyConfiguredByProvider();
   return {
     type: "atlas.admin.connection.v1",
     url: homeAssistantUrl.value.trim(),
@@ -824,7 +835,8 @@ function createEditorConnectionHandoff() {
     autoConnect: autoConnectEditor.checked,
     translationProvider: provider,
     translationApiEndpoint: defaultTranslationApiEndpoint,
-    ...(providerKeyConfigured ? { translationApiKeyConfigured: true } : {}),
+    translationApiKeyConfigured: translationApiKeyConfiguredByProvider[provider] === true,
+    translationApiKeyConfiguredByProvider,
     sentAt: new Date().toISOString(),
   };
 }

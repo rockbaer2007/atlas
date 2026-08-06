@@ -27,8 +27,9 @@ survives reloads without turning imported plugins back into a fresh list.
 The administration page also stores the selected Card translation module for
 future exports. Current choices are the default fallback path, ChatGPT/OpenAI,
 Gemini, DeepL API Free, DeepL API Pro and a custom AI provider. The selection is
-handed to the Card Editor, but real provider execution still requires a later
-backend adapter and API-key handling.
+handed to the Card Editor together with provider-specific key-configured
+booleans, but never with raw provider API keys. ChatGPT/OpenAI is the first
+connected provider path; the other providers remain planned adapters.
 DeepL API planning uses `https://www.deepl.com/de/pro#api` as the reference
 for Free/Pro API options.
 The prepared DeepL translate endpoint defaults to
