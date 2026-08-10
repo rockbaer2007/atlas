@@ -1223,6 +1223,14 @@ describe("Home Assistant frontend integration planning", () => {
         scriptMatchesArchive: true,
         scriptMatchesPackage: true,
       },
+      localeReadiness: {
+        manifestLanguages: ["en"],
+        fallbackLanguages: [],
+        archiveLocaleFiles: ["locales/en.json"],
+        requiredLocaleFiles: ["locales/en.json"],
+        missingArchiveLocaleFiles: [],
+        invalidArchiveLocaleFiles: [],
+      },
       summary: {
         title: "Energy Kitchen",
         entityIds: ["sensor.energy_today"],
@@ -1247,6 +1255,44 @@ describe("Home Assistant frontend integration planning", () => {
         cardName: "Energy Kitchen",
         scriptFilename: "energy-kitchen.js",
       },
+    });
+  });
+
+  it("rejects HACS card zip archives missing locales declared by the embedded package", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      languages: ["de"],
+      editorPlan,
+    }));
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      ...bundle,
+      files: bundle.files.filter(file => file.path !== "locales/de.json"),
+    });
+
+    expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-package",
+      importable: false,
+      localeReadiness: {
+        manifestLanguages: ["en", "de"],
+        fallbackLanguages: ["de"],
+        archiveLocaleFiles: ["locales/en.json"],
+        requiredLocaleFiles: ["locales/en.json", "locales/de.json"],
+        missingArchiveLocaleFiles: ["locales/de.json"],
+        invalidArchiveLocaleFiles: [],
+      },
+      packageFile: "atlas/energy-kitchen.atlas-card.json",
+      reason: "The archive is missing locale files declared by the embedded ATLAS card package: locales/de.json.",
     });
   });
 

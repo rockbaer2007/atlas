@@ -71,6 +71,7 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly importable: boolean;
   readonly inspection: HomeAssistantCardEditorHacsBundleArchiveInspection;
   readonly hacsMetadata?: HomeAssistantCardEditorHacsBundleArchiveMetadata;
+  readonly localeReadiness?: HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness;
   readonly packageFile?: string;
   readonly packageContent?: string;
   readonly summary?: HomeAssistantCardImportSummary;
@@ -82,6 +83,15 @@ export interface HomeAssistantCardEditorHacsBundleArchiveMetadata {
   readonly filename?: string;
   readonly scriptMatchesArchive: boolean;
   readonly scriptMatchesPackage: boolean;
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness {
+  readonly manifestLanguages: readonly string[];
+  readonly fallbackLanguages: readonly string[];
+  readonly archiveLocaleFiles: readonly string[];
+  readonly requiredLocaleFiles: readonly string[];
+  readonly missingArchiveLocaleFiles: readonly string[];
+  readonly invalidArchiveLocaleFiles: readonly string[];
 }
 
 export function createHomeAssistantCardEditorHacsBundle(
@@ -314,6 +324,34 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
 
     const packageContent = readStoredZipEntryText(content, packageEntry);
     const summary = summarizeHomeAssistantCardImport(packageContent);
+    const localeReadiness = readHacsBundleArchiveLocaleReadiness(content, entries, packageContent, inspection);
+    if (localeReadiness.missingArchiveLocaleFiles.length > 0) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata,
+        localeReadiness,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The archive is missing locale files declared by the embedded ATLAS card package: ${localeReadiness.missingArchiveLocaleFiles.join(", ")}.`,
+      };
+    }
+    if (localeReadiness.invalidArchiveLocaleFiles.length > 0) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata,
+        localeReadiness,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The archive contains invalid locale files declared by the embedded ATLAS card package: ${localeReadiness.invalidArchiveLocaleFiles.join(", ")}.`,
+      };
+    }
+
     const packageScriptFilename = summary.script?.filename ?? summary.editorPlan?.scriptFilename;
     const checkedHacsMetadata = {
       ...hacsMetadata,
@@ -337,6 +375,7 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
       importable: true,
       inspection,
       hacsMetadata: checkedHacsMetadata,
+      localeReadiness,
       packageFile: packageEntry.path,
       packageContent,
       summary,
@@ -376,6 +415,36 @@ function readHacsBundleArchiveMetadata(
     filename,
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
+  };
+}
+
+function readHacsBundleArchiveLocaleReadiness(
+  content: Uint8Array,
+  entries: readonly ReadableZipArchiveEntry[],
+  packageContent: string,
+  inspection: HomeAssistantCardEditorHacsBundleArchiveInspection,
+): HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness {
+  const packageJson = parseJsonRecord(packageContent);
+  const manifest = isRecord(packageJson.manifest) ? packageJson.manifest : {};
+  const manifestLanguages = normalizeLanguageCodes(readStringArray(manifest.languages));
+  const fallbackLanguages = normalizeLanguageCodes(readStringArray(manifest.fallbackLanguages));
+  const requiredLocaleFiles = normalizeLanguageCodes(manifestLanguages.length ? manifestLanguages : ["en"])
+    .map(language => `locales/${language}.json`);
+  const localeEntries = new Map(entries
+    .filter(entry => inspection.localeFiles.includes(entry.path))
+    .map(entry => [entry.path, entry]));
+  const missingArchiveLocaleFiles = requiredLocaleFiles.filter(path => !localeEntries.has(path));
+  const invalidArchiveLocaleFiles = requiredLocaleFiles
+    .filter(path => localeEntries.has(path))
+    .filter(path => !isReadableMatchingLocaleFile(content, localeEntries.get(path)!, path));
+
+  return {
+    manifestLanguages: manifestLanguages.length ? manifestLanguages : ["en"],
+    fallbackLanguages,
+    archiveLocaleFiles: inspection.localeFiles,
+    requiredLocaleFiles,
+    missingArchiveLocaleFiles,
+    invalidArchiveLocaleFiles,
   };
 }
 
@@ -672,6 +741,20 @@ function encodeUtf8(value: string): Uint8Array {
   return new TextEncoder().encode(value);
 }
 
+function isReadableMatchingLocaleFile(
+  content: Uint8Array,
+  entry: ReadableZipArchiveEntry,
+  path: string,
+): boolean {
+  try {
+    const locale = path.match(/^locales\/([a-z]{2})\.json$/)?.[1];
+    const parsed = parseJsonRecord(readStoredZipEntryText(content, entry));
+    return isRecord(parsed._meta) && parsed._meta.language === locale;
+  } catch {
+    return false;
+  }
+}
+
 function isSafeHacsBundleArchivePath(path: string): boolean {
   const trimmed = path.trim();
   if (!trimmed || trimmed !== path) return false;
@@ -692,10 +775,30 @@ function listDuplicateStrings(values: readonly string[]): string[] {
   return [...duplicates];
 }
 
+function normalizeLanguageCodes(values: readonly string[]): string[] {
+  return [...new Set(values
+    .map(value => value.trim().toLowerCase())
+    .filter(value => /^[a-z]{2}$/.test(value)))].sort((left, right) => {
+      if (left === "en") return -1;
+      if (right === "en") return 1;
+      return left.localeCompare(right);
+    });
+}
+
+function readStringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
 function parseJsonRecord(text: string): Record<string, unknown> {
   const parsed: unknown = JSON.parse(text);
   if (typeof parsed === "object" && parsed !== null) {
     return parsed as Record<string, unknown>;
   }
   return {};
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }

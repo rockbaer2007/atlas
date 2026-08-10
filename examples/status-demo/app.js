@@ -1965,6 +1965,10 @@ function formatHacsBundlePackageReadReview(packageRead) {
   if (packageRead.hacsMetadata?.filename) {
     lines.push(`HACS script: ${packageRead.hacsMetadata.filename}`);
   }
+  if (packageRead.localeReadiness) {
+    lines.push(`Required locales: ${packageRead.localeReadiness.requiredLocaleFiles.join(", ")}`);
+    lines.push(`Archive locales: ${packageRead.localeReadiness.archiveLocaleFiles.join(", ") || "none"}`);
+  }
   for (const issue of packageRead.inspection.issues ?? []) {
     lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
   }
