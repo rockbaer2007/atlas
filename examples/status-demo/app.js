@@ -1960,6 +1960,17 @@ function renderHaCardImportDecision(text) {
   return decision;
 }
 
+function formatHacsBundlePackageReadReview(packageRead) {
+  const lines = [packageRead.reason];
+  if (packageRead.hacsMetadata?.filename) {
+    lines.push(`HACS script: ${packageRead.hacsMetadata.filename}`);
+  }
+  for (const issue of packageRead.inspection.issues ?? []) {
+    lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
+  }
+  return lines.join("\n");
+}
+
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
   const visibleCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
@@ -4062,7 +4073,7 @@ importHaCardConfig.addEventListener("change", async () => {
     if (isHacsBundleArchiveFile(file)) {
       const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(new Uint8Array(await file.arrayBuffer()));
       haCardImportReview.dataset.action = packageRead.importable ? "import" : "reject";
-      haCardImportReview.textContent = packageRead.reason;
+      haCardImportReview.textContent = formatHacsBundlePackageReadReview(packageRead);
       statusMessage.textContent = packageRead.importable
         ? t("message.hacsBundleInspected", {
           count: String(packageRead.inspection.fileCount),

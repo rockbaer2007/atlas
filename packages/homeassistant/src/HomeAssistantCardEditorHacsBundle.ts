@@ -36,6 +36,18 @@ export interface HomeAssistantCardEditorHacsBundleArchiveEntry {
   readonly uncompressedSize: number;
 }
 
+export type HomeAssistantCardEditorHacsBundleArchiveIssueCode =
+  | "missing-required-file"
+  | "unsafe-path"
+  | "duplicate-path";
+
+export interface HomeAssistantCardEditorHacsBundleArchiveIssue {
+  readonly code: HomeAssistantCardEditorHacsBundleArchiveIssueCode;
+  readonly severity: "error";
+  readonly paths: readonly string[];
+  readonly message: string;
+}
+
 export interface HomeAssistantCardEditorHacsBundleArchiveInspection {
   readonly kind: "atlas.homeassistant.hacs-card-bundle-archive";
   readonly importable: boolean;
@@ -45,6 +57,7 @@ export interface HomeAssistantCardEditorHacsBundleArchiveInspection {
   readonly missingFiles: readonly string[];
   readonly unsafePaths: readonly string[];
   readonly duplicatePaths: readonly string[];
+  readonly issues: readonly HomeAssistantCardEditorHacsBundleArchiveIssue[];
   readonly scriptFiles: readonly string[];
   readonly atlasPackageFiles: readonly string[];
   readonly reason: string;
@@ -166,15 +179,15 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       ...(scriptFiles.length > 0 ? [] : ["*.js"]),
       ...(atlasPackageFiles.length > 0 ? [] : ["atlas/*.atlas-card.json"]),
     ];
-    const rejectionReasons = [
-      ...(missingFiles.length > 0 ? [`missing required files: ${missingFiles.join(", ")}`] : []),
-      ...(unsafePaths.length > 0 ? [`unsafe archive paths: ${unsafePaths.join(", ")}`] : []),
-      ...(duplicatePaths.length > 0 ? [`duplicate archive paths: ${duplicatePaths.join(", ")}`] : []),
-    ];
+    const issues = createHacsBundleArchiveIssues({
+      missingFiles,
+      unsafePaths,
+      duplicatePaths,
+    });
 
     return {
       kind: "atlas.homeassistant.hacs-card-bundle-archive",
-      importable: rejectionReasons.length === 0,
+      importable: issues.length === 0,
       fileCount: files.length,
       files: files.map(file => ({
         path: file.path,
@@ -186,11 +199,12 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       missingFiles,
       unsafePaths,
       duplicatePaths,
+      issues,
       scriptFiles,
       atlasPackageFiles,
-      reason: rejectionReasons.length === 0
+      reason: issues.length === 0
         ? "The archive contains the required ATLAS HACS card bundle files."
-        : `The archive is not a safe ATLAS HACS card bundle: ${rejectionReasons.join("; ")}.`,
+        : `The archive is not a safe ATLAS HACS card bundle: ${issues.map(issue => issue.message).join("; ")}.`,
     };
   } catch {
     return {
@@ -202,6 +216,11 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       missingFiles: requiredFiles,
       unsafePaths: [],
       duplicatePaths: [],
+      issues: createHacsBundleArchiveIssues({
+        missingFiles: requiredFiles,
+        unsafePaths: [],
+        duplicatePaths: [],
+      }),
       scriptFiles: [],
       atlasPackageFiles: [],
       reason: "The archive is not a readable ZIP file.",
@@ -347,6 +366,39 @@ function readHacsBundleArchiveMetadata(
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
   };
+}
+
+function createHacsBundleArchiveIssues(input: {
+  readonly missingFiles: readonly string[];
+  readonly unsafePaths: readonly string[];
+  readonly duplicatePaths: readonly string[];
+}): HomeAssistantCardEditorHacsBundleArchiveIssue[] {
+  return [
+    ...(input.missingFiles.length > 0
+      ? [{
+          code: "missing-required-file" as const,
+          severity: "error" as const,
+          paths: input.missingFiles,
+          message: `missing required files: ${input.missingFiles.join(", ")}`,
+        }]
+      : []),
+    ...(input.unsafePaths.length > 0
+      ? [{
+          code: "unsafe-path" as const,
+          severity: "error" as const,
+          paths: input.unsafePaths,
+          message: `unsafe archive paths: ${input.unsafePaths.join(", ")}`,
+        }]
+      : []),
+    ...(input.duplicatePaths.length > 0
+      ? [{
+          code: "duplicate-path" as const,
+          severity: "error" as const,
+          paths: input.duplicatePaths,
+          message: `duplicate archive paths: ${input.duplicatePaths.join(", ")}`,
+        }]
+      : []),
+  ];
 }
 
 function createHomeAssistantCardEditorBundleReadme(

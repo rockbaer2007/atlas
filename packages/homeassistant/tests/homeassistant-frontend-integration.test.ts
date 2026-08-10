@@ -1068,6 +1068,7 @@ describe("Home Assistant frontend integration planning", () => {
       missingFiles: [],
       unsafePaths: [],
       duplicatePaths: [],
+      issues: [],
       scriptFiles: ["energy-kitchen.js"],
       atlasPackageFiles: ["atlas/energy-kitchen.atlas-card.json"],
     });
@@ -1075,6 +1076,46 @@ describe("Home Assistant frontend integration planning", () => {
       importable: false,
       fileCount: 0,
       reason: "The archive is not a readable ZIP file.",
+    });
+  });
+
+  it("reports missing HACS card zip archive files as structured issues", () => {
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      version: 1,
+      kind: "atlas.homeassistant.hacs-card-bundle",
+      cardName: "Incomplete Card",
+      scriptFilename: "incomplete-card.js",
+      customElementName: "incomplete-card",
+      cardType: "custom:incomplete-card",
+      resourcePath: "/hacsfiles/atlas/incomplete-card.js",
+      files: [
+        {
+          path: "hacs.json",
+          mimeType: "application/json",
+          content: JSON.stringify({
+            name: "Incomplete Card",
+            render_readme: true,
+            filename: "incomplete-card.js",
+          }, null, 2),
+        },
+      ],
+      installSteps: [],
+    });
+
+    expect(inspectHomeAssistantCardEditorHacsBundleArchive(archive.content)).toMatchObject({
+      importable: false,
+      missingFiles: ["README.md", "examples/lovelace-card.json", "*.js", "atlas/*.atlas-card.json"],
+      unsafePaths: [],
+      duplicatePaths: [],
+      issues: [
+        {
+          code: "missing-required-file",
+          severity: "error",
+          paths: ["README.md", "examples/lovelace-card.json", "*.js", "atlas/*.atlas-card.json"],
+          message: "missing required files: README.md, examples/lovelace-card.json, *.js, atlas/*.atlas-card.json",
+        },
+      ],
+      reason: "The archive is not a safe ATLAS HACS card bundle: missing required files: README.md, examples/lovelace-card.json, *.js, atlas/*.atlas-card.json.",
     });
   });
 
@@ -1121,6 +1162,20 @@ describe("Home Assistant frontend integration planning", () => {
       unsafePaths: ["../energy-kitchen.js", "locales\\en.json"],
       duplicatePaths: ["README.md"],
       missingFiles: [],
+      issues: [
+        {
+          code: "unsafe-path",
+          severity: "error",
+          paths: ["../energy-kitchen.js", "locales\\en.json"],
+          message: "unsafe archive paths: ../energy-kitchen.js, locales\\en.json",
+        },
+        {
+          code: "duplicate-path",
+          severity: "error",
+          paths: ["README.md"],
+          message: "duplicate archive paths: README.md",
+        },
+      ],
       reason: "The archive is not a safe ATLAS HACS card bundle: unsafe archive paths: ../energy-kitchen.js, locales\\en.json; duplicate archive paths: README.md.",
     });
     expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
