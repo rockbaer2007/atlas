@@ -52,10 +52,18 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly kind: "atlas.homeassistant.hacs-card-bundle-package";
   readonly importable: boolean;
   readonly inspection: HomeAssistantCardEditorHacsBundleArchiveInspection;
+  readonly hacsMetadata?: HomeAssistantCardEditorHacsBundleArchiveMetadata;
   readonly packageFile?: string;
   readonly packageContent?: string;
   readonly summary?: HomeAssistantCardImportSummary;
   readonly reason: string;
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveMetadata {
+  readonly name?: string;
+  readonly filename?: string;
+  readonly scriptMatchesArchive: boolean;
+  readonly scriptMatchesPackage: boolean;
 }
 
 export function createHomeAssistantCardEditorHacsBundle(
@@ -203,7 +211,24 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
 
   try {
     const entries = readZipCentralDirectoryEntries(content);
+    const hacsEntry = entries.find(entry => entry.path === "hacs.json");
     const packageEntry = entries.find(entry => entry.path === inspection.atlasPackageFiles[0]);
+    if (!hacsEntry) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        reason: "The archive does not contain a readable HACS manifest file.",
+      };
+    }
+    if (hacsEntry.compressionMethod !== "store") {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        reason: `The HACS manifest file uses unsupported ZIP compression: ${hacsEntry.compressionMethod}.`,
+      };
+    }
     if (!packageEntry) {
       return {
         kind: "atlas.homeassistant.hacs-card-bundle-package",
@@ -222,14 +247,56 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
       };
     }
 
+    const hacsMetadata = readHacsBundleArchiveMetadata(content, hacsEntry, inspection.scriptFiles);
+    if (!hacsMetadata.filename) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata,
+        packageFile: packageEntry.path,
+        reason: "The HACS manifest file does not declare a card script filename.",
+      };
+    }
+    if (!hacsMetadata.scriptMatchesArchive) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata,
+        packageFile: packageEntry.path,
+        reason: `The HACS manifest filename ${hacsMetadata.filename} does not match a root script file in the archive.`,
+      };
+    }
+
     const packageContent = readStoredZipEntryText(content, packageEntry);
+    const summary = summarizeHomeAssistantCardImport(packageContent);
+    const packageScriptFilename = summary.script?.filename ?? summary.editorPlan?.scriptFilename;
+    const checkedHacsMetadata = {
+      ...hacsMetadata,
+      scriptMatchesPackage: packageScriptFilename === hacsMetadata.filename,
+    };
+    if (!checkedHacsMetadata.scriptMatchesPackage) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata: checkedHacsMetadata,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The HACS manifest filename ${hacsMetadata.filename} does not match the embedded ATLAS card package script filename ${packageScriptFilename ?? "unknown"}.`,
+      };
+    }
+
     return {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: true,
       inspection,
+      hacsMetadata: checkedHacsMetadata,
       packageFile: packageEntry.path,
       packageContent,
-      summary: summarizeHomeAssistantCardImport(packageContent),
+      summary,
       reason: "The archive contains a readable ATLAS card package file.",
     };
   } catch {
@@ -251,6 +318,21 @@ export function createHomeAssistantCardEditorHacsBundleArchive(
     filename,
     mimeType: "application/zip",
     content: createStoredZipArchive(bundle.files),
+  };
+}
+
+function readHacsBundleArchiveMetadata(
+  content: Uint8Array,
+  entry: ReadableZipArchiveEntry,
+  scriptFiles: readonly string[],
+): HomeAssistantCardEditorHacsBundleArchiveMetadata {
+  const manifest = parseJsonRecord(readStoredZipEntryText(content, entry));
+  const filename = typeof manifest.filename === "string" ? manifest.filename.trim() : undefined;
+  return {
+    name: typeof manifest.name === "string" ? manifest.name.trim() : undefined,
+    filename,
+    scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
+    scriptMatchesPackage: false,
   };
 }
 
@@ -503,4 +585,12 @@ function concatUint8Arrays(chunks: readonly Uint8Array[]): Uint8Array {
 
 function encodeUtf8(value: string): Uint8Array {
   return new TextEncoder().encode(value);
+}
+
+function parseJsonRecord(text: string): Record<string, unknown> {
+  const parsed: unknown = JSON.parse(text);
+  if (typeof parsed === "object" && parsed !== null) {
+    return parsed as Record<string, unknown>;
+  }
+  return {};
 }

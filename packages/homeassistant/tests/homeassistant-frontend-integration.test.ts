@@ -1100,6 +1100,12 @@ describe("Home Assistant frontend integration planning", () => {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: true,
       packageFile: "atlas/energy-kitchen.atlas-card.json",
+      hacsMetadata: {
+        name: "Energy Kitchen",
+        filename: "energy-kitchen.js",
+        scriptMatchesArchive: true,
+        scriptMatchesPackage: true,
+      },
       summary: {
         title: "Energy Kitchen",
         entityIds: ["sensor.energy_today"],
@@ -1140,7 +1146,11 @@ describe("Home Assistant frontend integration planning", () => {
         {
           path: "hacs.json",
           mimeType: "application/json",
-          content: "{}",
+          content: JSON.stringify({
+            name: "Broken Card",
+            render_readme: true,
+            filename: "broken-card.js",
+          }, null, 2),
         },
         {
           path: "broken-card.js",
@@ -1170,6 +1180,50 @@ describe("Home Assistant frontend integration planning", () => {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: false,
       reason: "The ATLAS card package file could not be read from the archive.",
+    });
+  });
+
+  it("rejects HACS card zip archives whose manifest filename does not match the embedded package", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      ...bundle,
+      files: bundle.files.map(file => file.path === "hacs.json"
+        ? {
+            ...file,
+            content: JSON.stringify({
+              name: "Energy Kitchen",
+              render_readme: true,
+              filename: "Energy-Kitchen.js",
+            }, null, 2),
+          }
+        : file),
+    });
+
+    expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-package",
+      importable: false,
+      hacsMetadata: {
+        name: "Energy Kitchen",
+        filename: "Energy-Kitchen.js",
+        scriptMatchesArchive: false,
+        scriptMatchesPackage: false,
+      },
+      packageFile: "atlas/energy-kitchen.atlas-card.json",
+      reason: "The HACS manifest filename Energy-Kitchen.js does not match a root script file in the archive.",
     });
   });
 });
