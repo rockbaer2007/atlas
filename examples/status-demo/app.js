@@ -4073,6 +4073,10 @@ importHaCardConfig.addEventListener("change", async () => {
         return;
       }
       text = packageRead.packageContent;
+      if (packageRead.summary) {
+        applyHomeAssistantCardImportSummary(packageRead.summary);
+        return;
+      }
     } else {
       text = await file.text();
     }
@@ -4086,52 +4090,56 @@ importHaCardConfig.addEventListener("change", async () => {
     }
 
     const summary = summarizeHomeAssistantCardImport(text);
-    const entityIds = [...summary.entityIds];
-    const title = summary.title;
-    const id = createGroupId(title);
-    panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
-    homeAssistantEntity.value = entityIds.join(", ");
-    homeAssistantGroupName.value = title;
-    stackSelectedEntityIds.clear();
-    for (const entityId of entityIds) {
-      stackSelectedEntityIds.add(entityId);
-    }
-    haCardTarget.value = summary.target;
-    haCardLayout.value = summary.layout;
-    haCardFormat.value = summary.format;
-    if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
-      haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
-    }
-    syncCardLayoutState();
-    renderGroupOptions(id);
-    if (summary.editorPlan?.editorMode === "expert") {
-      expertEditorFields.splice(0, expertEditorFields.length, ...createHomeAssistantCardEditorPackagePlan(summary.editorPlan).fields);
-      selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
-      expertCardName.value = summary.editorPlan.cardName;
-      haCardScriptFilename.value = summary.editorPlan.scriptFilename ?? summary.script?.filename ?? "";
-      expertFieldEditing = false;
-      renderEditorMode("expert");
-    } else {
-      expertEditorFields.length = 0;
-      selectedExpertFieldIndex = -1;
-      expertCardName.value = "";
-      expertFieldEditing = false;
-      renderEditorMode("simple");
-    }
-    persistConfiguration();
-    homeAssistantEntity.dispatchEvent(new Event("input"));
-    statusMessage.textContent = t("message.haCardImported", {
-      type: summary.packaged ? t("message.atlasPackage") : t("message.haCard"),
-      format: summary.format.toUpperCase(),
-      title,
-      entities: entityIds.length,
-    });
+    applyHomeAssistantCardImportSummary(summary);
   } catch {
     statusMessage.textContent = t("message.importHaCardFailed");
   } finally {
     importHaCardConfig.value = "";
   }
 });
+
+function applyHomeAssistantCardImportSummary(summary) {
+  const entityIds = [...summary.entityIds];
+  const title = summary.title;
+  const id = createGroupId(title);
+  panelGroups = [...panelGroups, createHomeAssistantPanelGroup({ id, title, entityIds })];
+  homeAssistantEntity.value = entityIds.join(", ");
+  homeAssistantGroupName.value = title;
+  stackSelectedEntityIds.clear();
+  for (const entityId of entityIds) {
+    stackSelectedEntityIds.add(entityId);
+  }
+  haCardTarget.value = summary.target;
+  haCardLayout.value = summary.layout;
+  haCardFormat.value = summary.format;
+  if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
+    haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
+  }
+  syncCardLayoutState();
+  renderGroupOptions(id);
+  if (summary.editorPlan?.editorMode === "expert") {
+    expertEditorFields.splice(0, expertEditorFields.length, ...createHomeAssistantCardEditorPackagePlan(summary.editorPlan).fields);
+    selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
+    expertCardName.value = summary.editorPlan.cardName;
+    haCardScriptFilename.value = summary.editorPlan.scriptFilename ?? summary.script?.filename ?? "";
+    expertFieldEditing = false;
+    renderEditorMode("expert");
+  } else {
+    expertEditorFields.length = 0;
+    selectedExpertFieldIndex = -1;
+    expertCardName.value = "";
+    expertFieldEditing = false;
+    renderEditorMode("simple");
+  }
+  persistConfiguration();
+  homeAssistantEntity.dispatchEvent(new Event("input"));
+  statusMessage.textContent = t("message.haCardImported", {
+    type: summary.packaged ? t("message.atlasPackage") : t("message.haCard"),
+    format: summary.format.toUpperCase(),
+    title,
+    entities: entityIds.length,
+  });
+}
 connectButton.addEventListener("click", connectHomeAssistant);
 disconnectButton.addEventListener("click", disconnectHomeAssistant);
 

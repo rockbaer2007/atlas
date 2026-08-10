@@ -1100,6 +1100,18 @@ describe("Home Assistant frontend integration planning", () => {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: true,
       packageFile: "atlas/energy-kitchen.atlas-card.json",
+      summary: {
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+        format: "json",
+        target: "entities",
+        layout: "single",
+        packaged: true,
+        editorPlan: {
+          cardName: "Energy Kitchen",
+          scriptFilename: "energy-kitchen.js",
+        },
+      },
       reason: "The archive contains a readable ATLAS card package file.",
     });
     expect(embeddedPackage).toMatchObject({
@@ -1112,6 +1124,52 @@ describe("Home Assistant frontend integration planning", () => {
         cardName: "Energy Kitchen",
         scriptFilename: "energy-kitchen.js",
       },
+    });
+  });
+
+  it("rejects HACS card zip archives with unreadable embedded ATLAS packages", () => {
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      version: 1,
+      kind: "atlas.homeassistant.hacs-card-bundle",
+      cardName: "Broken Card",
+      scriptFilename: "broken-card.js",
+      customElementName: "broken-card",
+      cardType: "custom:broken-card",
+      resourcePath: "/hacsfiles/atlas/broken-card.js",
+      files: [
+        {
+          path: "hacs.json",
+          mimeType: "application/json",
+          content: "{}",
+        },
+        {
+          path: "broken-card.js",
+          mimeType: "text/javascript",
+          content: "customElements.define('broken-card', class extends HTMLElement {});",
+        },
+        {
+          path: "README.md",
+          mimeType: "text/markdown",
+          content: "# Broken Card\n",
+        },
+        {
+          path: "examples/lovelace-card.json",
+          mimeType: "application/json",
+          content: "{}",
+        },
+        {
+          path: "atlas/broken-card.atlas-card.json",
+          mimeType: "application/json",
+          content: "{\"version\":1,\"kind\":\"atlas.homeassistant.card\",\"manifest\":{},\"content\":\"type: markdown\\ncontent: unsupported\"}",
+        },
+      ],
+      installSteps: [],
+    });
+
+    expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-package",
+      importable: false,
+      reason: "The ATLAS card package file could not be read from the archive.",
     });
   });
 });

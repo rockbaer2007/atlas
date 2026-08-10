@@ -1,4 +1,8 @@
-import type { HomeAssistantCardExportPackage } from "./HomeAssistantCardConfiguration";
+import {
+  summarizeHomeAssistantCardImport,
+  type HomeAssistantCardExportPackage,
+  type HomeAssistantCardImportSummary,
+} from "./HomeAssistantCardConfiguration";
 import { createHomeAssistantCardEditorScriptExport } from "./HomeAssistantCardEditorPlan";
 
 export interface HomeAssistantCardEditorHacsBundleFile {
@@ -50,6 +54,7 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly inspection: HomeAssistantCardEditorHacsBundleArchiveInspection;
   readonly packageFile?: string;
   readonly packageContent?: string;
+  readonly summary?: HomeAssistantCardImportSummary;
   readonly reason: string;
 }
 
@@ -217,12 +222,14 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
       };
     }
 
+    const packageContent = readStoredZipEntryText(content, packageEntry);
     return {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: true,
       inspection,
       packageFile: packageEntry.path,
-      packageContent: readStoredZipEntryText(content, packageEntry),
+      packageContent,
+      summary: summarizeHomeAssistantCardImport(packageContent),
       reason: "The archive contains a readable ATLAS card package file.",
     };
   } catch {
