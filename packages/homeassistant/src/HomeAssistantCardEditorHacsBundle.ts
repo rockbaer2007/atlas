@@ -43,6 +43,8 @@ export interface HomeAssistantCardEditorHacsBundleArchiveInspection {
   readonly files: readonly HomeAssistantCardEditorHacsBundleArchiveEntry[];
   readonly requiredFiles: readonly string[];
   readonly missingFiles: readonly string[];
+  readonly unsafePaths: readonly string[];
+  readonly duplicatePaths: readonly string[];
   readonly scriptFiles: readonly string[];
   readonly atlasPackageFiles: readonly string[];
   readonly reason: string;
@@ -155,6 +157,8 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
   try {
     const files = readZipCentralDirectoryEntries(content);
     const paths = files.map(file => file.path);
+    const unsafePaths = paths.filter(path => !isSafeHacsBundleArchivePath(path));
+    const duplicatePaths = listDuplicateStrings(paths);
     const scriptFiles = paths.filter(path => !path.includes("/") && path.endsWith(".js"));
     const atlasPackageFiles = paths.filter(path => path.startsWith("atlas/") && path.endsWith(".atlas-card.json"));
     const missingFiles = [
@@ -162,10 +166,15 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       ...(scriptFiles.length > 0 ? [] : ["*.js"]),
       ...(atlasPackageFiles.length > 0 ? [] : ["atlas/*.atlas-card.json"]),
     ];
+    const rejectionReasons = [
+      ...(missingFiles.length > 0 ? [`missing required files: ${missingFiles.join(", ")}`] : []),
+      ...(unsafePaths.length > 0 ? [`unsafe archive paths: ${unsafePaths.join(", ")}`] : []),
+      ...(duplicatePaths.length > 0 ? [`duplicate archive paths: ${duplicatePaths.join(", ")}`] : []),
+    ];
 
     return {
       kind: "atlas.homeassistant.hacs-card-bundle-archive",
-      importable: missingFiles.length === 0,
+      importable: rejectionReasons.length === 0,
       fileCount: files.length,
       files: files.map(file => ({
         path: file.path,
@@ -175,11 +184,13 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       })),
       requiredFiles,
       missingFiles,
+      unsafePaths,
+      duplicatePaths,
       scriptFiles,
       atlasPackageFiles,
-      reason: missingFiles.length === 0
+      reason: rejectionReasons.length === 0
         ? "The archive contains the required ATLAS HACS card bundle files."
-        : `The archive is missing required ATLAS HACS card bundle files: ${missingFiles.join(", ")}.`,
+        : `The archive is not a safe ATLAS HACS card bundle: ${rejectionReasons.join("; ")}.`,
     };
   } catch {
     return {
@@ -189,6 +200,8 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       files: [],
       requiredFiles,
       missingFiles: requiredFiles,
+      unsafePaths: [],
+      duplicatePaths: [],
       scriptFiles: [],
       atlasPackageFiles: [],
       reason: "The archive is not a readable ZIP file.",
@@ -585,6 +598,26 @@ function concatUint8Arrays(chunks: readonly Uint8Array[]): Uint8Array {
 
 function encodeUtf8(value: string): Uint8Array {
   return new TextEncoder().encode(value);
+}
+
+function isSafeHacsBundleArchivePath(path: string): boolean {
+  const trimmed = path.trim();
+  if (!trimmed || trimmed !== path) return false;
+  if (trimmed.includes("\\") || trimmed.startsWith("/") || /^[a-zA-Z]:/.test(trimmed)) return false;
+  return trimmed.split("/").every(segment => segment && segment !== "." && segment !== "..");
+}
+
+function listDuplicateStrings(values: readonly string[]): string[] {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const value of values) {
+    if (seen.has(value)) {
+      duplicates.add(value);
+      continue;
+    }
+    seen.add(value);
+  }
+  return [...duplicates];
 }
 
 function parseJsonRecord(text: string): Record<string, unknown> {

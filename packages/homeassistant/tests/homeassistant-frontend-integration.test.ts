@@ -1066,6 +1066,8 @@ describe("Home Assistant frontend integration planning", () => {
       importable: true,
       fileCount: 6,
       missingFiles: [],
+      unsafePaths: [],
+      duplicatePaths: [],
       scriptFiles: ["energy-kitchen.js"],
       atlasPackageFiles: ["atlas/energy-kitchen.atlas-card.json"],
     });
@@ -1073,6 +1075,57 @@ describe("Home Assistant frontend integration planning", () => {
       importable: false,
       fileCount: 0,
       reason: "The archive is not a readable ZIP file.",
+    });
+  });
+
+  it("rejects HACS card zip archives with unsafe or duplicate paths", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      ...bundle,
+      files: [
+        ...bundle.files,
+        {
+          path: "../energy-kitchen.js",
+          mimeType: "text/javascript",
+          content: "export {};",
+        },
+        {
+          path: "locales\\en.json",
+          mimeType: "application/json",
+          content: "{}",
+        },
+        {
+          path: "README.md",
+          mimeType: "text/markdown",
+          content: "# Duplicate README\n",
+        },
+      ],
+    });
+
+    expect(inspectHomeAssistantCardEditorHacsBundleArchive(archive.content)).toMatchObject({
+      importable: false,
+      unsafePaths: ["../energy-kitchen.js", "locales\\en.json"],
+      duplicatePaths: ["README.md"],
+      missingFiles: [],
+      reason: "The archive is not a safe ATLAS HACS card bundle: unsafe archive paths: ../energy-kitchen.js, locales\\en.json; duplicate archive paths: README.md.",
+    });
+    expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
+      importable: false,
+      reason: "The archive is not a safe ATLAS HACS card bundle: unsafe archive paths: ../energy-kitchen.js, locales\\en.json; duplicate archive paths: README.md.",
     });
   });
 
