@@ -92,6 +92,14 @@ export interface HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness {
   readonly requiredLocaleFiles: readonly string[];
   readonly missingArchiveLocaleFiles: readonly string[];
   readonly invalidArchiveLocaleFiles: readonly string[];
+  readonly invalidArchiveLocales: readonly HomeAssistantCardEditorHacsBundleArchiveInvalidLocale[];
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveInvalidLocale {
+  readonly path: string;
+  readonly expectedLanguage: string;
+  readonly actualLanguage?: string;
+  readonly reason: "invalid-json" | "missing-meta-language" | "language-mismatch";
 }
 
 export function createHomeAssistantCardEditorHacsBundle(
@@ -434,9 +442,10 @@ function readHacsBundleArchiveLocaleReadiness(
     .filter(entry => inspection.localeFiles.includes(entry.path))
     .map(entry => [entry.path, entry]));
   const missingArchiveLocaleFiles = requiredLocaleFiles.filter(path => !localeEntries.has(path));
-  const invalidArchiveLocaleFiles = requiredLocaleFiles
+  const invalidArchiveLocales = requiredLocaleFiles
     .filter(path => localeEntries.has(path))
-    .filter(path => !isReadableMatchingLocaleFile(content, localeEntries.get(path)!, path));
+    .map(path => inspectLocaleArchiveEntry(content, localeEntries.get(path)!, path))
+    .filter((result): result is HomeAssistantCardEditorHacsBundleArchiveInvalidLocale => result !== undefined);
 
   return {
     manifestLanguages: manifestLanguages.length ? manifestLanguages : ["en"],
@@ -444,7 +453,8 @@ function readHacsBundleArchiveLocaleReadiness(
     archiveLocaleFiles: inspection.localeFiles,
     requiredLocaleFiles,
     missingArchiveLocaleFiles,
-    invalidArchiveLocaleFiles,
+    invalidArchiveLocaleFiles: invalidArchiveLocales.map(locale => locale.path),
+    invalidArchiveLocales,
   };
 }
 
@@ -741,17 +751,39 @@ function encodeUtf8(value: string): Uint8Array {
   return new TextEncoder().encode(value);
 }
 
-function isReadableMatchingLocaleFile(
+function inspectLocaleArchiveEntry(
   content: Uint8Array,
   entry: ReadableZipArchiveEntry,
   path: string,
-): boolean {
+): HomeAssistantCardEditorHacsBundleArchiveInvalidLocale | undefined {
+  const expectedLanguage = path.match(/^locales\/([a-z]{2})\.json$/)?.[1] ?? "";
   try {
-    const locale = path.match(/^locales\/([a-z]{2})\.json$/)?.[1];
     const parsed = parseJsonRecord(readStoredZipEntryText(content, entry));
-    return isRecord(parsed._meta) && parsed._meta.language === locale;
+    const actualLanguage = isRecord(parsed._meta) && typeof parsed._meta.language === "string"
+      ? parsed._meta.language
+      : undefined;
+    if (!actualLanguage) {
+      return {
+        path,
+        expectedLanguage,
+        reason: "missing-meta-language",
+      };
+    }
+    if (actualLanguage !== expectedLanguage) {
+      return {
+        path,
+        expectedLanguage,
+        actualLanguage,
+        reason: "language-mismatch",
+      };
+    }
+    return undefined;
   } catch {
-    return false;
+    return {
+      path,
+      expectedLanguage,
+      reason: "invalid-json",
+    };
   }
 }
 
