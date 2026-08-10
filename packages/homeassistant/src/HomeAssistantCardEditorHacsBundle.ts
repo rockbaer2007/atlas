@@ -38,6 +38,7 @@ export interface HomeAssistantCardEditorHacsBundleArchiveEntry {
 
 export type HomeAssistantCardEditorHacsBundleArchiveIssueCode =
   | "missing-required-file"
+  | "missing-locale-file"
   | "unsafe-path"
   | "duplicate-path";
 
@@ -60,6 +61,8 @@ export interface HomeAssistantCardEditorHacsBundleArchiveInspection {
   readonly issues: readonly HomeAssistantCardEditorHacsBundleArchiveIssue[];
   readonly scriptFiles: readonly string[];
   readonly atlasPackageFiles: readonly string[];
+  readonly localeFiles: readonly string[];
+  readonly missingLocaleFiles: readonly string[];
   readonly reason: string;
 }
 
@@ -174,6 +177,8 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
     const duplicatePaths = listDuplicateStrings(paths);
     const scriptFiles = paths.filter(path => !path.includes("/") && path.endsWith(".js"));
     const atlasPackageFiles = paths.filter(path => path.startsWith("atlas/") && path.endsWith(".atlas-card.json"));
+    const localeFiles = paths.filter(path => path.startsWith("locales/") && path.endsWith(".json"));
+    const missingLocaleFiles = paths.includes("locales/en.json") ? [] : ["locales/en.json"];
     const missingFiles = [
       ...requiredFiles.filter(path => !paths.includes(path)),
       ...(scriptFiles.length > 0 ? [] : ["*.js"]),
@@ -181,6 +186,7 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
     ];
     const issues = createHacsBundleArchiveIssues({
       missingFiles,
+      missingLocaleFiles,
       unsafePaths,
       duplicatePaths,
     });
@@ -202,6 +208,8 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       issues,
       scriptFiles,
       atlasPackageFiles,
+      localeFiles,
+      missingLocaleFiles,
       reason: issues.length === 0
         ? "The archive contains the required ATLAS HACS card bundle files."
         : `The archive is not a safe ATLAS HACS card bundle: ${issues.map(issue => issue.message).join("; ")}.`,
@@ -218,11 +226,14 @@ export function inspectHomeAssistantCardEditorHacsBundleArchive(
       duplicatePaths: [],
       issues: createHacsBundleArchiveIssues({
         missingFiles: requiredFiles,
+        missingLocaleFiles: ["locales/en.json"],
         unsafePaths: [],
         duplicatePaths: [],
       }),
       scriptFiles: [],
       atlasPackageFiles: [],
+      localeFiles: [],
+      missingLocaleFiles: ["locales/en.json"],
       reason: "The archive is not a readable ZIP file.",
     };
   }
@@ -370,6 +381,7 @@ function readHacsBundleArchiveMetadata(
 
 function createHacsBundleArchiveIssues(input: {
   readonly missingFiles: readonly string[];
+  readonly missingLocaleFiles: readonly string[];
   readonly unsafePaths: readonly string[];
   readonly duplicatePaths: readonly string[];
 }): HomeAssistantCardEditorHacsBundleArchiveIssue[] {
@@ -380,6 +392,14 @@ function createHacsBundleArchiveIssues(input: {
           severity: "error" as const,
           paths: input.missingFiles,
           message: `missing required files: ${input.missingFiles.join(", ")}`,
+        }]
+      : []),
+    ...(input.missingLocaleFiles.length > 0
+      ? [{
+          code: "missing-locale-file" as const,
+          severity: "error" as const,
+          paths: input.missingLocaleFiles,
+          message: `missing required locale files: ${input.missingLocaleFiles.join(", ")}`,
         }]
       : []),
     ...(input.unsafePaths.length > 0

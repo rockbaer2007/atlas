@@ -1071,6 +1071,8 @@ describe("Home Assistant frontend integration planning", () => {
       issues: [],
       scriptFiles: ["energy-kitchen.js"],
       atlasPackageFiles: ["atlas/energy-kitchen.atlas-card.json"],
+      localeFiles: ["locales/en.json"],
+      missingLocaleFiles: [],
     });
     expect(inspectHomeAssistantCardEditorHacsBundleArchive(new Uint8Array([1, 2, 3]))).toMatchObject({
       importable: false,
@@ -1105,6 +1107,7 @@ describe("Home Assistant frontend integration planning", () => {
     expect(inspectHomeAssistantCardEditorHacsBundleArchive(archive.content)).toMatchObject({
       importable: false,
       missingFiles: ["README.md", "examples/lovelace-card.json", "*.js", "atlas/*.atlas-card.json"],
+      missingLocaleFiles: ["locales/en.json"],
       unsafePaths: [],
       duplicatePaths: [],
       issues: [
@@ -1114,8 +1117,14 @@ describe("Home Assistant frontend integration planning", () => {
           paths: ["README.md", "examples/lovelace-card.json", "*.js", "atlas/*.atlas-card.json"],
           message: "missing required files: README.md, examples/lovelace-card.json, *.js, atlas/*.atlas-card.json",
         },
+        {
+          code: "missing-locale-file",
+          severity: "error",
+          paths: ["locales/en.json"],
+          message: "missing required locale files: locales/en.json",
+        },
       ],
-      reason: "The archive is not a safe ATLAS HACS card bundle: missing required files: README.md, examples/lovelace-card.json, *.js, atlas/*.atlas-card.json.",
+      reason: "The archive is not a safe ATLAS HACS card bundle: missing required files: README.md, examples/lovelace-card.json, *.js, atlas/*.atlas-card.json; missing required locale files: locales/en.json.",
     });
   });
 
@@ -1279,6 +1288,11 @@ describe("Home Assistant frontend integration planning", () => {
           path: "atlas/broken-card.atlas-card.json",
           mimeType: "application/json",
           content: "{\"version\":1,\"kind\":\"atlas.homeassistant.card\",\"manifest\":{},\"content\":\"type: markdown\\ncontent: unsupported\"}",
+        },
+        {
+          path: "locales/en.json",
+          mimeType: "application/json",
+          content: "{}",
         },
       ],
       installSteps: [],
