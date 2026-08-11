@@ -73,6 +73,7 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly hacsMetadata?: HomeAssistantCardEditorHacsBundleArchiveMetadata;
   readonly localeReadiness?: HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness;
   readonly exampleReadiness?: HomeAssistantCardEditorHacsBundleArchiveExampleReadiness;
+  readonly readmeReadiness?: HomeAssistantCardEditorHacsBundleArchiveReadmeReadiness;
   readonly packageFile?: string;
   readonly packageContent?: string;
   readonly summary?: HomeAssistantCardImportSummary;
@@ -109,6 +110,16 @@ export interface HomeAssistantCardEditorHacsBundleArchiveExampleReadiness {
   readonly actualType?: string;
   readonly valid: boolean;
   readonly reason: "ok" | "invalid-json" | "missing-type" | "type-mismatch";
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveReadmeReadiness {
+  readonly path: "README.md";
+  readonly expectedResourcePath?: string;
+  readonly expectedCardType?: string;
+  readonly mentionsResourcePath: boolean;
+  readonly mentionsCardType: boolean;
+  readonly valid: boolean;
+  readonly reason: "ok" | "missing-resource-path" | "missing-card-type";
 }
 
 export function createHomeAssistantCardEditorHacsBundle(
@@ -401,6 +412,27 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
         reason: `The Lovelace example card does not match the embedded ATLAS card package: ${exampleReadiness.reason}.`,
       };
     }
+    const readmeReadiness = readHacsBundleArchiveReadmeReadiness(
+      content,
+      entries,
+      summary.script?.resourcePath,
+      summary.script?.cardType,
+    );
+    if (!readmeReadiness.valid) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata: checkedHacsMetadata,
+        localeReadiness,
+        exampleReadiness,
+        readmeReadiness,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The README does not document the embedded ATLAS card package correctly: ${readmeReadiness.reason}.`,
+      };
+    }
 
     return {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
@@ -409,6 +441,7 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
       hacsMetadata: checkedHacsMetadata,
       localeReadiness,
       exampleReadiness,
+      readmeReadiness,
       packageFile: packageEntry.path,
       packageContent,
       summary,
@@ -455,6 +488,9 @@ export function formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(
   }
   if (packageRead.exampleReadiness) {
     lines.push(formatExampleReadinessReviewLine(packageRead.exampleReadiness));
+  }
+  if (packageRead.readmeReadiness) {
+    lines.push(formatReadmeReadinessReviewLine(packageRead.readmeReadiness));
   }
   for (const issue of packageRead.inspection.issues) {
     lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
@@ -519,6 +555,30 @@ function readHacsBundleArchiveExampleReadiness(
       reason: "invalid-json",
     };
   }
+}
+
+function readHacsBundleArchiveReadmeReadiness(
+  content: Uint8Array,
+  entries: readonly ReadableZipArchiveEntry[],
+  expectedResourcePath: string | undefined,
+  expectedCardType: string | undefined,
+): HomeAssistantCardEditorHacsBundleArchiveReadmeReadiness {
+  const path = "README.md";
+  const entry = entries.find(candidate => candidate.path === path);
+  const readme = entry ? readStoredZipEntryText(content, entry) : "";
+  const mentionsResourcePath = expectedResourcePath ? readme.includes(expectedResourcePath) : false;
+  const mentionsCardType = expectedCardType ? readme.includes(expectedCardType) : false;
+  const valid = mentionsResourcePath && mentionsCardType;
+
+  return {
+    path,
+    expectedResourcePath,
+    expectedCardType,
+    mentionsResourcePath,
+    mentionsCardType,
+    valid,
+    reason: valid ? "ok" : !mentionsResourcePath ? "missing-resource-path" : "missing-card-type",
+  };
 }
 
 function readHacsBundleArchiveLocaleReadiness(
@@ -862,6 +922,18 @@ function formatExampleReadinessReviewLine(
   const expected = readiness.expectedType ? `expected ${readiness.expectedType}` : "expected card type unknown";
   const actual = readiness.actualType ? `, actual ${readiness.actualType}` : "";
   return `Invalid example card ${readiness.path}: ${expected}${actual} (${readiness.reason})`;
+}
+
+function formatReadmeReadinessReviewLine(
+  readiness: HomeAssistantCardEditorHacsBundleArchiveReadmeReadiness,
+): string {
+  if (readiness.valid) {
+    return `README: ${readiness.expectedResourcePath ?? "unknown resource"} / ${readiness.expectedCardType ?? "unknown card"} (${readiness.reason})`;
+  }
+  const missing = !readiness.mentionsResourcePath
+    ? readiness.expectedResourcePath ?? "resource path"
+    : readiness.expectedCardType ?? "card type";
+  return `Invalid README ${readiness.path}: missing ${missing} (${readiness.reason})`;
 }
 
 function inspectLocaleArchiveEntry(
