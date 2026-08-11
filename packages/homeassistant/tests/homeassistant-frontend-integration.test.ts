@@ -20,6 +20,7 @@ import {
   createHomeAssistantAtlasFrontendResourceReferences,
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
+  formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
   inspectHomeAssistantCardEditorHacsBundleArchive,
   listHomeAssistantCardEditorTemplates,
   normalizeHomeAssistantCustomElementName,
@@ -1281,7 +1282,9 @@ describe("Home Assistant frontend integration planning", () => {
       files: bundle.files.filter(file => file.path !== "locales/de.json"),
     });
 
-    expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+
+    expect(packageRead).toMatchObject({
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: false,
       localeReadiness: {
@@ -1296,6 +1299,13 @@ describe("Home Assistant frontend integration planning", () => {
       packageFile: "atlas/energy-kitchen.atlas-card.json",
       reason: "The archive is missing locale files declared by the embedded ATLAS card package: locales/de.json.",
     });
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead)).toEqual([
+      "The archive is missing locale files declared by the embedded ATLAS card package: locales/de.json.",
+      "HACS script: energy-kitchen.js",
+      "Required locales: locales/en.json, locales/de.json",
+      "Archive locales: locales/en.json",
+      "Missing locales: locales/de.json",
+    ]);
   });
 
   it("rejects HACS card zip archives with locale files whose metadata language does not match the path", () => {
@@ -1332,7 +1342,9 @@ describe("Home Assistant frontend integration planning", () => {
         : file),
     });
 
-    expect(readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content)).toMatchObject({
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+
+    expect(packageRead).toMatchObject({
       kind: "atlas.homeassistant.hacs-card-bundle-package",
       importable: false,
       localeReadiness: {
@@ -1352,6 +1364,9 @@ describe("Home Assistant frontend integration planning", () => {
       },
       reason: "The archive contains invalid locale files declared by the embedded ATLAS card package: locales/de.json.",
     });
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead)).toContain(
+      "Invalid locale locales/de.json: expected de, actual fr (language-mismatch)",
+    );
   });
 
   it("rejects HACS card zip archives with unreadable embedded ATLAS packages", () => {

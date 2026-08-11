@@ -411,6 +411,29 @@ export function createHomeAssistantCardEditorHacsBundleArchive(
   };
 }
 
+export function formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(
+  packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
+): readonly string[] {
+  const lines = [packageRead.reason];
+  if (packageRead.hacsMetadata?.filename) {
+    lines.push(`HACS script: ${packageRead.hacsMetadata.filename}`);
+  }
+  if (packageRead.localeReadiness) {
+    lines.push(`Required locales: ${packageRead.localeReadiness.requiredLocaleFiles.join(", ")}`);
+    lines.push(`Archive locales: ${packageRead.localeReadiness.archiveLocaleFiles.join(", ") || "none"}`);
+    if (packageRead.localeReadiness.missingArchiveLocaleFiles.length > 0) {
+      lines.push(`Missing locales: ${packageRead.localeReadiness.missingArchiveLocaleFiles.join(", ")}`);
+    }
+    for (const locale of packageRead.localeReadiness.invalidArchiveLocales) {
+      lines.push(formatInvalidLocaleReviewLine(locale));
+    }
+  }
+  for (const issue of packageRead.inspection.issues) {
+    lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
+  }
+  return lines;
+}
+
 function readHacsBundleArchiveMetadata(
   content: Uint8Array,
   entry: ReadableZipArchiveEntry,
@@ -749,6 +772,13 @@ function concatUint8Arrays(chunks: readonly Uint8Array[]): Uint8Array {
 
 function encodeUtf8(value: string): Uint8Array {
   return new TextEncoder().encode(value);
+}
+
+function formatInvalidLocaleReviewLine(
+  locale: HomeAssistantCardEditorHacsBundleArchiveInvalidLocale,
+): string {
+  const actual = locale.actualLanguage ? `, actual ${locale.actualLanguage}` : "";
+  return `Invalid locale ${locale.path}: expected ${locale.expectedLanguage}${actual} (${locale.reason})`;
 }
 
 function inspectLocaleArchiveEntry(

@@ -38,6 +38,7 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   inspectHomeAssistantCardEditorHacsBundleArchive,
+  formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
   readHomeAssistantCardEditorHacsBundleArchivePackage,
   listHomeAssistantCardEditorTemplates,
   listHomeAssistantCardTargets,
@@ -1961,18 +1962,7 @@ function renderHaCardImportDecision(text) {
 }
 
 function formatHacsBundlePackageReadReview(packageRead) {
-  const lines = [packageRead.reason];
-  if (packageRead.hacsMetadata?.filename) {
-    lines.push(`HACS script: ${packageRead.hacsMetadata.filename}`);
-  }
-  if (packageRead.localeReadiness) {
-    lines.push(`Required locales: ${packageRead.localeReadiness.requiredLocaleFiles.join(", ")}`);
-    lines.push(`Archive locales: ${packageRead.localeReadiness.archiveLocaleFiles.join(", ") || "none"}`);
-  }
-  for (const issue of packageRead.inspection.issues ?? []) {
-    lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
-  }
-  return lines.join("\n");
+  return formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead).join("\n");
 }
 
 function renderExpertTemplatePalette() {
