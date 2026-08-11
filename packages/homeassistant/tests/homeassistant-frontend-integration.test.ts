@@ -1233,6 +1233,13 @@ describe("Home Assistant frontend integration planning", () => {
         invalidArchiveLocaleFiles: [],
         invalidArchiveLocales: [],
       },
+      scriptReadiness: {
+        path: "energy-kitchen.js",
+        expectedCustomElementName: "energy-kitchen",
+        definesCustomElement: true,
+        valid: true,
+        reason: "ok",
+      },
       exampleReadiness: {
         path: "examples/lovelace-card.json",
         expectedType: "custom:energy-kitchen",
@@ -1327,6 +1334,54 @@ describe("Home Assistant frontend integration planning", () => {
     });
     expect(formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead)).toContain(
       "Invalid README README.md: missing /hacsfiles/atlas/energy-kitchen.js (missing-resource-path)",
+    );
+  });
+
+  it("rejects HACS card zip archives whose script does not define the embedded custom element", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      ...bundle,
+      files: bundle.files.map(file => file.path === "energy-kitchen.js"
+        ? {
+            ...file,
+            content: file.content.replace(
+              "customElements.define(\"energy-kitchen\"",
+              "customElements.define(\"other-card\"",
+            ),
+          }
+        : file),
+    });
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+
+    expect(packageRead).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-package",
+      importable: false,
+      scriptReadiness: {
+        path: "energy-kitchen.js",
+        expectedCustomElementName: "energy-kitchen",
+        definesCustomElement: false,
+        valid: false,
+        reason: "custom-element-mismatch",
+      },
+      reason: "The generated script does not define the embedded ATLAS custom element: custom-element-mismatch.",
+    });
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead)).toContain(
+      "Invalid script energy-kitchen.js: expected energy-kitchen (custom-element-mismatch)",
     );
   });
 

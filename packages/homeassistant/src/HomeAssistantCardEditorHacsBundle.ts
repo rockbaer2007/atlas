@@ -72,6 +72,7 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly inspection: HomeAssistantCardEditorHacsBundleArchiveInspection;
   readonly hacsMetadata?: HomeAssistantCardEditorHacsBundleArchiveMetadata;
   readonly localeReadiness?: HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness;
+  readonly scriptReadiness?: HomeAssistantCardEditorHacsBundleArchiveScriptReadiness;
   readonly exampleReadiness?: HomeAssistantCardEditorHacsBundleArchiveExampleReadiness;
   readonly readmeReadiness?: HomeAssistantCardEditorHacsBundleArchiveReadmeReadiness;
   readonly packageFile?: string;
@@ -102,6 +103,14 @@ export interface HomeAssistantCardEditorHacsBundleArchiveInvalidLocale {
   readonly expectedLanguage: string;
   readonly actualLanguage?: string;
   readonly reason: "invalid-json" | "missing-meta-language" | "language-mismatch";
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveScriptReadiness {
+  readonly path?: string;
+  readonly expectedCustomElementName?: string;
+  readonly definesCustomElement: boolean;
+  readonly valid: boolean;
+  readonly reason: "ok" | "missing-script" | "missing-custom-element-name" | "custom-element-mismatch";
 }
 
 export interface HomeAssistantCardEditorHacsBundleArchiveExampleReadiness {
@@ -397,6 +406,26 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
         reason: `The HACS manifest filename ${hacsMetadata.filename} does not match the embedded ATLAS card package script filename ${packageScriptFilename ?? "unknown"}.`,
       };
     }
+    const scriptReadiness = readHacsBundleArchiveScriptReadiness(
+      content,
+      entries,
+      hacsMetadata.filename,
+      summary.script?.customElementName,
+    );
+    if (!scriptReadiness.valid) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata: checkedHacsMetadata,
+        localeReadiness,
+        scriptReadiness,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The generated script does not define the embedded ATLAS custom element: ${scriptReadiness.reason}.`,
+      };
+    }
     const exampleReadiness = readHacsBundleArchiveExampleReadiness(content, entries, summary.script?.cardType);
     if (!exampleReadiness.valid) {
       return {
@@ -405,6 +434,7 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
         inspection,
         hacsMetadata: checkedHacsMetadata,
         localeReadiness,
+        scriptReadiness,
         exampleReadiness,
         packageFile: packageEntry.path,
         packageContent,
@@ -425,6 +455,7 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
         inspection,
         hacsMetadata: checkedHacsMetadata,
         localeReadiness,
+        scriptReadiness,
         exampleReadiness,
         readmeReadiness,
         packageFile: packageEntry.path,
@@ -440,6 +471,7 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
       inspection,
       hacsMetadata: checkedHacsMetadata,
       localeReadiness,
+      scriptReadiness,
       exampleReadiness,
       readmeReadiness,
       packageFile: packageEntry.path,
@@ -486,6 +518,9 @@ export function formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(
       lines.push(formatInvalidLocaleReviewLine(locale));
     }
   }
+  if (packageRead.scriptReadiness) {
+    lines.push(formatScriptReadinessReviewLine(packageRead.scriptReadiness));
+  }
   if (packageRead.exampleReadiness) {
     lines.push(formatExampleReadinessReviewLine(packageRead.exampleReadiness));
   }
@@ -510,6 +545,47 @@ function readHacsBundleArchiveMetadata(
     filename,
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
+  };
+}
+
+function readHacsBundleArchiveScriptReadiness(
+  content: Uint8Array,
+  entries: readonly ReadableZipArchiveEntry[],
+  scriptFilename: string | undefined,
+  expectedCustomElementName: string | undefined,
+): HomeAssistantCardEditorHacsBundleArchiveScriptReadiness {
+  if (!expectedCustomElementName) {
+    return {
+      path: scriptFilename,
+      expectedCustomElementName,
+      definesCustomElement: false,
+      valid: false,
+      reason: "missing-custom-element-name",
+    };
+  }
+  const entry = scriptFilename ? entries.find(candidate => candidate.path === scriptFilename) : undefined;
+  if (!entry) {
+    return {
+      path: scriptFilename,
+      expectedCustomElementName,
+      definesCustomElement: false,
+      valid: false,
+      reason: "missing-script",
+    };
+  }
+
+  const script = readStoredZipEntryText(content, entry);
+  const definesCustomElement = [
+    `customElements.define("${expectedCustomElementName}"`,
+    `customElements.define('${expectedCustomElementName}'`,
+  ].some(fragment => script.includes(fragment));
+
+  return {
+    path: entry.path,
+    expectedCustomElementName,
+    definesCustomElement,
+    valid: definesCustomElement,
+    reason: definesCustomElement ? "ok" : "custom-element-mismatch",
   };
 }
 
@@ -911,6 +987,16 @@ function formatInvalidLocaleReviewLine(
 ): string {
   const actual = locale.actualLanguage ? `, actual ${locale.actualLanguage}` : "";
   return `Invalid locale ${locale.path}: expected ${locale.expectedLanguage}${actual} (${locale.reason})`;
+}
+
+function formatScriptReadinessReviewLine(
+  readiness: HomeAssistantCardEditorHacsBundleArchiveScriptReadiness,
+): string {
+  if (readiness.valid) {
+    return `Script: ${readiness.path ?? "unknown script"} defines ${readiness.expectedCustomElementName ?? "unknown element"} (${readiness.reason})`;
+  }
+  const expected = readiness.expectedCustomElementName ? `expected ${readiness.expectedCustomElementName}` : "expected custom element unknown";
+  return `Invalid script ${readiness.path ?? "unknown script"}: ${expected} (${readiness.reason})`;
 }
 
 function formatExampleReadinessReviewLine(
