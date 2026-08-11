@@ -84,6 +84,7 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
 export interface HomeAssistantCardEditorHacsBundleArchiveMetadata {
   readonly name?: string;
   readonly filename?: string;
+  readonly nameMatchesPackage: boolean;
   readonly scriptMatchesArchive: boolean;
   readonly scriptMatchesPackage: boolean;
 }
@@ -390,10 +391,24 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
     }
 
     const packageScriptFilename = summary.script?.filename ?? summary.editorPlan?.scriptFilename;
+    const packageName = summary.title;
     const checkedHacsMetadata = {
       ...hacsMetadata,
+      nameMatchesPackage: hacsMetadata.name === packageName,
       scriptMatchesPackage: packageScriptFilename === hacsMetadata.filename,
     };
+    if (!checkedHacsMetadata.nameMatchesPackage) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata: checkedHacsMetadata,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The HACS manifest name ${hacsMetadata.name ?? "unknown"} does not match the embedded ATLAS card package name ${packageName}.`,
+      };
+    }
     if (!checkedHacsMetadata.scriptMatchesPackage) {
       return {
         kind: "atlas.homeassistant.hacs-card-bundle-package",
@@ -505,6 +520,9 @@ export function formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(
   packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
 ): readonly string[] {
   const lines = [packageRead.reason];
+  if (packageRead.hacsMetadata?.name) {
+    lines.push(`HACS name: ${packageRead.hacsMetadata.name}`);
+  }
   if (packageRead.hacsMetadata?.filename) {
     lines.push(`HACS script: ${packageRead.hacsMetadata.filename}`);
   }
@@ -543,6 +561,7 @@ function readHacsBundleArchiveMetadata(
   return {
     name: typeof manifest.name === "string" ? manifest.name.trim() : undefined,
     filename,
+    nameMatchesPackage: false,
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
   };
