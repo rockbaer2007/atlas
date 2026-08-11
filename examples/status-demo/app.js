@@ -14,8 +14,6 @@ import {
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorHacsBundleArchive,
-  createHomeAssistantCardEditorHacsBundleReadinessOverview,
-  createHomeAssistantCardEditorHacsBundleReadinessReport,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFieldFromTemplate,
@@ -40,6 +38,7 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   inspectHomeAssistantCardEditorHacsBundleArchive,
+  formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines,
   formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
   readHomeAssistantCardEditorHacsBundleArchivePackage,
   listHomeAssistantCardEditorTemplates,
@@ -1964,19 +1963,8 @@ function renderHaCardImportDecision(text) {
 }
 
 function formatHacsBundlePackageReadReview(packageRead) {
-  const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
-  const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
-  const firstBlockedGroup = overview.firstBlockedGroup
-    ? `First blocked group: ${overview.firstBlockedGroup.label} (${overview.firstBlockedGroup.firstFailedCheck?.code ?? "unknown"})`
-    : "First blocked group: none";
-  const firstPendingGroup = overview.firstPendingGroup
-    ? `First pending group: ${overview.firstPendingGroup.label} (${overview.firstPendingGroup.firstPendingCheck?.code ?? "unknown"})`
-    : "First pending group: none";
   return [
-    `Readiness: ${report.passed}/${report.checks.length} passed, ${report.failed} failed, ${report.pending} pending`,
-    `Readiness groups: ${overview.readyGroups}/${overview.groupCount} ready, ${overview.blockedGroups} blocked, ${overview.pendingGroups} pending`,
-    firstBlockedGroup,
-    firstPendingGroup,
+    ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
     ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
   ].join("\n");
 }

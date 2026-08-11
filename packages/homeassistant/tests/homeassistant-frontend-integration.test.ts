@@ -23,6 +23,7 @@ import {
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
   formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
+  formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines,
   inspectHomeAssistantCardEditorHacsBundleArchive,
   listHomeAssistantCardEditorTemplates,
   normalizeHomeAssistantCustomElementName,
@@ -1446,6 +1447,33 @@ describe("Home Assistant frontend integration planning", () => {
     expect(overview.firstPendingGroup).toBeUndefined();
   });
 
+  it("formats HACS readiness overview lines for ready archives", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const archive = createHomeAssistantCardEditorHacsBundleArchive(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+
+    expect(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead)).toEqual([
+      "Readiness: 111/111 passed, 0 failed, 0 pending",
+      "Readiness groups: 8/8 ready, 0 blocked, 0 pending",
+      "First blocked group: none",
+      "First pending group: none",
+    ]);
+  });
+
   it("shows blocked and pending HACS readiness groups for rejected archives", () => {
     const archive = createHomeAssistantCardEditorHacsBundleArchive({
       version: 1,
@@ -1507,6 +1535,12 @@ describe("Home Assistant frontend integration planning", () => {
     expect(groupsById.archive).toMatchObject({ failed: 10 });
     expect(groupsById.manifest).toMatchObject({ pending: 15 });
     expect(groupsById.import).toMatchObject({ failed: 2, pending: 8 });
+    expect(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead)).toEqual([
+      "Readiness: 17/111 passed, 12 failed, 82 pending",
+      "Readiness groups: 0/8 ready, 2 blocked, 7 pending",
+      "First blocked group: Archive (has-readme)",
+      "First pending group: HACS manifest (hacs-filename-declared)",
+    ]);
   });
 
   it("rejects HACS card zip archives whose README omits the generated resource path", () => {
