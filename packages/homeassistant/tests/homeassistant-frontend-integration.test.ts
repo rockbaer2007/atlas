@@ -13,6 +13,7 @@ import {
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorHacsBundleArchive,
+  createHomeAssistantCardEditorHacsBundleReadinessReport,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFrontendIntegrationPlan,
@@ -1281,6 +1282,112 @@ describe("Home Assistant frontend integration planning", () => {
         cardName: "Energy Kitchen",
         scriptFilename: "energy-kitchen.js",
       },
+    });
+  });
+
+  it("creates a 30-check HACS bundle readiness report for importable archives", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const archive = createHomeAssistantCardEditorHacsBundleArchive(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+    const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
+
+    expect(report).toMatchObject({
+      ready: true,
+      passed: 30,
+      failed: 0,
+      pending: 0,
+    });
+    expect(report.checks).toHaveLength(30);
+    expect(report.checks.map(check => check.code)).toEqual([
+      "zip-readable",
+      "safe-paths",
+      "unique-paths",
+      "has-hacs-manifest",
+      "has-readme",
+      "has-example-card",
+      "has-root-script",
+      "has-atlas-package",
+      "has-english-locale",
+      "hacs-filename-declared",
+      "hacs-script-in-archive",
+      "atlas-package-readable",
+      "declared-locales-present",
+      "locale-json-readable",
+      "locale-meta-language-present",
+      "locale-language-matches-path",
+      "hacs-name-declared",
+      "hacs-name-matches-package",
+      "hacs-filename-matches-package",
+      "script-custom-element-known",
+      "script-file-readable",
+      "script-defines-custom-element",
+      "example-json-readable",
+      "example-type-present",
+      "example-type-matches-package",
+      "readme-mentions-resource-path",
+      "readme-mentions-card-type",
+      "package-contains-entities",
+      "package-is-atlas-export",
+      "bundle-importable",
+    ]);
+    expect(report.checks.every(check => check.status === "pass")).toBe(true);
+  });
+
+  it("marks failed and pending HACS readiness checks for rejected archives", () => {
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      version: 1,
+      kind: "atlas.homeassistant.hacs-card-bundle",
+      cardName: "Incomplete Card",
+      scriptFilename: "incomplete-card.js",
+      customElementName: "incomplete-card",
+      cardType: "custom:incomplete-card",
+      resourcePath: "/hacsfiles/atlas/incomplete-card.js",
+      files: [
+        {
+          path: "hacs.json",
+          mimeType: "application/json",
+          content: JSON.stringify({
+            name: "Incomplete Card",
+            render_readme: true,
+            filename: "incomplete-card.js",
+          }, null, 2),
+        },
+      ],
+      installSteps: [],
+    });
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+    const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
+
+    expect(report).toMatchObject({
+      ready: false,
+      passed: 4,
+      failed: 6,
+      pending: 20,
+    });
+    expect(Object.fromEntries(report.checks.map(check => [check.code, check.status]))).toMatchObject({
+      "zip-readable": "pass",
+      "has-hacs-manifest": "pass",
+      "has-readme": "fail",
+      "has-root-script": "fail",
+      "has-atlas-package": "fail",
+      "hacs-filename-declared": "pending",
+      "atlas-package-readable": "pending",
+      "bundle-importable": "fail",
     });
   });
 

@@ -81,6 +81,55 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly reason: string;
 }
 
+export type HomeAssistantCardEditorHacsBundleReadinessCheckStatus = "pass" | "fail" | "pending";
+
+export type HomeAssistantCardEditorHacsBundleReadinessCheckCode =
+  | "zip-readable"
+  | "safe-paths"
+  | "unique-paths"
+  | "has-hacs-manifest"
+  | "has-readme"
+  | "has-example-card"
+  | "has-root-script"
+  | "has-atlas-package"
+  | "has-english-locale"
+  | "hacs-filename-declared"
+  | "hacs-script-in-archive"
+  | "atlas-package-readable"
+  | "declared-locales-present"
+  | "locale-json-readable"
+  | "locale-meta-language-present"
+  | "locale-language-matches-path"
+  | "hacs-name-declared"
+  | "hacs-name-matches-package"
+  | "hacs-filename-matches-package"
+  | "script-custom-element-known"
+  | "script-file-readable"
+  | "script-defines-custom-element"
+  | "example-json-readable"
+  | "example-type-present"
+  | "example-type-matches-package"
+  | "readme-mentions-resource-path"
+  | "readme-mentions-card-type"
+  | "package-contains-entities"
+  | "package-is-atlas-export"
+  | "bundle-importable";
+
+export interface HomeAssistantCardEditorHacsBundleReadinessCheck {
+  readonly code: HomeAssistantCardEditorHacsBundleReadinessCheckCode;
+  readonly status: HomeAssistantCardEditorHacsBundleReadinessCheckStatus;
+  readonly label: string;
+  readonly detail: string;
+}
+
+export interface HomeAssistantCardEditorHacsBundleReadinessReport {
+  readonly ready: boolean;
+  readonly passed: number;
+  readonly failed: number;
+  readonly pending: number;
+  readonly checks: readonly HomeAssistantCardEditorHacsBundleReadinessCheck[];
+}
+
 export interface HomeAssistantCardEditorHacsBundleArchiveMetadata {
   readonly name?: string;
   readonly filename?: string;
@@ -549,6 +598,74 @@ export function formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(
     lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
   }
   return lines;
+}
+
+export function createHomeAssistantCardEditorHacsBundleReadinessReport(
+  packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
+): HomeAssistantCardEditorHacsBundleReadinessReport {
+  const checks: HomeAssistantCardEditorHacsBundleReadinessCheck[] = [];
+  const add = (
+    code: HomeAssistantCardEditorHacsBundleReadinessCheckCode,
+    status: HomeAssistantCardEditorHacsBundleReadinessCheckStatus,
+    label: string,
+    detail: string,
+  ) => {
+    checks.push({ code, status, label, detail });
+  };
+  const inspection = packageRead.inspection;
+  const localeReadiness = packageRead.localeReadiness;
+  const invalidLocaleReasons = new Set(localeReadiness?.invalidArchiveLocales.map(locale => locale.reason) ?? []);
+  const exampleReadiness = packageRead.exampleReadiness;
+  const readmeReadiness = packageRead.readmeReadiness;
+  const scriptReadiness = packageRead.scriptReadiness;
+  const hacsMetadata = packageRead.hacsMetadata;
+  const summary = packageRead.summary;
+  const zipReadable = inspection.reason !== "The archive is not a readable ZIP file.";
+  const hasRequiredFile = (path: string) => !inspection.missingFiles.includes(path);
+  const hasRootScript = !inspection.missingFiles.includes("*.js") && inspection.scriptFiles.length > 0;
+  const hasAtlasPackage = !inspection.missingFiles.includes("atlas/*.atlas-card.json") && inspection.atlasPackageFiles.length > 0;
+
+  add("zip-readable", zipReadable ? "pass" : "fail", "ZIP readable", zipReadable ? "The archive central directory can be read." : inspection.reason);
+  add("safe-paths", inspection.unsafePaths.length === 0 ? "pass" : "fail", "Safe archive paths", inspection.unsafePaths.length === 0 ? "No unsafe archive paths detected." : `Unsafe paths: ${inspection.unsafePaths.join(", ")}`);
+  add("unique-paths", inspection.duplicatePaths.length === 0 ? "pass" : "fail", "Unique archive paths", inspection.duplicatePaths.length === 0 ? "No duplicate archive paths detected." : `Duplicate paths: ${inspection.duplicatePaths.join(", ")}`);
+  add("has-hacs-manifest", hasRequiredFile("hacs.json") ? "pass" : "fail", "HACS manifest present", hasRequiredFile("hacs.json") ? "hacs.json is present." : "hacs.json is missing.");
+  add("has-readme", hasRequiredFile("README.md") ? "pass" : "fail", "README present", hasRequiredFile("README.md") ? "README.md is present." : "README.md is missing.");
+  add("has-example-card", hasRequiredFile("examples/lovelace-card.json") ? "pass" : "fail", "Example card present", hasRequiredFile("examples/lovelace-card.json") ? "examples/lovelace-card.json is present." : "examples/lovelace-card.json is missing.");
+  add("has-root-script", hasRootScript ? "pass" : "fail", "Root script present", hasRootScript ? `Root scripts: ${inspection.scriptFiles.join(", ")}` : "No root JavaScript file found.");
+  add("has-atlas-package", hasAtlasPackage ? "pass" : "fail", "ATLAS package present", hasAtlasPackage ? `ATLAS packages: ${inspection.atlasPackageFiles.join(", ")}` : "No atlas/*.atlas-card.json file found.");
+  add("has-english-locale", inspection.missingLocaleFiles.length === 0 ? "pass" : "fail", "English locale present", inspection.missingLocaleFiles.length === 0 ? "locales/en.json is present." : "locales/en.json is missing.");
+  add("hacs-filename-declared", hacsMetadata ? (hacsMetadata.filename ? "pass" : "fail") : "pending", "HACS filename declared", hacsMetadata?.filename ? `Manifest filename: ${hacsMetadata.filename}` : "Manifest filename has not been read.");
+  add("hacs-script-in-archive", hacsMetadata ? (hacsMetadata.scriptMatchesArchive ? "pass" : "fail") : "pending", "HACS script in archive", hacsMetadata?.scriptMatchesArchive ? "Manifest filename matches a root script file." : "Manifest script was not matched to a root script file.");
+  add("atlas-package-readable", summary ? "pass" : (hasAtlasPackage ? "fail" : "pending"), "ATLAS package readable", summary ? "Embedded ATLAS package was parsed." : packageRead.packageFile ? "Embedded ATLAS package could not be parsed." : "Embedded ATLAS package has not been read.");
+  add("declared-locales-present", localeReadiness ? (localeReadiness.missingArchiveLocaleFiles.length === 0 ? "pass" : "fail") : "pending", "Declared locales present", localeReadiness?.missingArchiveLocaleFiles.length ? `Missing locales: ${localeReadiness.missingArchiveLocaleFiles.join(", ")}` : localeReadiness ? "All declared locales are present." : "Locale declarations have not been read.");
+  add("locale-json-readable", localeReadiness ? (invalidLocaleReasons.has("invalid-json") ? "fail" : "pass") : "pending", "Locale JSON readable", invalidLocaleReasons.has("invalid-json") ? "At least one declared locale is invalid JSON." : localeReadiness ? "Declared locale JSON files are readable." : "Locale JSON has not been read.");
+  add("locale-meta-language-present", localeReadiness ? (invalidLocaleReasons.has("missing-meta-language") ? "fail" : "pass") : "pending", "Locale metadata language present", invalidLocaleReasons.has("missing-meta-language") ? "At least one locale is missing _meta.language." : localeReadiness ? "Declared locales include _meta.language." : "Locale metadata has not been read.");
+  add("locale-language-matches-path", localeReadiness ? (invalidLocaleReasons.has("language-mismatch") ? "fail" : "pass") : "pending", "Locale language matches path", invalidLocaleReasons.has("language-mismatch") ? "At least one locale _meta.language does not match its path." : localeReadiness ? "Locale metadata matches file paths." : "Locale metadata has not been checked.");
+  add("hacs-name-declared", hacsMetadata ? (hacsMetadata.name ? "pass" : "fail") : "pending", "HACS name declared", hacsMetadata?.name ? `Manifest name: ${hacsMetadata.name}` : "Manifest name has not been read.");
+  add("hacs-name-matches-package", hacsMetadata && summary ? (hacsMetadata.nameMatchesPackage ? "pass" : "fail") : "pending", "HACS name matches package", hacsMetadata?.nameMatchesPackage ? "Manifest name matches the package title." : summary ? "Manifest name does not match the package title." : "Package title has not been read.");
+  add("hacs-filename-matches-package", hacsMetadata && summary ? (hacsMetadata.scriptMatchesPackage ? "pass" : "fail") : "pending", "HACS filename matches package", hacsMetadata?.scriptMatchesPackage ? "Manifest filename matches the package script filename." : summary ? "Manifest filename does not match the package script filename." : "Package script filename has not been read.");
+  add("script-custom-element-known", scriptReadiness ? (scriptReadiness.expectedCustomElementName ? "pass" : "fail") : "pending", "Script custom element known", scriptReadiness?.expectedCustomElementName ? `Expected element: ${scriptReadiness.expectedCustomElementName}` : "Expected custom element has not been read.");
+  add("script-file-readable", scriptReadiness ? (scriptReadiness.path ? "pass" : "fail") : "pending", "Script file readable", scriptReadiness?.path ? `Script file: ${scriptReadiness.path}` : "Script file has not been read.");
+  add("script-defines-custom-element", scriptReadiness ? (scriptReadiness.definesCustomElement ? "pass" : "fail") : "pending", "Script defines custom element", scriptReadiness?.definesCustomElement ? "Script defines the expected custom element." : "Script definition has not been verified.");
+  add("example-json-readable", exampleReadiness ? (exampleReadiness.reason === "invalid-json" ? "fail" : "pass") : "pending", "Example JSON readable", exampleReadiness?.reason === "invalid-json" ? "Example card is invalid JSON." : exampleReadiness ? "Example card JSON is readable." : "Example card has not been read.");
+  add("example-type-present", exampleReadiness ? (exampleReadiness.actualType ? "pass" : "fail") : "pending", "Example type present", exampleReadiness?.actualType ? `Example type: ${exampleReadiness.actualType}` : "Example type has not been read.");
+  add("example-type-matches-package", exampleReadiness ? (exampleReadiness.reason === "ok" ? "pass" : "fail") : "pending", "Example type matches package", exampleReadiness?.reason === "ok" ? "Example type matches the package card type." : "Example type has not been verified.");
+  add("readme-mentions-resource-path", readmeReadiness ? (readmeReadiness.mentionsResourcePath ? "pass" : "fail") : "pending", "README mentions resource path", readmeReadiness?.mentionsResourcePath ? `README mentions ${readmeReadiness.expectedResourcePath}.` : "README resource path has not been verified.");
+  add("readme-mentions-card-type", readmeReadiness ? (readmeReadiness.mentionsCardType ? "pass" : "fail") : "pending", "README mentions card type", readmeReadiness?.mentionsCardType ? `README mentions ${readmeReadiness.expectedCardType}.` : "README card type has not been verified.");
+  add("package-contains-entities", summary ? (summary.entityIds.length > 0 ? "pass" : "fail") : "pending", "Package contains entities", summary?.entityIds.length ? `Entities: ${summary.entityIds.join(", ")}` : "No package entities have been read.");
+  add("package-is-atlas-export", summary ? (summary.packaged ? "pass" : "fail") : "pending", "Package is ATLAS export", summary?.packaged ? "Embedded package is an ATLAS card export." : "Embedded package has not been confirmed as an ATLAS export.");
+  add("bundle-importable", packageRead.importable ? "pass" : "fail", "Bundle importable", packageRead.reason);
+
+  const passed = checks.filter(check => check.status === "pass").length;
+  const failed = checks.filter(check => check.status === "fail").length;
+  const pending = checks.filter(check => check.status === "pending").length;
+  return {
+    ready: packageRead.importable && failed === 0 && pending === 0,
+    passed,
+    failed,
+    pending,
+    checks,
+  };
 }
 
 function readHacsBundleArchiveMetadata(

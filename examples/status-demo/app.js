@@ -14,6 +14,7 @@ import {
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorHacsBundleArchive,
+  createHomeAssistantCardEditorHacsBundleReadinessReport,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardEditorFieldFromTemplate,
@@ -1962,7 +1963,11 @@ function renderHaCardImportDecision(text) {
 }
 
 function formatHacsBundlePackageReadReview(packageRead) {
-  return formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead).join("\n");
+  const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
+  return [
+    `Readiness: ${report.passed}/${report.checks.length} passed, ${report.failed} failed, ${report.pending} pending`,
+    ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
+  ].join("\n");
 }
 
 function renderExpertTemplatePalette() {
