@@ -1233,6 +1233,13 @@ describe("Home Assistant frontend integration planning", () => {
         invalidArchiveLocaleFiles: [],
         invalidArchiveLocales: [],
       },
+      exampleReadiness: {
+        path: "examples/lovelace-card.json",
+        expectedType: "custom:energy-kitchen",
+        actualType: "custom:energy-kitchen",
+        valid: true,
+        reason: "ok",
+      },
       summary: {
         title: "Energy Kitchen",
         entityIds: ["sensor.energy_today"],
@@ -1258,6 +1265,54 @@ describe("Home Assistant frontend integration planning", () => {
         scriptFilename: "energy-kitchen.js",
       },
     });
+  });
+
+  it("rejects HACS card zip archives whose Lovelace example type does not match the embedded package", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      ...bundle,
+      files: bundle.files.map(file => file.path === "examples/lovelace-card.json"
+        ? {
+            ...file,
+            content: JSON.stringify({
+              type: "custom:other-card",
+              title: "Energy Kitchen",
+            }),
+          }
+        : file),
+    });
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+
+    expect(packageRead).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-package",
+      importable: false,
+      exampleReadiness: {
+        path: "examples/lovelace-card.json",
+        expectedType: "custom:energy-kitchen",
+        actualType: "custom:other-card",
+        valid: false,
+        reason: "type-mismatch",
+      },
+      reason: "The Lovelace example card does not match the embedded ATLAS card package: type-mismatch.",
+    });
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead)).toContain(
+      "Invalid example card examples/lovelace-card.json: expected custom:energy-kitchen, actual custom:other-card (type-mismatch)",
+    );
   });
 
   it("rejects HACS card zip archives missing locales declared by the embedded package", () => {

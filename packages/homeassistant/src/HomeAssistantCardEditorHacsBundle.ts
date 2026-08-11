@@ -72,6 +72,7 @@ export interface HomeAssistantCardEditorHacsBundleArchivePackageRead {
   readonly inspection: HomeAssistantCardEditorHacsBundleArchiveInspection;
   readonly hacsMetadata?: HomeAssistantCardEditorHacsBundleArchiveMetadata;
   readonly localeReadiness?: HomeAssistantCardEditorHacsBundleArchiveLocaleReadiness;
+  readonly exampleReadiness?: HomeAssistantCardEditorHacsBundleArchiveExampleReadiness;
   readonly packageFile?: string;
   readonly packageContent?: string;
   readonly summary?: HomeAssistantCardImportSummary;
@@ -100,6 +101,14 @@ export interface HomeAssistantCardEditorHacsBundleArchiveInvalidLocale {
   readonly expectedLanguage: string;
   readonly actualLanguage?: string;
   readonly reason: "invalid-json" | "missing-meta-language" | "language-mismatch";
+}
+
+export interface HomeAssistantCardEditorHacsBundleArchiveExampleReadiness {
+  readonly path: "examples/lovelace-card.json";
+  readonly expectedType?: string;
+  readonly actualType?: string;
+  readonly valid: boolean;
+  readonly reason: "ok" | "invalid-json" | "missing-type" | "type-mismatch";
 }
 
 export function createHomeAssistantCardEditorHacsBundle(
@@ -377,6 +386,21 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
         reason: `The HACS manifest filename ${hacsMetadata.filename} does not match the embedded ATLAS card package script filename ${packageScriptFilename ?? "unknown"}.`,
       };
     }
+    const exampleReadiness = readHacsBundleArchiveExampleReadiness(content, entries, summary.script?.cardType);
+    if (!exampleReadiness.valid) {
+      return {
+        kind: "atlas.homeassistant.hacs-card-bundle-package",
+        importable: false,
+        inspection,
+        hacsMetadata: checkedHacsMetadata,
+        localeReadiness,
+        exampleReadiness,
+        packageFile: packageEntry.path,
+        packageContent,
+        summary,
+        reason: `The Lovelace example card does not match the embedded ATLAS card package: ${exampleReadiness.reason}.`,
+      };
+    }
 
     return {
       kind: "atlas.homeassistant.hacs-card-bundle-package",
@@ -384,6 +408,7 @@ export function readHomeAssistantCardEditorHacsBundleArchivePackage(
       inspection,
       hacsMetadata: checkedHacsMetadata,
       localeReadiness,
+      exampleReadiness,
       packageFile: packageEntry.path,
       packageContent,
       summary,
@@ -428,6 +453,9 @@ export function formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(
       lines.push(formatInvalidLocaleReviewLine(locale));
     }
   }
+  if (packageRead.exampleReadiness) {
+    lines.push(formatExampleReadinessReviewLine(packageRead.exampleReadiness));
+  }
   for (const issue of packageRead.inspection.issues) {
     lines.push(`${issue.code}: ${issue.paths.join(", ")}`);
   }
@@ -447,6 +475,50 @@ function readHacsBundleArchiveMetadata(
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
   };
+}
+
+function readHacsBundleArchiveExampleReadiness(
+  content: Uint8Array,
+  entries: readonly ReadableZipArchiveEntry[],
+  expectedType: string | undefined,
+): HomeAssistantCardEditorHacsBundleArchiveExampleReadiness {
+  const path = "examples/lovelace-card.json";
+  const entry = entries.find(candidate => candidate.path === path);
+  try {
+    const example = entry ? parseJsonRecord(readStoredZipEntryText(content, entry)) : {};
+    const actualType = typeof example.type === "string" ? example.type : undefined;
+    if (!actualType) {
+      return {
+        path,
+        expectedType,
+        valid: false,
+        reason: "missing-type",
+      };
+    }
+    if (expectedType && actualType !== expectedType) {
+      return {
+        path,
+        expectedType,
+        actualType,
+        valid: false,
+        reason: "type-mismatch",
+      };
+    }
+    return {
+      path,
+      expectedType,
+      actualType,
+      valid: true,
+      reason: "ok",
+    };
+  } catch {
+    return {
+      path,
+      expectedType,
+      valid: false,
+      reason: "invalid-json",
+    };
+  }
 }
 
 function readHacsBundleArchiveLocaleReadiness(
@@ -779,6 +851,17 @@ function formatInvalidLocaleReviewLine(
 ): string {
   const actual = locale.actualLanguage ? `, actual ${locale.actualLanguage}` : "";
   return `Invalid locale ${locale.path}: expected ${locale.expectedLanguage}${actual} (${locale.reason})`;
+}
+
+function formatExampleReadinessReviewLine(
+  readiness: HomeAssistantCardEditorHacsBundleArchiveExampleReadiness,
+): string {
+  if (readiness.valid) {
+    return `Example card: ${readiness.actualType ?? "unknown"} (${readiness.reason})`;
+  }
+  const expected = readiness.expectedType ? `expected ${readiness.expectedType}` : "expected card type unknown";
+  const actual = readiness.actualType ? `, actual ${readiness.actualType}` : "";
+  return `Invalid example card ${readiness.path}: ${expected}${actual} (${readiness.reason})`;
 }
 
 function inspectLocaleArchiveEntry(
