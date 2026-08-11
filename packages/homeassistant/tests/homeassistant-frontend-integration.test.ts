@@ -1440,6 +1440,10 @@ describe("Home Assistant frontend integration planning", () => {
       "import",
     ]);
     expect(overview.groups.every(group => group.ready && group.checks.length > 0)).toBe(true);
+    expect(overview.firstFailedCheck).toBeUndefined();
+    expect(overview.firstPendingCheck).toBeUndefined();
+    expect(overview.firstBlockedGroup).toBeUndefined();
+    expect(overview.firstPendingGroup).toBeUndefined();
   });
 
   it("shows blocked and pending HACS readiness groups for rejected archives", () => {
@@ -1478,6 +1482,26 @@ describe("Home Assistant frontend integration planning", () => {
       firstFailedCheck: {
         code: "has-readme",
         status: "fail",
+      },
+      firstPendingCheck: {
+        code: "hacs-filename-declared",
+        status: "pending",
+      },
+      firstBlockedGroup: {
+        id: "archive",
+        label: "Archive",
+        firstFailedCheck: {
+          code: "has-readme",
+          status: "fail",
+        },
+      },
+      firstPendingGroup: {
+        id: "manifest",
+        label: "HACS manifest",
+        firstPendingCheck: {
+          code: "hacs-filename-declared",
+          status: "pending",
+        },
       },
     });
     expect(groupsById.archive).toMatchObject({ failed: 10 });

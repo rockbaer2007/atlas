@@ -228,6 +228,8 @@ export interface HomeAssistantCardEditorHacsBundleReadinessGroup {
   readonly passed: number;
   readonly failed: number;
   readonly pending: number;
+  readonly firstFailedCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
+  readonly firstPendingCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
   readonly checks: readonly HomeAssistantCardEditorHacsBundleReadinessCheck[];
 }
 
@@ -241,6 +243,9 @@ export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
   readonly blockedGroups: number;
   readonly pendingGroups: number;
   readonly firstFailedCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
+  readonly firstPendingCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
+  readonly firstBlockedGroup?: HomeAssistantCardEditorHacsBundleReadinessGroup;
+  readonly firstPendingGroup?: HomeAssistantCardEditorHacsBundleReadinessGroup;
   readonly groups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
 }
 
@@ -930,16 +935,23 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     const passed = checks.filter(check => check.status === "pass").length;
     const failed = checks.filter(check => check.status === "fail").length;
     const pending = checks.filter(check => check.status === "pending").length;
+    const firstFailedCheck = checks.find(check => check.status === "fail");
+    const firstPendingCheck = checks.find(check => check.status === "pending");
     return {
       ...definition,
       ready: checks.length > 0 && failed === 0 && pending === 0,
       passed,
       failed,
       pending,
+      ...(firstFailedCheck ? { firstFailedCheck } : {}),
+      ...(firstPendingCheck ? { firstPendingCheck } : {}),
       checks,
     };
   });
   const firstFailedCheck = report.checks.find(check => check.status === "fail");
+  const firstPendingCheck = report.checks.find(check => check.status === "pending");
+  const firstBlockedGroup = groups.find(group => group.failed > 0);
+  const firstPendingGroup = groups.find(group => group.pending > 0);
 
   return {
     ready: report.ready,
@@ -951,6 +963,9 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     blockedGroups: groups.filter(group => group.failed > 0).length,
     pendingGroups: groups.filter(group => group.pending > 0).length,
     ...(firstFailedCheck ? { firstFailedCheck } : {}),
+    ...(firstPendingCheck ? { firstPendingCheck } : {}),
+    ...(firstBlockedGroup ? { firstBlockedGroup } : {}),
+    ...(firstPendingGroup ? { firstPendingGroup } : {}),
     groups,
   };
 }
