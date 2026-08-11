@@ -1369,6 +1369,82 @@ describe("Home Assistant frontend integration planning", () => {
     );
   });
 
+  it("reports invalid JSON and missing metadata in declared HACS locale files", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const bundle = createHomeAssistantCardEditorHacsBundle(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      languages: ["de", "fr"],
+      editorPlan,
+    }));
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      ...bundle,
+      files: bundle.files.map(file => {
+        if (file.path === "locales/de.json") {
+          return {
+            ...file,
+            content: "{not-json",
+          };
+        }
+        if (file.path === "locales/fr.json") {
+          return {
+            ...file,
+            content: JSON.stringify({
+              _meta: {
+                status: "fallback",
+                sourceLanguage: "en",
+              },
+              card: {},
+            }),
+          };
+        }
+        return file;
+      }),
+    });
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+
+    expect(packageRead).toMatchObject({
+      kind: "atlas.homeassistant.hacs-card-bundle-package",
+      importable: false,
+      localeReadiness: {
+        manifestLanguages: ["en", "de", "fr"],
+        fallbackLanguages: ["de", "fr"],
+        invalidArchiveLocaleFiles: ["locales/de.json", "locales/fr.json"],
+        invalidArchiveLocales: [
+          {
+            path: "locales/de.json",
+            expectedLanguage: "de",
+            reason: "invalid-json",
+          },
+          {
+            path: "locales/fr.json",
+            expectedLanguage: "fr",
+            reason: "missing-meta-language",
+          },
+        ],
+      },
+      reason: "The archive contains invalid locale files declared by the embedded ATLAS card package: locales/de.json, locales/fr.json.",
+    });
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead)).toEqual([
+      "The archive contains invalid locale files declared by the embedded ATLAS card package: locales/de.json, locales/fr.json.",
+      "HACS script: energy-kitchen.js",
+      "Required locales: locales/en.json, locales/de.json, locales/fr.json",
+      "Archive locales: locales/en.json, locales/de.json, locales/fr.json",
+      "Invalid locale locales/de.json: expected de (invalid-json)",
+      "Invalid locale locales/fr.json: expected fr (missing-meta-language)",
+    ]);
+  });
+
   it("rejects HACS card zip archives with unreadable embedded ATLAS packages", () => {
     const archive = createHomeAssistantCardEditorHacsBundleArchive({
       version: 1,
