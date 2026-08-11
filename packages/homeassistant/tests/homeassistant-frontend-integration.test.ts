@@ -1285,7 +1285,7 @@ describe("Home Assistant frontend integration planning", () => {
     });
   });
 
-  it("creates a 30-check HACS bundle readiness report for importable archives", () => {
+  it("creates a 100-plus-check HACS bundle readiness report for importable archives", () => {
     const editorPlan = createHomeAssistantCardEditorPackagePlan({
       cardName: "Energy Kitchen",
       scriptFilename: "energy-kitchen.js",
@@ -1307,12 +1307,12 @@ describe("Home Assistant frontend integration planning", () => {
 
     expect(report).toMatchObject({
       ready: true,
-      passed: 30,
+      passed: 111,
       failed: 0,
       pending: 0,
     });
-    expect(report.checks).toHaveLength(30);
-    expect(report.checks.map(check => check.code)).toEqual([
+    expect(report.checks).toHaveLength(111);
+    expect(report.checks.map(check => check.code).slice(0, 30)).toEqual([
       "zip-readable",
       "safe-paths",
       "unique-paths",
@@ -1343,6 +1343,13 @@ describe("Home Assistant frontend integration planning", () => {
       "package-contains-entities",
       "package-is-atlas-export",
       "bundle-importable",
+    ]);
+    expect(report.checks.map(check => check.code).slice(-5)).toEqual([
+      "import-report-terminal-check-present",
+      "import-report-first-check-readable",
+      "import-report-last-check-importable",
+      "import-report-statuses-known",
+      "import-report-100-checks",
     ]);
     expect(report.checks.every(check => check.status === "pass")).toBe(true);
   });
@@ -1375,9 +1382,9 @@ describe("Home Assistant frontend integration planning", () => {
 
     expect(report).toMatchObject({
       ready: false,
-      passed: 4,
-      failed: 6,
-      pending: 20,
+      passed: 17,
+      failed: 12,
+      pending: 82,
     });
     expect(Object.fromEntries(report.checks.map(check => [check.code, check.status]))).toMatchObject({
       "zip-readable": "pass",

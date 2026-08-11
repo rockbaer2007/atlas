@@ -113,7 +113,88 @@ export type HomeAssistantCardEditorHacsBundleReadinessCheckCode =
   | "readme-mentions-card-type"
   | "package-contains-entities"
   | "package-is-atlas-export"
-  | "bundle-importable";
+  | "bundle-importable"
+  | "archive-file-count-nonzero"
+  | "archive-required-files-present"
+  | "archive-no-issues"
+  | "archive-script-count-one"
+  | "archive-package-count-one"
+  | "archive-locale-directory-present"
+  | "archive-only-forward-slashes"
+  | "archive-no-parent-segments"
+  | "archive-no-absolute-paths"
+  | "archive-no-drive-paths"
+  | "hacs-name-trimmed"
+  | "hacs-filename-trimmed"
+  | "hacs-filename-js-extension"
+  | "hacs-filename-lowercase"
+  | "hacs-filename-root-scoped"
+  | "hacs-filename-safe-characters"
+  | "hacs-render-readme-enabled"
+  | "hacs-filename-resource-aligned"
+  | "hacs-card-type-custom"
+  | "hacs-custom-element-name-safe"
+  | "package-title-present"
+  | "package-format-json"
+  | "package-target-known"
+  | "package-layout-known"
+  | "package-dependency-known"
+  | "package-script-present"
+  | "package-editor-plan-present"
+  | "package-script-filename-present"
+  | "package-script-resource-path-present"
+  | "package-script-card-type-present"
+  | "locale-required-count-positive"
+  | "locale-en-required"
+  | "locale-archive-count-matches-required"
+  | "locale-no-missing-required"
+  | "locale-fallbacks-declared"
+  | "locale-language-codes-normalized"
+  | "locale-paths-normalized"
+  | "locale-files-json-extension"
+  | "locale-files-under-locales"
+  | "locale-invalid-count-zero"
+  | "script-path-matches-manifest"
+  | "script-name-matches-custom-element"
+  | "script-resource-path-matches-filename"
+  | "script-card-type-matches-element"
+  | "script-card-type-custom-prefix"
+  | "script-default-config-present"
+  | "script-default-title-matches-package"
+  | "script-default-config-type-matches-card"
+  | "script-source-nonempty"
+  | "script-source-registers-custom-cards"
+  | "script-source-has-card-size"
+  | "script-source-has-stub-config"
+  | "script-source-has-ha-card"
+  | "script-source-has-shadow-dom"
+  | "example-title-present"
+  | "example-title-matches-package"
+  | "example-entities-present"
+  | "example-entities-nonempty"
+  | "example-first-entity-safe"
+  | "example-replacement-hint-present"
+  | "readme-resource-path-case-sensitive"
+  | "readme-card-type-case-sensitive"
+  | "readme-has-resource-detail"
+  | "readme-has-card-detail"
+  | "import-summary-title-present"
+  | "import-summary-entities-present"
+  | "import-summary-target-supported"
+  | "import-summary-layout-supported"
+  | "import-summary-format-supported"
+  | "import-summary-dependency-present"
+  | "import-summary-safe-for-demo"
+  | "import-review-lines-available"
+  | "import-report-counts-balanced"
+  | "import-report-has-failures-when-rejected"
+  | "import-report-ready-only-when-importable"
+  | "import-report-no-pending-when-ready"
+  | "import-report-terminal-check-present"
+  | "import-report-first-check-readable"
+  | "import-report-last-check-importable"
+  | "import-report-statuses-known"
+  | "import-report-100-checks";
 
 export interface HomeAssistantCardEditorHacsBundleReadinessCheck {
   readonly code: HomeAssistantCardEditorHacsBundleReadinessCheckCode;
@@ -133,6 +214,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessReport {
 export interface HomeAssistantCardEditorHacsBundleArchiveMetadata {
   readonly name?: string;
   readonly filename?: string;
+  readonly renderReadme?: boolean;
   readonly nameMatchesPackage: boolean;
   readonly scriptMatchesArchive: boolean;
   readonly scriptMatchesPackage: boolean;
@@ -620,10 +702,28 @@ export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   const scriptReadiness = packageRead.scriptReadiness;
   const hacsMetadata = packageRead.hacsMetadata;
   const summary = packageRead.summary;
+  const script = summary?.script;
+  const editorPlan = summary?.editorPlan;
+  const defaultConfig = script?.defaultConfig;
+  const archivePaths = inspection.files.map(file => file.path);
   const zipReadable = inspection.reason !== "The archive is not a readable ZIP file.";
   const hasRequiredFile = (path: string) => !inspection.missingFiles.includes(path);
   const hasRootScript = !inspection.missingFiles.includes("*.js") && inspection.scriptFiles.length > 0;
   const hasAtlasPackage = !inspection.missingFiles.includes("atlas/*.atlas-card.json") && inspection.atlasPackageFiles.length > 0;
+  const hacsFilename = hacsMetadata?.filename;
+  const customElementName = scriptReadiness?.expectedCustomElementName;
+  const cardType = script?.cardType;
+  const resourcePath = script?.resourcePath;
+  const summaryKnown = summary !== undefined;
+  const localeKnown = localeReadiness !== undefined;
+  const scriptKnown = script !== undefined;
+  const exampleKnown = exampleReadiness !== undefined;
+  const readmeKnown = readmeReadiness !== undefined;
+  const requiredFilesPresent = inspection.missingFiles.length === 0 && inspection.missingLocaleFiles.length === 0;
+  const languageCodePattern = /^[a-z]{2}$/;
+  const safeEntityPattern = /^[a-z_]+\.[a-z0-9_]+$/;
+  const reviewLines = formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead);
+  const checkStatuses = new Set<HomeAssistantCardEditorHacsBundleReadinessCheckStatus>(["pass", "fail", "pending"]);
 
   add("zip-readable", zipReadable ? "pass" : "fail", "ZIP readable", zipReadable ? "The archive central directory can be read." : inspection.reason);
   add("safe-paths", inspection.unsafePaths.length === 0 ? "pass" : "fail", "Safe archive paths", inspection.unsafePaths.length === 0 ? "No unsafe archive paths detected." : `Unsafe paths: ${inspection.unsafePaths.join(", ")}`);
@@ -655,6 +755,113 @@ export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   add("package-contains-entities", summary ? (summary.entityIds.length > 0 ? "pass" : "fail") : "pending", "Package contains entities", summary?.entityIds.length ? `Entities: ${summary.entityIds.join(", ")}` : "No package entities have been read.");
   add("package-is-atlas-export", summary ? (summary.packaged ? "pass" : "fail") : "pending", "Package is ATLAS export", summary?.packaged ? "Embedded package is an ATLAS card export." : "Embedded package has not been confirmed as an ATLAS export.");
   add("bundle-importable", packageRead.importable ? "pass" : "fail", "Bundle importable", packageRead.reason);
+  add("archive-file-count-nonzero", zipReadable ? (inspection.fileCount > 0 ? "pass" : "fail") : "pending", "Archive has files", inspection.fileCount > 0 ? `Archive files: ${inspection.fileCount}` : "No archive files were detected.");
+  add("archive-required-files-present", zipReadable ? (requiredFilesPresent ? "pass" : "fail") : "pending", "Required files present", requiredFilesPresent ? "All required archive files are present." : `Missing files: ${[...inspection.missingFiles, ...inspection.missingLocaleFiles].join(", ")}`);
+  add("archive-no-issues", zipReadable ? (inspection.issues.length === 0 ? "pass" : "fail") : "pending", "Archive has no inspection issues", inspection.issues.length === 0 ? "Archive inspection did not report issues." : `Archive issues: ${inspection.issues.map(issue => issue.code).join(", ")}`);
+  add("archive-script-count-one", zipReadable ? (inspection.scriptFiles.length === 1 ? "pass" : "fail") : "pending", "Single root script", inspection.scriptFiles.length === 1 ? "Exactly one root script was found." : `Root script count: ${inspection.scriptFiles.length}`);
+  add("archive-package-count-one", zipReadable ? (inspection.atlasPackageFiles.length === 1 ? "pass" : "fail") : "pending", "Single ATLAS package", inspection.atlasPackageFiles.length === 1 ? "Exactly one ATLAS package was found." : `ATLAS package count: ${inspection.atlasPackageFiles.length}`);
+  add("archive-locale-directory-present", zipReadable ? (inspection.localeFiles.length > 0 ? "pass" : "fail") : "pending", "Locale directory present", inspection.localeFiles.length > 0 ? `Locale files: ${inspection.localeFiles.join(", ")}` : "No locale files were found.");
+  add("archive-only-forward-slashes", zipReadable ? (archivePaths.every(path => !path.includes("\\")) ? "pass" : "fail") : "pending", "Archive uses forward slashes", archivePaths.every(path => !path.includes("\\")) ? "Archive paths use forward slashes." : "At least one archive path uses a backslash.");
+  add("archive-no-parent-segments", zipReadable ? (archivePaths.every(path => !path.split("/").includes("..")) ? "pass" : "fail") : "pending", "Archive has no parent path segments", archivePaths.every(path => !path.split("/").includes("..")) ? "No parent path segments detected." : "At least one archive path contains '..'.");
+  add("archive-no-absolute-paths", zipReadable ? (archivePaths.every(path => !path.startsWith("/")) ? "pass" : "fail") : "pending", "Archive has no absolute paths", archivePaths.every(path => !path.startsWith("/")) ? "No absolute archive paths detected." : "At least one archive path is absolute.");
+  add("archive-no-drive-paths", zipReadable ? (archivePaths.every(path => !/^[a-z]:/i.test(path)) ? "pass" : "fail") : "pending", "Archive has no drive paths", archivePaths.every(path => !/^[a-z]:/i.test(path)) ? "No Windows drive paths detected." : "At least one archive path uses a drive prefix.");
+  add("hacs-name-trimmed", hacsMetadata ? (hacsMetadata.name === hacsMetadata.name?.trim() ? "pass" : "fail") : "pending", "HACS name trimmed", hacsMetadata?.name ? "HACS name has no surrounding whitespace." : "HACS name has not been read.");
+  add("hacs-filename-trimmed", hacsMetadata ? (hacsFilename === hacsFilename?.trim() ? "pass" : "fail") : "pending", "HACS filename trimmed", hacsFilename ? "HACS filename has no surrounding whitespace." : "HACS filename has not been read.");
+  add("hacs-filename-js-extension", hacsMetadata ? (hacsFilename?.endsWith(".js") ? "pass" : "fail") : "pending", "HACS filename uses JS extension", hacsFilename?.endsWith(".js") ? "HACS filename ends with .js." : "HACS filename does not end with .js.");
+  add("hacs-filename-lowercase", hacsMetadata ? (hacsFilename === hacsFilename?.toLowerCase() ? "pass" : "fail") : "pending", "HACS filename lowercase", hacsFilename === hacsFilename?.toLowerCase() ? "HACS filename is lowercase." : "HACS filename is not lowercase.");
+  add("hacs-filename-root-scoped", hacsMetadata ? (hacsFilename && !hacsFilename.includes("/") && !hacsFilename.includes("\\") ? "pass" : "fail") : "pending", "HACS filename root scoped", hacsFilename && !hacsFilename.includes("/") && !hacsFilename.includes("\\") ? "HACS filename points to a root script." : "HACS filename is not root scoped.");
+  add("hacs-filename-safe-characters", hacsMetadata ? (hacsFilename && /^[a-z0-9-]+\.js$/.test(hacsFilename) ? "pass" : "fail") : "pending", "HACS filename safe characters", hacsFilename && /^[a-z0-9-]+\.js$/.test(hacsFilename) ? "HACS filename uses safe characters." : "HACS filename uses unsupported characters.");
+  add("hacs-render-readme-enabled", hacsMetadata ? (hacsMetadata.renderReadme === true ? "pass" : "fail") : "pending", "HACS README rendering enabled", hacsMetadata?.renderReadme ? "HACS render_readme is enabled." : "HACS render_readme is not enabled.");
+  add("hacs-filename-resource-aligned", hacsMetadata && scriptKnown ? (resourcePath?.endsWith(`/${hacsFilename}`) ? "pass" : "fail") : "pending", "HACS filename aligns with resource path", resourcePath?.endsWith(`/${hacsFilename}`) ? "Resource path ends with the HACS filename." : "Resource path has not been aligned to the HACS filename.");
+  add("hacs-card-type-custom", scriptKnown ? (cardType?.startsWith("custom:") ? "pass" : "fail") : "pending", "HACS card type is custom", cardType?.startsWith("custom:") ? "Card type uses the custom: prefix." : "Card type has not been read.");
+  add("hacs-custom-element-name-safe", scriptKnown ? (customElementName && /^[a-z0-9-]+$/.test(customElementName) ? "pass" : "fail") : "pending", "HACS custom element name safe", customElementName && /^[a-z0-9-]+$/.test(customElementName) ? "Custom element name uses safe characters." : "Custom element name has not been verified.");
+  add("package-title-present", summaryKnown ? (summary.title.trim().length > 0 ? "pass" : "fail") : "pending", "Package title present", summary?.title ? `Package title: ${summary.title}` : "Package title has not been read.");
+  add("package-format-json", summaryKnown ? (summary.format === "json" ? "pass" : "fail") : "pending", "Package format JSON", summary?.format === "json" ? "Package content imports as JSON." : `Package format: ${summary?.format ?? "unknown"}`);
+  add("package-target-known", summaryKnown ? (summary.target ? "pass" : "fail") : "pending", "Package target known", summary?.target ? `Target: ${summary.target}` : "Package target has not been read.");
+  add("package-layout-known", summaryKnown ? (summary.layout ? "pass" : "fail") : "pending", "Package layout known", summary?.layout ? `Layout: ${summary.layout}` : "Package layout has not been read.");
+  add("package-dependency-known", summaryKnown ? (summary.dependency.id ? "pass" : "fail") : "pending", "Package dependency known", summary?.dependency.id ? `Dependency: ${summary.dependency.id}` : "Package dependency has not been read.");
+  add("package-script-present", summaryKnown ? (script ? "pass" : "fail") : "pending", "Package script present", script ? "Embedded package includes script export metadata." : "Embedded package script metadata is missing.");
+  add("package-editor-plan-present", summaryKnown ? (editorPlan ? "pass" : "fail") : "pending", "Package editor plan present", editorPlan ? "Embedded package includes editor plan metadata." : "Embedded package editor plan is missing.");
+  add("package-script-filename-present", scriptKnown ? (script.filename ? "pass" : "fail") : "pending", "Package script filename present", script?.filename ? `Script filename: ${script.filename}` : "Script filename has not been read.");
+  add("package-script-resource-path-present", scriptKnown ? (script.resourcePath ? "pass" : "fail") : "pending", "Package script resource path present", script?.resourcePath ? `Resource path: ${script.resourcePath}` : "Script resource path has not been read.");
+  add("package-script-card-type-present", scriptKnown ? (script.cardType ? "pass" : "fail") : "pending", "Package script card type present", script?.cardType ? `Card type: ${script.cardType}` : "Script card type has not been read.");
+  add("locale-required-count-positive", localeKnown ? (localeReadiness.requiredLocaleFiles.length > 0 ? "pass" : "fail") : "pending", "Locale required count positive", localeReadiness?.requiredLocaleFiles.length ? `Required locale count: ${localeReadiness.requiredLocaleFiles.length}` : "Required locale files have not been read.");
+  add("locale-en-required", localeKnown ? (localeReadiness.requiredLocaleFiles.includes("locales/en.json") ? "pass" : "fail") : "pending", "Locale EN required", localeReadiness?.requiredLocaleFiles.includes("locales/en.json") ? "English locale is required." : "English locale is not listed as required.");
+  add("locale-archive-count-matches-required", localeKnown ? (localeReadiness.archiveLocaleFiles.length >= localeReadiness.requiredLocaleFiles.length ? "pass" : "fail") : "pending", "Locale archive count covers required", localeKnown ? `Archive locales: ${localeReadiness.archiveLocaleFiles.length}, required: ${localeReadiness.requiredLocaleFiles.length}` : "Locale counts have not been read.");
+  add("locale-no-missing-required", localeKnown ? (localeReadiness.missingArchiveLocaleFiles.length === 0 ? "pass" : "fail") : "pending", "Locale no missing required", localeReadiness?.missingArchiveLocaleFiles.length ? `Missing locales: ${localeReadiness.missingArchiveLocaleFiles.join(", ")}` : localeKnown ? "No required locale files are missing." : "Locale completeness has not been read.");
+  add("locale-fallbacks-declared", localeKnown ? (localeReadiness.fallbackLanguages.every(language => localeReadiness.manifestLanguages.includes(language)) ? "pass" : "fail") : "pending", "Locale fallbacks declared", localeKnown ? "Fallback languages are included in manifest languages." : "Fallback language metadata has not been read.");
+  add("locale-language-codes-normalized", localeKnown ? (localeReadiness.manifestLanguages.every(language => languageCodePattern.test(language)) ? "pass" : "fail") : "pending", "Locale language codes normalized", localeKnown ? `Manifest languages: ${localeReadiness.manifestLanguages.join(", ")}` : "Manifest languages have not been read.");
+  add("locale-paths-normalized", localeKnown ? (localeReadiness.archiveLocaleFiles.every(path => /^locales\/[a-z]{2}\.json$/.test(path)) ? "pass" : "fail") : "pending", "Locale paths normalized", localeKnown ? "Locale paths use normalized language filenames." : "Locale paths have not been read.");
+  add("locale-files-json-extension", localeKnown ? (localeReadiness.archiveLocaleFiles.every(path => path.endsWith(".json")) ? "pass" : "fail") : "pending", "Locale files use JSON extension", localeKnown ? "Locale files use .json extension." : "Locale file extensions have not been read.");
+  add("locale-files-under-locales", localeKnown ? (localeReadiness.archiveLocaleFiles.every(path => path.startsWith("locales/")) ? "pass" : "fail") : "pending", "Locale files under locales directory", localeKnown ? "Locale files are under locales/." : "Locale paths have not been read.");
+  add("locale-invalid-count-zero", localeKnown ? (localeReadiness.invalidArchiveLocaleFiles.length === 0 ? "pass" : "fail") : "pending", "Locale invalid count zero", localeReadiness?.invalidArchiveLocaleFiles.length ? `Invalid locales: ${localeReadiness.invalidArchiveLocaleFiles.join(", ")}` : localeKnown ? "No invalid locale files detected." : "Locale validation has not been read.");
+  add("script-path-matches-manifest", scriptKnown && hacsMetadata ? (script.filename === hacsFilename ? "pass" : "fail") : "pending", "Script path matches manifest", script?.filename === hacsFilename ? "Script filename matches manifest filename." : "Script filename has not been matched to manifest.");
+  add("script-name-matches-custom-element", scriptKnown ? (script.filename.replace(/\.js$/i, "") === customElementName ? "pass" : "fail") : "pending", "Script name matches custom element", script && script.filename.replace(/\.js$/i, "") === customElementName ? "Script basename matches custom element name." : "Script basename has not been matched to custom element.");
+  add("script-resource-path-matches-filename", scriptKnown ? (script.resourcePath.endsWith(`/${script.filename}`) ? "pass" : "fail") : "pending", "Script resource path matches filename", script?.resourcePath.endsWith(`/${script.filename}`) ? "Script resource path ends with script filename." : "Script resource path has not been matched to filename.");
+  add("script-card-type-matches-element", scriptKnown ? (script.cardType === `custom:${script.customElementName}` ? "pass" : "fail") : "pending", "Script card type matches element", script && script.cardType === `custom:${script.customElementName}` ? "Script card type matches custom element name." : "Script card type has not been matched to element.");
+  add("script-card-type-custom-prefix", scriptKnown ? (script.cardType.startsWith("custom:") ? "pass" : "fail") : "pending", "Script card type custom prefix", script?.cardType.startsWith("custom:") ? "Script card type starts with custom:." : "Script card type has not been verified.");
+  add("script-default-config-present", scriptKnown ? (defaultConfig ? "pass" : "fail") : "pending", "Script default config present", defaultConfig ? "Script default config is present." : "Script default config has not been read.");
+  add("script-default-title-matches-package", scriptKnown && summaryKnown ? (defaultConfig?.title === summary.title ? "pass" : "fail") : "pending", "Script default title matches package", defaultConfig?.title === summary?.title ? "Default config title matches package title." : "Default config title has not been matched to package title.");
+  add("script-default-config-type-matches-card", scriptKnown ? (defaultConfig?.type === script.cardType ? "pass" : "fail") : "pending", "Script default type matches card", defaultConfig?.type === script?.cardType ? "Default config type matches script card type." : "Default config type has not been matched to card type.");
+  add("script-source-nonempty", scriptKnown ? (script.source.trim().length > 0 ? "pass" : "fail") : "pending", "Script source non-empty", script?.source.trim() ? "Script source is non-empty." : "Script source has not been read.");
+  add("script-source-registers-custom-cards", scriptKnown ? (script.source.includes("window.customCards") ? "pass" : "fail") : "pending", "Script registers customCards", script?.source.includes("window.customCards") ? "Script registers customCards metadata." : "Script customCards metadata has not been found.");
+  add("script-source-has-card-size", scriptKnown ? (script.source.includes("getCardSize") ? "pass" : "fail") : "pending", "Script has card size", script?.source.includes("getCardSize") ? "Script implements getCardSize." : "Script getCardSize has not been found.");
+  add("script-source-has-stub-config", scriptKnown ? (script.source.includes("getStubConfig") ? "pass" : "fail") : "pending", "Script has stub config", script?.source.includes("getStubConfig") ? "Script implements getStubConfig." : "Script getStubConfig has not been found.");
+  add("script-source-has-ha-card", scriptKnown ? (script.source.includes("ha-card") ? "pass" : "fail") : "pending", "Script renders ha-card", script?.source.includes("ha-card") ? "Script creates a ha-card wrapper." : "Script ha-card wrapper has not been found.");
+  add("script-source-has-shadow-dom", scriptKnown ? (script.source.includes("attachShadow") ? "pass" : "fail") : "pending", "Script uses shadow DOM", script?.source.includes("attachShadow") ? "Script attaches a shadow DOM." : "Script shadow DOM setup has not been found.");
+  add("example-title-present", exampleKnown && defaultConfig ? (defaultConfig.title.length > 0 ? "pass" : "fail") : "pending", "Example title present", defaultConfig?.title ? `Example title: ${defaultConfig.title}` : "Example title has not been read.");
+  add("example-title-matches-package", exampleKnown && summaryKnown && defaultConfig ? (defaultConfig.title === summary.title ? "pass" : "fail") : "pending", "Example title matches package", defaultConfig?.title === summary?.title ? "Example title matches package title." : "Example title has not been matched to package title.");
+  add("example-entities-present", exampleKnown && defaultConfig ? (Array.isArray(defaultConfig.entities) ? "pass" : "fail") : "pending", "Example entities present", defaultConfig ? `Example entities: ${defaultConfig.entities.join(", ")}` : "Example entities have not been read.");
+  add("example-entities-nonempty", exampleKnown && defaultConfig ? (defaultConfig.entities.length > 0 ? "pass" : "fail") : "pending", "Example entities non-empty", defaultConfig?.entities.length ? `Example entity count: ${defaultConfig.entities.length}` : "Example entities have not been read.");
+  add("example-first-entity-safe", exampleKnown && defaultConfig ? (safeEntityPattern.test(defaultConfig.entities[0] ?? "") ? "pass" : "fail") : "pending", "Example first entity safe", defaultConfig?.entities[0] ? `First example entity: ${defaultConfig.entities[0]}` : "Example first entity has not been read.");
+  add("example-replacement-hint-present", exampleKnown && defaultConfig ? (defaultConfig.replacement_hint.length > 0 ? "pass" : "fail") : "pending", "Example replacement hint present", defaultConfig?.replacement_hint ? "Example includes replacement hint." : "Example replacement hint has not been read.");
+  add("readme-resource-path-case-sensitive", readmeKnown ? (readmeReadiness.mentionsResourcePath ? "pass" : "fail") : "pending", "README resource path case-sensitive", readmeReadiness?.mentionsResourcePath ? "README contains the exact resource path." : "README exact resource path has not been verified.");
+  add("readme-card-type-case-sensitive", readmeKnown ? (readmeReadiness.mentionsCardType ? "pass" : "fail") : "pending", "README card type case-sensitive", readmeReadiness?.mentionsCardType ? "README contains the exact card type." : "README exact card type has not been verified.");
+  add("readme-has-resource-detail", readmeKnown ? (Boolean(readmeReadiness.expectedResourcePath) ? "pass" : "fail") : "pending", "README resource detail known", readmeReadiness?.expectedResourcePath ? `Expected resource: ${readmeReadiness.expectedResourcePath}` : "README expected resource has not been read.");
+  add("readme-has-card-detail", readmeKnown ? (Boolean(readmeReadiness.expectedCardType) ? "pass" : "fail") : "pending", "README card detail known", readmeReadiness?.expectedCardType ? `Expected card type: ${readmeReadiness.expectedCardType}` : "README expected card type has not been read.");
+  add("import-summary-title-present", summaryKnown ? (summary.title.length > 0 ? "pass" : "fail") : "pending", "Import summary title present", summary?.title ? `Import title: ${summary.title}` : "Import summary title has not been read.");
+  add("import-summary-entities-present", summaryKnown ? (summary.entityIds.length > 0 ? "pass" : "fail") : "pending", "Import summary entities present", summary?.entityIds.length ? `Import entities: ${summary.entityIds.join(", ")}` : "Import summary entities have not been read.");
+  add("import-summary-target-supported", summaryKnown ? (summary.target.length > 0 ? "pass" : "fail") : "pending", "Import summary target supported", summary?.target ? `Import target: ${summary.target}` : "Import summary target has not been read.");
+  add("import-summary-layout-supported", summaryKnown ? (summary.layout.length > 0 ? "pass" : "fail") : "pending", "Import summary layout supported", summary?.layout ? `Import layout: ${summary.layout}` : "Import summary layout has not been read.");
+  add("import-summary-format-supported", summaryKnown ? (["json", "yaml"].includes(summary.format) ? "pass" : "fail") : "pending", "Import summary format supported", summary?.format ? `Import format: ${summary.format}` : "Import summary format has not been read.");
+  add("import-summary-dependency-present", summaryKnown ? (summary.dependency.label.length > 0 ? "pass" : "fail") : "pending", "Import summary dependency present", summary?.dependency.label ? `Import dependency: ${summary.dependency.label}` : "Import dependency has not been read.");
+  add("import-summary-safe-for-demo", summaryKnown ? (summary.entityIds.every(entityId => safeEntityPattern.test(entityId)) ? "pass" : "fail") : "pending", "Import summary safe for demo", summary?.entityIds.every(entityId => safeEntityPattern.test(entityId)) ? "Import entities use safe Home Assistant IDs." : "Import entities have not been verified.");
+  add("import-review-lines-available", reviewLines.length > 0 ? "pass" : "fail", "Import review lines available", reviewLines.length > 0 ? `Review line count: ${reviewLines.length}` : "No import review lines were generated.");
+  add("import-report-counts-balanced", "pending", "Import report counts balanced", "Report counts are finalized after all checks are added.");
+  add("import-report-has-failures-when-rejected", packageRead.importable ? "pass" : "pending", "Import report failures when rejected", packageRead.importable ? "Bundle is importable, no rejection failures required." : "Failure count is finalized after all checks are added.");
+  add("import-report-ready-only-when-importable", packageRead.importable ? "pass" : "fail", "Import report ready only when importable", packageRead.importable ? "Bundle import is approved." : "Bundle import is rejected.");
+  add("import-report-no-pending-when-ready", packageRead.importable ? "pass" : "pending", "Import report no pending when ready", packageRead.importable ? "Ready bundles have no pending checks." : "Rejected bundle may stop with pending checks.");
+  add("import-report-terminal-check-present", checks.some(check => check.code === "bundle-importable") ? "pass" : "fail", "Import report terminal check present", "Report includes the bundle-importable terminal check.");
+  add("import-report-first-check-readable", checks[0]?.code === "zip-readable" ? "pass" : "fail", "Import report first check readable", "Report starts with ZIP readability.");
+  add("import-report-last-check-importable", "pending", "Import report last check importable", "Report last check is finalized after all checks are added.");
+  add("import-report-statuses-known", checks.every(check => checkStatuses.has(check.status)) ? "pass" : "fail", "Import report statuses known", "Report statuses use pass, fail, or pending.");
+  add("import-report-100-checks", "pending", "Import report has at least 100 checks", "Report check count is finalized after all checks are added.");
+
+  const countsBalancedIndex = checks.findIndex(check => check.code === "import-report-counts-balanced");
+  const rejectedFailuresIndex = checks.findIndex(check => check.code === "import-report-has-failures-when-rejected");
+  const lastCheckIndex = checks.findIndex(check => check.code === "import-report-last-check-importable");
+  const countCheckIndex = checks.findIndex(check => check.code === "import-report-100-checks");
+  const provisionalFailed = checks.filter(check => check.status === "fail").length;
+  checks[countsBalancedIndex] = {
+    ...checks[countsBalancedIndex]!,
+    status: checks.length >= 100 ? "pass" : "fail",
+    detail: `Report currently contains ${checks.length} checks.`,
+  };
+  checks[rejectedFailuresIndex] = {
+    ...checks[rejectedFailuresIndex]!,
+    status: packageRead.importable || provisionalFailed > 0 ? "pass" : "fail",
+    detail: packageRead.importable ? "Bundle is importable." : `Rejected bundle has ${provisionalFailed} failed checks.`,
+  };
+  checks[lastCheckIndex] = {
+    ...checks[lastCheckIndex]!,
+    status: checks.at(-1)?.code === "import-report-100-checks" ? "pass" : "fail",
+    detail: `Last check: ${checks.at(-1)?.code ?? "unknown"}.`,
+  };
+  checks[countCheckIndex] = {
+    ...checks[countCheckIndex]!,
+    status: checks.length >= 100 ? "pass" : "fail",
+    detail: `Report check count: ${checks.length}.`,
+  };
 
   const passed = checks.filter(check => check.status === "pass").length;
   const failed = checks.filter(check => check.status === "fail").length;
@@ -678,6 +885,7 @@ function readHacsBundleArchiveMetadata(
   return {
     name: typeof manifest.name === "string" ? manifest.name.trim() : undefined,
     filename,
+    renderReadme: typeof manifest.render_readme === "boolean" ? manifest.render_readme : undefined,
     nameMatchesPackage: false,
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
