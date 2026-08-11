@@ -211,6 +211,39 @@ export interface HomeAssistantCardEditorHacsBundleReadinessReport {
   readonly checks: readonly HomeAssistantCardEditorHacsBundleReadinessCheck[];
 }
 
+export type HomeAssistantCardEditorHacsBundleReadinessGroupId =
+  | "archive"
+  | "manifest"
+  | "package"
+  | "locale"
+  | "script"
+  | "example"
+  | "readme"
+  | "import";
+
+export interface HomeAssistantCardEditorHacsBundleReadinessGroup {
+  readonly id: HomeAssistantCardEditorHacsBundleReadinessGroupId;
+  readonly label: string;
+  readonly ready: boolean;
+  readonly passed: number;
+  readonly failed: number;
+  readonly pending: number;
+  readonly checks: readonly HomeAssistantCardEditorHacsBundleReadinessCheck[];
+}
+
+export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
+  readonly ready: boolean;
+  readonly passed: number;
+  readonly failed: number;
+  readonly pending: number;
+  readonly groupCount: number;
+  readonly readyGroups: number;
+  readonly blockedGroups: number;
+  readonly pendingGroups: number;
+  readonly firstFailedCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
+  readonly groups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
+}
+
 export interface HomeAssistantCardEditorHacsBundleArchiveMetadata {
   readonly name?: string;
   readonly filename?: string;
@@ -875,6 +908,53 @@ export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   };
 }
 
+export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
+  packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
+): HomeAssistantCardEditorHacsBundleReadinessOverview {
+  const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
+  const groupDefinitions: readonly {
+    readonly id: HomeAssistantCardEditorHacsBundleReadinessGroupId;
+    readonly label: string;
+  }[] = [
+    { id: "archive", label: "Archive" },
+    { id: "manifest", label: "HACS manifest" },
+    { id: "package", label: "ATLAS package" },
+    { id: "locale", label: "Locales" },
+    { id: "script", label: "Script" },
+    { id: "example", label: "Example card" },
+    { id: "readme", label: "README" },
+    { id: "import", label: "Import" },
+  ];
+  const groups = groupDefinitions.map(definition => {
+    const checks = report.checks.filter(check => getHacsBundleReadinessCheckGroupId(check.code) === definition.id);
+    const passed = checks.filter(check => check.status === "pass").length;
+    const failed = checks.filter(check => check.status === "fail").length;
+    const pending = checks.filter(check => check.status === "pending").length;
+    return {
+      ...definition,
+      ready: checks.length > 0 && failed === 0 && pending === 0,
+      passed,
+      failed,
+      pending,
+      checks,
+    };
+  });
+  const firstFailedCheck = report.checks.find(check => check.status === "fail");
+
+  return {
+    ready: report.ready,
+    passed: report.passed,
+    failed: report.failed,
+    pending: report.pending,
+    groupCount: groups.length,
+    readyGroups: groups.filter(group => group.ready).length,
+    blockedGroups: groups.filter(group => group.failed > 0).length,
+    pendingGroups: groups.filter(group => group.pending > 0).length,
+    ...(firstFailedCheck ? { firstFailedCheck } : {}),
+    groups,
+  };
+}
+
 function readHacsBundleArchiveMetadata(
   content: Uint8Array,
   entry: ReadableZipArchiveEntry,
@@ -890,6 +970,27 @@ function readHacsBundleArchiveMetadata(
     scriptMatchesArchive: filename ? scriptFiles.includes(filename) : false,
     scriptMatchesPackage: false,
   };
+}
+
+function getHacsBundleReadinessCheckGroupId(
+  code: HomeAssistantCardEditorHacsBundleReadinessCheckCode,
+): HomeAssistantCardEditorHacsBundleReadinessGroupId {
+  if (
+    code.startsWith("zip-")
+    || code.startsWith("safe-")
+    || code.startsWith("unique-")
+    || code.startsWith("archive-")
+    || code.startsWith("has-")
+  ) {
+    return "archive";
+  }
+  if (code.startsWith("hacs-")) return "manifest";
+  if (code.startsWith("package-") || code.startsWith("atlas-package")) return "package";
+  if (code.startsWith("locale-") || code.startsWith("declared-locales")) return "locale";
+  if (code.startsWith("script-")) return "script";
+  if (code.startsWith("example-")) return "example";
+  if (code.startsWith("readme-")) return "readme";
+  return "import";
 }
 
 function readHacsBundleArchiveScriptReadiness(

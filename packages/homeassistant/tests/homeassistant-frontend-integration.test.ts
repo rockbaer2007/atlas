@@ -13,6 +13,7 @@ import {
   createHomeAssistantCardEditorFieldFromTemplate,
   createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorHacsBundleArchive,
+  createHomeAssistantCardEditorHacsBundleReadinessOverview,
   createHomeAssistantCardEditorHacsBundleReadinessReport,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
@@ -1396,6 +1397,92 @@ describe("Home Assistant frontend integration planning", () => {
       "atlas-package-readable": "pending",
       "bundle-importable": "fail",
     });
+  });
+
+  it("groups HACS bundle readiness checks by import area", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const archive = createHomeAssistantCardEditorHacsBundleArchive(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+    const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
+
+    expect(overview).toMatchObject({
+      ready: true,
+      groupCount: 8,
+      readyGroups: 8,
+      blockedGroups: 0,
+      pendingGroups: 0,
+      passed: 111,
+      failed: 0,
+      pending: 0,
+    });
+    expect(overview.groups.map(group => group.id)).toEqual([
+      "archive",
+      "manifest",
+      "package",
+      "locale",
+      "script",
+      "example",
+      "readme",
+      "import",
+    ]);
+    expect(overview.groups.every(group => group.ready && group.checks.length > 0)).toBe(true);
+  });
+
+  it("shows blocked and pending HACS readiness groups for rejected archives", () => {
+    const archive = createHomeAssistantCardEditorHacsBundleArchive({
+      version: 1,
+      kind: "atlas.homeassistant.hacs-card-bundle",
+      cardName: "Incomplete Card",
+      scriptFilename: "incomplete-card.js",
+      customElementName: "incomplete-card",
+      cardType: "custom:incomplete-card",
+      resourcePath: "/hacsfiles/atlas/incomplete-card.js",
+      files: [
+        {
+          path: "hacs.json",
+          mimeType: "application/json",
+          content: JSON.stringify({
+            name: "Incomplete Card",
+            render_readme: true,
+            filename: "incomplete-card.js",
+          }, null, 2),
+        },
+      ],
+      installSteps: [],
+    });
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+    const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
+    const groupsById = Object.fromEntries(overview.groups.map(group => [group.id, group]));
+
+    expect(overview).toMatchObject({
+      ready: false,
+      groupCount: 8,
+      readyGroups: 0,
+      blockedGroups: 2,
+      pendingGroups: 7,
+      firstFailedCheck: {
+        code: "has-readme",
+        status: "fail",
+      },
+    });
+    expect(groupsById.archive).toMatchObject({ failed: 10 });
+    expect(groupsById.manifest).toMatchObject({ pending: 15 });
+    expect(groupsById.import).toMatchObject({ failed: 2, pending: 8 });
   });
 
   it("rejects HACS card zip archives whose README omits the generated resource path", () => {

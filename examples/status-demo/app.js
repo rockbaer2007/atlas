@@ -14,6 +14,7 @@ import {
   createHomeAssistantCardEditorConfiguration,
   createHomeAssistantCardEditorHacsBundle,
   createHomeAssistantCardEditorHacsBundleArchive,
+  createHomeAssistantCardEditorHacsBundleReadinessOverview,
   createHomeAssistantCardEditorHacsBundleReadinessReport,
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
@@ -1964,8 +1965,10 @@ function renderHaCardImportDecision(text) {
 
 function formatHacsBundlePackageReadReview(packageRead) {
   const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
+  const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
   return [
     `Readiness: ${report.passed}/${report.checks.length} passed, ${report.failed} failed, ${report.pending} pending`,
+    `Readiness groups: ${overview.readyGroups}/${overview.groupCount} ready, ${overview.blockedGroups} blocked, ${overview.pendingGroups} pending`,
     ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
   ].join("\n");
 }
