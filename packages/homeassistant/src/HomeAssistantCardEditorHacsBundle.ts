@@ -246,6 +246,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
   readonly firstPendingCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
   readonly firstBlockedGroup?: HomeAssistantCardEditorHacsBundleReadinessGroup;
   readonly firstPendingGroup?: HomeAssistantCardEditorHacsBundleReadinessGroup;
+  readonly attentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
   readonly groups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
 }
 
@@ -754,11 +755,23 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(
   });
 }
 
+export function formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(
+  packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
+): readonly string[] {
+  const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
+  return [
+    overview.attentionGroups.length > 0
+      ? `Attention groups: ${overview.attentionGroups.map(group => group.label).join(", ")}`
+      : "Attention groups: none",
+  ];
+}
+
 export function formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(
   packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
 ): readonly string[] {
   return [
     ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
+    ...formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead),
     ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),
     ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
   ];
@@ -996,6 +1009,7 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
   const firstPendingCheck = report.checks.find(check => check.status === "pending");
   const firstBlockedGroup = groups.find(group => group.failed > 0);
   const firstPendingGroup = groups.find(group => group.pending > 0);
+  const attentionGroups = groups.filter(group => !group.ready);
 
   return {
     ready: report.ready,
@@ -1010,6 +1024,7 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     ...(firstPendingCheck ? { firstPendingCheck } : {}),
     ...(firstBlockedGroup ? { firstBlockedGroup } : {}),
     ...(firstPendingGroup ? { firstPendingGroup } : {}),
+    attentionGroups,
     groups,
   };
 }
