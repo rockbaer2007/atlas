@@ -1449,6 +1449,8 @@ describe("Home Assistant frontend integration planning", () => {
     expect(overview.firstBlockedGroup).toBeUndefined();
     expect(overview.firstPendingGroup).toBeUndefined();
     expect(overview.attentionGroups).toEqual([]);
+    expect(overview.blockedAttentionGroups).toEqual([]);
+    expect(overview.pendingAttentionGroups).toEqual([]);
   });
 
   it("formats HACS readiness overview lines for ready archives", () => {
@@ -1478,6 +1480,8 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead)).toEqual([
       "Attention groups: none",
+      "Blocked attention groups: none",
+      "Pending attention groups: none",
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead)).toHaveLength(8);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead).every(line => line.includes(": ready "))).toBe(true);
@@ -1504,8 +1508,8 @@ describe("Home Assistant frontend integration planning", () => {
     const lines = formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead);
 
     expect(lines.slice(0, 4)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead));
-    expect(lines.slice(4, 5)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead));
-    expect(lines.slice(5, 13)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead));
+    expect(lines.slice(4, 7)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead));
+    expect(lines.slice(7, 15)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead));
     expect(lines).toContain("The archive contains a readable ATLAS card package file.");
     expect(lines).toContain("HACS script: energy-kitchen.js");
   });
@@ -1578,6 +1582,16 @@ describe("Home Assistant frontend integration planning", () => {
       "readme",
       "import",
     ]);
+    expect(overview.blockedAttentionGroups.map(group => group.id)).toEqual(["archive", "import"]);
+    expect(overview.pendingAttentionGroups.map(group => group.id)).toEqual([
+      "manifest",
+      "package",
+      "locale",
+      "script",
+      "example",
+      "readme",
+      "import",
+    ]);
     expect(groupsById.archive).toMatchObject({ failed: 10 });
     expect(groupsById.manifest).toMatchObject({ pending: 15 });
     expect(groupsById.import).toMatchObject({ failed: 2, pending: 8 });
@@ -1589,6 +1603,8 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead)).toEqual([
       "Attention groups: Archive, HACS manifest, ATLAS package, Locales, Script, Example card, README, Import",
+      "Blocked attention groups: Archive, Import",
+      "Pending attention groups: HACS manifest, ATLAS package, Locales, Script, Example card, README, Import",
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead)).toEqual([
       "Archive: blocked (9 passed, 10 failed, 0 pending) - first failure has-readme",
@@ -1600,7 +1616,7 @@ describe("Home Assistant frontend integration planning", () => {
       "README: pending (0 passed, 0 failed, 6 pending) - first pending readme-mentions-resource-path",
       "Import: blocked (8 passed, 2 failed, 8 pending) - first failure bundle-importable",
     ]);
-    expect(formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).slice(0, 13)).toEqual([
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).slice(0, 15)).toEqual([
       ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
       ...formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead),
       ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),

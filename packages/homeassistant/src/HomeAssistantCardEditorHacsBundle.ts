@@ -247,6 +247,8 @@ export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
   readonly firstBlockedGroup?: HomeAssistantCardEditorHacsBundleReadinessGroup;
   readonly firstPendingGroup?: HomeAssistantCardEditorHacsBundleReadinessGroup;
   readonly attentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
+  readonly blockedAttentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
+  readonly pendingAttentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
   readonly groups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
 }
 
@@ -763,6 +765,12 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(
     overview.attentionGroups.length > 0
       ? `Attention groups: ${overview.attentionGroups.map(group => group.label).join(", ")}`
       : "Attention groups: none",
+    overview.blockedAttentionGroups.length > 0
+      ? `Blocked attention groups: ${overview.blockedAttentionGroups.map(group => group.label).join(", ")}`
+      : "Blocked attention groups: none",
+    overview.pendingAttentionGroups.length > 0
+      ? `Pending attention groups: ${overview.pendingAttentionGroups.map(group => group.label).join(", ")}`
+      : "Pending attention groups: none",
   ];
 }
 
@@ -1010,6 +1018,8 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
   const firstBlockedGroup = groups.find(group => group.failed > 0);
   const firstPendingGroup = groups.find(group => group.pending > 0);
   const attentionGroups = groups.filter(group => !group.ready);
+  const blockedAttentionGroups = groups.filter(group => group.failed > 0);
+  const pendingAttentionGroups = groups.filter(group => group.pending > 0);
 
   return {
     ready: report.ready,
@@ -1025,6 +1035,8 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     ...(firstBlockedGroup ? { firstBlockedGroup } : {}),
     ...(firstPendingGroup ? { firstPendingGroup } : {}),
     attentionGroups,
+    blockedAttentionGroups,
+    pendingAttentionGroups,
     groups,
   };
 }
