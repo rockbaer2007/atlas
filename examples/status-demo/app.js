@@ -38,9 +38,7 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   inspectHomeAssistantCardEditorHacsBundleArchive,
-  formatHomeAssistantCardEditorHacsBundleReadinessGroupLines,
-  formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines,
-  formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
+  formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines,
   readHomeAssistantCardEditorHacsBundleArchivePackage,
   listHomeAssistantCardEditorTemplates,
   listHomeAssistantCardTargets,
@@ -1964,11 +1962,7 @@ function renderHaCardImportDecision(text) {
 }
 
 function formatHacsBundlePackageReadReview(packageRead) {
-  return [
-    ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
-    ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),
-    ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
-  ].join("\n");
+  return formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).join("\n");
 }
 
 function renderExpertTemplatePalette() {

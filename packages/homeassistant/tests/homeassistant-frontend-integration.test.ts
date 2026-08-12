@@ -23,6 +23,7 @@ import {
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
   formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
+  formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines,
   formatHomeAssistantCardEditorHacsBundleReadinessGroupLines,
   formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines,
   inspectHomeAssistantCardEditorHacsBundleArchive,
@@ -1477,6 +1478,32 @@ describe("Home Assistant frontend integration planning", () => {
     expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead).every(line => line.includes(": ready "))).toBe(true);
   });
 
+  it("formats a combined HACS readiness review for package reads", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const archive = createHomeAssistantCardEditorHacsBundleArchive(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.energy_today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+    const lines = formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead);
+
+    expect(lines.slice(0, 4)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead));
+    expect(lines.slice(4, 12)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead));
+    expect(lines).toContain("The archive contains a readable ATLAS card package file.");
+    expect(lines).toContain("HACS script: energy-kitchen.js");
+  });
+
   it("shows blocked and pending HACS readiness groups for rejected archives", () => {
     const archive = createHomeAssistantCardEditorHacsBundleArchive({
       version: 1,
@@ -1553,6 +1580,10 @@ describe("Home Assistant frontend integration planning", () => {
       "Example card: pending (0 passed, 0 failed, 9 pending) - first pending example-json-readable",
       "README: pending (0 passed, 0 failed, 6 pending) - first pending readme-mentions-resource-path",
       "Import: blocked (8 passed, 2 failed, 8 pending) - first failure bundle-importable",
+    ]);
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).slice(0, 12)).toEqual([
+      ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
+      ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),
     ]);
   });
 

@@ -754,6 +754,16 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(
   });
 }
 
+export function formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(
+  packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
+): readonly string[] {
+  return [
+    ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
+    ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),
+    ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
+  ];
+}
+
 export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
 ): HomeAssistantCardEditorHacsBundleReadinessReport {
