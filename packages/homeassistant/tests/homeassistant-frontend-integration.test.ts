@@ -23,6 +23,7 @@ import {
   createHomeAssistantAtlasFrontendIntegrationPlan,
   findHomeAssistantCardEditorTemplate,
   formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
+  formatHomeAssistantCardEditorHacsBundleReadinessGroupLines,
   formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines,
   inspectHomeAssistantCardEditorHacsBundleArchive,
   listHomeAssistantCardEditorTemplates,
@@ -1472,6 +1473,8 @@ describe("Home Assistant frontend integration planning", () => {
       "First blocked group: none",
       "First pending group: none",
     ]);
+    expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead)).toHaveLength(8);
+    expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead).every(line => line.includes(": ready "))).toBe(true);
   });
 
   it("shows blocked and pending HACS readiness groups for rejected archives", () => {
@@ -1540,6 +1543,16 @@ describe("Home Assistant frontend integration planning", () => {
       "Readiness groups: 0/8 ready, 2 blocked, 7 pending",
       "First blocked group: Archive (has-readme)",
       "First pending group: HACS manifest (hacs-filename-declared)",
+    ]);
+    expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead)).toEqual([
+      "Archive: blocked (9 passed, 10 failed, 0 pending) - first failure has-readme",
+      "HACS manifest: pending (0 passed, 0 failed, 15 pending) - first pending hacs-filename-declared",
+      "ATLAS package: pending (0 passed, 0 failed, 13 pending) - first pending atlas-package-readable",
+      "Locales: pending (0 passed, 0 failed, 14 pending) - first pending declared-locales-present",
+      "Script: pending (0 passed, 0 failed, 17 pending) - first pending script-custom-element-known",
+      "Example card: pending (0 passed, 0 failed, 9 pending) - first pending example-json-readable",
+      "README: pending (0 passed, 0 failed, 6 pending) - first pending readme-mentions-resource-path",
+      "Import: blocked (8 passed, 2 failed, 8 pending) - first failure bundle-importable",
     ]);
   });
 

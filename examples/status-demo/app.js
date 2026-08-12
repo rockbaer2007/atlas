@@ -38,6 +38,7 @@ import {
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   inspectHomeAssistantCardEditorHacsBundleArchive,
+  formatHomeAssistantCardEditorHacsBundleReadinessGroupLines,
   formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines,
   formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines,
   readHomeAssistantCardEditorHacsBundleArchivePackage,
@@ -1965,6 +1966,7 @@ function renderHaCardImportDecision(text) {
 function formatHacsBundlePackageReadReview(packageRead) {
   return [
     ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
+    ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),
     ...formatHomeAssistantCardEditorHacsBundlePackageReadReviewLines(packageRead),
   ].join("\n");
 }

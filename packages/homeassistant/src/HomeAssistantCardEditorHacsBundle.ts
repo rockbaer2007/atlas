@@ -739,6 +739,21 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(
   ];
 }
 
+export function formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(
+  packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
+): readonly string[] {
+  const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
+  return overview.groups.map(group => {
+    const status = group.ready ? "ready" : group.failed > 0 ? "blocked" : "pending";
+    const anchor = group.firstFailedCheck
+      ? ` - first failure ${group.firstFailedCheck.code}`
+      : group.firstPendingCheck
+        ? ` - first pending ${group.firstPendingCheck.code}`
+        : "";
+    return `${group.label}: ${status} (${group.passed} passed, ${group.failed} failed, ${group.pending} pending)${anchor}`;
+  });
+}
+
 export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   packageRead: HomeAssistantCardEditorHacsBundleArchivePackageRead,
 ): HomeAssistantCardEditorHacsBundleReadinessReport {
