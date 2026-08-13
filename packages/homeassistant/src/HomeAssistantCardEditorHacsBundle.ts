@@ -243,6 +243,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessAttentionSummary {
   readonly attentionCount: number;
   readonly blockedCount: number;
   readonly pendingCount: number;
+  readonly nextAction: string;
   readonly attentionLabels: readonly string[];
   readonly blockedLabels: readonly string[];
   readonly pendingLabels: readonly string[];
@@ -780,6 +781,7 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(
   const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
   return [
     `Attention summary: ${overview.attentionSummary.attentionCount} attention, ${overview.attentionSummary.blockedCount} blocked, ${overview.attentionSummary.pendingCount} pending`,
+    `Next action: ${overview.attentionSummary.nextAction}`,
     overview.attentionGroups.length > 0
       ? `Attention groups: ${overview.attentionGroups.map(group => group.label).join(", ")}`
       : "Attention groups: none",
@@ -1043,10 +1045,16 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
   const attentionGroups = groups.filter(group => !group.ready);
   const blockedAttentionGroups = groups.filter(group => group.failed > 0);
   const pendingAttentionGroups = groups.filter(group => group.pending > 0);
+  const nextAction = firstBlockedGroup
+    ? `Fix ${firstBlockedGroup.label} (${firstBlockedGroup.firstFailedCheck?.code ?? "unknown"})`
+    : firstPendingGroup
+      ? `Complete ${firstPendingGroup.label} (${firstPendingGroup.firstPendingCheck?.code ?? "unknown"})`
+      : "Ready to import HACS card bundle";
   const attentionSummary: HomeAssistantCardEditorHacsBundleReadinessAttentionSummary = {
     attentionCount: attentionGroups.length,
     blockedCount: blockedAttentionGroups.length,
     pendingCount: pendingAttentionGroups.length,
+    nextAction,
     attentionLabels: attentionGroups.map(group => group.label),
     blockedLabels: blockedAttentionGroups.map(group => group.label),
     pendingLabels: pendingAttentionGroups.map(group => group.label),

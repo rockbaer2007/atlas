@@ -1468,6 +1468,7 @@ describe("Home Assistant frontend integration planning", () => {
       attentionCount: 0,
       blockedCount: 0,
       pendingCount: 0,
+      nextAction: "Ready to import HACS card bundle",
       attentionLabels: [],
       blockedLabels: [],
       pendingLabels: [],
@@ -1502,6 +1503,7 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead)).toEqual([
       "Attention summary: 0 attention, 0 blocked, 0 pending",
+      "Next action: Ready to import HACS card bundle",
       "Attention groups: none",
       "Blocked attention groups: none",
       "Pending attention groups: none",
@@ -1531,8 +1533,8 @@ describe("Home Assistant frontend integration planning", () => {
     const lines = formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead);
 
     expect(lines.slice(0, 5)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead));
-    expect(lines.slice(5, 9)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead));
-    expect(lines.slice(9, 17)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead));
+    expect(lines.slice(5, 10)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead));
+    expect(lines.slice(10, 18)).toEqual(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead));
     expect(lines).toContain("The archive contains a readable ATLAS card package file.");
     expect(lines).toContain("HACS script: energy-kitchen.js");
   });
@@ -1620,6 +1622,7 @@ describe("Home Assistant frontend integration planning", () => {
       attentionCount: 8,
       blockedCount: 2,
       pendingCount: 7,
+      nextAction: "Fix Archive (has-readme)",
       attentionLabels: ["Archive", "HACS manifest", "ATLAS package", "Locales", "Script", "Example card", "README", "Import"],
       blockedLabels: ["Archive", "Import"],
       pendingLabels: ["HACS manifest", "ATLAS package", "Locales", "Script", "Example card", "README", "Import"],
@@ -1646,6 +1649,7 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead)).toEqual([
       "Attention summary: 8 attention, 2 blocked, 7 pending",
+      "Next action: Fix Archive (has-readme)",
       "Attention groups: Archive, HACS manifest, ATLAS package, Locales, Script, Example card, README, Import",
       "Blocked attention groups: Archive, Import",
       "Pending attention groups: HACS manifest, ATLAS package, Locales, Script, Example card, README, Import",
@@ -1660,7 +1664,7 @@ describe("Home Assistant frontend integration planning", () => {
       "README: pending (0 passed, 0 failed, 6 pending) - first pending readme-mentions-resource-path",
       "Import: blocked (8 passed, 2 failed, 8 pending) - first failure bundle-importable",
     ]);
-    expect(formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).slice(0, 17)).toEqual([
+    expect(formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).slice(0, 18)).toEqual([
       ...formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead),
       ...formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(packageRead),
       ...formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead),
