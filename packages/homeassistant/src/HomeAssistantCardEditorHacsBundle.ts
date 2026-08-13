@@ -221,9 +221,12 @@ export type HomeAssistantCardEditorHacsBundleReadinessGroupId =
   | "readme"
   | "import";
 
+export type HomeAssistantCardEditorHacsBundleReadinessGroupStatus = "ready" | "blocked" | "pending";
+
 export interface HomeAssistantCardEditorHacsBundleReadinessGroup {
   readonly id: HomeAssistantCardEditorHacsBundleReadinessGroupId;
   readonly label: string;
+  readonly status: HomeAssistantCardEditorHacsBundleReadinessGroupStatus;
   readonly ready: boolean;
   readonly passed: number;
   readonly failed: number;
@@ -757,13 +760,12 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(
 ): readonly string[] {
   const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
   return overview.groups.map(group => {
-    const status = group.ready ? "ready" : group.failed > 0 ? "blocked" : "pending";
     const anchor = group.firstFailedCheck
       ? ` - first failure ${group.firstFailedCheck.code}`
       : group.firstPendingCheck
         ? ` - first pending ${group.firstPendingCheck.code}`
         : "";
-    return `${group.label}: ${status} (${group.passed} passed, ${group.failed} failed, ${group.pending} pending)${anchor}`;
+    return `${group.label}: ${group.status} (${group.passed} passed, ${group.failed} failed, ${group.pending} pending)${anchor}`;
   });
 }
 
@@ -1013,9 +1015,12 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     const pending = checks.filter(check => check.status === "pending").length;
     const firstFailedCheck = checks.find(check => check.status === "fail");
     const firstPendingCheck = checks.find(check => check.status === "pending");
+    const ready = checks.length > 0 && failed === 0 && pending === 0;
+    const status: HomeAssistantCardEditorHacsBundleReadinessGroupStatus = ready ? "ready" : failed > 0 ? "blocked" : "pending";
     return {
       ...definition,
-      ready: checks.length > 0 && failed === 0 && pending === 0,
+      status,
+      ready,
       passed,
       failed,
       pending,

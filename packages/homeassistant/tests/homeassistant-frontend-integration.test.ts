@@ -1443,6 +1443,16 @@ describe("Home Assistant frontend integration planning", () => {
       "readme",
       "import",
     ]);
+    expect(overview.groups.map(group => group.status)).toEqual([
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+      "ready",
+    ]);
     expect(overview.groups.every(group => group.ready && group.checks.length > 0)).toBe(true);
     expect(overview.firstFailedCheck).toBeUndefined();
     expect(overview.firstPendingCheck).toBeUndefined();
@@ -1612,6 +1622,16 @@ describe("Home Assistant frontend integration planning", () => {
     expect(groupsById.archive).toMatchObject({ failed: 10 });
     expect(groupsById.manifest).toMatchObject({ pending: 15 });
     expect(groupsById.import).toMatchObject({ failed: 2, pending: 8 });
+    expect(overview.groups.map(group => [group.id, group.status])).toEqual([
+      ["archive", "blocked"],
+      ["manifest", "pending"],
+      ["package", "pending"],
+      ["locale", "pending"],
+      ["script", "pending"],
+      ["example", "pending"],
+      ["readme", "pending"],
+      ["import", "blocked"],
+    ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead)).toEqual([
       "Readiness: 17/111 passed, 12 failed, 82 pending",
       "Readiness groups: 0/8 ready, 2 blocked, 7 pending",
