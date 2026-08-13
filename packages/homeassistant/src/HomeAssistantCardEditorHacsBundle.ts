@@ -752,6 +752,7 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(
     ? `First pending group: ${overview.firstPendingGroup.label} (${overview.firstPendingGroup.firstPendingCheck?.code ?? "unknown"})`
     : "First pending group: none";
   return [
+    `Readiness status: ${overview.status}`,
     `Readiness: ${report.passed}/${report.checks.length} passed, ${report.failed} failed, ${report.pending} pending`,
     `Readiness groups: ${overview.readyGroups}/${overview.groupCount} ready, ${overview.blockedGroups} blocked, ${overview.pendingGroups} pending`,
     firstBlockedGroup,
