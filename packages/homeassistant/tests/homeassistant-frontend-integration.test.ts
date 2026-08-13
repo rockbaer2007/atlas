@@ -1311,6 +1311,7 @@ describe("Home Assistant frontend integration planning", () => {
     const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
 
     expect(report).toMatchObject({
+      status: "ready",
       ready: true,
       passed: 111,
       failed: 0,
@@ -1386,6 +1387,7 @@ describe("Home Assistant frontend integration planning", () => {
     const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
 
     expect(report).toMatchObject({
+      status: "blocked",
       ready: false,
       passed: 17,
       failed: 12,
@@ -1424,6 +1426,7 @@ describe("Home Assistant frontend integration planning", () => {
     const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
 
     expect(overview).toMatchObject({
+      status: "ready",
       ready: true,
       groupCount: 8,
       readyGroups: 8,
@@ -1561,6 +1564,7 @@ describe("Home Assistant frontend integration planning", () => {
     const groupsById = Object.fromEntries(overview.groups.map(group => [group.id, group]));
 
     expect(overview).toMatchObject({
+      status: "blocked",
       ready: false,
       groupCount: 8,
       readyGroups: 0,

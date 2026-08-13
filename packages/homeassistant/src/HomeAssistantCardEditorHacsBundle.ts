@@ -204,6 +204,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessCheck {
 }
 
 export interface HomeAssistantCardEditorHacsBundleReadinessReport {
+  readonly status: HomeAssistantCardEditorHacsBundleReadinessStatus;
   readonly ready: boolean;
   readonly passed: number;
   readonly failed: number;
@@ -221,7 +222,9 @@ export type HomeAssistantCardEditorHacsBundleReadinessGroupId =
   | "readme"
   | "import";
 
-export type HomeAssistantCardEditorHacsBundleReadinessGroupStatus = "ready" | "blocked" | "pending";
+export type HomeAssistantCardEditorHacsBundleReadinessStatus = "ready" | "blocked" | "pending";
+
+export type HomeAssistantCardEditorHacsBundleReadinessGroupStatus = HomeAssistantCardEditorHacsBundleReadinessStatus;
 
 export interface HomeAssistantCardEditorHacsBundleReadinessGroup {
   readonly id: HomeAssistantCardEditorHacsBundleReadinessGroupId;
@@ -246,6 +249,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessAttentionSummary {
 }
 
 export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
+  readonly status: HomeAssistantCardEditorHacsBundleReadinessStatus;
   readonly ready: boolean;
   readonly passed: number;
   readonly failed: number;
@@ -982,8 +986,10 @@ export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   const passed = checks.filter(check => check.status === "pass").length;
   const failed = checks.filter(check => check.status === "fail").length;
   const pending = checks.filter(check => check.status === "pending").length;
+  const ready = packageRead.importable && failed === 0 && pending === 0;
   return {
-    ready: packageRead.importable && failed === 0 && pending === 0,
+    status: getHacsBundleReadinessStatus(ready, failed),
+    ready,
     passed,
     failed,
     pending,
@@ -1016,7 +1022,7 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     const firstFailedCheck = checks.find(check => check.status === "fail");
     const firstPendingCheck = checks.find(check => check.status === "pending");
     const ready = checks.length > 0 && failed === 0 && pending === 0;
-    const status: HomeAssistantCardEditorHacsBundleReadinessGroupStatus = ready ? "ready" : failed > 0 ? "blocked" : "pending";
+    const status = getHacsBundleReadinessStatus(ready, failed);
     return {
       ...definition,
       status,
@@ -1046,6 +1052,7 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
   };
 
   return {
+    status: report.status,
     ready: report.ready,
     passed: report.passed,
     failed: report.failed,
@@ -1064,6 +1071,13 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     attentionSummary,
     groups,
   };
+}
+
+function getHacsBundleReadinessStatus(
+  ready: boolean,
+  failed: number,
+): HomeAssistantCardEditorHacsBundleReadinessStatus {
+  return ready ? "ready" : failed > 0 ? "blocked" : "pending";
 }
 
 function readHacsBundleArchiveMetadata(
