@@ -1473,6 +1473,7 @@ describe("Home Assistant frontend integration planning", () => {
       blockedLabels: [],
       pendingLabels: [],
     });
+    expect(overview.attentionSummary.nextActionCheck).toBeUndefined();
   });
 
   it("formats HACS readiness overview lines for ready archives", () => {
@@ -1623,6 +1624,12 @@ describe("Home Assistant frontend integration planning", () => {
       blockedCount: 2,
       pendingCount: 7,
       nextAction: "Fix Archive (has-readme)",
+      nextActionCheck: {
+        code: "has-readme",
+        status: "fail",
+        label: "README present",
+        detail: "README.md is missing.",
+      },
       attentionLabels: ["Archive", "HACS manifest", "ATLAS package", "Locales", "Script", "Example card", "README", "Import"],
       blockedLabels: ["Archive", "Import"],
       pendingLabels: ["HACS manifest", "ATLAS package", "Locales", "Script", "Example card", "README", "Import"],

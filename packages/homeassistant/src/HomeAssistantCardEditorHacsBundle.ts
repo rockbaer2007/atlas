@@ -244,6 +244,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessAttentionSummary {
   readonly blockedCount: number;
   readonly pendingCount: number;
   readonly nextAction: string;
+  readonly nextActionCheck?: HomeAssistantCardEditorHacsBundleReadinessCheck;
   readonly attentionLabels: readonly string[];
   readonly blockedLabels: readonly string[];
   readonly pendingLabels: readonly string[];
@@ -1050,11 +1051,13 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     : firstPendingGroup
       ? `Complete ${firstPendingGroup.label} (${firstPendingGroup.firstPendingCheck?.code ?? "unknown"})`
       : "Ready to import HACS card bundle";
+  const nextActionCheck = firstBlockedGroup?.firstFailedCheck ?? firstPendingGroup?.firstPendingCheck;
   const attentionSummary: HomeAssistantCardEditorHacsBundleReadinessAttentionSummary = {
     attentionCount: attentionGroups.length,
     blockedCount: blockedAttentionGroups.length,
     pendingCount: pendingAttentionGroups.length,
     nextAction,
+    ...(nextActionCheck ? { nextActionCheck } : {}),
     attentionLabels: attentionGroups.map(group => group.label),
     blockedLabels: blockedAttentionGroups.map(group => group.label),
     pendingLabels: pendingAttentionGroups.map(group => group.label),
