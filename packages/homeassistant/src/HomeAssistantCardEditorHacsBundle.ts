@@ -233,6 +233,15 @@ export interface HomeAssistantCardEditorHacsBundleReadinessGroup {
   readonly checks: readonly HomeAssistantCardEditorHacsBundleReadinessCheck[];
 }
 
+export interface HomeAssistantCardEditorHacsBundleReadinessAttentionSummary {
+  readonly attentionCount: number;
+  readonly blockedCount: number;
+  readonly pendingCount: number;
+  readonly attentionLabels: readonly string[];
+  readonly blockedLabels: readonly string[];
+  readonly pendingLabels: readonly string[];
+}
+
 export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
   readonly ready: boolean;
   readonly passed: number;
@@ -249,6 +258,7 @@ export interface HomeAssistantCardEditorHacsBundleReadinessOverview {
   readonly attentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
   readonly blockedAttentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
   readonly pendingAttentionGroups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
+  readonly attentionSummary: HomeAssistantCardEditorHacsBundleReadinessAttentionSummary;
   readonly groups: readonly HomeAssistantCardEditorHacsBundleReadinessGroup[];
 }
 
@@ -762,6 +772,7 @@ export function formatHomeAssistantCardEditorHacsBundleReadinessAttentionLines(
 ): readonly string[] {
   const overview = createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead);
   return [
+    `Attention summary: ${overview.attentionSummary.attentionCount} attention, ${overview.attentionSummary.blockedCount} blocked, ${overview.attentionSummary.pendingCount} pending`,
     overview.attentionGroups.length > 0
       ? `Attention groups: ${overview.attentionGroups.map(group => group.label).join(", ")}`
       : "Attention groups: none",
@@ -1020,6 +1031,14 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
   const attentionGroups = groups.filter(group => !group.ready);
   const blockedAttentionGroups = groups.filter(group => group.failed > 0);
   const pendingAttentionGroups = groups.filter(group => group.pending > 0);
+  const attentionSummary: HomeAssistantCardEditorHacsBundleReadinessAttentionSummary = {
+    attentionCount: attentionGroups.length,
+    blockedCount: blockedAttentionGroups.length,
+    pendingCount: pendingAttentionGroups.length,
+    attentionLabels: attentionGroups.map(group => group.label),
+    blockedLabels: blockedAttentionGroups.map(group => group.label),
+    pendingLabels: pendingAttentionGroups.map(group => group.label),
+  };
 
   return {
     ready: report.ready,
@@ -1037,6 +1056,7 @@ export function createHomeAssistantCardEditorHacsBundleReadinessOverview(
     attentionGroups,
     blockedAttentionGroups,
     pendingAttentionGroups,
+    attentionSummary,
     groups,
   };
 }
