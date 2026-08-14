@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Configuration;
 using System.Windows.Forms;
 
 if (args.Length >= 2)
@@ -37,7 +38,12 @@ internal sealed class ExporterForm : Form
             "automations-export-selected");
 
         sourceTextBox.Text = File.Exists(defaultSource) ? defaultSource : string.Empty;
-        outputTextBox.Text = defaultOutput;
+        outputTextBox.Text = AppSettings.Default.ExportFolder;
+
+        if (string.IsNullOrWhiteSpace(outputTextBox.Text))
+        {
+            outputTextBox.Text = defaultOutput;
+        }
 
         var root = new TableLayoutPanel
         {
@@ -53,7 +59,7 @@ internal sealed class ExporterForm : Form
         Controls.Add(root);
 
         root.Controls.Add(CreatePathRow("automations.yaml", sourceTextBox, "Datei wählen...", SelectSourceFile), 0, 0);
-        root.Controls.Add(CreatePathRow("Export-Ordner", outputTextBox, "Ordner wählen...", SelectOutputFolder), 0, 1);
+        root.Controls.Add(CreatePathRow("Export-Ordner", outputTextBox, "Ordner wählen...", SelectOutputFolder, () => SaveSettings()), 0, 1);
 
         ConfigureGrid();
         root.Controls.Add(automationGrid, 0, 2);
@@ -101,18 +107,27 @@ internal sealed class ExporterForm : Form
         }
     }
 
-    private static Control CreatePathRow(string labelText, TextBox textBox, string buttonText, Action browseAction)
+    private static Control CreatePathRow(
+        string labelText,
+        TextBox textBox,
+        string buttonText,
+        Action browseAction,
+        Action? saveAction = null)
     {
         var panel = new TableLayoutPanel
         {
             AutoSize = true,
             Dock = DockStyle.Fill,
-            ColumnCount = 3,
+            ColumnCount = saveAction is null ? 3 : 4,
             Padding = new Padding(0, 0, 0, 8)
         };
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        if (saveAction is not null)
+        {
+            panel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        }
 
         var label = new Label
         {
@@ -130,6 +145,14 @@ internal sealed class ExporterForm : Form
         panel.Controls.Add(label, 0, 0);
         panel.Controls.Add(textBox, 1, 0);
         panel.Controls.Add(button, 2, 0);
+
+        if (saveAction is not null)
+        {
+            var saveButton = new Button { Text = "Einstellung speichern", AutoSize = true };
+            saveButton.Click += (_, _) => saveAction();
+            panel.Controls.Add(saveButton, 3, 0);
+        }
+
         return panel;
     }
 
@@ -199,6 +222,7 @@ internal sealed class ExporterForm : Form
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
             outputTextBox.Text = dialog.SelectedPath;
+            SaveSettings(showMessage: false);
         }
     }
 
@@ -253,6 +277,7 @@ internal sealed class ExporterForm : Form
         try
         {
             var exported = AutomationExporter.Export(selected, outputTextBox.Text).ToList();
+            SaveSettings(showMessage: false);
             statusLabel.Text = $"{exported.Count} Automation(en) exportiert.";
             MessageBox.Show(
                 this,
@@ -266,6 +291,41 @@ internal sealed class ExporterForm : Form
             statusLabel.Text = "Export fehlgeschlagen.";
             MessageBox.Show(this, exception.Message, "Fehler beim Export", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+    }
+
+    private void SaveSettings(bool showMessage = true)
+    {
+        try
+        {
+            AppSettings.Default.ExportFolder = outputTextBox.Text.Trim();
+            AppSettings.Default.Save();
+            statusLabel.Text = "Einstellung gespeichert.";
+
+            if (showMessage)
+            {
+                MessageBox.Show(this, "Export-Ordner wurde in user.config gespeichert.", "Einstellung gespeichert", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        catch (Exception exception)
+        {
+            statusLabel.Text = "Speichern fehlgeschlagen.";
+            MessageBox.Show(this, exception.Message, "Fehler beim Speichern", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+}
+
+internal sealed class AppSettings : ApplicationSettingsBase
+{
+    private static readonly AppSettings SettingsInstance = (AppSettings)Synchronized(new AppSettings());
+
+    public static AppSettings Default => SettingsInstance;
+
+    [UserScopedSetting]
+    [DefaultSettingValue("")]
+    public string ExportFolder
+    {
+        get => (string)this[nameof(ExportFolder)];
+        set => this[nameof(ExportFolder)] = value;
     }
 }
 
