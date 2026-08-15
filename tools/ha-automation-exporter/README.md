@@ -29,6 +29,20 @@ removes the leading top-level `id:` line, writes the top-level keys as
 This format is intended for pasting into Home Assistant's automation YAML
 editor when creating a new automation.
 
+## GitHub and open source YAML examples
+
+Home Assistant automation examples from GitHub, forums and other open source
+projects may use different YAML spellings depending on the Home Assistant
+version they were created with. For example, some files use top-level
+`trigger`, `condition` and `action`, while newer UI-generated exports may use
+`triggers`, `conditions` and `actions`.
+
+The exporter accepts these version differences in the source `automations.yaml`
+and normalizes the exported single automation files automatically for the
+current import target. That means old or mixed YAML entries do not need to be
+edited manually before export just because the Home Assistant schema spelling
+changed between versions.
+
 If you exported automations with an older version of this tool and Home
 Assistant reports an import error, open the affected YAML file, delete the first
 line when it starts with `id:`, rename the top-level `triggers`, `conditions`
