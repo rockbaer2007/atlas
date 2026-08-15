@@ -22,13 +22,19 @@ in Windows Explorer.
 
 ## Home Assistant import
 
-Current exports remove the leading top-level `id:` line from each exported
-automation YAML file. Home Assistant can reject manually imported single
-automation files when that `id:` line is present at the beginning.
+Current exports write import-friendly single automation YAML files. The exporter
+removes the leading top-level `id:` line, writes the top-level keys as
+`trigger`, `condition` and `action`, converts `- trigger: ...` entries to
+`- platform: ...`, and writes service calls as `- service: domain.service`.
+This format is intended for pasting into Home Assistant's automation YAML
+editor when creating a new automation.
 
 If you exported automations with an older version of this tool and Home
-Assistant reports an import error, open the affected YAML file and delete the
-first line when it starts with `id:`. Keep the rest of the automation unchanged.
+Assistant reports an import error, open the affected YAML file, delete the first
+line when it starts with `id:`, rename the top-level `triggers`, `conditions`
+and `actions` keys to `trigger`, `condition` and `action`, change trigger list
+items such as `- trigger: state` to `- platform: state`, and change service
+steps such as `- action: switch.turn_on` to `- service: switch.turn_on`.
 
 ## CLI
 

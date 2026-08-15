@@ -776,7 +776,42 @@ internal static class AutomationExporter
             lines.RemoveAt(0);
         }
 
+        for (var index = 0; index < lines.Count; index++)
+        {
+            lines[index] = ConvertToImportReadyLine(lines[index]);
+        }
+
         return string.Join(Environment.NewLine, lines);
+    }
+
+    private static string ConvertToImportReadyLine(string line)
+    {
+        return line switch
+        {
+            "triggers:" => "trigger:",
+            "conditions:" => "condition:",
+            "actions:" => "action:",
+            _ => ConvertAutomationListItemLine(line)
+        };
+    }
+
+    private static string ConvertAutomationListItemLine(string line)
+    {
+        var triggerMatch = Regex.Match(line, @"^(?<indent>\s*)-\s+trigger:\s*(?<value>.+?)\s*$", RegexOptions.CultureInvariant);
+
+        if (triggerMatch.Success)
+        {
+            return $"{triggerMatch.Groups["indent"].Value}- platform: {triggerMatch.Groups["value"].Value}";
+        }
+
+        var actionMatch = Regex.Match(line, @"^(?<indent>\s*)-\s+action:\s*(?<value>[A-Za-z0-9_]+\.[A-Za-z0-9_]+)\s*$", RegexOptions.CultureInvariant);
+
+        if (actionMatch.Success)
+        {
+            return $"{actionMatch.Groups["indent"].Value}- service: {actionMatch.Groups["value"].Value}";
+        }
+
+        return line;
     }
 
     public static IEnumerable<AutomationEntityReference> ExtractEntities(AutomationEntry automation)
