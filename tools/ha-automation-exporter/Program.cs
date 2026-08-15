@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Configuration;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 if (args.Length >= 2)
@@ -21,6 +22,7 @@ internal sealed class ExporterForm : Form
     private readonly Label statusLabel = new();
     private readonly Button detailsButton = new();
     private readonly Button exportButton = new();
+    private readonly Button openExportFolderButton = new();
     private List<AutomationEntry> automations = [];
     private readonly Dictionary<int, bool> checkedAutomations = [];
 
@@ -73,13 +75,14 @@ internal sealed class ExporterForm : Form
         {
             AutoSize = true,
             Dock = DockStyle.Fill,
-            ColumnCount = 6,
+            ColumnCount = 7,
             Padding = new Padding(0, 10, 0, 0)
         };
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         root.Controls.Add(footer, 0, 4);
@@ -103,6 +106,10 @@ internal sealed class ExporterForm : Form
         exportButton.Enabled = false;
         exportButton.Click += (_, _) => ExportSelected();
 
+        openExportFolderButton.Text = "Export im Explorer öffnen";
+        openExportFolderButton.AutoSize = true;
+        openExportFolderButton.Click += (_, _) => OpenExportFolder();
+
         statusLabel.AutoSize = true;
         statusLabel.Anchor = AnchorStyles.Left;
 
@@ -112,6 +119,7 @@ internal sealed class ExporterForm : Form
         footer.Controls.Add(statusLabel, 3, 0);
         footer.Controls.Add(selectNoneButton, 4, 0);
         footer.Controls.Add(exportButton, 5, 0);
+        footer.Controls.Add(openExportFolderButton, 6, 0);
 
         if (!string.IsNullOrWhiteSpace(sourceTextBox.Text))
         {
@@ -414,6 +422,35 @@ internal sealed class ExporterForm : Form
         {
             statusLabel.Text = "Export fehlgeschlagen.";
             MessageBox.Show(this, exception.Message, "Fehler beim Export", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void OpenExportFolder()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(outputTextBox.Text))
+            {
+                MessageBox.Show(this, "Bitte zuerst einen Export-Ordner auswählen.", "Kein Export-Ordner", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var outputFolder = Path.GetFullPath(outputTextBox.Text.Trim());
+            Directory.CreateDirectory(outputFolder);
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                UseShellExecute = true
+            };
+            startInfo.ArgumentList.Add(outputFolder);
+            Process.Start(startInfo);
+            SaveSettings(showMessage: false);
+            statusLabel.Text = "Export-Ordner im Explorer geöffnet.";
+        }
+        catch (Exception exception)
+        {
+            statusLabel.Text = "Explorer konnte nicht geöffnet werden.";
+            MessageBox.Show(this, exception.Message, "Fehler beim Öffnen", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 

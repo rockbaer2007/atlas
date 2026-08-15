@@ -17,6 +17,8 @@ generated file name and YAML content, so terms such as `pool` can find
 automations by entity IDs or templates as well.
 
 Only checked rows in the currently visible result list are exported.
+Use `Export im Explorer öffnen` to open the configured export folder directly
+in Windows Explorer.
 
 ## CLI
 
