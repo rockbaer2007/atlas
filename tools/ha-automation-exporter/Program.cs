@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 if (args.Length >= 2)
 {
-    return AutomationExporter.RunCli(args[0], args[1]);
+    return AutomationExporter.RunCli(args[0], args[1], args.Length >= 3 ? args[2] : null);
 }
 
 ApplicationConfiguration.Initialize();
@@ -16,11 +16,13 @@ internal sealed class ExporterForm : Form
 {
     private readonly TextBox sourceTextBox = new();
     private readonly TextBox outputTextBox = new();
+    private readonly TextBox filterTextBox = new();
     private readonly DataGridView automationGrid = new();
     private readonly Label statusLabel = new();
     private readonly Button detailsButton = new();
     private readonly Button exportButton = new();
     private List<AutomationEntry> automations = [];
+    private readonly Dictionary<int, bool> checkedAutomations = [];
 
     public ExporterForm()
     {
@@ -50,9 +52,10 @@ internal sealed class ExporterForm : Form
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 4,
+            RowCount = 5,
             Padding = new Padding(12)
         };
+        root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
@@ -61,9 +64,10 @@ internal sealed class ExporterForm : Form
 
         root.Controls.Add(CreatePathRow("automations.yaml", sourceTextBox, "Datei wählen...", SelectSourceFile), 0, 0);
         root.Controls.Add(CreatePathRow("Export-Ordner", outputTextBox, "Ordner wählen...", SelectOutputFolder, () => SaveSettings()), 0, 1);
+        root.Controls.Add(CreateFilterRow(), 0, 2);
 
         ConfigureGrid();
-        root.Controls.Add(automationGrid, 0, 2);
+        root.Controls.Add(automationGrid, 0, 3);
 
         var footer = new TableLayoutPanel
         {
@@ -78,7 +82,7 @@ internal sealed class ExporterForm : Form
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         footer.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        root.Controls.Add(footer, 0, 3);
+        root.Controls.Add(footer, 0, 4);
 
         var loadButton = new Button { Text = "Laden", AutoSize = true };
         loadButton.Click += (_, _) => LoadAutomations();
@@ -113,6 +117,40 @@ internal sealed class ExporterForm : Form
         {
             Load += (_, _) => LoadAutomations();
         }
+    }
+
+    private Control CreateFilterRow()
+    {
+        var panel = new TableLayoutPanel
+        {
+            AutoSize = true,
+            Dock = DockStyle.Fill,
+            ColumnCount = 3,
+            Padding = new Padding(0, 0, 0, 8)
+        };
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 120));
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        panel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+
+        var label = new Label
+        {
+            Text = "Suche",
+            AutoSize = true,
+            Anchor = AnchorStyles.Left,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+
+        filterTextBox.Dock = DockStyle.Fill;
+        filterTextBox.PlaceholderText = "Alias, ID, Dateiname oder YAML durchsuchen, z.B. pool";
+        filterTextBox.TextChanged += (_, _) => ApplyFilter();
+
+        var clearButton = new Button { Text = "Zurücksetzen", AutoSize = true };
+        clearButton.Click += (_, _) => filterTextBox.Clear();
+
+        panel.Controls.Add(label, 0, 0);
+        panel.Controls.Add(filterTextBox, 1, 0);
+        panel.Controls.Add(clearButton, 2, 0);
+        return panel;
     }
 
     private static Control CreatePathRow(
@@ -247,25 +285,71 @@ internal sealed class ExporterForm : Form
         try
         {
             automations = AutomationExporter.Load(sourceTextBox.Text).ToList();
-            automationGrid.Rows.Clear();
+            checkedAutomations.Clear();
 
             foreach (var automation in automations)
             {
-                var rowIndex = automationGrid.Rows.Add(true, automation.Alias, automation.Id, automation.FileName);
-                automationGrid.Rows[rowIndex].Tag = automation;
+                checkedAutomations[automation.Index] = true;
             }
 
-            exportButton.Enabled = automations.Count > 0;
+            PopulateGrid(AutomationExporter.Filter(automations, filterTextBox.Text).ToList());
             UpdateDetailsButtonState();
-            statusLabel.Text = $"{automations.Count} Automation(en) geladen.";
+            UpdateStatus();
         }
         catch (Exception exception)
         {
+            automationGrid.Rows.Clear();
             exportButton.Enabled = false;
             detailsButton.Enabled = false;
             statusLabel.Text = "Laden fehlgeschlagen.";
             MessageBox.Show(this, exception.Message, "Fehler beim Laden", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+    }
+
+    private void ApplyFilter()
+    {
+        StoreCurrentChecks();
+        PopulateGrid(AutomationExporter.Filter(automations, filterTextBox.Text).ToList());
+        UpdateStatus();
+    }
+
+    private void PopulateGrid(IReadOnlyCollection<AutomationEntry> entries)
+    {
+        automationGrid.Rows.Clear();
+
+        foreach (var automation in entries)
+        {
+            var isChecked = checkedAutomations.TryGetValue(automation.Index, out var savedChecked)
+                ? savedChecked
+                : true;
+            var rowIndex = automationGrid.Rows.Add(isChecked, automation.Alias, automation.Id, automation.FileName);
+            automationGrid.Rows[rowIndex].Tag = automation;
+        }
+
+        exportButton.Enabled = automationGrid.Rows.Count > 0;
+        UpdateDetailsButtonState();
+    }
+
+    private void StoreCurrentChecks()
+    {
+        automationGrid.EndEdit();
+
+        foreach (DataGridViewRow row in automationGrid.Rows)
+        {
+            if (row.Tag is AutomationEntry automation)
+            {
+                checkedAutomations[automation.Index] = Convert.ToBoolean(row.Cells[0].Value);
+            }
+        }
+    }
+
+    private void UpdateStatus()
+    {
+        var filter = filterTextBox.Text.Trim();
+
+        statusLabel.Text = string.IsNullOrWhiteSpace(filter)
+            ? $"{automations.Count} Automation(en) geladen."
+            : $"{automationGrid.Rows.Count} von {automations.Count} Automation(en) gefunden.";
     }
 
     private void UpdateDetailsButtonState()
@@ -290,12 +374,17 @@ internal sealed class ExporterForm : Form
         foreach (DataGridViewRow row in automationGrid.Rows)
         {
             row.Cells[0].Value = isChecked;
+
+            if (row.Tag is AutomationEntry automation)
+            {
+                checkedAutomations[automation.Index] = isChecked;
+            }
         }
     }
 
     private void ExportSelected()
     {
-        automationGrid.EndEdit();
+        StoreCurrentChecks();
 
         var selected = automationGrid.Rows
             .Cast<DataGridViewRow>()
@@ -519,15 +608,22 @@ internal static class AutomationExporter
         @"\b(?:alarm_control_panel|automation|binary_sensor|button|calendar|camera|climate|cover|device_tracker|event|fan|humidifier|input_boolean|input_button|input_datetime|input_number|input_select|input_text|light|lock|media_player|number|person|remote|scene|script|select|sensor|siren|sun|switch|text|timer|update|vacuum|valve|water_heater|weather|zone)\.[A-Za-z0-9_]+\b",
         RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
-    public static int RunCli(string sourcePath, string outputPath)
+    public static int RunCli(string sourcePath, string outputPath, string? filter = null)
     {
         try
         {
-            var automations = Load(sourcePath).ToList();
+            var loaded = Load(sourcePath).ToList();
+            var automations = Filter(loaded, filter).ToList();
+
+            if (loaded.Count == 0)
+            {
+                Console.Error.WriteLine("No top-level automation entries found. Expected a YAML list starting with '- ...'.");
+                return 1;
+            }
 
             if (automations.Count == 0)
             {
-                Console.Error.WriteLine("No top-level automation entries found. Expected a YAML list starting with '- ...'.");
+                Console.Error.WriteLine($"No automation entries match the filter: {filter}");
                 return 1;
             }
 
@@ -539,7 +635,9 @@ internal static class AutomationExporter
             }
 
             Console.WriteLine();
-            Console.WriteLine($"Exported {exported.Count} automation(s) to:");
+            Console.WriteLine(string.IsNullOrWhiteSpace(filter)
+                ? $"Exported {exported.Count} automation(s) to:"
+                : $"Exported {exported.Count} of {loaded.Count} automation(s) matching \"{filter}\" to:");
             Console.WriteLine(Path.GetFullPath(outputPath));
             return 0;
         }
@@ -548,6 +646,22 @@ internal static class AutomationExporter
             Console.Error.WriteLine(exception.Message);
             return 1;
         }
+    }
+
+    public static IEnumerable<AutomationEntry> Filter(IEnumerable<AutomationEntry> automations, string? filter)
+    {
+        var normalizedFilter = filter?.Trim();
+
+        if (string.IsNullOrWhiteSpace(normalizedFilter))
+        {
+            return automations;
+        }
+
+        return automations.Where(automation =>
+            automation.Alias.Contains(normalizedFilter, StringComparison.OrdinalIgnoreCase) ||
+            automation.Id.Contains(normalizedFilter, StringComparison.OrdinalIgnoreCase) ||
+            automation.FileName.Contains(normalizedFilter, StringComparison.OrdinalIgnoreCase) ||
+            automation.Yaml.Contains(normalizedFilter, StringComparison.OrdinalIgnoreCase));
     }
 
     public static IEnumerable<AutomationEntry> Load(string sourcePath)
