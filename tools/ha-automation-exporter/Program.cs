@@ -757,9 +757,26 @@ internal static class AutomationExporter
             var fileName = MakeUniqueFileName(automation.FileName, usedNames);
             var targetFile = Path.Combine(outputFolder, fileName);
 
-            File.WriteAllText(targetFile, automation.Yaml.TrimEnd() + Environment.NewLine, new UTF8Encoding(false));
+            File.WriteAllText(targetFile, CreateImportReadyYaml(automation).TrimEnd() + Environment.NewLine, new UTF8Encoding(false));
             yield return new AutomationExport(exported, fileName, targetFile);
         }
+    }
+
+    public static string CreateImportReadyYaml(AutomationEntry automation)
+    {
+        var lines = automation.Yaml.ReplaceLineEndings("\n").Split('\n').ToList();
+
+        while (lines.Count > 0 && string.IsNullOrWhiteSpace(lines[0]))
+        {
+            lines.RemoveAt(0);
+        }
+
+        if (lines.Count > 0 && Regex.IsMatch(lines[0], @"^id:\s*.*$", RegexOptions.CultureInvariant))
+        {
+            lines.RemoveAt(0);
+        }
+
+        return string.Join(Environment.NewLine, lines);
     }
 
     public static IEnumerable<AutomationEntityReference> ExtractEntities(AutomationEntry automation)

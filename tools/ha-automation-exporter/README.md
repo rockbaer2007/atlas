@@ -20,6 +20,16 @@ Only checked rows in the currently visible result list are exported.
 Use `Export im Explorer öffnen` to open the configured export folder directly
 in Windows Explorer.
 
+## Home Assistant import
+
+Current exports remove the leading top-level `id:` line from each exported
+automation YAML file. Home Assistant can reject manually imported single
+automation files when that `id:` line is present at the beginning.
+
+If you exported automations with an older version of this tool and Home
+Assistant reports an import error, open the affected YAML file and delete the
+first line when it starts with `id:`. Keep the rest of the automation unchanged.
+
 ## CLI
 
 Export all automations:
