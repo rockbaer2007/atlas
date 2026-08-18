@@ -1313,11 +1313,11 @@ describe("Home Assistant frontend integration planning", () => {
     expect(report).toMatchObject({
       status: "ready",
       ready: true,
-      passed: 111,
+      passed: 112,
       failed: 0,
       pending: 0,
     });
-    expect(report.checks).toHaveLength(111);
+    expect(report.checks).toHaveLength(112);
     expect(report.checks.map(check => check.code).slice(0, 30)).toEqual([
       "zip-readable",
       "safe-paths",
@@ -1347,8 +1347,8 @@ describe("Home Assistant frontend integration planning", () => {
       "readme-mentions-resource-path",
       "readme-mentions-card-type",
       "package-contains-entities",
+      "package-entity-ids-safe",
       "package-is-atlas-export",
-      "bundle-importable",
     ]);
     expect(report.checks.map(check => check.code).slice(-5)).toEqual([
       "import-report-terminal-check-present",
@@ -1391,7 +1391,7 @@ describe("Home Assistant frontend integration planning", () => {
       ready: false,
       passed: 17,
       failed: 12,
-      pending: 82,
+      pending: 83,
     });
     expect(Object.fromEntries(report.checks.map(check => [check.code, check.status]))).toMatchObject({
       "zip-readable": "pass",
@@ -1402,6 +1402,39 @@ describe("Home Assistant frontend integration planning", () => {
       "hacs-filename-declared": "pending",
       "atlas-package-readable": "pending",
       "bundle-importable": "fail",
+    });
+  });
+
+  it("blocks HACS readiness when embedded package entity IDs are unsafe", () => {
+    const editorPlan = createHomeAssistantCardEditorPackagePlan({
+      cardName: "Energy Kitchen",
+      scriptFilename: "energy-kitchen.js",
+      defaultEntityIds: ["sensor.energy_today"],
+    });
+    const archive = createHomeAssistantCardEditorHacsBundleArchive(createHomeAssistantCardExportPackage({
+      card: createHomeAssistantCardConfiguration({
+        target: "entities",
+        title: "Energy Kitchen",
+        entityIds: ["sensor.Energy Today"],
+      }),
+      format: "json",
+      name: "Energy Kitchen",
+      editorPlan,
+    }));
+
+    const packageRead = readHomeAssistantCardEditorHacsBundleArchivePackage(archive.content);
+    const report = createHomeAssistantCardEditorHacsBundleReadinessReport(packageRead);
+
+    expect(Object.fromEntries(report.checks.map(check => [check.code, check.status]))).toMatchObject({
+      "package-contains-entities": "pass",
+      "package-entity-ids-safe": "fail",
+      "import-summary-safe-for-demo": "fail",
+    });
+    expect(createHomeAssistantCardEditorHacsBundleReadinessOverview(packageRead).firstBlockedGroup).toMatchObject({
+      id: "package",
+      firstFailedCheck: {
+        code: "package-entity-ids-safe",
+      },
     });
   });
 
@@ -1432,7 +1465,7 @@ describe("Home Assistant frontend integration planning", () => {
       readyGroups: 8,
       blockedGroups: 0,
       pendingGroups: 0,
-      passed: 111,
+      passed: 112,
       failed: 0,
       pending: 0,
     });
@@ -1497,7 +1530,7 @@ describe("Home Assistant frontend integration planning", () => {
 
     expect(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead)).toEqual([
       "Readiness status: ready",
-      "Readiness: 111/111 passed, 0 failed, 0 pending",
+      "Readiness: 112/112 passed, 0 failed, 0 pending",
       "Readiness groups: 8/8 ready, 0 blocked, 0 pending",
       "First blocked group: none",
       "First pending group: none",
@@ -1636,6 +1669,7 @@ describe("Home Assistant frontend integration planning", () => {
     });
     expect(groupsById.archive).toMatchObject({ failed: 10 });
     expect(groupsById.manifest).toMatchObject({ pending: 15 });
+    expect(groupsById.package).toMatchObject({ pending: 14 });
     expect(groupsById.import).toMatchObject({ failed: 2, pending: 8 });
     expect(overview.groups.map(group => [group.id, group.status])).toEqual([
       ["archive", "blocked"],
@@ -1649,7 +1683,7 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(formatHomeAssistantCardEditorHacsBundleReadinessOverviewLines(packageRead)).toEqual([
       "Readiness status: blocked",
-      "Readiness: 17/111 passed, 12 failed, 82 pending",
+      "Readiness: 17/112 passed, 12 failed, 83 pending",
       "Readiness groups: 0/8 ready, 2 blocked, 7 pending",
       "First blocked group: Archive (has-readme)",
       "First pending group: HACS manifest (hacs-filename-declared)",
@@ -1664,7 +1698,7 @@ describe("Home Assistant frontend integration planning", () => {
     expect(formatHomeAssistantCardEditorHacsBundleReadinessGroupLines(packageRead)).toEqual([
       "Archive: blocked (9 passed, 10 failed, 0 pending) - first failure has-readme",
       "HACS manifest: pending (0 passed, 0 failed, 15 pending) - first pending hacs-filename-declared",
-      "ATLAS package: pending (0 passed, 0 failed, 13 pending) - first pending atlas-package-readable",
+      "ATLAS package: pending (0 passed, 0 failed, 14 pending) - first pending atlas-package-readable",
       "Locales: pending (0 passed, 0 failed, 14 pending) - first pending declared-locales-present",
       "Script: pending (0 passed, 0 failed, 17 pending) - first pending script-custom-element-known",
       "Example card: pending (0 passed, 0 failed, 9 pending) - first pending example-json-readable",

@@ -112,6 +112,7 @@ export type HomeAssistantCardEditorHacsBundleReadinessCheckCode =
   | "readme-mentions-resource-path"
   | "readme-mentions-card-type"
   | "package-contains-entities"
+  | "package-entity-ids-safe"
   | "package-is-atlas-export"
   | "bundle-importable"
   | "archive-file-count-nonzero"
@@ -877,6 +878,7 @@ export function createHomeAssistantCardEditorHacsBundleReadinessReport(
   add("readme-mentions-resource-path", readmeReadiness ? (readmeReadiness.mentionsResourcePath ? "pass" : "fail") : "pending", "README mentions resource path", readmeReadiness?.mentionsResourcePath ? `README mentions ${readmeReadiness.expectedResourcePath}.` : "README resource path has not been verified.");
   add("readme-mentions-card-type", readmeReadiness ? (readmeReadiness.mentionsCardType ? "pass" : "fail") : "pending", "README mentions card type", readmeReadiness?.mentionsCardType ? `README mentions ${readmeReadiness.expectedCardType}.` : "README card type has not been verified.");
   add("package-contains-entities", summary ? (summary.entityIds.length > 0 ? "pass" : "fail") : "pending", "Package contains entities", summary?.entityIds.length ? `Entities: ${summary.entityIds.join(", ")}` : "No package entities have been read.");
+  add("package-entity-ids-safe", summary ? (summary.entityIds.every(entityId => safeEntityPattern.test(entityId)) ? "pass" : "fail") : "pending", "Package entity IDs safe", summary?.entityIds.every(entityId => safeEntityPattern.test(entityId)) ? "Package entity IDs use safe Home Assistant syntax." : "Package entity IDs have not been verified.");
   add("package-is-atlas-export", summary ? (summary.packaged ? "pass" : "fail") : "pending", "Package is ATLAS export", summary?.packaged ? "Embedded package is an ATLAS card export." : "Embedded package has not been confirmed as an ATLAS export.");
   add("bundle-importable", packageRead.importable ? "pass" : "fail", "Bundle importable", packageRead.reason);
   add("archive-file-count-nonzero", zipReadable ? (inspection.fileCount > 0 ? "pass" : "fail") : "pending", "Archive has files", inspection.fileCount > 0 ? `Archive files: ${inspection.fileCount}` : "No archive files were detected.");
