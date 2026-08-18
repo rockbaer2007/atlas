@@ -35,6 +35,8 @@ const adminSaveState = document.querySelector("#admin-save-state");
 const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
+const parcelProviderSummary = document.querySelector("#parcel-provider-summary");
+const parcelProviderList = document.querySelector("#parcel-provider-list");
 const adminStorageKey = "atlas.administration.configuration";
 const adminPluginStorageKey = "atlas.administration.importedPlugins";
 const adminPluginStateStorageKey = "atlas.administration.pluginState";
@@ -47,6 +49,80 @@ const adminConnectionApiPath = "/api/admin-connection";
 const adminDeviceApiPath = "/api/admin-device";
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
+const parcelProviderDefaults = [
+  {
+    id: "dhl",
+    name: "DHL",
+    region: "DE/EU",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.dhl.de/de/privatkunden/dhl-sendungsverfolgung.html?piececode={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "deutsche-post",
+    name: "Deutsche Post",
+    region: "DE",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.deutschepost.de/sendung/simpleQuery.html?piececode={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "hermes",
+    name: "Hermes",
+    region: "DE",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#{trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "dpd",
+    name: "DPD",
+    region: "DE/EU",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://tracking.dpd.de/status/de_DE/parcel/{trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "gls",
+    name: "GLS",
+    region: "DE/EU",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://gls-group.com/DE/de/paketverfolgung?match={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "ups",
+    name: "UPS",
+    region: "Global",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.ups.com/track?loc=de_DE&tracknum={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "fedex",
+    name: "FedEx",
+    region: "Global",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.fedex.com/fedextrack/?trknbr={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "amazon",
+    name: "Amazon Logistics",
+    region: "Global",
+    authMode: "account-required",
+    status: "manual-account",
+    trackingUrl: "https://www.amazon.de/progress-tracker/package",
+    capabilities: ["account-link", "manual-status"],
+  },
+];
 const editorOrigin = "http://127.0.0.1:4174";
 const longTermCookieMaxAge = 31536000;
 const pluginCatalog = new RuntimePluginCatalog();
@@ -57,12 +133,16 @@ let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let importedPluginDescriptors = [];
 let lastEditorWindow;
 let currentAdminDeviceBinding;
+let currentParcelProviderSettings = normalizeParcelProviderSettings();
 
 const translations = {
   en: {
     "page.title": "ATLAS Administration",
     "page.subtitle": "Manage plugins, install packages and central Home Assistant access.",
     "heading.access": "Connection settings",
+    "heading.haConnection": "Home Assistant connection",
+    "heading.translationSettings": "Card translation",
+    "heading.parcelSettings": "Parcel service providers",
     "heading.plugins": "Installed plugins",
     "heading.policy": "Plugin access policy",
     "label.haUrl": "Home Assistant URL",
@@ -73,6 +153,7 @@ const translations = {
     "label.version": "Version",
     "label.extensionPoints": "Extension points",
     "label.capabilities": "Capabilities",
+    "label.parcelEnabled": "Enabled",
     "button.saveSettings": "Save settings",
     "button.forgetToken": "Forget token",
     "button.exportSettings": "Export settings",
@@ -100,6 +181,7 @@ const translations = {
     "message.geminiApiKeyLink": "Get Gemini API key:",
     "message.deeplApiKeyLink": "Get DeepL API key:",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
+    "message.parcelProviderSummary": "{enabled} of {total} service providers enabled. Public tracking links are prefilled automatically; account-only providers stay marked for later connection.",
     "message.pluginSummary": "{total} plugins, {active} active, {available} available, {disabled} disabled",
     "message.policySummary": "Current approved context: Home Assistant URL {url}, WebSocket path {websocket}.",
     "message.saved": "Settings saved.",
@@ -126,11 +208,18 @@ const translations = {
     "text.pluginStatusAvailable": "Available",
     "text.pluginStatusActive": "Active",
     "text.pluginStatusDisabled": "Disabled",
+    "text.parcelStatusReady": "Ready",
+    "text.parcelStatusManualAccount": "Account required",
+    "text.parcelAuthPublicTracking": "Public tracking link",
+    "text.parcelAuthAccountRequired": "Account sign-in required",
   },
   de: {
     "page.title": "ATLAS Administration",
     "page.subtitle": "Plugins, Installpakete und zentralen Home-Assistant-Zugriff verwalten.",
     "heading.access": "Verbindungseinstellungen",
+    "heading.haConnection": "Home-Assistant-Verbindung",
+    "heading.translationSettings": "Card-Uebersetzung",
+    "heading.parcelSettings": "Paket-Dienstleister",
     "heading.plugins": "Installierte Plugins",
     "heading.policy": "Plugin-Zugriffsregel",
     "label.haUrl": "Home Assistant URL",
@@ -141,6 +230,7 @@ const translations = {
     "label.version": "Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
+    "label.parcelEnabled": "Aktiv",
     "button.saveSettings": "Einstellungen speichern",
     "button.forgetToken": "Token vergessen",
     "button.exportSettings": "Einstellungen exportieren",
@@ -168,6 +258,7 @@ const translations = {
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
     "message.deeplApiKeyLink": "DeepL API-Key erhalten:",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
+    "message.parcelProviderSummary": "{enabled} von {total} Dienstleistern aktiv. Oeffentliche Tracking-Links sind automatisch vorbelegt; Konto-Dienstleister bleiben fuer die spaetere Anbindung markiert.",
     "message.pluginSummary": "{total} Plugins, {active} aktiv, {available} verfuegbar, {disabled} deaktiviert",
     "message.policySummary": "Aktuell freigegebener Kontext: Home-Assistant-URL {url}, WebSocket-Pfad {websocket}.",
     "message.saved": "Einstellungen gespeichert.",
@@ -194,6 +285,10 @@ const translations = {
     "text.pluginStatusAvailable": "Verfuegbar",
     "text.pluginStatusActive": "Aktiv",
     "text.pluginStatusDisabled": "Deaktiviert",
+    "text.parcelStatusReady": "Fertig",
+    "text.parcelStatusManualAccount": "Konto noetig",
+    "text.parcelAuthPublicTracking": "Oeffentlicher Tracking-Link",
+    "text.parcelAuthAccountRequired": "Konto-Anmeldung erforderlich",
   },
 };
 
@@ -257,6 +352,140 @@ function normalizeTranslationApiEndpoint(value) {
   } catch {
     return defaultTranslationApiEndpoint;
   }
+}
+
+function normalizeParcelProviderSettings(value) {
+  const savedProviders = Array.isArray(value?.providers) ? value.providers : Array.isArray(value) ? value : [];
+  const savedById = new Map(savedProviders
+    .filter(provider => provider && typeof provider.id === "string")
+    .map(provider => [provider.id, provider]));
+
+  return {
+    version: 1,
+    providers: parcelProviderDefaults.map(provider => {
+      const saved = savedById.get(provider.id);
+      return {
+        ...provider,
+        enabled: typeof saved?.enabled === "boolean"
+          ? saved.enabled
+          : provider.status === "ready",
+        trackingUrl: typeof saved?.trackingUrl === "string" && saved.trackingUrl.trim()
+          ? saved.trackingUrl.trim()
+          : provider.trackingUrl,
+      };
+    }),
+  };
+}
+
+function readParcelProviderSettings() {
+  if (!parcelProviderList.children.length) {
+    return currentParcelProviderSettings;
+  }
+
+  const providers = parcelProviderDefaults.map(provider => {
+    const enabledInput = document.querySelector(`[data-parcel-provider-enabled="${provider.id}"]`);
+    const trackingUrlInput = document.querySelector(`[data-parcel-provider-url="${provider.id}"]`);
+    return {
+      ...provider,
+      enabled: enabledInput ? enabledInput.checked : provider.status === "ready",
+      trackingUrl: trackingUrlInput?.value.trim() || provider.trackingUrl,
+    };
+  });
+
+  currentParcelProviderSettings = {
+    version: 1,
+    providers,
+  };
+  return currentParcelProviderSettings;
+}
+
+function applyParcelProviderSettings(settings) {
+  const normalized = normalizeParcelProviderSettings(settings);
+  currentParcelProviderSettings = normalized;
+  for (const provider of normalized.providers) {
+    const enabledInput = document.querySelector(`[data-parcel-provider-enabled="${provider.id}"]`);
+    const trackingUrlInput = document.querySelector(`[data-parcel-provider-url="${provider.id}"]`);
+    if (enabledInput) {
+      enabledInput.checked = provider.enabled;
+    }
+    if (trackingUrlInput) {
+      trackingUrlInput.value = provider.trackingUrl;
+    }
+  }
+  renderParcelProviderSummary(normalized);
+}
+
+function translateParcelProviderStatus(status) {
+  if (status === "manual-account") return t("text.parcelStatusManualAccount");
+  return t("text.parcelStatusReady");
+}
+
+function translateParcelProviderAuthMode(authMode) {
+  if (authMode === "account-required") return t("text.parcelAuthAccountRequired");
+  return t("text.parcelAuthPublicTracking");
+}
+
+function renderParcelProviderSummary(settings = readParcelProviderSettings()) {
+  currentParcelProviderSettings = normalizeParcelProviderSettings(settings);
+  const providers = settings.providers ?? [];
+  parcelProviderSummary.textContent = t("message.parcelProviderSummary", {
+    enabled: providers.filter(provider => provider.enabled).length,
+    total: providers.length,
+  });
+}
+
+function renderParcelProviders() {
+  const settings = readParcelProviderSettings();
+  parcelProviderList.replaceChildren();
+
+  for (const provider of normalizeParcelProviderSettings(settings).providers) {
+    const row = document.createElement("label");
+    const option = document.createElement("span");
+    const checkbox = document.createElement("input");
+    const optionText = document.createElement("span");
+    const meta = document.createElement("span");
+    const name = document.createElement("span");
+    const detail = document.createElement("span");
+    const urlInput = document.createElement("input");
+
+    row.className = "parcel-provider-row";
+    option.className = "provider-option";
+    meta.className = "parcel-provider-meta";
+    name.className = "parcel-provider-name";
+    detail.className = "parcel-provider-detail";
+    urlInput.className = "provider-key";
+    urlInput.type = "url";
+    urlInput.inputMode = "url";
+    urlInput.spellcheck = false;
+    urlInput.value = provider.trackingUrl;
+    urlInput.dataset.parcelProviderUrl = provider.id;
+    checkbox.type = "checkbox";
+    checkbox.checked = provider.enabled;
+    checkbox.dataset.parcelProviderEnabled = provider.id;
+    optionText.textContent = t("label.parcelEnabled");
+    name.textContent = provider.name;
+    detail.textContent = [
+      provider.region,
+      translateParcelProviderStatus(provider.status),
+      translateParcelProviderAuthMode(provider.authMode),
+    ].join(" - ");
+
+    checkbox.addEventListener("change", () => {
+      renderParcelProviderSummary();
+      persistConfiguration();
+    });
+    urlInput.addEventListener("input", () => {
+      renderParcelProviderSummary();
+      persistConfiguration();
+    });
+
+    option.append(checkbox, optionText);
+    meta.append(name, detail);
+    row.append(option, meta, urlInput);
+    parcelProviderList.append(row);
+  }
+
+  renderParcelProviderSummary();
 }
 
 function readTranslationApiKeys() {
@@ -369,6 +598,7 @@ function persistConfiguration() {
     translationApiEndpoint: defaultTranslationApiEndpoint,
     translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider(), translationApiKeys),
     translationApiKeyConfiguredByProvider: createTranslationApiKeyConfiguredByProvider(translationApiKeys),
+    parcelProviders: readParcelProviderSettings(),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
     tokenConfigured: rememberAdminToken.checked && Boolean(token),
@@ -394,6 +624,7 @@ async function persistServerConnectionSettings(configuration) {
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
       translationApiKeys: configuration.translationApiKeys,
+      parcelProviders: configuration.parcelProviders,
     }),
   });
 }
@@ -412,6 +643,7 @@ function persistSharedConnectionCookie(configuration) {
       translationApiEndpoint: configuration.translationApiEndpoint,
       translationApiKeyConfigured: configuration.translationApiKeyConfigured,
       translationApiKeyConfiguredByProvider: configuration.translationApiKeyConfiguredByProvider,
+      parcelProviders: configuration.parcelProviders,
       tokenConfigured: configuration.tokenConfigured,
       updatedAt: new Date().toISOString(),
     }))}`,
@@ -616,6 +848,7 @@ function restoreConfiguration() {
     if (typeof saved?.translationProvider === "string") {
       setTranslationProvider(saved.translationProvider);
     }
+    applyParcelProviderSettings(saved?.parcelProviders);
     if (saved?.translationApiKeys && typeof saved.translationApiKeys === "object") {
       applyTranslationApiKeys(saved.translationApiKeys);
       void persistEncryptedAdminSecretsCookie(readAdminSecrets());
@@ -663,6 +896,7 @@ async function restoreServerConnectionSettings() {
       setTranslationProvider(saved.translationProvider);
     }
     applyTranslationApiKeys(saved.translationApiKeys);
+    applyParcelProviderSettings(saved.parcelProviders);
     if (typeof saved.token === "string" && saved.token && !homeAssistantToken.value.trim()) {
       homeAssistantToken.value = saved.token;
       rememberAdminToken.checked = true;
@@ -802,6 +1036,7 @@ async function createAdminSettingsExport() {
       url: homeAssistantUrl.value.trim(),
       translationProvider: currentTranslationProvider(),
       translationApiEndpoint: defaultTranslationApiEndpoint,
+      parcelProviders: readParcelProviderSettings(),
       rememberToken: rememberAdminToken.checked,
       autoConnectEditor: autoConnectEditor.checked,
     },
@@ -837,6 +1072,7 @@ function createEditorConnectionHandoff() {
     translationApiEndpoint: defaultTranslationApiEndpoint,
     translationApiKeyConfigured: translationApiKeyConfiguredByProvider[provider] === true,
     translationApiKeyConfiguredByProvider,
+    parcelProviders: readParcelProviderSettings(),
     sentAt: new Date().toISOString(),
   };
 }
@@ -1019,6 +1255,7 @@ function renderAdministration() {
 function setLanguage(language) {
   currentLanguage = language === "de" ? "de" : "en";
   applyTranslations();
+  renderParcelProviders();
   renderAdministration();
   persistConfiguration();
 }
@@ -1038,6 +1275,7 @@ async function initializeAdministration() {
     persistConfiguration();
   }
   applyTranslations();
+  renderParcelProviders();
   renderAdministration();
   void restoreServerConnectionSettings();
 }

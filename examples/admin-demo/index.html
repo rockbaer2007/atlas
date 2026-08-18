@@ -162,6 +162,56 @@
         grid-column: 1 / -1;
       }
 
+      .settings-accordion {
+        display: grid;
+        gap: 8px;
+      }
+
+      .settings-accordion details {
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .settings-accordion details[open] {
+        background: #ffffff;
+      }
+
+      .settings-accordion summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 38px;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        color: #172033;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+
+      .settings-accordion summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .settings-accordion summary::after {
+        content: "+";
+        color: #0f766e;
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      .settings-accordion details[open] summary::after {
+        content: "-";
+      }
+
+      .settings-section-body {
+        display: grid;
+        gap: 10px;
+        padding: 0 10px 10px;
+      }
+
       .field-hint {
         color: #52617a;
         font-size: 12px;
@@ -219,6 +269,45 @@
       .provider-key {
         min-height: 32px;
         font-size: 14px;
+      }
+
+      .parcel-provider-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .parcel-provider-row {
+        display: grid;
+        grid-template-columns: minmax(170px, 0.32fr) minmax(220px, 0.34fr) minmax(220px, 0.34fr);
+        align-items: center;
+        gap: 8px 12px;
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        padding: 9px;
+      }
+
+      .parcel-provider-meta {
+        display: grid;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .parcel-provider-name {
+        color: #172033;
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .parcel-provider-detail,
+      .parcel-provider-url {
+        color: #536079;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .parcel-provider-url {
+        color: #0f766e;
+        font-weight: 700;
       }
 
       .checkbox-row {
@@ -347,7 +436,8 @@
         .admin-grid,
         .field-grid,
         .provider-row,
-        .provider-link-row {
+        .provider-link-row,
+        .parcel-provider-row {
           display: grid;
           grid-template-columns: 1fr;
         }
@@ -392,18 +482,26 @@
           </div>
           <output id="admin-save-state" aria-live="polite"></output>
         </div>
-        <div class="field-grid">
-          <div class="field-pair">
-            <label for="home-assistant-url" data-i18n="label.haUrl">Home Assistant URL</label>
-            <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
-          </div>
-          <div class="field-pair">
-            <label for="home-assistant-token" data-i18n="label.accessToken">Access token</label>
-            <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="field-pair wide">
-            <span id="translation-provider-label" data-i18n="label.translationProvider">Translation module</span>
-            <div class="provider-list" role="radiogroup" aria-labelledby="translation-provider-label">
+        <div class="settings-accordion">
+          <details open>
+            <summary data-i18n="heading.haConnection">Home Assistant connection</summary>
+            <div class="settings-section-body field-grid">
+              <div class="field-pair">
+                <label for="home-assistant-url" data-i18n="label.haUrl">Home Assistant URL</label>
+                <input id="home-assistant-url" type="url" inputmode="url" value="http://homeassistant.local:8123" autocomplete="url">
+              </div>
+              <div class="field-pair">
+                <label for="home-assistant-token" data-i18n="label.accessToken">Access token</label>
+                <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
+              </div>
+            </div>
+          </details>
+
+          <details>
+            <summary data-i18n="heading.translationSettings">Card translation</summary>
+            <div class="settings-section-body">
+              <span id="translation-provider-label" data-i18n="label.translationProvider">Translation module</span>
+              <div class="provider-list" role="radiogroup" aria-labelledby="translation-provider-label">
               <label class="provider-row">
                 <span class="provider-option">
                   <input type="radio" name="translation-provider" value="none" checked>
@@ -463,8 +561,17 @@
                 </span>
                 <input id="translation-api-key-custom-ai" class="provider-key" type="password" autocomplete="off" spellcheck="false" data-i18n-placeholder="placeholder.customAiApiKey" placeholder="Custom provider API key later">
               </label>
+              </div>
             </div>
-          </div>
+          </details>
+
+          <details>
+            <summary data-i18n="heading.parcelSettings">Parcel service providers</summary>
+            <div class="settings-section-body">
+              <p id="parcel-provider-summary"></p>
+              <div id="parcel-provider-list" class="parcel-provider-list"></div>
+            </div>
+          </details>
         </div>
         <label class="checkbox-row" for="remember-admin-token">
           <input id="remember-admin-token" type="checkbox">

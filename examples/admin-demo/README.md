@@ -65,6 +65,13 @@ server-held key. The default model can be overridden with
 The Administration provider list links to `https://platform.openai.com/api-keys`
 next to the ChatGPT/OpenAI provider row.
 
+The connection settings are grouped as an accordion so Home Assistant access,
+card translation and parcel service providers stay compact. The parcel provider
+section preconfigures public tracking links for DHL, Deutsche Post, Hermes, DPD,
+GLS, UPS and FedEx. Amazon Logistics is included as an account-only provider and
+is marked for a later authenticated connector instead of pretending that a
+public API is available.
+
 Home Assistant tokens are restored by the admin page when the local remember
 option is selected or when Save settings is used with a token in the field. The
 Card Editor receives the token only through the active Admin handoff or the

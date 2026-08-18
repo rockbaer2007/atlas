@@ -8,6 +8,80 @@ const root = resolve(import.meta.dirname, "..", "..");
 const port = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
+const parcelProviderDefaults = [
+  {
+    id: "dhl",
+    name: "DHL",
+    region: "DE/EU",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.dhl.de/de/privatkunden/dhl-sendungsverfolgung.html?piececode={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "deutsche-post",
+    name: "Deutsche Post",
+    region: "DE",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.deutschepost.de/sendung/simpleQuery.html?piececode={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "hermes",
+    name: "Hermes",
+    region: "DE",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.myhermes.de/empfangen/sendungsverfolgung/sendungsinformation/#{trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "dpd",
+    name: "DPD",
+    region: "DE/EU",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://tracking.dpd.de/status/de_DE/parcel/{trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "gls",
+    name: "GLS",
+    region: "DE/EU",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://gls-group.com/DE/de/paketverfolgung?match={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "ups",
+    name: "UPS",
+    region: "Global",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.ups.com/track?loc=de_DE&tracknum={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "fedex",
+    name: "FedEx",
+    region: "Global",
+    authMode: "public-tracking",
+    status: "ready",
+    trackingUrl: "https://www.fedex.com/fedextrack/?trknbr={trackingNumber}",
+    capabilities: ["tracking-link", "tracking-number"],
+  },
+  {
+    id: "amazon",
+    name: "Amazon Logistics",
+    region: "Global",
+    authMode: "account-required",
+    status: "manual-account",
+    trackingUrl: "https://www.amazon.de/progress-tracker/package",
+    capabilities: ["account-link", "manual-status"],
+  },
+];
 const openAiTranslationModel = process.env.ATLAS_OPENAI_TRANSLATION_MODEL ?? "gpt-5.6-luna";
 const editorOrigin = "http://127.0.0.1:4174";
 const adminDeviceFilePath = process.env.ATLAS_ADMIN_DEVICE_FILE
@@ -284,6 +358,7 @@ function normalizeAdminConnectionSettings(settings, previousSettings) {
     translationApiEndpoint: normalizeTranslationApiEndpoint(settings.translationApiEndpoint),
     translationApiKeys,
     translationApiKeyConfigured: hasTranslationApiKey(translationProvider, translationApiKeys),
+    parcelProviders: normalizeParcelProviderSettings(settings.parcelProviders),
     updatedAt: new Date().toISOString(),
   };
 }
@@ -321,6 +396,29 @@ function hasTranslationApiKey(provider, keys) {
   return Boolean(keys?.[normalizeTranslationProvider(provider)]?.trim());
 }
 
+function normalizeParcelProviderSettings(value) {
+  const savedProviders = Array.isArray(value?.providers) ? value.providers : Array.isArray(value) ? value : [];
+  const savedById = new Map(savedProviders
+    .filter(provider => provider && typeof provider.id === "string")
+    .map(provider => [provider.id, provider]));
+
+  return {
+    version: 1,
+    providers: parcelProviderDefaults.map(provider => {
+      const saved = savedById.get(provider.id);
+      return {
+        ...provider,
+        enabled: typeof saved?.enabled === "boolean"
+          ? saved.enabled
+          : provider.status === "ready",
+        trackingUrl: typeof saved?.trackingUrl === "string" && saved.trackingUrl.trim()
+          ? saved.trackingUrl.trim()
+          : provider.trackingUrl,
+      };
+    }),
+  };
+}
+
 function canReadAdminConnectionSecrets(request, requestUrl) {
   return requestUrl.searchParams.get("includeSecrets") === "1"
     && request.headers.origin !== editorOrigin;
@@ -339,6 +437,7 @@ function sanitizeAdminConnectionSettings(settings, { includeSecrets = false } = 
         .filter(provider => provider !== "none")
         .map(provider => [provider, hasTranslationApiKey(provider, settings.translationApiKeys)]),
     ),
+    parcelProviders: normalizeParcelProviderSettings(settings.parcelProviders),
     ...(includeSecrets ? { translationApiKeys: settings.translationApiKeys } : {}),
     updatedAt: settings.updatedAt,
   };
