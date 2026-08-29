@@ -207,6 +207,9 @@ additional envelope-only contract expansion.
 * Project templates
 * Code generators
 * Documentation generator
+* `html-vitepress-konverter`: planned helper program that imports HTML pages
+  with optional CSS, extracts the documentation content, copies referenced
+  assets, and writes VitePress-ready Markdown/frontmatter output.
 * Architecture validator
 * Development tools
 
