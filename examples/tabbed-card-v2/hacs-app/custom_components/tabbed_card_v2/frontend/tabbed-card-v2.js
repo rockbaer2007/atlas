@@ -329,7 +329,7 @@ class TabbedCardV2Editor extends HTMLElement {
           </a>
         </div>
         <p>
-          Installiere die Tabbed Card V2 App ueber HACS, damit der Editor in der Seitenleiste erscheint.
+          Installiere den Tabbed Card V2 Editor ueber HACS, damit der Editor in der Seitenleiste erscheint.
           Bis dahin kannst du die YAML-Konfiguration ueber
           "Code-Editor anzeigen" bearbeiten.
         </p>
