@@ -1014,6 +1014,7 @@ let activeEditorMode = "simple";
 let importedSimpleCard;
 let importedSimpleCodePreview;
 let importedSimpleStyleInspection;
+let importedSimpleEntityNames = new Map();
 let applyingImportedSimpleSummary = false;
 let expertPaletteShowAllCards = false;
 let expertPaletteSearchQuery = "";
@@ -1909,6 +1910,7 @@ function clearImportedSimplePreviewState() {
   importedSimpleCard = undefined;
   importedSimpleCodePreview = undefined;
   importedSimpleStyleInspection = undefined;
+  importedSimpleEntityNames = new Map();
 }
 
 function formatSimpleHaCardCodePreview(card) {
@@ -2061,6 +2063,16 @@ function getSimplePreviewCardEntities(card) {
       .filter(Boolean);
   }
   return collectSimplePreviewCardEntities(card);
+}
+
+function collectImportedSimpleEntityNames(card) {
+  const names = new Map();
+  for (const entity of getSimplePreviewCardEntities(card)) {
+    if (entity.name) {
+      names.set(entity.entity, entity.name);
+    }
+  }
+  return names;
 }
 
 function collectSimplePreviewCardEntities(value, key = "") {
@@ -4573,13 +4585,16 @@ function renderEntityList() {
       const batteryPercent = Number(entity.value);
       card.dataset.batteryLevel = batteryPercent <= 20 ? "low" : batteryPercent <= 50 ? "medium" : "normal";
     }
-    name.textContent = presentation?.label ?? entityId;
+    const importedName = importedSimpleEntityNames.get(entityId);
+    name.textContent = presentation?.label ?? importedName ?? entityId;
     value.textContent = entity?.value && presentation?.category === "battery" && !entity.unit
       ? `${entity.value}%`
       : entity?.value ?? entity?.state ?? t("text.waiting");
     detail.textContent = entity?.updatedAt
       ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${formatRelativeTime(entity.updatedAt)}`
-      : presentation?.detail ?? entityId.split(".", 1)[0];
+      : importedName
+        ? entityId
+        : presentation?.detail ?? entityId.split(".", 1)[0];
     if (entity?.state === "on" || entity?.state === "available") ready += 1;
     else if (entity?.state === "off") pending += 1;
     else if (entity) {
@@ -5505,6 +5520,7 @@ function applyHomeAssistantCardImportSummary(summary) {
   haCardLayout.value = summary.layout;
   haCardFormat.value = summary.format;
   importedSimpleCard = summary.target === "custom-card" ? summary.card : undefined;
+  importedSimpleEntityNames = collectImportedSimpleEntityNames(summary.card);
   if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
     haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
   }
