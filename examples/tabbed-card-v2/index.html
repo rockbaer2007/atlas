@@ -120,7 +120,7 @@
 
       .editor-grid {
         display: grid;
-        grid-template-columns: 260px minmax(330px, 430px) minmax(0, 1fr);
+        grid-template-columns: 1fr;
         gap: 12px;
         align-items: start;
       }
@@ -154,9 +154,12 @@
       }
 
       .tabs-list {
-        display: grid;
+        display: flex;
+        flex: 1 1 auto;
         gap: 8px;
-        margin-bottom: 12px;
+        min-width: 0;
+        overflow-x: auto;
+        padding-bottom: 2px;
       }
 
       .tab-item {
@@ -164,7 +167,7 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 8px;
         align-items: center;
-        width: 100%;
+        flex: 0 0 180px;
         padding: 9px;
         text-align: left;
       }
@@ -196,7 +199,19 @@
       }
 
       .tab-actions {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(5, minmax(90px, 1fr));
+      }
+
+      .tabs-body {
+        display: grid;
+        gap: 10px;
+      }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 520px) minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
       }
 
       .field-grid {
@@ -343,7 +358,7 @@
       }
 
       .card-preview {
-        min-height: 238px;
+        min-height: 320px;
         padding: 18px;
         background: #f8fbff;
       }
@@ -445,12 +460,8 @@
       }
 
       @media (max-width: 1120px) {
-        .editor-grid {
-          grid-template-columns: 250px minmax(0, 1fr);
-        }
-
-        .preview-panel {
-          grid-column: 1 / -1;
+        .detail-grid {
+          grid-template-columns: minmax(300px, 460px) minmax(0, 1fr);
         }
       }
 
@@ -474,13 +485,18 @@
         }
 
         .editor-grid,
+        .detail-grid,
         .field-grid,
         .toggle-grid {
           grid-template-columns: 1fr;
         }
 
-        .preview-panel {
-          grid-column: auto;
+        .tab-actions {
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .tab-item {
+          flex-basis: 150px;
         }
       }
     </style>
@@ -506,12 +522,12 @@
       </header>
 
       <section class="editor-grid" aria-label="Tabbed Card V2 Editor">
-        <aside class="panel">
+        <aside class="panel tabs-panel">
           <div class="panel-header">
             <h2>Tabs</h2>
             <button id="add-tab" type="button">Neu</button>
           </div>
-          <div class="panel-body">
+          <div class="panel-body tabs-body">
             <div id="tabs-list" class="tabs-list" aria-live="polite"></div>
             <div class="tab-actions">
               <button id="move-tab-up" type="button">Hoch</button>
@@ -522,131 +538,141 @@
           </div>
         </aside>
 
-        <section class="panel">
-          <div class="panel-header">
-            <h2>Eigenschaften</h2>
-          </div>
-          <div class="panel-body field-row">
-            <fieldset>
-              <legend>Globale Card</legend>
-              <div class="field-grid">
-                <div class="field">
-                  <label for="default-tab">Start-Tab</label>
-                  <select id="default-tab"></select>
-                </div>
-                <div class="field">
-                  <label for="primary-color">Aktivfarbe</label>
-                  <input id="primary-color" type="color" value="#087f8c">
-                </div>
-                <div class="field">
-                  <label for="inactive-color">Inaktivfarbe</label>
-                  <input id="inactive-color" type="text" value="rgba(var(--rgb-primary-text-color), 0.72)">
-                </div>
-                <div class="field">
-                  <label for="font-size">Schriftgröße</label>
-                  <input id="font-size" type="text" value="14px">
-                </div>
-                <div class="field full">
-                  <label for="card-name">Individuelle HA-Card</label>
-                  <input id="card-name" type="text" autocomplete="off" placeholder="wohnzimmer">
-                </div>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>Tab</legend>
-              <div class="field-grid">
-                <div class="field">
-                  <label for="tab-label">Label</label>
-                  <input id="tab-label" type="text" autocomplete="off">
-                </div>
-                <div class="field">
-                  <label for="tab-icon">Icon</label>
-                  <input id="tab-icon" type="text" autocomplete="off" placeholder="mdi:lightbulb">
-                </div>
-              </div>
-              <div class="toggle-grid">
-                <label class="toggle"><input id="tab-stacked" type="checkbox"> Icon gestapelt</label>
-                <label class="toggle"><input id="tab-min-width" type="checkbox"> Schmaler Tab</label>
-                <label class="toggle"><input id="tab-min-indicator" type="checkbox"> Schmaler Indikator</label>
-                <label class="toggle"><input id="tab-fading" type="checkbox"> Fade-Indikator</label>
-              </div>
-            </fieldset>
-
-            <fieldset>
-              <legend>Card im Tab</legend>
-              <div class="field-grid">
-                <div class="field">
-                  <label for="card-type">Card-Typ</label>
-                  <select id="card-type">
-                    <option value="button">Button</option>
-                    <option value="entity">Entity</option>
-                    <option value="entities">Entities</option>
-                    <option value="sensor">Sensor</option>
-                    <option value="markdown">Markdown</option>
-                    <option value="custom:bubble-card">Bubble Card</option>
-                    <option value="custom:mushroom-entity-card">Mushroom Entity</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="card-title">Titel</label>
-                  <input id="card-title" type="text" autocomplete="off">
-                </div>
-                <div class="field full">
-                  <label for="card-entity">Entity</label>
-                  <input id="card-entity" type="text" autocomplete="off" placeholder="light.bed_light">
-                </div>
-                <div class="field full">
-                  <label for="card-entities">Entities Liste</label>
-                  <textarea id="card-entities" spellcheck="false" placeholder="sensor.temperature&#10;binary_sensor.motion"></textarea>
-                </div>
-                <div class="field">
-                  <label for="tap-action">Tap Action</label>
-                  <select id="tap-action">
-                    <option value="">Keine</option>
-                    <option value="toggle">toggle</option>
-                    <option value="more-info">more-info</option>
-                    <option value="navigate">navigate</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label for="bubble-type">Bubble Button</label>
-                  <select id="bubble-type">
-                    <option value="state">state</option>
-                    <option value="switch">switch</option>
-                    <option value="slider">slider</option>
-                    <option value="name">name</option>
-                  </select>
-                </div>
-              </div>
-              <div class="toggle-grid">
-                <label class="toggle"><input id="show-name" type="checkbox" checked> Name zeigen</label>
-                <label class="toggle"><input id="show-icon" type="checkbox" checked> Icon zeigen</label>
-                <label class="toggle"><input id="show-state" type="checkbox" checked> State zeigen</label>
-              </div>
-            </fieldset>
-          </div>
-        </section>
-
         <section class="panel preview-panel">
           <div class="panel-header">
-            <h2>Vorschau und YAML</h2>
-            <div class="output-actions">
-              <select id="output-mode" aria-label="Ausgabe">
-                <option value="yaml">YAML</option>
-                <option value="json">JSON</option>
-              </select>
-            </div>
+            <h2>Vorschau</h2>
           </div>
           <div class="panel-body preview-shell">
             <div class="lovelace-card">
               <div id="preview-tabs" class="ha-tabs"></div>
               <div id="card-preview" class="card-preview"></div>
             </div>
-            <pre id="yaml-output" class="yaml-output" aria-live="polite"></pre>
             <output id="status-message" class="status" aria-live="polite"></output>
           </div>
         </section>
+
+        <div class="detail-grid">
+          <section class="panel">
+            <div class="panel-header">
+              <h2>Eigenschaften</h2>
+            </div>
+            <div class="panel-body field-row">
+              <fieldset>
+                <legend>Globale Card</legend>
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="default-tab">Start-Tab</label>
+                    <select id="default-tab"></select>
+                  </div>
+                  <div class="field">
+                    <label for="primary-color">Aktivfarbe</label>
+                    <input id="primary-color" type="color" value="#087f8c">
+                  </div>
+                  <div class="field">
+                    <label for="inactive-color">Inaktivfarbe</label>
+                    <input id="inactive-color" type="text" value="rgba(var(--rgb-primary-text-color), 0.72)">
+                  </div>
+                  <div class="field">
+                    <label for="font-size">Schriftgröße</label>
+                    <input id="font-size" type="text" value="14px">
+                  </div>
+                  <div class="field full">
+                    <label for="card-name">Individuelle HA-Card</label>
+                    <input id="card-name" type="text" autocomplete="off" placeholder="wohnzimmer">
+                  </div>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Tab</legend>
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="tab-label">Label</label>
+                    <input id="tab-label" type="text" autocomplete="off">
+                  </div>
+                  <div class="field">
+                    <label for="tab-icon">Icon</label>
+                    <input id="tab-icon" type="text" autocomplete="off" placeholder="mdi:lightbulb">
+                  </div>
+                </div>
+                <div class="toggle-grid">
+                  <label class="toggle"><input id="tab-stacked" type="checkbox"> Icon gestapelt</label>
+                  <label class="toggle"><input id="tab-min-width" type="checkbox"> Schmaler Tab</label>
+                  <label class="toggle"><input id="tab-min-indicator" type="checkbox"> Schmaler Indikator</label>
+                  <label class="toggle"><input id="tab-fading" type="checkbox"> Fade-Indikator</label>
+                </div>
+              </fieldset>
+
+              <fieldset>
+                <legend>Card im Tab</legend>
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="card-type">Card-Typ</label>
+                    <select id="card-type">
+                      <option value="button">Button</option>
+                      <option value="entity">Entity</option>
+                      <option value="entities">Entities</option>
+                      <option value="sensor">Sensor</option>
+                      <option value="markdown">Markdown</option>
+                      <option value="custom:bubble-card">Bubble Card</option>
+                      <option value="custom:mushroom-entity-card">Mushroom Entity</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="card-title">Titel</label>
+                    <input id="card-title" type="text" autocomplete="off">
+                  </div>
+                  <div class="field full">
+                    <label for="card-entity">Entity</label>
+                    <input id="card-entity" type="text" autocomplete="off" placeholder="light.bed_light">
+                  </div>
+                  <div class="field full">
+                    <label for="card-entities">Entities Liste</label>
+                    <textarea id="card-entities" spellcheck="false" placeholder="sensor.temperature&#10;binary_sensor.motion"></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="tap-action">Tap Action</label>
+                    <select id="tap-action">
+                      <option value="">Keine</option>
+                      <option value="toggle">toggle</option>
+                      <option value="more-info">more-info</option>
+                      <option value="navigate">navigate</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="bubble-type">Bubble Button</label>
+                    <select id="bubble-type">
+                      <option value="state">state</option>
+                      <option value="switch">switch</option>
+                      <option value="slider">slider</option>
+                      <option value="name">name</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="toggle-grid">
+                  <label class="toggle"><input id="show-name" type="checkbox" checked> Name zeigen</label>
+                  <label class="toggle"><input id="show-icon" type="checkbox" checked> Icon zeigen</label>
+                  <label class="toggle"><input id="show-state" type="checkbox" checked> State zeigen</label>
+                </div>
+              </fieldset>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <h2>YAML Code</h2>
+              <div class="output-actions">
+                <select id="output-mode" aria-label="Ausgabe">
+                  <option value="yaml">YAML</option>
+                  <option value="json">JSON</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel-body">
+              <pre id="yaml-output" class="yaml-output" aria-live="polite"></pre>
+            </div>
+          </section>
+        </div>
       </section>
     </main>
     <script type="module" src="/examples/tabbed-card-v2/app.js"></script>
