@@ -1,0 +1,22 @@
+ATLAS Kurzbefehle fuer Codex
+============================
+
+Diese Kurzbefehle nutzt Rockbaer im ATLAS-Projekt, um wiederkehrende
+Aktionen kurz anzustossen.
+
+??   Nur antworten. Keine Umsetzung, keine Dateiänderung.
+>>   Alles umsetzen, was im letzten Wunsch beschrieben wurde.
+>>!  Ausführen plus kurze Zusammenfassung als Text.
+<<   Letzte Änderung rückgängig machen.
+!!B  Backup vom aktuellen Stand erstellen.
+!!b  Backup vom aktuellen Stand erstellen.
+!!D  Open-Source-Dokumentation aktualisieren.
+!!d  Open-Source-Dokumentation aktualisieren.
+
+Kombinationen sind erlaubt, zum Beispiel:
+
+!!D !!B
+
+Das bedeutet: zuerst den aktuellen Stand sichern und danach die
+Open-Source-Dokumentation aktualisieren, sofern es zur aktuellen Änderung
+passt.
