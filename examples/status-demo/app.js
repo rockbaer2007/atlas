@@ -4357,9 +4357,57 @@ function formatExpertHaCardCodePreview(card) {
 }
 
 function formatExpertYamlForStyleExport(text) {
-  return haCardFormat.value === "yaml" && haCardStyleExport.value === "uix-style"
-    ? convertHomeAssistantCardModStylesToUixStyle(text)
-    : text;
+  if (haCardFormat.value !== "yaml") return text;
+  const withImportedStyles = appendImportedStylesToExpertYaml(text);
+  return haCardStyleExport.value === "uix-style"
+    ? convertHomeAssistantCardModStylesToUixStyle(withImportedStyles)
+    : withImportedStyles;
+}
+
+function appendImportedStylesToExpertYaml(text) {
+  if (!importedSimpleStyleInspection?.hasStyles) return text;
+  const lines = text.split(/\r?\n/);
+  const output = [];
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index] ?? "";
+    output.push(line);
+    const entityMatch = line.match(/^(\s*)entity:\s*(.+?)\s*$/);
+    if (!entityMatch) continue;
+    const indent = entityMatch[1] ?? "";
+    const entityId = stripYamlPreviewQuotes(entityMatch[2] ?? "");
+    const hasFollowingStyle = /^\s*(card_mod|uix|uix_style):/.test(lines[index + 1]?.trimStart() ?? "");
+    if (hasFollowingStyle) continue;
+    for (const block of getImportedEntityStyleBlocks(entityId)) {
+      output.push(indentImportedStyleBlock(block.code, indent));
+    }
+  }
+
+  const globalBlocks = importedSimpleStyleInspection.globalStyles ?? [];
+  const hasGlobalStyle = lines.some(line => /^(card_mod|uix|uix_style):/.test(line.trim()));
+  if (globalBlocks.length && !hasGlobalStyle) {
+    output.push(...globalBlocks.map(block => normalizeImportedStyleBlock(block.code)));
+  }
+  return output.join("\n");
+}
+
+function stripYamlPreviewQuotes(value) {
+  return value.trim().replace(/^["']|["']$/g, "");
+}
+
+function normalizeImportedStyleBlock(code) {
+  const lines = code.split(/\r?\n/);
+  const indents = lines
+    .filter(line => line.trim())
+    .map(line => line.match(/^ */)?.[0].length ?? 0);
+  const minIndent = indents.length ? Math.min(...indents) : 0;
+  return lines.map(line => line.slice(Math.min(minIndent, line.length))).join("\n").trimEnd();
+}
+
+function indentImportedStyleBlock(code, indent) {
+  return normalizeImportedStyleBlock(code)
+    .split(/\r?\n/)
+    .map(line => `${indent}${line}`)
+    .join("\n");
 }
 
 function addExpertEditorField() {
