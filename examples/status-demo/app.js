@@ -3666,6 +3666,10 @@ function renderExpertEditorSurface() {
     });
     tile.append(remove);
     tile.append(title, target, entity);
+    const styles = getImportedEntityStyleBlocks(field.entityId);
+    if (styles.length) {
+      tile.append(createImportedEntityStyleDetails(styles));
+    }
     if (isTabbedCardField(field)) {
       tile.append(createTabbedCardInlineView(field, index));
     } else if (isStackContainerField(field)) {
@@ -3723,6 +3727,17 @@ function renderExpertEditorSurface() {
   });
   expertEditorDropzone.append(grid);
   appendExpertEditorSurfaceResizeHandle();
+}
+
+function createImportedEntityStyleDetails(styles) {
+  const details = document.createElement("details");
+  details.className = "expert-entity-style";
+  const summary = document.createElement("summary");
+  summary.textContent = `Entity style (${styles.length})`;
+  const code = document.createElement("pre");
+  code.textContent = styles.map(block => block.code).join("\n\n");
+  details.append(summary, code);
+  return details;
 }
 
 function createStackContainerInlineView(field, fieldIndex) {
