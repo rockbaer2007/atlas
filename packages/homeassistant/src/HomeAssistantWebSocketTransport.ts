@@ -203,8 +203,8 @@ export function createHomeAssistantWebSocketClient(
 
       const requestId = nextRequestId;
       nextRequestId += 1;
-      socket.send(JSON.stringify({ id: requestId, type: "get_states" }));
       pendingEntityStateRequests.add(requestId);
+      socket.send(JSON.stringify({ id: requestId, type: "get_states" }));
       return { accepted: true, requestId };
     },
     subscribeEntityStateList(listener): () => void {
@@ -221,8 +221,8 @@ export function createHomeAssistantWebSocketClient(
 
       const requestId = nextRequestId;
       nextRequestId += 1;
-      socket.send(JSON.stringify({ id: requestId, type: "lovelace/resources" }));
       pendingLovelaceResourceRequests.add(requestId);
+      socket.send(JSON.stringify({ id: requestId, type: "lovelace/resources" }));
       return { accepted: true, requestId };
     },
     subscribeLovelaceResources(listener): () => void {

@@ -270,6 +270,60 @@ describe("Home Assistant WebSocket transport", () => {
     });
   });
 
+  it("keeps entity state requests when the socket answers during send", async () => {
+    const messageListeners = new Set<(data: string) => void | Promise<void>>();
+    const socket: HomeAssistantWebSocket & { readonly sent: string[] } = {
+      sent: [],
+      send(data: string): void {
+        this.sent.push(data);
+        const message = JSON.parse(data) as { id?: number; type?: string };
+        if (message.type !== "get_states" || typeof message.id !== "number") {
+          return;
+        }
+        for (const listener of messageListeners) {
+          void listener(JSON.stringify({
+            id: message.id,
+            type: "result",
+            success: true,
+            result: [{
+              entity_id: "sensor.instant_state",
+              state: "42",
+              attributes: { friendly_name: "Instant state" },
+            }],
+          }));
+        }
+      },
+      close(): void {},
+      onMessage(listener): () => void {
+        messageListeners.add(listener);
+        return () => messageListeners.delete(listener);
+      },
+      onClose(): () => void {
+        return () => {};
+      },
+    };
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+    const results: Array<{ entities: readonly { entityId: string }[] }> = [];
+    client.subscribeEntityStateList(result => results.push(result));
+
+    for (const listener of messageListeners) {
+      await listener('{"type":"auth_ok"}');
+    }
+    expect(client.requestEntityStates()).toEqual({ accepted: true, requestId: 2 });
+
+    await new Promise(resolve => setTimeout(resolve, 0));
+    expect(results).toEqual([{
+      requestId: 2,
+      success: true,
+      entities: [{
+        entityId: "sensor.instant_state",
+        state: "available",
+        value: "42",
+        name: "Instant state",
+      }],
+    }]);
+  });
+
   it("sends the event subscription before lifecycle listeners can request other data", async () => {
     const socket = createTestSocket();
     const client = createHomeAssistantWebSocketClient(socket, "test-token");

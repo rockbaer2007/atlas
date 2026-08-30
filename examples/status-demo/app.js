@@ -5589,8 +5589,10 @@ function bindSelectedEntity(nextTransport) {
     removeEntityStateListListener = connection?.getClient()?.subscribeEntityStateList(result => {
       for (const entity of result.entities) {
         knownEntityIds.add(entity.entityId);
+        entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now() });
       }
       renderEntityPickerOptions();
+      renderEntityList();
       statusMessage.textContent = result.success
         ? t("message.loadedEntities", { count: result.entities.length })
         : t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
