@@ -68,6 +68,27 @@ tabs:
 
 The built-in Home Assistant editor is intentionally small. The full visual editor is delivered as a standalone app so complex tab layouts, nested cards, previews, imports and dependency checks do not overload the Lovelace card dialog.
 
+## Individual card export
+
+The editor can export individual Home Assistant card files. Enter a suffix such as `wohnzimmer`; the generated card type becomes:
+
+```yaml
+type: custom:tabbed-card-v2-wohnzimmer
+```
+
+The matching JavaScript export is named:
+
+```text
+tabbed-card-v2-wohnzimmer.js
+```
+
+Add that file to Home Assistant as a Lovelace resource, for example:
+
+```yaml
+url: /local/tabbed-card-v2-wohnzimmer.js
+type: module
+```
+
 ## HACS package targets
 
 This demo contains the public HACS card target and a private/internal Home Assistant integration prototype:

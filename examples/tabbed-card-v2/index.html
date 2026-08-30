@@ -495,7 +495,8 @@
         <div class="toolbar">
           <button id="copy-yaml" class="primary-button" type="button">YAML kopieren</button>
           <button id="download-yaml" type="button">YAML exportieren</button>
-          <a class="download-link" href="/examples/tabbed-card-v2/home-assistant/tabbed-card-v2.js" download="tabbed-card-v2.js">HA-Datei</a>
+          <button id="download-card" type="button">HA-Card exportieren</button>
+          <a class="download-link" href="/examples/tabbed-card-v2/home-assistant/tabbed-card-v2.js" download="tabbed-card-v2.js">Basis-Card</a>
           <label>
             <input id="import-file" class="hidden-file" type="file" accept="application/json,.json,.yaml,.yml">
             <button id="import-button" type="button">Importieren</button>
@@ -544,6 +545,10 @@
                 <div class="field">
                   <label for="font-size">Schriftgröße</label>
                   <input id="font-size" type="text" value="14px">
+                </div>
+                <div class="field full">
+                  <label for="card-name">Individuelle HA-Card</label>
+                  <input id="card-name" type="text" autocomplete="off" placeholder="wohnzimmer">
                 </div>
               </div>
             </fieldset>

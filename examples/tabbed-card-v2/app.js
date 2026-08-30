@@ -3,8 +3,9 @@ const storageKey = "tabbed-card-v2.demo.config";
 const initialState = {
   selectedIndex: 0,
   outputMode: "yaml",
+  cardName: "meine-card",
   config: {
-    type: "custom:tabbed-card-v2",
+    type: "custom:tabbed-card-v2-meine-card",
     options: { defaultTabIndex: 0 },
     styles: {
       "--mdc-theme-primary": "#087f8c",
@@ -56,6 +57,7 @@ const elements = {
   primaryColor: document.querySelector("#primary-color"),
   inactiveColor: document.querySelector("#inactive-color"),
   fontSize: document.querySelector("#font-size"),
+  cardName: document.querySelector("#card-name"),
   tabLabel: document.querySelector("#tab-label"),
   tabIcon: document.querySelector("#tab-icon"),
   tabStacked: document.querySelector("#tab-stacked"),
@@ -77,6 +79,7 @@ const elements = {
   outputMode: document.querySelector("#output-mode"),
   copyYaml: document.querySelector("#copy-yaml"),
   downloadYaml: document.querySelector("#download-yaml"),
+  downloadCard: document.querySelector("#download-card"),
   importFile: document.querySelector("#import-file"),
   importButton: document.querySelector("#import-button"),
   resetEditor: document.querySelector("#reset-editor"),
@@ -103,6 +106,7 @@ function bindEvents() {
   elements.primaryColor.addEventListener("input", () => updateStyle("--mdc-theme-primary", elements.primaryColor.value));
   elements.inactiveColor.addEventListener("input", () => updateStyle("--mdc-tab-text-label-color-default", elements.inactiveColor.value));
   elements.fontSize.addEventListener("input", () => updateStyle("--mdc-typography-button-font-size", elements.fontSize.value));
+  elements.cardName.addEventListener("input", updateCardName);
   elements.tabLabel.addEventListener("input", syncTabForm);
   elements.tabIcon.addEventListener("input", syncTabForm);
   elements.tabStacked.addEventListener("change", syncTabForm);
@@ -120,6 +124,7 @@ function bindEvents() {
   elements.showState.addEventListener("change", syncCardForm);
   elements.copyYaml.addEventListener("click", copyOutput);
   elements.downloadYaml.addEventListener("click", downloadOutput);
+  elements.downloadCard.addEventListener("click", downloadCustomCard);
   elements.importButton.addEventListener("click", () => elements.importFile.click());
   elements.importFile.addEventListener("change", importConfiguration);
   elements.resetEditor.addEventListener("click", resetEditor);
@@ -182,6 +187,7 @@ function renderForms() {
   elements.primaryColor.value = normalizeColorInput(styles["--mdc-theme-primary"] ?? "#087f8c");
   elements.inactiveColor.value = styles["--mdc-tab-text-label-color-default"] ?? "";
   elements.fontSize.value = styles["--mdc-typography-button-font-size"] ?? "";
+  elements.cardName.value = state.cardName ?? "";
   elements.tabLabel.value = attributes.label ?? "";
   elements.tabIcon.value = attributes.icon ?? "";
   elements.tabStacked.checked = attributes.stacked === true;
@@ -400,10 +406,34 @@ function downloadOutput() {
   const contentType = state.outputMode === "json" ? "application/json" : "application/yaml";
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([elements.yamlOutput.textContent], { type: `${contentType}; charset=utf-8` }));
-  link.download = `tabbed-card-v2.${extension}`;
+  link.download = `${customElementName()}.${extension}`;
   link.click();
   URL.revokeObjectURL(link.href);
   elements.statusMessage.textContent = "Export erstellt.";
+}
+
+async function downloadCustomCard() {
+  const source = await fetch("/examples/tabbed-card-v2/home-assistant/tabbed-card-v2.js").then(response => {
+    if (!response.ok) {
+      throw new Error("Card-Vorlage konnte nicht geladen werden.");
+    }
+    return response.text();
+  });
+  const elementName = customElementName();
+  const displayName = displayCardName();
+  const customType = `custom:${elementName}`;
+  const code = source
+    .replaceAll("custom:tabbed-card-v2", customType)
+    .replaceAll("\"tabbed-card-v2-editor\"", `"${elementName}-editor"`)
+    .replaceAll("\"tabbed-card-v2\"", `"${elementName}"`)
+    .replaceAll("name: \"Tabbed Card V2\"", `name: ${JSON.stringify(displayName)}`)
+    .replaceAll(
+      "description: \"A tabbed Home Assistant card with a standalone visual editor.\"",
+      `description: ${JSON.stringify(`Individual Tabbed Card V2 export: ${customType}`)}`,
+    );
+
+  downloadText(`${elementName}.js`, code, "text/javascript");
+  elements.statusMessage.textContent = `${elementName}.js exportiert.`;
 }
 
 async function importConfiguration() {
@@ -413,6 +443,7 @@ async function importConfiguration() {
     const text = await file.text();
     const imported = file.name.endsWith(".json") ? JSON.parse(text) : parseGeneratedYaml(text);
     state.config = normalizeImportedConfig(imported);
+    state.cardName = normalizeCardName(cardNameFromType(state.config.type));
     state.selectedIndex = state.config.options.defaultTabIndex ?? 0;
     persistAndRender("Konfiguration importiert.");
   } catch (error) {
@@ -429,6 +460,7 @@ function resetEditor() {
 
 function publicConfig() {
   const config = deepClone(state.config);
+  config.type = `custom:${customElementName()}`;
   config.options = cleanObject(config.options ?? {});
   config.styles = cleanObject(config.styles ?? {});
   config.attributes = cleanObject(config.attributes ?? {});
@@ -442,6 +474,7 @@ function publicConfig() {
 
 function normalizeState() {
   state.config = normalizeImportedConfig(state.config);
+  state.cardName = normalizeCardName(state.cardName ?? cardNameFromType(state.config.type));
   state.selectedIndex = Math.max(0, Math.min(state.selectedIndex, state.config.tabs.length - 1));
   state.outputMode = state.outputMode === "json" ? "json" : "yaml";
 }
@@ -467,7 +500,7 @@ function normalizeImportedConfig(config) {
     : deepClone(initialState.config.tabs);
 
   return cleanObject({
-    type: "custom:tabbed-card-v2",
+    type: typeof config.type === "string" ? config.type : "custom:tabbed-card-v2-meine-card",
     options: {
       defaultTabIndex: clampIndex(config.options?.defaultTabIndex ?? 0, tabs.length),
     },
@@ -496,6 +529,12 @@ function selectedTab() {
   return state.config.tabs[state.selectedIndex];
 }
 
+function updateCardName() {
+  state.cardName = normalizeCardName(elements.cardName.value);
+  state.config.type = `custom:${customElementName()}`;
+  persistAndRender("Card-Name aktualisiert.");
+}
+
 function cleanObject(object) {
   return Object.fromEntries(Object.entries(object)
     .filter(([, value]) => value !== undefined && value !== "" && value !== false)
@@ -515,14 +554,56 @@ function persistAndRender(message = "") {
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(storageKey) ?? "");
+    const config = normalizeImportedConfig(saved.config);
     return {
       ...deepClone(initialState),
       ...saved,
-      config: normalizeImportedConfig(saved.config),
+      cardName: normalizeCardName(saved.cardName ?? cardNameFromType(config.type)),
+      config,
     };
   } catch {
     return deepClone(initialState);
   }
+}
+
+function customElementName() {
+  const suffix = normalizeCardName(state.cardName);
+  return suffix ? `tabbed-card-v2-${suffix}` : "tabbed-card-v2";
+}
+
+function displayCardName() {
+  const suffix = normalizeCardName(state.cardName);
+  return suffix ? `Tabbed Card V2 ${titleCase(suffix)}` : "Tabbed Card V2";
+}
+
+function normalizeCardName(value) {
+  return String(value ?? "")
+    .toLowerCase()
+    .replace(/^custom:/, "")
+    .replace(/^tabbed-card-v2-?/, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+}
+
+function cardNameFromType(type) {
+  return String(type ?? "").replace(/^custom:tabbed-card-v2-?/, "");
+}
+
+function titleCase(value) {
+  return value
+    .split("-")
+    .filter(Boolean)
+    .map(part => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
+}
+
+function downloadText(filename, text, contentType) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([text], { type: `${contentType}; charset=utf-8` }));
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 function supportsDisplayToggles(type) {
@@ -602,7 +683,7 @@ function formatYamlScalar(value) {
 
 function parseGeneratedYaml(text) {
   const lines = text.split(/\r?\n/);
-  const config = { type: "custom:tabbed-card-v2", options: {}, styles: {}, tabs: [] };
+  const config = { type: "custom:tabbed-card-v2-meine-card", options: {}, styles: {}, tabs: [] };
   let currentTab = null;
   let currentSection = "";
   let currentCardSubsection = "";
@@ -617,6 +698,16 @@ function parseGeneratedYaml(text) {
       currentSection = trimmed.slice(0, -1);
       currentCardSubsection = "";
       continue;
+    }
+
+    if (indent === 0) {
+      const topLevelPair = parseYamlPair(trimmed);
+      if (topLevelPair?.key === "type") {
+        config.type = topLevelPair.value;
+      }
+      if (topLevelPair) {
+        continue;
+      }
     }
 
     if (currentSection === "tabs" && indent === 2 && trimmed.startsWith("- ")) {
