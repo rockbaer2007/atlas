@@ -1623,6 +1623,38 @@
         accent-color: #2563eb;
       }
 
+      .overview-entity-editor-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .overview-entity-editor-row {
+        display: grid;
+        grid-template-columns: minmax(120px, 1fr) minmax(180px, 1.2fr) minmax(110px, 0.8fr) auto auto;
+        gap: 8px;
+        align-items: end;
+        padding: 8px;
+        border: 1px solid #dbeafe;
+        border-radius: 6px;
+        background: #f8fbff;
+      }
+
+      .overview-entity-editor-row .checkbox-row {
+        min-height: 38px;
+      }
+
+      .overview-entity-actions {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
+      }
+
+      .overview-entity-actions button {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 4px 8px;
+      }
+
       .range-row {
         display: grid;
         grid-template-columns: minmax(140px, 1fr) auto;

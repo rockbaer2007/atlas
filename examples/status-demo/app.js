@@ -224,6 +224,8 @@ const translations = {
     "label.bubbleButtonType": "Bubble button type",
     "label.title": "Title",
     "label.entity": "Entity",
+    "label.name": "Name",
+    "label.icon": "Icon",
     "label.tabLabel": "Tab label",
     "label.tabIcon": "Tab icon",
     "label.tabbedCardFullWidth": "Full width",
@@ -259,6 +261,8 @@ const translations = {
     "button.saveAs": "Choose save location",
     "button.download": "Download",
     "button.addEntity": "Add entity",
+    "button.save": "Save",
+    "button.cancel": "Cancel",
     "button.refreshEntities": "Refresh entities",
     "button.saveFavorites": "Save favorites",
     "button.showAllCards": "Show all cards",
@@ -295,6 +299,7 @@ const translations = {
     "heading.cardList": "Card list",
     "heading.tabbedCardSettings": "Tabbed Card V2 settings",
     "heading.stackCardSettings": "Stack settings",
+    "heading.overviewCardEntities": "Overview entities",
     "heading.selectedCardDetails": "Selected card",
     "heading.exportHaCard": "Export HA card",
     "heading.pasteHaCard": "Paste HA card YAML",
@@ -375,6 +380,8 @@ const translations = {
     "message.tabbedCardSettingsOpened": "Tabbed Card V2 settings opened for {field}.",
     "message.stackCardSettingsOpened": "Stack settings opened for {field}.",
     "message.stackCardSettingsUpdated": "Stack settings updated for {field}.",
+    "message.overviewEntitiesOpened": "Overview entities opened for {field}.",
+    "message.overviewEntitiesUpdated": "Overview entities updated for {field}.",
     "message.selectTabbedCardFirst": "Select a Tabbed Card V2 field first.",
     "message.tabAdded": "Tab {label} added.",
     "message.tabRemoved": "Tab removed.",
@@ -620,6 +627,8 @@ const translations = {
     "label.bubbleButtonType": "Bubble-Button-Typ",
     "label.title": "Titel",
     "label.entity": "Entität",
+    "label.name": "Name",
+    "label.icon": "Icon",
     "label.tabLabel": "Tab-Label",
     "label.tabIcon": "Tab-Icon",
     "label.tabbedCardFullWidth": "Volle Breite",
@@ -655,6 +664,8 @@ const translations = {
     "button.saveAs": "Speicherort wählen",
     "button.download": "Download",
     "button.addEntity": "Entität hinzufügen",
+    "button.save": "Speichern",
+    "button.cancel": "Abbrechen",
     "button.refreshEntities": "Entitäten aktualisieren",
     "button.saveFavorites": "Favoriten speichern",
     "button.showAllCards": "Alle Cards anzeigen",
@@ -691,6 +702,7 @@ const translations = {
     "heading.cardList": "Card-Liste",
     "heading.tabbedCardSettings": "Tabbed Card V2 Einstellungen",
     "heading.stackCardSettings": "Stack-Einstellungen",
+    "heading.overviewCardEntities": "Übersichts-Entitäten",
     "heading.selectedCardDetails": "Ausgewählte Card",
     "heading.exportHaCard": "HA-Card exportieren",
     "heading.pasteHaCard": "HA-Card-YAML einfügen",
@@ -771,6 +783,8 @@ const translations = {
     "message.tabbedCardSettingsOpened": "Tabbed Card V2 Einstellungen für {field} geöffnet.",
     "message.stackCardSettingsOpened": "Stack-Einstellungen für {field} geöffnet.",
     "message.stackCardSettingsUpdated": "Stack-Einstellungen für {field} aktualisiert.",
+    "message.overviewEntitiesOpened": "Übersichts-Entitäten für {field} geöffnet.",
+    "message.overviewEntitiesUpdated": "Übersichts-Entitäten für {field} aktualisiert.",
     "message.selectTabbedCardFirst": "Wähle zuerst ein Tabbed Card V2 Feld aus.",
     "message.tabAdded": "Tab {label} hinzugefügt.",
     "message.tabRemoved": "Tab entfernt.",
@@ -3517,6 +3531,189 @@ function openStackCardSettings() {
   statusMessage.textContent = t("message.stackCardSettingsOpened", { field: field.id });
 }
 
+function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
+  const field = expertEditorFields[fieldIndex];
+  if (!isOverviewField(field)) {
+    statusMessage.textContent = t("message.selectFieldBeforeEditing");
+    return;
+  }
+
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  const dialog = document.createElement("section");
+  dialog.className = "tabbed-card-dialog";
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+
+  const header = document.createElement("header");
+  const title = document.createElement("h2");
+  title.textContent = t("heading.overviewCardEntities");
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "icon-button";
+  close.setAttribute("aria-label", t("button.cancel"));
+  close.title = t("button.cancel");
+  close.textContent = "×";
+  header.append(title, close);
+
+  const body = document.createElement("div");
+  body.className = "tabbed-card-dialog-body single-column";
+  const list = document.createElement("div");
+  list.className = "overview-entity-editor-list";
+  body.append(list);
+
+  const actions = document.createElement("div");
+  actions.className = "connection-actions";
+  const add = document.createElement("button");
+  add.type = "button";
+  add.textContent = t("button.addEntity");
+  const save = document.createElement("button");
+  save.type = "button";
+  save.textContent = t("button.save");
+  const cancel = document.createElement("button");
+  cancel.type = "button";
+  cancel.textContent = t("button.cancel");
+  actions.append(add, save, cancel);
+  body.append(actions);
+  dialog.append(header, body);
+  backdrop.append(dialog);
+  document.body.append(backdrop);
+
+  let entries = [...(field.entries ?? [])].map(entry => ({ ...entry }));
+
+  const closeDialog = () => {
+    backdrop.remove();
+  };
+  const renderRows = () => {
+    list.replaceChildren();
+    entries.forEach((entry, index) => {
+      list.append(createOverviewEntityEditorRow(entry, index, entries.length, {
+        update: nextEntry => {
+          entries[index] = nextEntry;
+        },
+        move: direction => {
+          const nextIndex = index + direction;
+          if (nextIndex < 0 || nextIndex >= entries.length) return;
+          [entries[index], entries[nextIndex]] = [entries[nextIndex], entries[index]];
+          renderRows();
+        },
+        remove: () => {
+          entries.splice(index, 1);
+          renderRows();
+        },
+      }));
+    });
+    if (entries.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "dialog-hint";
+      empty.textContent = t("message.dragCard");
+      list.append(empty);
+    }
+  };
+
+  add.addEventListener("click", () => {
+    const entityId = expertEntity.value.trim() || currentEntityId();
+    if (!entityId) return;
+    entries.push({
+      id: entityDisplayName(entityId),
+      target: "entity",
+      entityId,
+      icon: entityIcon(entityId),
+    });
+    renderRows();
+  });
+  save.addEventListener("click", () => {
+    const normalizedEntries = entries
+      .map((entry, index) => ({
+        id: String(entry.id ?? "").trim() || entityDisplayName(entry.entityId) || `Entity ${index + 1}`,
+        target: "entity",
+        entityId: String(entry.entityId ?? "").trim(),
+        ...(String(entry.icon ?? "").trim() ? { icon: String(entry.icon).trim() } : {}),
+        ...(typeof entry.show_last_changed === "boolean" ? { show_last_changed: entry.show_last_changed } : {}),
+      }))
+      .filter(entry => entry.entityId);
+    expertEditorFields[fieldIndex] = {
+      ...expertEditorFields[fieldIndex],
+      entries: normalizedEntries,
+    };
+    selectedExpertFieldIndex = fieldIndex;
+    selectedContainerCardRef = undefined;
+    persistConfiguration();
+    renderExpertEditorPreview();
+    statusMessage.textContent = t("message.overviewEntitiesUpdated", { field: expertEditorFields[fieldIndex]?.id ?? "" });
+    closeDialog();
+  });
+  cancel.addEventListener("click", closeDialog);
+  close.addEventListener("click", closeDialog);
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) closeDialog();
+  });
+  renderRows();
+  statusMessage.textContent = t("message.overviewEntitiesOpened", { field: field.id });
+}
+
+function createOverviewEntityEditorRow(entry, index, total, callbacks) {
+  const row = document.createElement("div");
+  row.className = "overview-entity-editor-row";
+
+  const name = createLabeledInput(t("label.name"), entry.id ?? "");
+  const entity = createLabeledInput(t("label.entity"), entry.entityId ?? "");
+  const icon = createLabeledInput(t("label.icon"), entry.icon ?? entityIcon(entry.entityId));
+  const showLastChanged = document.createElement("label");
+  showLastChanged.className = "checkbox-row";
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = entry.show_last_changed === true;
+  const checkboxLabel = document.createElement("span");
+  checkboxLabel.textContent = "show_last_changed";
+  showLastChanged.append(checkbox, checkboxLabel);
+
+  const actions = document.createElement("div");
+  actions.className = "overview-entity-actions";
+  const up = createSmallActionButton("↑", index === 0, () => callbacks.move(-1));
+  const down = createSmallActionButton("↓", index >= total - 1, () => callbacks.move(1));
+  const remove = createSmallActionButton("×", false, callbacks.remove);
+  actions.append(up, down, remove);
+
+  const sync = () => callbacks.update({
+    ...entry,
+    id: name.input.value,
+    entityId: entity.input.value,
+    icon: icon.input.value,
+    show_last_changed: checkbox.checked,
+  });
+  for (const control of [name.input, entity.input, icon.input, checkbox]) {
+    control.addEventListener("input", sync);
+    control.addEventListener("change", sync);
+  }
+
+  row.append(name.wrapper, entity.wrapper, icon.wrapper, showLastChanged, actions);
+  return row;
+}
+
+function createLabeledInput(labelText, value) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "field-pair";
+  const label = document.createElement("label");
+  label.textContent = labelText;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.autocomplete = "off";
+  input.spellcheck = false;
+  input.value = value ?? "";
+  wrapper.append(label, input);
+  return { wrapper, input };
+}
+
+function createSmallActionButton(label, disabled, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.textContent = label;
+  button.disabled = disabled;
+  button.addEventListener("click", onClick);
+  return button;
+}
+
 function closeTabbedCardSettingsDialog() {
   tabbedCardSettingsBackdrop.hidden = true;
 }
@@ -4098,6 +4295,9 @@ function renderExpertEditorSurface() {
     }
     tile.addEventListener("click", () => {
       selectExpertEditorField(index);
+      if (isOverviewField(field)) {
+        openOverviewCardEntitiesDialog(index);
+      }
     });
     tile.addEventListener("keydown", event => {
       handleExpertSurfaceFieldKeydown(event, index);
@@ -4322,12 +4522,14 @@ function renderExpertSelectedCardDetails() {
 
   const actions = document.createElement("div");
   actions.className = "expert-detail-actions";
-  if (!card && isEditableContainerField(field)) {
+  if (!card && (isEditableContainerField(field) || isOverviewField(field))) {
     const settings = document.createElement("button");
     settings.type = "button";
     settings.textContent = t("button.settings");
     settings.addEventListener("click", () => {
-      if (isTabbedCardField(field)) {
+      if (isOverviewField(field)) {
+        openOverviewCardEntitiesDialog(fieldIndex);
+      } else if (isTabbedCardField(field)) {
         openTabbedCardSettings();
       } else {
         openStackCardSettings();
