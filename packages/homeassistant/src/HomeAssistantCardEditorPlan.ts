@@ -70,7 +70,7 @@ export interface HomeAssistantCardEditorSurfaceField {
   readonly layout?: HomeAssistantCardEditorSurfaceFieldLayout;
   readonly entries?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
   readonly activeTabIndex?: number;
-  readonly columns?: "full";
+  readonly columns?: "full" | number;
   readonly rows?: "auto";
   readonly column: number;
   readonly row: number;
@@ -553,8 +553,9 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
     layout: field.layout ?? "card",
     entries: (field.entries ?? []).map(normalizeSurfaceFieldEntry),
     ...(field.target === "tabbed-card-v2" ? { activeTabIndex: normalizeTabIndex(field.activeTabIndex, field.entries?.length ?? 0) } : {}),
-    ...(field.target === "tabbed-card-v2" && field.columns === "full" ? { columns: "full" as const } : {}),
-    ...(field.target === "tabbed-card-v2" && field.rows === "auto" ? { rows: "auto" as const } : {}),
+    ...((field.target === "tabbed-card-v2" || field.layout === "horizontal-stack" || field.layout === "vertical-stack") && field.columns === "full" ? { columns: "full" as const } : {}),
+    ...((field.layout === "horizontal-stack" || field.layout === "vertical-stack") && typeof field.columns === "number" ? { columns: normalizeStackColumns(field.columns) } : {}),
+    ...((field.target === "tabbed-card-v2" || field.layout === "horizontal-stack" || field.layout === "vertical-stack") && field.rows === "auto" ? { rows: "auto" as const } : {}),
     column: Math.max(0, Math.floor(field.column)),
     row: Math.max(0, Math.floor(field.row)),
     width: Math.max(1, Math.floor(field.width)),
@@ -579,6 +580,10 @@ function normalizeSurfaceFieldEntry(
 
 function normalizeBubbleButtonType(value: HomeAssistantBubbleButtonType | undefined): HomeAssistantBubbleButtonType {
   return value === "name" || value === "slider" || value === "switch" ? value : "state";
+}
+
+function normalizeStackColumns(value: number | undefined): number {
+  return Math.max(4, Math.min(10, Math.floor(Number(value) || 4)));
 }
 
 function compareSurfaceFields(
@@ -712,6 +717,8 @@ function createSurfaceFieldCardConfiguration(
 
     return {
       type: layout,
+      ...(field.columns === "full" || typeof field.columns === "number" ? { columns: field.columns } : {}),
+      ...(field.rows === "auto" ? { rows: "auto" as const } : {}),
       cards: populatedEntries.map(entry => createHomeAssistantCardConfiguration({
         target: entry.target ?? "entity",
         bubbleButtonType: entry.bubbleButtonType,

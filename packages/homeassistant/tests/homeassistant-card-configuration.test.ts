@@ -374,6 +374,50 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("serializes stack card layout hints", () => {
+    expect(serializeHomeAssistantEntitiesCardConfiguration({
+      type: "horizontal-stack",
+      columns: 8,
+      rows: "auto",
+      cards: [
+        {
+          type: "entity",
+          name: "Status",
+          entity: "binary_sensor.status",
+        },
+      ],
+    }, "yaml")).toBe([
+      "type: horizontal-stack",
+      "columns: 8",
+      "rows: auto",
+      "cards:",
+      "  - type: \"entity\"",
+      "    name: \"Status\"",
+      "    entity: \"binary_sensor.status\"",
+    ].join("\n"));
+
+    expect(parseHomeAssistantEntitiesCardConfiguration([
+      "type: vertical-stack",
+      "columns: full",
+      "rows: auto",
+      "cards:",
+      "  - type: entity",
+      "    name: Status",
+      "    entity: binary_sensor.status",
+    ].join("\n")).card).toEqual({
+      type: "vertical-stack",
+      columns: "full",
+      rows: "auto",
+      cards: [
+        {
+          type: "entity",
+          name: "Status",
+          entity: "binary_sensor.status",
+        },
+      ],
+    });
+  });
+
   it("lists supported card targets with dependency metadata", () => {
     const builtInDependency = { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] };
     expect(listHomeAssistantCardTargets()).toEqual([

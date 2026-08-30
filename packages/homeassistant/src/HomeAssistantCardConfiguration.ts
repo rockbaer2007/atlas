@@ -140,6 +140,8 @@ export interface HomeAssistantConditionalCardConfiguration {
 
 export interface HomeAssistantStackCardConfiguration {
   readonly type: "horizontal-stack" | "vertical-stack";
+  readonly columns?: "full" | number;
+  readonly rows?: "auto";
   readonly cards: readonly HomeAssistantCardConfiguration[];
 }
 
@@ -935,6 +937,8 @@ function normalizeHomeAssistantCardConfiguration(
     }
     const normalizedCard = {
       type: card.type,
+      ...(card.columns === "full" || typeof card.columns === "number" ? { columns: card.columns } : {}),
+      ...(card.rows === "auto" ? { rows: "auto" as const } : {}),
       cards: normalizedCards,
     } satisfies HomeAssistantStackCardConfiguration;
     return {
@@ -1256,8 +1260,10 @@ function serializeHomeAssistantYamlObject(value: Record<string, unknown>, indent
 function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfiguration): string {
   const lines = [
     `type: ${card.type}`,
-    "cards:",
   ];
+  if (card.columns !== undefined) lines.push(`columns: ${serializeYamlScalar(card.columns)}`);
+  if (card.rows === "auto") lines.push("rows: auto");
+  lines.push("cards:");
   for (const child of card.cards) {
     const childLines = serializeHomeAssistantEntitiesCardConfiguration(child, "yaml").split("\n");
     childLines.forEach((line, index) => {

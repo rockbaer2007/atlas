@@ -173,6 +173,14 @@ const tabbedCardFullWidth = document.querySelector("#tabbed-card-full-width");
 const tabbedCardAutoHeight = document.querySelector("#tabbed-card-auto-height");
 const applyTabbedCardTab = document.querySelector("#apply-tabbed-card-tab");
 const tabbedCardSettingsStatus = document.querySelector("#tabbed-card-settings-status");
+const stackCardSettingsBackdrop = document.querySelector("#stack-card-settings-backdrop");
+const closeStackCardSettings = document.querySelector("#close-stack-card-settings");
+const stackCardFullWidth = document.querySelector("#stack-card-full-width");
+const stackCardAutoHeight = document.querySelector("#stack-card-auto-height");
+const stackCardColumns = document.querySelector("#stack-card-columns");
+const stackCardColumnsOutput = document.querySelector("#stack-card-columns-output");
+const applyStackCardSettings = document.querySelector("#apply-stack-card-settings");
+const stackCardSettingsStatus = document.querySelector("#stack-card-settings-status");
 const entityList = document.querySelector("#atlas-entity-list");
 const stackSelectionSummary = document.querySelector("#stack-selection-summary");
 const groupSummary = document.querySelector("#group-summary");
@@ -218,6 +226,7 @@ const translations = {
     "label.tabIcon": "Tab icon",
     "label.tabbedCardFullWidth": "Full width",
     "label.tabbedCardAutoHeight": "Automatic height",
+    "label.stackCardColumns": "Card width",
     "label.column": "Column",
     "label.row": "Row",
     "label.width": "Width",
@@ -269,6 +278,7 @@ const translations = {
     "button.moveTabUp": "Up",
     "button.moveTabDown": "Down",
     "button.applyTab": "Apply tab",
+    "button.applyStackSettings": "Apply settings",
     "button.settings": "Settings",
     "button.off": "Off",
     "button.on": "On",
@@ -281,6 +291,7 @@ const translations = {
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
     "heading.tabbedCardSettings": "Tabbed Card V2 settings",
+    "heading.stackCardSettings": "Stack settings",
     "heading.exportHaCard": "Export HA card",
     "heading.pasteHaCard": "Paste HA card YAML",
     "heading.tabs": "Tabs",
@@ -310,6 +321,7 @@ const translations = {
     "aria.expertSurface": "Expert editor surface",
     "aria.resizeExpertSurface": "Resize Expert editor surface",
     "aria.closeTabbedCardSettings": "Close Tabbed Card V2 settings",
+    "aria.closeStackCardSettings": "Close stack settings",
     "aria.closeHaCardExport": "Close HA card export",
     "aria.closeHaCardPasteImport": "Close HA card YAML import",
     "aria.showStatusPreview": "Show {entityId} in the ATLAS Status Preview",
@@ -357,6 +369,8 @@ const translations = {
     "message.fieldResized": "{field} resized to {width}x{height}.",
     "message.fieldMoved": "{field} moved on the Expert editor surface.",
     "message.tabbedCardSettingsOpened": "Tabbed Card V2 settings opened for {field}.",
+    "message.stackCardSettingsOpened": "Stack settings opened for {field}.",
+    "message.stackCardSettingsUpdated": "Stack settings updated for {field}.",
     "message.selectTabbedCardFirst": "Select a Tabbed Card V2 field first.",
     "message.tabAdded": "Tab {label} added.",
     "message.tabRemoved": "Tab removed.",
@@ -589,6 +603,7 @@ const translations = {
     "label.tabIcon": "Tab-Icon",
     "label.tabbedCardFullWidth": "Volle Breite",
     "label.tabbedCardAutoHeight": "Automatische Höhe",
+    "label.stackCardColumns": "Card-Breite",
     "label.column": "Spalte",
     "label.row": "Zeile",
     "label.width": "Breite",
@@ -640,6 +655,7 @@ const translations = {
     "button.moveTabUp": "Hoch",
     "button.moveTabDown": "Runter",
     "button.applyTab": "Tab übernehmen",
+    "button.applyStackSettings": "Einstellungen übernehmen",
     "button.settings": "Einstellungen",
     "button.off": "Aus",
     "button.on": "Ein",
@@ -652,6 +668,7 @@ const translations = {
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
     "heading.tabbedCardSettings": "Tabbed Card V2 Einstellungen",
+    "heading.stackCardSettings": "Stack-Einstellungen",
     "heading.exportHaCard": "HA-Card exportieren",
     "heading.pasteHaCard": "HA-Card-YAML einfügen",
     "heading.tabs": "Tabs",
@@ -681,6 +698,7 @@ const translations = {
     "aria.expertSurface": "Expert-Editor-Fläche",
     "aria.resizeExpertSurface": "Expert-Editor-Fläche vergrößern",
     "aria.closeTabbedCardSettings": "Tabbed Card V2 Einstellungen schließen",
+    "aria.closeStackCardSettings": "Stack-Einstellungen schließen",
     "aria.closeHaCardExport": "HA-Card-Export schließen",
     "aria.closeHaCardPasteImport": "HA-Card-YAML-Import schließen",
     "aria.showStatusPreview": "{entityId} in der ATLAS Status Vorschau anzeigen",
@@ -728,6 +746,8 @@ const translations = {
     "message.fieldResized": "{field} auf {width}x{height} geändert.",
     "message.fieldMoved": "{field} auf der Expert-Editor-Fläche verschoben.",
     "message.tabbedCardSettingsOpened": "Tabbed Card V2 Einstellungen für {field} geöffnet.",
+    "message.stackCardSettingsOpened": "Stack-Einstellungen für {field} geöffnet.",
+    "message.stackCardSettingsUpdated": "Stack-Einstellungen für {field} aktualisiert.",
     "message.selectTabbedCardFirst": "Wähle zuerst ein Tabbed Card V2 Feld aus.",
     "message.tabAdded": "Tab {label} hinzugefügt.",
     "message.tabRemoved": "Tab entfernt.",
@@ -2007,7 +2027,7 @@ function createExpertHaCardConfig() {
   return createHomeAssistantCardEditorConfiguration({
     cardName: currentExpertCardName(),
     editorMode: "expert",
-    fields: expertEditorFields,
+    fields: normalizedExpertEditorFields(),
   });
 }
 
@@ -2022,8 +2042,12 @@ function createActiveCardEditorPlan() {
     editorMode: activeEditorMode,
     simpleTarget: haCardTarget.value,
     defaultEntityIds: cardPreviewEntityIds(),
-    fields: activeEditorMode === "expert" ? expertEditorFields : [],
+    fields: activeEditorMode === "expert" ? normalizedExpertEditorFields() : [],
   });
+}
+
+function normalizedExpertEditorFields() {
+  return expertEditorFields.map(field => isStackContainerField(field) ? normalizeStackContainerLayout(field) : field);
 }
 
 function currentExpertCardName() {
@@ -2893,6 +2917,11 @@ function selectedTabbedCardField() {
   return isTabbedCardField(field) ? field : undefined;
 }
 
+function selectedStackContainerField() {
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  return isStackContainerField(field) ? field : undefined;
+}
+
 function selectedEditableContainerField() {
   const field = expertEditorFields[selectedExpertFieldIndex];
   return isEditableContainerField(field) ? field : undefined;
@@ -2915,6 +2944,20 @@ function updateSelectedTabbedCardField(updater) {
   persistConfiguration();
   renderExpertEditorPreview();
   renderTabbedCardSettings();
+  return nextField;
+}
+
+function updateSelectedStackContainerField(updater) {
+  const field = selectedStackContainerField();
+  if (!field) {
+    statusMessage.textContent = t("message.selectFieldBeforeEditing");
+    return undefined;
+  }
+  const nextField = normalizeStackContainerLayout(updater(field));
+  expertEditorFields[selectedExpertFieldIndex] = nextField;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  renderStackCardSettings();
   return nextField;
 }
 
@@ -3011,11 +3054,11 @@ function addEntryToStackContainerFieldAt(fieldIndex, entry) {
   const field = expertEditorFields[fieldIndex];
   if (!isStackContainerField(field)) return false;
   const entries = [...(field.entries ?? []), entry];
-  expertEditorFields[fieldIndex] = {
+  expertEditorFields[fieldIndex] = normalizeStackContainerLayout({
     ...field,
     entityId: entries[0]?.entityId ?? field.entityId,
     entries,
-  };
+  });
   selectedExpertFieldIndex = fieldIndex;
   selectedContainerCardRef = {
     fieldIndex,
@@ -3070,6 +3113,7 @@ function selectContainerCard(reference) {
   renderExpertFieldList();
   renderExpertEditorSurface();
   renderTabbedCardSettings();
+  renderStackCardSettings();
   statusMessage.textContent = t("message.containerCardSelected", { card: card.id, container: field.id });
   return true;
 }
@@ -3094,7 +3138,9 @@ function updateSelectedContainerCard(updater) {
   if (!reference || !field) return false;
   const nextField = updateContainerCard(field, reference, updater);
   if (!nextField) return false;
-  expertEditorFields[reference.fieldIndex] = nextField;
+  expertEditorFields[reference.fieldIndex] = isStackContainerField(nextField)
+    ? normalizeStackContainerLayout(nextField)
+    : nextField;
   selectedExpertFieldIndex = reference.fieldIndex;
   persistConfiguration();
   renderExpertEditorPreview();
@@ -3156,6 +3202,9 @@ function removeContainerCard(reference) {
     entityId: entries[0]?.entityId ?? field.entityId,
     entries,
   };
+  if (isStackContainerField(expertEditorFields[reference.fieldIndex])) {
+    expertEditorFields[reference.fieldIndex] = normalizeStackContainerLayout(expertEditorFields[reference.fieldIndex]);
+  }
   selectedExpertFieldIndex = reference.fieldIndex;
   selectedContainerCardRef = undefined;
   persistConfiguration();
@@ -3294,8 +3343,23 @@ function openTabbedCardSettings() {
   statusMessage.textContent = t("message.tabbedCardSettingsOpened", { field: field.id });
 }
 
+function openStackCardSettings() {
+  const field = selectedStackContainerField();
+  if (!field) {
+    statusMessage.textContent = t("message.selectFieldBeforeEditing");
+    return;
+  }
+  stackCardSettingsBackdrop.hidden = false;
+  renderStackCardSettings();
+  statusMessage.textContent = t("message.stackCardSettingsOpened", { field: field.id });
+}
+
 function closeTabbedCardSettingsDialog() {
   tabbedCardSettingsBackdrop.hidden = true;
+}
+
+function closeStackCardSettingsDialog() {
+  stackCardSettingsBackdrop.hidden = true;
 }
 
 function renderTabbedCardSettings() {
@@ -3409,6 +3473,78 @@ function applyTabbedCardContainerOptions() {
   }));
   renderExpertEditButton();
   tabbedCardSettingsStatus.textContent = t("message.tabUpdated", { label: tabbedCardTabLabel.value || selectedTabbedCardField()?.id || "Tabbed Card V2" });
+}
+
+function renderStackCardSettings() {
+  if (stackCardSettingsBackdrop.hidden) return;
+  const field = selectedStackContainerField();
+  if (!field) {
+    stackCardSettingsBackdrop.hidden = true;
+    return;
+  }
+  const columns = normalizeStackColumns(typeof field.columns === "number" ? field.columns : field.width);
+  stackCardFullWidth.checked = field.columns === "full" || field.fullWidth === true;
+  stackCardAutoHeight.checked = field.rows === "auto" || field.autoHeight === true;
+  stackCardColumns.value = String(columns);
+  stackCardColumns.disabled = stackCardFullWidth.checked;
+  renderStackCardColumnsOutput();
+}
+
+function applyStackCardContainerOptions() {
+  updateSelectedStackContainerField(field => {
+    const fullWidth = stackCardFullWidth.checked;
+    const width = fullWidth ? expertGridColumns : normalizeStackColumns(stackCardColumns.value);
+    return {
+      ...field,
+      columns: fullWidth ? "full" : width,
+      rows: stackCardAutoHeight.checked ? "auto" : undefined,
+      fullWidth: undefined,
+      autoHeight: undefined,
+      column: fullWidth ? 0 : Math.min(field.column, expertGridColumns - width),
+      width,
+    };
+  });
+  renderExpertEditButton();
+  stackCardSettingsStatus.textContent = t("message.stackCardSettingsUpdated", { field: selectedStackContainerField()?.id || "" });
+}
+
+function normalizeStackColumns(value) {
+  return Math.max(4, Math.min(10, Math.floor(Number(value) || 4)));
+}
+
+function renderStackCardColumnsOutput() {
+  const columns = stackCardFullWidth.checked ? expertGridColumns : normalizeStackColumns(stackCardColumns.value);
+  stackCardColumnsOutput.textContent = `${columns} ${t("label.column")}`;
+}
+
+function normalizeStackContainerLayout(field) {
+  if (!isStackContainerField(field)) return field;
+  const fullWidth = field.columns === "full" || field.fullWidth === true;
+  const width = fullWidth ? expertGridColumns : normalizeStackColumns(typeof field.columns === "number" ? field.columns : field.width);
+  const next = {
+    ...field,
+    ...(fullWidth ? { columns: "full" } : { columns: width }),
+    width,
+    column: fullWidth ? 0 : Math.min(field.column, expertGridColumns - width),
+  };
+  if (field.rows === "auto" || field.autoHeight === true) {
+    return {
+      ...next,
+      rows: "auto",
+      height: calculateStackContainerAutoHeight(next),
+    };
+  }
+  return next;
+}
+
+function calculateStackContainerAutoHeight(field) {
+  const entries = field.entries?.length ?? 0;
+  if (entries === 0) return 2;
+  if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
+    const cardsPerRow = Math.max(1, Math.floor(Math.max(1, field.width) / 4));
+    return Math.max(2, 2 + Math.ceil(entries / cardsPerRow) * 2);
+  }
+  return Math.max(2, 2 + entries * 2);
 }
 
 function updateSelectedExpertFieldTarget() {
@@ -3687,6 +3823,7 @@ function selectExpertEditorField(index) {
   renderExpertFieldList();
   renderExpertEditorSurface();
   renderTabbedCardSettings();
+  renderStackCardSettings();
   statusMessage.textContent = t("text.fieldSelected", { field: field.id });
 }
 
@@ -3701,6 +3838,10 @@ function toggleExpertFieldEditing() {
 
   if (isTabbedCardField(field)) {
     openTabbedCardSettings();
+    return;
+  }
+  if (isStackContainerField(field)) {
+    openStackCardSettings();
     return;
   }
 
@@ -3745,7 +3886,10 @@ function renderExpertEditorSurface() {
     return;
   }
 
-  expertEditorFields.forEach((field, index) => {
+  expertEditorFields.forEach((storedField, index) => {
+    const field = isStackContainerField(storedField) && (storedField.rows === "auto" || storedField.autoHeight === true)
+      ? normalizeStackContainerLayout(storedField)
+      : storedField;
     const tile = document.createElement("div");
     tile.tabIndex = 0;
     tile.className = "expert-surface-field";
@@ -3772,7 +3916,7 @@ function renderExpertEditorSurface() {
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
-    tile.style.gridColumn = (field.columns === "full" || field.fullWidth === true) && isTabbedCardField(field)
+    tile.style.gridColumn = (field.columns === "full" || field.fullWidth === true) && isEditableContainerField(field)
       ? `1 / span ${expertGridColumns}`
       : `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
     tile.style.gridRow = `${field.row + 1} / span ${Math.min(expertGridRows, field.height)}`;
@@ -3944,10 +4088,27 @@ function listImportedStyleTypes(styles) {
 function createStackContainerInlineView(field, fieldIndex) {
   const wrapper = document.createElement("div");
   wrapper.className = "expert-tab-inline";
+  const header = document.createElement("div");
+  header.className = "expert-container-header";
   const count = document.createElement("small");
   count.textContent = t("text.tabbedCardContainer", { count: field.entries?.length ?? 0 });
+  const settings = document.createElement("button");
+  settings.type = "button";
+  settings.className = "expert-container-settings";
+  settings.textContent = t("button.settings");
+  settings.addEventListener("click", event => {
+    event.stopPropagation();
+    selectedExpertFieldIndex = fieldIndex;
+    selectedContainerCardRef = undefined;
+    openStackCardSettings();
+  });
+  header.append(count, settings);
   const preview = document.createElement("div");
   preview.className = `expert-tab-preview ${(field.layout ?? "vertical-stack") === "horizontal-stack" ? "horizontal" : "vertical"}`;
+  if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
+    const minimumWidth = Math.max(33, Math.round((4 / Math.max(4, field.width)) * 100));
+    preview.style.gridTemplateColumns = `repeat(auto-fit, minmax(min(100%, ${minimumWidth}%), 1fr))`;
+  }
   preview.addEventListener("dragover", event => {
     event.preventDefault();
     preview.classList.add("drag-over");
@@ -3981,7 +4142,7 @@ function createStackContainerInlineView(field, fieldIndex) {
     });
   }
 
-  wrapper.append(count, preview);
+  wrapper.append(header, preview);
   return wrapper;
 }
 
@@ -4411,6 +4572,8 @@ function renderExpertEditorPreview() {
     }
     renderExpertFieldList();
     renderExpertEditorSurface();
+    renderTabbedCardSettings();
+    renderStackCardSettings();
     return;
   }
 
@@ -4435,6 +4598,8 @@ function renderExpertEditorPreview() {
   if (activeEditorMode === "expert") renderHaCardDependency(card);
   renderExpertFieldList();
   renderExpertEditorSurface();
+  renderTabbedCardSettings();
+  renderStackCardSettings();
 }
 
 function formatExpertHaCardCodePreview(card) {
@@ -4587,7 +4752,7 @@ function createExpertEditorField(input) {
     templateId: input.templateId,
   };
   if (stackEntityIds.length > 1 && field.layout !== "card") {
-    return {
+    const fieldWithEntries = {
       ...fieldWithResizeBase,
       entityId: "",
       entries: stackEntityIds.map((entityId, index) => isTabbedTemplate
@@ -4603,8 +4768,11 @@ function createExpertEditorField(input) {
           }),
       ...(isTabbedTemplate ? { activeTabIndex: 0 } : {}),
     };
+    return isStackContainerField(fieldWithEntries)
+      ? normalizeStackContainerLayout({ ...fieldWithEntries, columns: fieldWithEntries.width, rows: "auto" })
+      : fieldWithEntries;
   }
-  return {
+  const fieldWithEntries = {
     ...fieldWithResizeBase,
     entries: isTabbedTemplate
       ? [createTabbedCardTab({
@@ -4614,6 +4782,9 @@ function createExpertEditorField(input) {
       : renameExpertFieldEntries(field, field.id),
     ...(isTabbedTemplate ? { activeTabIndex: 0 } : {}),
   };
+  return isStackContainerField(fieldWithEntries)
+    ? normalizeStackContainerLayout({ ...fieldWithEntries, columns: fieldWithEntries.width, rows: "auto" })
+    : fieldWithEntries;
 }
 
 function addExpertEditorFieldFromTemplate(templateId, placement = calculateExpertDropPlacement(), options = {}) {
@@ -5570,6 +5741,17 @@ moveTabbedCardTabDown.addEventListener("click", () => moveActiveTabbedCardTab(1)
 applyTabbedCardTab.addEventListener("click", applyActiveTabbedCardTab);
 tabbedCardFullWidth.addEventListener("change", applyTabbedCardContainerOptions);
 tabbedCardAutoHeight.addEventListener("change", applyTabbedCardContainerOptions);
+closeStackCardSettings.addEventListener("click", closeStackCardSettingsDialog);
+stackCardSettingsBackdrop.addEventListener("click", event => {
+  if (event.target === stackCardSettingsBackdrop) {
+    closeStackCardSettingsDialog();
+  }
+});
+stackCardFullWidth.addEventListener("change", applyStackCardContainerOptions);
+stackCardAutoHeight.addEventListener("change", applyStackCardContainerOptions);
+stackCardColumns.addEventListener("input", renderStackCardColumnsOutput);
+stackCardColumns.addEventListener("change", applyStackCardContainerOptions);
+applyStackCardSettings.addEventListener("click", applyStackCardContainerOptions);
 window.addEventListener("resize", applyExpertEditorSurfaceSize);
 resetSimplePreview.addEventListener("click", resetSimplePreviewState);
 resetExpertPreview.addEventListener("click", resetExpertPreviewState);
