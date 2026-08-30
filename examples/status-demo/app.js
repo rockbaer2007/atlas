@@ -3031,7 +3031,13 @@ function setExpertPaletteFavoriteDraft(cardId, favorite) {
 }
 
 function toggleExpertPaletteAllCards() {
-  expertPaletteShowAllCards = !expertPaletteShowAllCards;
+  if (!expertPaletteShowAllCards) {
+    expertPaletteShowAllCards = true;
+    expertPaletteSearchQuery = "";
+    expertPaletteSearch.value = "";
+  } else {
+    expertPaletteShowAllCards = expertPaletteFavoriteIds.size === 0;
+  }
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteShowAllCards
     ? t("text.fullCardListVisible")
@@ -3043,7 +3049,7 @@ function saveExpertPaletteFavoriteSelection() {
   for (const cardId of expertPaletteDraftFavoriteIds) {
     expertPaletteFavoriteIds.add(cardId);
   }
-  expertPaletteShowAllCards = false;
+  expertPaletteShowAllCards = expertPaletteFavoriteIds.size === 0;
   persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteFavoriteIds.size
