@@ -1020,6 +1020,73 @@ function translatePaletteCategory(category) {
   if (category === "Community") return t("text.categoryCommunity");
   return category;
 }
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function expertFieldTitleBase(templateId, target = expertTarget.value) {
+  if (templateId === "tabbed-card-v2" || target === "tabbed-card-v2") return "Tabbed";
+  if (templateId === "vertical-stack") return "Vertical";
+  if (templateId === "horizontal-stack") return "Horizontal";
+  if (target === "bubble") return "Bubble";
+  if (target === "mushroom-template") return "Mushroom";
+  const baseByTemplate = {
+    "entity-list": "Entities",
+    "entity-card": "Entity",
+    "button-card": "Button",
+    grid: "Grid",
+    "sensor-card": "Sensor",
+    "thermostat-card": "Thermostat",
+    "link-card": "Link",
+    "webpage-card": "Webpage",
+    "state-button": "Bubble",
+    "switch-button": "Bubble",
+  };
+  return baseByTemplate[templateId] ?? "Card";
+}
+
+function listExpertEditorCardTitles() {
+  return expertEditorFields.flatMap(field => [
+    field.id,
+    ...(field.entries ?? []).flatMap(entry => [
+      entry.id,
+      ...(entry.cards ?? []).map(card => card.id),
+    ]),
+  ]).filter(Boolean);
+}
+
+function nextExpertEditorTitle(templateId, target = expertTarget.value) {
+  const base = expertFieldTitleBase(templateId, target);
+  const titlePattern = new RegExp(`^${escapeRegExp(base)}(?:\\s+(\\d+))?$`, "i");
+  const maxNumber = listExpertEditorCardTitles().reduce((highest, title) => {
+    const match = String(title).trim().match(titlePattern);
+    if (!match) return highest;
+    return Math.max(highest, match[1] ? Number(match[1]) : 1);
+  }, 0);
+  return `${base} ${maxNumber + 1}`;
+}
+
+function expertTitleIsExisting(title) {
+  const normalizedTitle = title.trim().toLowerCase();
+  return listExpertEditorCardTitles().some(existingTitle => String(existingTitle).trim().toLowerCase() === normalizedTitle);
+}
+
+function expertTitleForNewField(templateId, proposedTitle) {
+  const title = proposedTitle?.trim() ?? "";
+  return title && !expertTitleIsExisting(title)
+    ? title
+    : nextExpertEditorTitle(templateId);
+}
+
+function expertTitleForNewCardEntry(target, proposedTitle) {
+  const title = proposedTitle?.trim() ?? "";
+  const templateId = templateIdForCardTarget(target);
+  return title && !expertTitleIsExisting(title)
+    ? title
+    : nextExpertEditorTitle(templateId, target);
+}
+
 let expertPaletteCards = [
   { id: "core-entity", category: "Core", label: "Entity", templateId: "entity-card", target: "entity", preview: ["type: entity"] },
   { id: "core-entities", category: "Core", label: "Entities", templateId: "entity-list", target: "entities", preview: ["Entity list"] },
@@ -2964,8 +3031,8 @@ function updateSelectedStackContainerField(updater) {
 
 function createTabbedCardEntry(input = {}) {
   const entityId = input.entityId?.trim() || expertEntity.value.trim() || currentEntityId();
-  const title = input.title?.trim() || currentExpertEntityTitle(entityId);
   const target = input.target && input.target !== "tabbed-card-v2" ? input.target : "entity";
+  const title = expertTitleForNewCardEntry(target, input.title);
   return {
     id: title,
     target,
@@ -4764,7 +4831,7 @@ function createExpertEditorField(input) {
     target: expertTarget.value,
     bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
     entityId: isContainerTemplate ? "" : input.entityId,
-    id: input.title ?? `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
+    id: expertTitleForNewField(input.templateId, input.title),
     column: input.column,
     row: input.row,
     width,
