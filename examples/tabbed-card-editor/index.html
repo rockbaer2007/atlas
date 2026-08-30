@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tabbed Card Visual Editor</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #eef3f8;
+        color: #18212f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          linear-gradient(180deg, rgba(12, 73, 97, 0.08), transparent 260px),
+          #eef3f8;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        min-height: 36px;
+        border: 1px solid #bac7d7;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #18212f;
+        cursor: pointer;
+      }
+
+      button:hover:not(:disabled),
+      button:focus-visible {
+        border-color: #087f8c;
+        outline: 2px solid rgba(8, 127, 140, 0.22);
+        outline-offset: 1px;
+      }
+
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.48;
+      }
+
+      main {
+        width: min(100%, 1440px);
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      .app-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 14px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 26px;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .app-header p {
+        margin: 6px 0 0;
+        color: #5d6a7c;
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .primary-button {
+        border-color: #087f8c;
+        background: #087f8c;
+        color: #ffffff;
+        font-weight: 700;
+      }
+
+      .danger-button:hover:not(:disabled),
+      .danger-button:focus-visible {
+        border-color: #ba1a1a;
+        outline-color: rgba(186, 26, 26, 0.22);
+      }
+
+      .editor-grid {
+        display: grid;
+        grid-template-columns: 260px minmax(330px, 430px) minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+      }
+
+      .panel {
+        min-width: 0;
+        border: 1px solid #cfdae7;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 16px 38px rgba(31, 47, 70, 0.08);
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        min-height: 48px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #d8e2ee;
+      }
+
+      .panel-header h2 {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: 0;
+      }
+
+      .panel-body {
+        padding: 12px;
+      }
+
+      .tabs-list {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .tab-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        width: 100%;
+        padding: 9px;
+        text-align: left;
+      }
+
+      .tab-item[aria-pressed="true"] {
+        border-color: #087f8c;
+        background: #e7fbfc;
+        box-shadow: inset 0 0 0 1px #087f8c;
+      }
+
+      .tab-item strong,
+      .tab-item span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .tab-item span {
+        color: #627083;
+        font-size: 12px;
+      }
+
+      .tab-actions,
+      .field-row,
+      .toggle-grid,
+      .output-actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .tab-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+
+      .field {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label,
+      legend {
+        color: #314056;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        min-width: 0;
+        min-height: 36px;
+        border: 1px solid #bac7d7;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #18212f;
+        padding: 7px 9px;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: #087f8c;
+        outline: 2px solid rgba(8, 127, 140, 0.2);
+        outline-offset: 1px;
+      }
+
+      textarea {
+        min-height: 84px;
+        resize: vertical;
+      }
+
+      fieldset {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 10px;
+        border: 1px solid #d8e2ee;
+        border-radius: 8px;
+      }
+
+      .toggle-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 30px;
+        color: #314056;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .toggle input {
+        width: 16px;
+        min-height: 16px;
+        accent-color: #087f8c;
+      }
+
+      .preview-shell {
+        display: grid;
+        gap: 12px;
+      }
+
+      .lovelace-card {
+        overflow: hidden;
+        border: 1px solid #d7e0ec;
+        border-radius: 8px;
+        background: #f8fbff;
+      }
+
+      .ha-tabs {
+        display: flex;
+        overflow-x: auto;
+        border-bottom: 1px solid #d7e0ec;
+        background: #ffffff;
+      }
+
+      .ha-tab {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-width: 92px;
+        min-height: 48px;
+        padding: 8px 14px;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: #667387;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .ha-tab.stacked {
+        display: grid;
+        gap: 3px;
+        min-height: 62px;
+      }
+
+      .ha-tab.min-width {
+        min-width: 54px;
+      }
+
+      .ha-tab.active {
+        color: var(--tabbed-primary, #087f8c);
+      }
+
+      .ha-tab.active::after {
+        position: absolute;
+        right: var(--indicator-inset, 0);
+        bottom: 0;
+        left: var(--indicator-inset, 0);
+        height: 3px;
+        background: var(--tabbed-primary, #087f8c);
+        content: "";
+      }
+
+      .ha-tab.fade-indicator.active::after {
+        opacity: 0.72;
+      }
+
+      .card-preview {
+        min-height: 238px;
+        padding: 18px;
+        background: #f8fbff;
+      }
+
+      .mock-card {
+        width: min(100%, 460px);
+        border: 1px solid #d1dbe8;
+        border-radius: 8px;
+        background: #ffffff;
+        box-shadow: 0 8px 24px rgba(37, 49, 67, 0.08);
+      }
+
+      .mock-card-header {
+        padding: 13px 14px;
+        border-bottom: 1px solid #e1e8f1;
+        font-weight: 800;
+      }
+
+      .mock-card-body {
+        display: grid;
+        gap: 8px;
+        padding: 14px;
+      }
+
+      .entity-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 34px;
+        border-bottom: 1px solid #edf1f6;
+      }
+
+      .entity-line:last-child {
+        border-bottom: 0;
+      }
+
+      .entity-line span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .state-pill {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: #eaf6ef;
+        color: #247241;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .button-preview {
+        display: grid;
+        place-items: center;
+        gap: 8px;
+        min-height: 140px;
+        text-align: center;
+      }
+
+      .button-preview .big-icon {
+        display: grid;
+        place-items: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #e7fbfc;
+        color: #087f8c;
+        font-size: 25px;
+      }
+
+      .yaml-output {
+        min-height: 360px;
+        max-height: 560px;
+        overflow: auto;
+        margin: 0;
+        padding: 14px;
+        border: 1px solid #233247;
+        border-radius: 8px;
+        background: #172033;
+        color: #edf6ff;
+        font: 13px/1.48 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
+      .status {
+        min-height: 22px;
+        margin-top: 10px;
+        color: #536276;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .hidden-file {
+        display: none;
+      }
+
+      @media (max-width: 1120px) {
+        .editor-grid {
+          grid-template-columns: 250px minmax(0, 1fr);
+        }
+
+        .preview-panel {
+          grid-column: 1 / -1;
+        }
+      }
+
+      @media (max-width: 760px) {
+        main {
+          padding: 12px;
+        }
+
+        .app-header {
+          align-items: stretch;
+          display: grid;
+        }
+
+        .toolbar {
+          justify-content: stretch;
+        }
+
+        .toolbar button,
+        .toolbar label {
+          flex: 1 1 140px;
+        }
+
+        .editor-grid,
+        .field-grid,
+        .toggle-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .preview-panel {
+          grid-column: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="app-header">
+        <div>
+          <h1>Tabbed Card Visual Editor</h1>
+          <p>Eigenständiger Builder für Home Assistant <code>custom:tabbed-card</code>.</p>
+        </div>
+        <div class="toolbar">
+          <button id="copy-yaml" class="primary-button" type="button">YAML kopieren</button>
+          <button id="download-yaml" type="button">YAML exportieren</button>
+          <label>
+            <input id="import-file" class="hidden-file" type="file" accept="application/json,.json,.yaml,.yml">
+            <button id="import-button" type="button">Importieren</button>
+          </label>
+          <button id="reset-editor" class="danger-button" type="button">Zurücksetzen</button>
+        </div>
+      </header>
+
+      <section class="editor-grid" aria-label="Tabbed Card Editor">
+        <aside class="panel">
+          <div class="panel-header">
+            <h2>Tabs</h2>
+            <button id="add-tab" type="button">Neu</button>
+          </div>
+          <div class="panel-body">
+            <div id="tabs-list" class="tabs-list" aria-live="polite"></div>
+            <div class="tab-actions">
+              <button id="move-tab-up" type="button">Hoch</button>
+              <button id="move-tab-down" type="button">Runter</button>
+              <button id="duplicate-tab" type="button">Duplizieren</button>
+              <button id="delete-tab" class="danger-button" type="button">Löschen</button>
+            </div>
+          </div>
+        </aside>
+
+        <section class="panel">
+          <div class="panel-header">
+            <h2>Eigenschaften</h2>
+          </div>
+          <div class="panel-body field-row">
+            <fieldset>
+              <legend>Globale Card</legend>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="default-tab">Start-Tab</label>
+                  <select id="default-tab"></select>
+                </div>
+                <div class="field">
+                  <label for="primary-color">Aktivfarbe</label>
+                  <input id="primary-color" type="color" value="#087f8c">
+                </div>
+                <div class="field">
+                  <label for="inactive-color">Inaktivfarbe</label>
+                  <input id="inactive-color" type="text" value="rgba(var(--rgb-primary-text-color), 0.72)">
+                </div>
+                <div class="field">
+                  <label for="font-size">Schriftgröße</label>
+                  <input id="font-size" type="text" value="14px">
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Tab</legend>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="tab-label">Label</label>
+                  <input id="tab-label" type="text" autocomplete="off">
+                </div>
+                <div class="field">
+                  <label for="tab-icon">Icon</label>
+                  <input id="tab-icon" type="text" autocomplete="off" placeholder="mdi:lightbulb">
+                </div>
+              </div>
+              <div class="toggle-grid">
+                <label class="toggle"><input id="tab-stacked" type="checkbox"> Icon gestapelt</label>
+                <label class="toggle"><input id="tab-min-width" type="checkbox"> Schmaler Tab</label>
+                <label class="toggle"><input id="tab-min-indicator" type="checkbox"> Schmaler Indikator</label>
+                <label class="toggle"><input id="tab-fading" type="checkbox"> Fade-Indikator</label>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>Card im Tab</legend>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="card-type">Card-Typ</label>
+                  <select id="card-type">
+                    <option value="button">Button</option>
+                    <option value="entity">Entity</option>
+                    <option value="entities">Entities</option>
+                    <option value="sensor">Sensor</option>
+                    <option value="markdown">Markdown</option>
+                    <option value="custom:bubble-card">Bubble Card</option>
+                    <option value="custom:mushroom-entity-card">Mushroom Entity</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="card-title">Titel</label>
+                  <input id="card-title" type="text" autocomplete="off">
+                </div>
+                <div class="field full">
+                  <label for="card-entity">Entity</label>
+                  <input id="card-entity" type="text" autocomplete="off" placeholder="light.bed_light">
+                </div>
+                <div class="field full">
+                  <label for="card-entities">Entities Liste</label>
+                  <textarea id="card-entities" spellcheck="false" placeholder="sensor.temperature&#10;binary_sensor.motion"></textarea>
+                </div>
+                <div class="field">
+                  <label for="tap-action">Tap Action</label>
+                  <select id="tap-action">
+                    <option value="">Keine</option>
+                    <option value="toggle">toggle</option>
+                    <option value="more-info">more-info</option>
+                    <option value="navigate">navigate</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="bubble-type">Bubble Button</label>
+                  <select id="bubble-type">
+                    <option value="state">state</option>
+                    <option value="switch">switch</option>
+                    <option value="slider">slider</option>
+                    <option value="name">name</option>
+                  </select>
+                </div>
+              </div>
+              <div class="toggle-grid">
+                <label class="toggle"><input id="show-name" type="checkbox" checked> Name zeigen</label>
+                <label class="toggle"><input id="show-icon" type="checkbox" checked> Icon zeigen</label>
+                <label class="toggle"><input id="show-state" type="checkbox" checked> State zeigen</label>
+              </div>
+            </fieldset>
+          </div>
+        </section>
+
+        <section class="panel preview-panel">
+          <div class="panel-header">
+            <h2>Vorschau und YAML</h2>
+            <div class="output-actions">
+              <select id="output-mode" aria-label="Ausgabe">
+                <option value="yaml">YAML</option>
+                <option value="json">JSON</option>
+              </select>
+            </div>
+          </div>
+          <div class="panel-body preview-shell">
+            <div class="lovelace-card">
+              <div id="preview-tabs" class="ha-tabs"></div>
+              <div id="card-preview" class="card-preview"></div>
+            </div>
+            <pre id="yaml-output" class="yaml-output" aria-live="polite"></pre>
+            <output id="status-message" class="status" aria-live="polite"></output>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script type="module" src="/examples/tabbed-card-editor/app.js"></script>
+  </body>
+</html>
