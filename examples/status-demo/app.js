@@ -325,6 +325,8 @@ const translations = {
     "message.cardAddedToContainer": "{card} added to {container}.",
     "message.containerCardSelected": "{card} selected inside {container}.",
     "message.containerCardUpdated": "{card} updated inside {container}.",
+    "message.containerCardRemoved": "{card} removed from {container}.",
+    "message.containerCardMovedOut": "{card} moved out of {container}.",
     "message.tabbedCardNeedsTab": "Add a tab before placing cards inside Tabbed Card V2.",
     "message.groupStatus": "Group status: {ready} ready, {pending} pending, {blocked} blocked.",
     "message.needsAttention": "Needs attention: {entities}.",
@@ -379,6 +381,7 @@ const translations = {
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
     "message.hacsBundleInspected": "HACS bundle checked: {count} files, script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS bundle rejected: {reason}",
+    "message.invalidDragPayload": "Could not read dragged card.",
     "message.packageExported": "Card package exported with HACS script {scriptFilename}.",
     "message.scriptExported": "Card script exported as {scriptFilename}.",
     "message.bundleExported": "HACS bundle exported as {filename} with {count} files.",
@@ -664,6 +667,8 @@ const translations = {
     "message.cardAddedToContainer": "{card} in {container} eingefuegt.",
     "message.containerCardSelected": "{card} in {container} ausgewaehlt.",
     "message.containerCardUpdated": "{card} in {container} aktualisiert.",
+    "message.containerCardRemoved": "{card} aus {container} entfernt.",
+    "message.containerCardMovedOut": "{card} aus {container} auf die Flaeche gelegt.",
     "message.tabbedCardNeedsTab": "Fuege erst einen Tab hinzu, bevor Cards in Tabbed Card V2 abgelegt werden.",
     "message.groupStatus": "Gruppenstatus: {ready} bereit, {pending} wartend, {blocked} blockiert.",
     "message.needsAttention": "Braucht Aufmerksamkeit: {entities}.",
@@ -718,6 +723,7 @@ const translations = {
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
     "message.hacsBundleInspected": "HACS-Bundle geprueft: {count} Dateien, Script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS-Bundle abgelehnt: {reason}",
+    "message.invalidDragPayload": "Gezogene Card konnte nicht gelesen werden.",
     "message.packageExported": "Card-Paket mit HACS-Script {scriptFilename} exportiert.",
     "message.scriptExported": "Card-Script als {scriptFilename} exportiert.",
     "message.bundleExported": "HACS-Bundle als {filename} mit {count} Dateien exportiert.",
@@ -2739,6 +2745,103 @@ function updateContainerCard(field, reference, updater) {
   return undefined;
 }
 
+function removeContainerCard(reference) {
+  const field = expertEditorFields[reference?.fieldIndex];
+  const card = getContainerCard(reference);
+  if (!field || !card) return false;
+  const entries = [...(field.entries ?? [])];
+  if (isTabbedCardField(field)) {
+    const tabIndex = reference.tabIndex ?? normalizeTabbedCardTabIndex(field);
+    const tab = entries[tabIndex];
+    const cards = [...(tab?.cards ?? [])];
+    cards.splice(reference.cardIndex ?? 0, 1);
+    entries[tabIndex] = { ...tab, cards };
+  } else if (isStackContainerField(field)) {
+    entries.splice(reference.cardIndex ?? 0, 1);
+  } else {
+    return false;
+  }
+  expertEditorFields[reference.fieldIndex] = {
+    ...field,
+    entityId: entries[0]?.entityId ?? field.entityId,
+    entries,
+  };
+  selectedExpertFieldIndex = reference.fieldIndex;
+  selectedContainerCardRef = undefined;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  statusMessage.textContent = t("message.containerCardRemoved", { card: card.id, container: field.id });
+  return true;
+}
+
+function moveContainerCardToSurface(reference, placementOverride) {
+  const field = expertEditorFields[reference?.fieldIndex];
+  const card = getContainerCard(reference);
+  if (!field || !card) return false;
+  const placement = placementOverride ?? findAvailableExpertSurfacePlacement(3, 1);
+  if (!removeContainerCard(reference)) return false;
+  const templateId = templateIdForCardTarget(card.target);
+  const target = card.target ?? "entity";
+  expertEditorFields.push({
+    id: card.id,
+    target,
+    ...(card.bubbleButtonType ? { bubbleButtonType: card.bubbleButtonType } : {}),
+    entityId: card.entityId ?? currentEntityId(),
+    layout: "card",
+    column: placement.column,
+    row: placement.row,
+    width: placement.width ?? 3,
+    height: placement.height ?? 1,
+    resizeBaseWidth: placement.width ?? 3,
+    resizeBaseHeight: placement.height ?? 1,
+    templateId,
+  });
+  selectedExpertFieldIndex = expertEditorFields.length - 1;
+  selectedContainerCardRef = undefined;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  statusMessage.textContent = t("message.containerCardMovedOut", { card: card.id, container: field.id });
+  return true;
+}
+
+function findAvailableExpertSurfacePlacement(width, height) {
+  const nextWidth = Math.max(1, Math.min(expertGridColumns, width));
+  const nextHeight = Math.max(1, Math.min(expertGridRows, height));
+  for (let row = 0; row <= expertGridRows - nextHeight; row += 1) {
+    for (let column = 0; column <= expertGridColumns - nextWidth; column += 1) {
+      const candidate = { column, row, width: nextWidth, height: nextHeight };
+      if (!expertEditorFields.some(field => expertFieldsOverlap(candidate, field))) {
+        return candidate;
+      }
+    }
+  }
+  return {
+    column: 0,
+    row: 0,
+    width: nextWidth,
+    height: nextHeight,
+  };
+}
+
+function expertFieldsOverlap(first, second) {
+  return first.column < second.column + second.width
+    && first.column + first.width > second.column
+    && first.row < second.row + second.height
+    && first.row + first.height > second.row;
+}
+
+function templateIdForCardTarget(target) {
+  if (target === "bubble") return "state-button";
+  if (target === "mushroom-template") return "state-button";
+  if (target === "button") return "button-card";
+  if (target === "sensor") return "sensor-card";
+  if (target === "thermostat") return "thermostat-card";
+  if (target === "link") return "link-card";
+  if (target === "webpage") return "webpage-card";
+  if (target === "entities") return "entity-list";
+  return "entity-card";
+}
+
 function addCardToTabbedCardFieldAt(fieldIndex, entry) {
   const field = expertEditorFields[fieldIndex];
   if (!isTabbedCardField(field)) return false;
@@ -2834,8 +2937,8 @@ function renderTabbedCardSettings() {
   const activeEntry = entries[activeIndex];
   tabbedCardTabLabel.value = activeEntry?.id ?? "";
   tabbedCardTabIcon.value = activeEntry?.icon ?? "mdi:tab";
-  tabbedCardFullWidth.checked = field.fullWidth === true;
-  tabbedCardAutoHeight.checked = field.autoHeight === true;
+  tabbedCardFullWidth.checked = field.columns === "full" || field.fullWidth === true;
+  tabbedCardAutoHeight.checked = field.rows === "auto" || field.autoHeight === true;
   removeTabbedCardTab.disabled = entries.length === 0;
   moveTabbedCardTabUp.disabled = activeIndex <= 0;
   moveTabbedCardTabDown.disabled = activeIndex >= entries.length - 1;
@@ -2908,8 +3011,10 @@ function applyActiveTabbedCardTab() {
 function applyTabbedCardContainerOptions() {
   updateSelectedTabbedCardField(field => ({
     ...field,
-    fullWidth: tabbedCardFullWidth.checked,
-    autoHeight: tabbedCardAutoHeight.checked,
+    columns: tabbedCardFullWidth.checked ? "full" : undefined,
+    rows: tabbedCardAutoHeight.checked ? "auto" : undefined,
+    fullWidth: undefined,
+    autoHeight: undefined,
     ...(tabbedCardFullWidth.checked ? { column: 0, width: expertGridColumns } : {}),
   }));
   renderExpertEditButton();
@@ -3248,7 +3353,7 @@ function renderExpertEditorSurface() {
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
-    tile.style.gridColumn = field.fullWidth === true && isTabbedCardField(field)
+    tile.style.gridColumn = (field.columns === "full" || field.fullWidth === true) && isTabbedCardField(field)
       ? `1 / span ${expertGridColumns}`
       : `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
     tile.style.gridRow = `${field.row + 1} / span ${Math.min(expertGridRows, field.height)}`;
@@ -3349,8 +3454,11 @@ function createStackContainerInlineView(field, fieldIndex) {
   } else {
     entries.forEach((entry, cardIndex) => {
       preview.append(createContainerPreviewCard(entry, {
+        reference: { fieldIndex, cardIndex },
         selected: selectedContainerCardRef?.fieldIndex === fieldIndex && selectedContainerCardRef?.cardIndex === cardIndex,
         onClick: () => selectContainerCard({ fieldIndex, cardIndex }),
+        onRemove: () => removeContainerCard({ fieldIndex, cardIndex }),
+        onMoveOut: () => moveContainerCardToSurface({ fieldIndex, cardIndex }),
       }));
     });
   }
@@ -3434,10 +3542,13 @@ function createTabbedCardInlineView(field, fieldIndex) {
   } else {
     for (const card of cards) {
       preview.append(createContainerPreviewCard(card, {
+        reference: { fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) },
         selected: selectedContainerCardRef?.fieldIndex === fieldIndex
           && selectedContainerCardRef?.tabIndex === activeIndex
           && selectedContainerCardRef?.cardIndex === cards.indexOf(card),
         onClick: () => selectContainerCard({ fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) }),
+        onRemove: () => removeContainerCard({ fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) }),
+        onMoveOut: () => moveContainerCardToSurface({ fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) }),
       }));
     }
   }
@@ -3447,19 +3558,52 @@ function createTabbedCardInlineView(field, fieldIndex) {
 }
 
 function createContainerPreviewCard(card, options = {}) {
-  const item = document.createElement("button");
-  item.type = "button";
+  const item = document.createElement("article");
   item.className = "expert-tab-preview-card";
   item.classList.toggle("selected", options.selected === true);
+  item.tabIndex = 0;
+  item.draggable = true;
+  item.setAttribute("role", "button");
   const title = document.createElement("strong");
   title.textContent = card.id;
   const detail = document.createElement("small");
   const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType ?? "state"}` : "";
   detail.textContent = `${translateCardTarget(card.target, card.target)}${bubbleType} - ${card.entityId || t("text.demoEntity")}`;
-  item.append(title, detail);
+  const actions = document.createElement("span");
+  actions.className = "expert-tab-preview-card-actions";
+  const moveOut = document.createElement("button");
+  moveOut.type = "button";
+  moveOut.className = "expert-tab-preview-card-out";
+  moveOut.textContent = "Out";
+  moveOut.addEventListener("click", event => {
+    event.stopPropagation();
+    options.onMoveOut?.();
+  });
+  const remove = document.createElement("button");
+  remove.type = "button";
+  remove.className = "expert-tab-preview-card-remove";
+  remove.textContent = "x";
+  remove.addEventListener("click", event => {
+    event.stopPropagation();
+    options.onRemove?.();
+  });
+  actions.append(moveOut, remove);
+  item.append(actions, title, detail);
   item.addEventListener("click", event => {
     event.stopPropagation();
     options.onClick?.();
+  });
+  item.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      options.onClick?.();
+    }
+  });
+  item.addEventListener("dragstart", event => {
+    if (!options.reference) return;
+    event.stopPropagation();
+    event.dataTransfer?.setData("application/x-atlas-container-card", JSON.stringify(options.reference));
+    event.dataTransfer?.setDragImage(item, 12, 12);
   });
   return item;
 }
@@ -4668,6 +4812,16 @@ expertEditorDropzone.addEventListener("dragleave", event => {
 expertEditorDropzone.addEventListener("drop", event => {
   event.preventDefault();
   expertEditorDropzone.classList.remove("drag-over");
+  const containerCard = event.dataTransfer?.getData("application/x-atlas-container-card");
+  if (containerCard) {
+    try {
+      moveContainerCardToSurface(JSON.parse(containerCard), calculateExpertDropPlacement(event));
+    } catch {
+      statusMessage.textContent = t("message.invalidDragPayload");
+    }
+    expertDragFieldOffset = { column: 0, row: 0 };
+    return;
+  }
   const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
   if (fieldIndex) {
     moveExpertEditorField(Number(fieldIndex), calculateExpertDropPlacement(event));

@@ -261,11 +261,11 @@ class TabbedCardV2Panel extends HTMLElement {
               </label>
               <label class="field">
                 Volle Breite
-                <input data-global="fullWidth" type="checkbox" ${this._config.options.fullWidth === true ? "checked" : ""}>
+                <input data-global="columns" type="checkbox" ${this._config.columns === "full" ? "checked" : ""}>
               </label>
               <label class="field">
                 Automatische Hoehe
-                <input data-global="autoHeight" type="checkbox" ${this._config.options.autoHeight !== false ? "checked" : ""}>
+                <input data-global="rows" type="checkbox" ${this._config.rows === "auto" ? "checked" : ""}>
               </label>
               <label class="field">
                 Tab-Label
@@ -354,8 +354,10 @@ class TabbedCardV2Panel extends HTMLElement {
     const tab = this._config.tabs[this._selectedIndex];
     if (element.dataset.global === "defaultTabIndex") {
       this._config.options.defaultTabIndex = Number(element.value);
-    } else if (element.dataset.global === "fullWidth" || element.dataset.global === "autoHeight") {
-      this._config.options[element.dataset.global] = element.checked;
+    } else if (element.dataset.global === "columns") {
+      this._config.columns = element.checked ? "full" : undefined;
+    } else if (element.dataset.global === "rows") {
+      this._config.rows = element.checked ? "auto" : undefined;
     }
     if (element.dataset.style) {
       this._config.styles[element.dataset.style] = element.value.trim();
@@ -374,7 +376,7 @@ class TabbedCardV2Panel extends HTMLElement {
 function createDefaultConfig() {
   return {
     type: "custom:tabbed-card-v2",
-    options: { defaultTabIndex: 0, fullWidth: false, autoHeight: true },
+    options: { defaultTabIndex: 0 },
     styles: { "--mdc-theme-primary": "var(--primary-color)" },
     tabs: [
       {

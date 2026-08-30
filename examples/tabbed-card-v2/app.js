@@ -6,7 +6,7 @@ const initialState = {
   cardName: "meine-card",
   config: {
     type: "custom:tabbed-card-v2-meine-card",
-    options: { defaultTabIndex: 0, fullWidth: false, autoHeight: true },
+    options: { defaultTabIndex: 0 },
     styles: {
       "--mdc-theme-primary": "#087f8c",
       "--mdc-tab-text-label-color-default": "rgba(var(--rgb-primary-text-color), 0.72)",
@@ -106,11 +106,11 @@ function bindEvents() {
     persistAndRender("Start-Tab aktualisiert.");
   });
   elements.fullWidth.addEventListener("change", () => {
-    state.config.options.fullWidth = elements.fullWidth.checked;
+    state.config.columns = elements.fullWidth.checked ? "full" : undefined;
     persistAndRender("Breite aktualisiert.");
   });
   elements.autoHeight.addEventListener("change", () => {
-    state.config.options.autoHeight = elements.autoHeight.checked;
+    state.config.rows = elements.autoHeight.checked ? "auto" : undefined;
     persistAndRender("Hoehe aktualisiert.");
   });
   elements.outputMode.addEventListener("change", () => {
@@ -202,8 +202,8 @@ function renderForms() {
   elements.primaryColor.value = normalizeColorInput(styles["--mdc-theme-primary"] ?? "#087f8c");
   elements.inactiveColor.value = styles["--mdc-tab-text-label-color-default"] ?? "";
   elements.fontSize.value = styles["--mdc-typography-button-font-size"] ?? "";
-  elements.fullWidth.checked = state.config.options.fullWidth === true;
-  elements.autoHeight.checked = state.config.options.autoHeight !== false;
+  elements.fullWidth.checked = state.config.columns === "full" || state.config.options?.fullWidth === true;
+  elements.autoHeight.checked = state.config.rows === "auto" || state.config.options?.autoHeight === true;
   elements.cardName.value = state.cardName ?? "";
   elements.tabLabel.value = attributes.label ?? "";
   elements.tabIcon.value = attributes.icon ?? "";
@@ -613,9 +613,9 @@ function normalizeImportedConfig(config) {
     type: typeof config.type === "string" ? config.type : "custom:tabbed-card-v2-meine-card",
     options: {
       defaultTabIndex: clampIndex(config.options?.defaultTabIndex ?? 0, tabs.length),
-      fullWidth: config.options?.fullWidth === true,
-      autoHeight: config.options?.autoHeight !== false,
     },
+    columns: config.columns === "full" || config.options?.fullWidth === true ? "full" : undefined,
+    rows: config.rows === "auto" || config.options?.autoHeight === true ? "auto" : undefined,
     styles: cleanObject({
       "--mdc-theme-primary": config.styles?.["--mdc-theme-primary"] ?? "#087f8c",
       "--mdc-tab-text-label-color-default": config.styles?.["--mdc-tab-text-label-color-default"] ?? "rgba(var(--rgb-primary-text-color), 0.72)",

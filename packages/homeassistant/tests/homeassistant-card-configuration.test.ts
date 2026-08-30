@@ -1353,8 +1353,8 @@ describe("Home Assistant entities card configuration", () => {
       "type: custom:tabbed-card-v2",
       "options:",
       "  defaultTabIndex: 1",
-      "  fullWidth: true",
-      "  autoHeight: true",
+      "columns: full",
+      "rows: auto",
       "tabs:",
       "  - attributes:",
       "      label: Light",
@@ -1377,9 +1377,9 @@ describe("Home Assistant entities card configuration", () => {
         type: "custom:tabbed-card-v2",
         options: {
           defaultTabIndex: 1,
-          fullWidth: true,
-          autoHeight: true,
         },
+        columns: "full",
+        rows: "auto",
         tabs: [
           {
             attributes: {

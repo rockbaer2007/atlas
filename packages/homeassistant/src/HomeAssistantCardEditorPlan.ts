@@ -70,8 +70,8 @@ export interface HomeAssistantCardEditorSurfaceField {
   readonly layout?: HomeAssistantCardEditorSurfaceFieldLayout;
   readonly entries?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
   readonly activeTabIndex?: number;
-  readonly fullWidth?: boolean;
-  readonly autoHeight?: boolean;
+  readonly columns?: "full";
+  readonly rows?: "auto";
   readonly column: number;
   readonly row: number;
   readonly width: number;
@@ -553,8 +553,8 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
     layout: field.layout ?? "card",
     entries: (field.entries ?? []).map(normalizeSurfaceFieldEntry),
     ...(field.target === "tabbed-card-v2" ? { activeTabIndex: normalizeTabIndex(field.activeTabIndex, field.entries?.length ?? 0) } : {}),
-    ...(field.target === "tabbed-card-v2" && field.fullWidth === true ? { fullWidth: true } : {}),
-    ...(field.target === "tabbed-card-v2" && field.autoHeight === true ? { autoHeight: true } : {}),
+    ...(field.target === "tabbed-card-v2" && field.columns === "full" ? { columns: "full" as const } : {}),
+    ...(field.target === "tabbed-card-v2" && field.rows === "auto" ? { rows: "auto" as const } : {}),
     column: Math.max(0, Math.floor(field.column)),
     row: Math.max(0, Math.floor(field.row)),
     width: Math.max(1, Math.floor(field.width)),
@@ -681,9 +681,9 @@ function createSurfaceFieldCardConfiguration(
       type: "custom:tabbed-card-v2",
       options: {
         defaultTabIndex: normalizeTabIndex(field.activeTabIndex, tabs.length),
-        ...(field.fullWidth === true ? { fullWidth: true } : {}),
-        ...(field.autoHeight === true ? { autoHeight: true } : {}),
       },
+      ...(field.columns === "full" ? { columns: "full" as const } : {}),
+      ...(field.rows === "auto" ? { rows: "auto" as const } : {}),
       tabs,
     };
   }
