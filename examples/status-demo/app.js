@@ -1086,6 +1086,26 @@ function translateTemplateLabel(templateId, fallback = templateId) {
   return maybeTranslate(`template.${templateId}`, fallback);
 }
 
+function expertPaletteTargetLabel(card, template) {
+  if (card.target === "tabbed-card-v2") return translateCardTarget(card.target, card.target);
+  if (template?.layout === "horizontal-stack" || template?.layout === "vertical-stack" || template?.layout === "grid") {
+    return translateTemplateLabel(template.id, template.label);
+  }
+  return translateCardTarget(card.target, card.target);
+}
+
+function expertFieldTypeLabel(field) {
+  if (field.target === "tabbed-card-v2") return translateCardTarget(field.target, field.target);
+  if ((field.layout ?? "card") === "horizontal-stack") return translateTemplateLabel("horizontal-stack", "Horizontal stack");
+  if ((field.layout ?? "card") === "vertical-stack") return translateTemplateLabel("vertical-stack", "Vertical stack");
+  if ((field.layout ?? "card") === "grid") return translateTemplateLabel("grid", "Grid");
+  return translateCardTarget(field.target, field.target);
+}
+
+function shouldShowExpertFieldEntity(field) {
+  return !isEditableContainerField(field) && (field.layout ?? "card") !== "grid";
+}
+
 function translatePaletteCardLabel(card) {
   return card.scanned === true
     ? card.label
@@ -2874,7 +2894,7 @@ function renderExpertTemplatePalette() {
     return template ? expertPaletteCardMatchesSearch(card, template, expertPaletteSearchQuery.trim()) : false;
   });
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
-  showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;
+  showAllExpertPaletteCards.disabled = false;
   showAllExpertPaletteCards.textContent = expertPaletteShowAllCards ? t("button.showFavorites") : t("button.showAllCards");
   resetExpertTemplateSizing.disabled = !isExpertTemplateSizingDirty();
   resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
@@ -2915,7 +2935,7 @@ function renderExpertTemplatePalette() {
       : t("text.paletteDetail", {
         layout: translateTemplateLabel(template.id, template.layout),
         size: `${template.defaultWidth}x${template.defaultHeight}`,
-        target: `${translateCardTarget(card.target, card.target)}${bubbleType}`,
+        target: `${expertPaletteTargetLabel(card, template)}${bubbleType}`,
       });
     const preview = document.createElement("span");
     preview.textContent = card.preview.join(" / ");
@@ -3192,7 +3212,10 @@ function renderExpertFieldList() {
     item.classList.toggle("selected", index === selectedExpertFieldIndex);
     const text = document.createElement("span");
     const bubbleType = field.target === "bubble" ? `, ${field.bubbleButtonType ?? "state"}` : "";
-    text.textContent = `${field.id}: ${translateCardTarget(field.target, field.target)}${bubbleType}, ${field.layout ?? "card"}, ${field.width}x${field.height}, ${field.entityId || t("text.demoEntity")}, c${field.column + 1}/r${field.row + 1}`;
+    const entityText = shouldShowExpertFieldEntity(field)
+      ? `, ${field.entityId || t("text.demoEntity")}`
+      : "";
+    text.textContent = `${field.id}: ${expertFieldTypeLabel(field)}${bubbleType}, ${field.layout ?? "card"}, ${field.width}x${field.height}${entityText}`;
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "icon-button";
