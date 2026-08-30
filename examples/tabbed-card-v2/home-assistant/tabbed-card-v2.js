@@ -356,20 +356,31 @@ class TabbedCardV2Editor extends HTMLElement {
     this._config = TabbedCardV2.getStubConfig();
     this._hass = undefined;
     this._selectedIndex = 0;
+    this._entitySignature = "";
+    this._hasConfig = false;
   }
 
   set hass(hass) {
     this._hass = hass;
-    this._render();
+    const nextEntitySignature = listEditorEntities(hass).join("|");
+    if (nextEntitySignature !== this._entitySignature && !this._hasEditorFocus()) {
+      this._entitySignature = nextEntitySignature;
+      this._render();
+    } else {
+      this._entitySignature = nextEntitySignature;
+    }
   }
 
   setConfig(config) {
+    const previousSelectedIndex = this._selectedIndex;
     this._config = normalizeEditorConfig(config);
-    this._selectedIndex = clampIndex(
-      this._config.options?.defaultTabIndex ?? 0,
-      this._config.tabs.length,
-    );
-    this._render();
+    this._selectedIndex = this._hasConfig
+      ? clampIndex(previousSelectedIndex, this._config.tabs.length)
+      : clampIndex(this._config.options?.defaultTabIndex ?? 0, this._config.tabs.length);
+    this._hasConfig = true;
+    if (!this._hasEditorFocus()) {
+      this._render();
+    }
   }
 
   _render() {
@@ -720,7 +731,7 @@ class TabbedCardV2Editor extends HTMLElement {
       input.addEventListener("change", () => this._handleInput(input));
       input.addEventListener("input", () => {
         if (input.tagName !== "SELECT" && input.type !== "checkbox") {
-          this._handleInput(input, { deferRender: true });
+          this._handleInput(input, { deferRender: true, emit: false });
         }
       });
     }
@@ -757,7 +768,7 @@ class TabbedCardV2Editor extends HTMLElement {
     this._emitConfigChanged();
   }
 
-  _handleInput(input, { deferRender = false } = {}) {
+  _handleInput(input, { deferRender = false, emit = true } = {}) {
     const tab = this._config.tabs[this._selectedIndex];
     if (input.dataset.field === "defaultTabIndex") {
       this._config.options.defaultTabIndex = Number(input.value);
@@ -777,7 +788,9 @@ class TabbedCardV2Editor extends HTMLElement {
     if (input.dataset.card) {
       tab.card = this._updateCardValue(tab.card ?? {}, input);
     }
-    this._emitConfigChanged({ deferRender });
+    if (emit) {
+      this._emitConfigChanged({ deferRender });
+    }
   }
 
   _updateCardValue(card, input) {
@@ -889,6 +902,10 @@ class TabbedCardV2Editor extends HTMLElement {
     if (!deferRender) {
       this._render();
     }
+  }
+
+  _hasEditorFocus() {
+    return Boolean(this.shadowRoot.activeElement);
   }
 }
 
