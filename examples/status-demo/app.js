@@ -103,6 +103,8 @@ const closeHaCardPasteImport = document.querySelector("#close-ha-card-paste-impo
 const haCardPasteImportText = document.querySelector("#ha-card-paste-import-text");
 const pasteHaCardFromClipboard = document.querySelector("#paste-ha-card-from-clipboard");
 const clearHaCardPasteImport = document.querySelector("#clear-ha-card-paste-import");
+const openHaCardFileImport = document.querySelector("#open-ha-card-file-import");
+const haCardFileImport = document.querySelector("#ha-card-file-import");
 const applyHaCardPasteImport = document.querySelector("#apply-ha-card-paste-import");
 const haCardPasteImportStatus = document.querySelector("#ha-card-paste-import-status");
 const haCardPasteStyleReview = document.querySelector("#ha-card-paste-style-review");
@@ -231,6 +233,7 @@ const translations = {
     "button.pasteHaCard": "Paste YAML",
     "button.pasteClipboard": "Paste from clipboard",
     "button.clearPasteImport": "Clear",
+    "button.openYamlFile": "Open YAML file",
     "button.applyImport": "Import into editor",
     "button.addEntity": "Add entity",
     "button.refreshEntities": "Refresh entities",
@@ -406,6 +409,7 @@ const translations = {
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
     "message.pasteImportEmpty": "Paste YAML or JSON before importing.",
     "message.clipboardReadFailed": "Clipboard could not be read.",
+    "message.fileReadFailed": "File could not be read.",
     "message.styleBlocksDetected": "Styles detected: {global} global, {cards} card, {layout} layout.",
     "message.noStyleBlocksDetected": "No card_mod/UIX style blocks detected.",
     "message.entityStylesAssigned": "{count} entity style blocks are assigned in the preview.",
@@ -588,6 +592,7 @@ const translations = {
     "button.pasteHaCard": "YAML einfuegen",
     "button.pasteClipboard": "Aus Zwischenablage einfuegen",
     "button.clearPasteImport": "Leeren",
+    "button.openYamlFile": "YAML-Datei oeffnen",
     "button.applyImport": "In Editor importieren",
     "button.addEntity": "Entitaet hinzufuegen",
     "button.refreshEntities": "Entitaeten aktualisieren",
@@ -763,6 +768,7 @@ const translations = {
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
     "message.pasteImportEmpty": "Fuege zuerst YAML oder JSON ein.",
     "message.clipboardReadFailed": "Zwischenablage konnte nicht gelesen werden.",
+    "message.fileReadFailed": "Datei konnte nicht gelesen werden.",
     "message.styleBlocksDetected": "Styles erkannt: {global} global, {cards} Card, {layout} Layout.",
     "message.noStyleBlocksDetected": "Keine card_mod/UIX-Style-Bloecke erkannt.",
     "message.entityStylesAssigned": "{count} Entity-Style-Bloecke sind in der Vorschau zugeordnet.",
@@ -5607,13 +5613,23 @@ haCardPasteImportBackdrop.addEventListener("click", event => {
 });
 pasteHaCardFromClipboard.addEventListener("click", async () => {
   try {
-    haCardPasteImportText.value = await navigator.clipboard.readText();
-    renderHaCardStyleInspection(haCardPasteImportText.value);
-    haCardPasteImportStatus.textContent = haCardPasteImportText.value.trim()
-      ? renderHaCardImportDecision(haCardPasteImportText.value).message
-      : t("message.pasteImportEmpty");
+    updateHaCardPasteImportText(await navigator.clipboard.readText());
   } catch {
     haCardPasteImportStatus.textContent = t("message.clipboardReadFailed");
+  }
+});
+openHaCardFileImport.addEventListener("click", () => {
+  haCardFileImport.click();
+});
+haCardFileImport.addEventListener("change", async () => {
+  const file = haCardFileImport.files?.[0];
+  if (!file) return;
+  try {
+    updateHaCardPasteImportText(await file.text());
+  } catch {
+    haCardPasteImportStatus.textContent = t("message.fileReadFailed");
+  } finally {
+    haCardFileImport.value = "";
   }
 });
 clearHaCardPasteImport.addEventListener("click", () => {
@@ -5629,6 +5645,15 @@ haCardPasteImportText.addEventListener("input", () => {
     clearHaCardStyleInspection();
   }
 });
+
+function updateHaCardPasteImportText(text) {
+  haCardPasteImportText.value = text;
+  renderHaCardStyleInspection(text);
+  haCardPasteImportStatus.textContent = text.trim()
+    ? renderHaCardImportDecision(text).message
+    : t("message.pasteImportEmpty");
+  haCardPasteImportText.focus();
+}
 applyHaCardPasteImport.addEventListener("click", () => {
   const text = haCardPasteImportText.value.trim();
   if (!text) {
