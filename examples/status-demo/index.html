@@ -568,6 +568,92 @@
         overflow-wrap: anywhere;
       }
 
+      .ha-card-visual-preview {
+        display: grid;
+        gap: 8px;
+        min-height: 96px;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .ha-card-visual-card {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid #d7dee8;
+        border-radius: 6px;
+        background: #ffffff;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      }
+
+      .ha-card-visual-card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .ha-card-visual-card strong,
+      .ha-card-visual-row strong {
+        color: #172033;
+      }
+
+      .ha-card-visual-type,
+      .ha-card-entity-style-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 22px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: #e0f2fe;
+        color: #075985;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .ha-card-visual-entities {
+        display: grid;
+        gap: 6px;
+      }
+
+      .ha-card-visual-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: start;
+        padding: 8px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .ha-card-visual-row small {
+        display: block;
+        margin-top: 2px;
+        color: #64748b;
+      }
+
+      .ha-card-entity-style {
+        grid-column: 1 / -1;
+      }
+
+      .ha-card-entity-style summary {
+        cursor: pointer;
+        color: #0f766e;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .ha-card-entity-style pre {
+        min-height: 0;
+        max-height: 160px;
+        margin-top: 6px;
+        background: #0f172a;
+        font-size: 12px;
+      }
+
       .expert-editor-controls {
         display: grid;
         grid-template-columns: repeat(4, minmax(96px, 1fr));
@@ -1735,6 +1821,8 @@
           <button type="button" data-editor-mode="expert" aria-pressed="false" data-i18n="button.expertMode">Expert</button>
         </div>
         <div id="simple-card-section" class="ha-card-preview">
+          <label for="ha-card-visual-preview" data-i18n="label.haCardPreview">HA card preview</label>
+          <div id="ha-card-visual-preview" class="ha-card-visual-preview" aria-live="polite"></div>
           <label for="ha-card-preview" data-i18n="label.haCardCode">HA card code</label>
           <pre id="ha-card-preview" aria-live="polite"></pre>
         </div>

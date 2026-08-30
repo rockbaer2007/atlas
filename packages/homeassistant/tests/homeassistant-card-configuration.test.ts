@@ -1583,6 +1583,7 @@ describe("Home Assistant entities card configuration", () => {
       },
     });
     const summary = summarizeHomeAssistantCardImport(text);
+    const styleInspection = inspectHomeAssistantCardStyleBlocks(text);
     expect(summary).toMatchObject({
       target: "custom-card",
       title: "gauge-card-pro",
@@ -1596,6 +1597,8 @@ describe("Home Assistant entities card configuration", () => {
         gradient: true,
       },
     });
+    expect(styleInspection.globalStyles).toHaveLength(1);
+    expect(styleInspection.cardStyles).toHaveLength(0);
     expect(serializeHomeAssistantEntitiesCardConfiguration(summary.card, "yaml")).toContain("type: \"custom:gauge-card-pro\"");
   });
 

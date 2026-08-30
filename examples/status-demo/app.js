@@ -104,6 +104,7 @@ const applyHaCardPasteImport = document.querySelector("#apply-ha-card-paste-impo
 const haCardPasteImportStatus = document.querySelector("#ha-card-paste-import-status");
 const haCardPasteStyleReview = document.querySelector("#ha-card-paste-style-review");
 const haCardPreview = document.querySelector("#ha-card-preview");
+const haCardVisualPreview = document.querySelector("#ha-card-visual-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const haCardStyleReview = document.querySelector("#ha-card-style-review");
@@ -188,6 +189,7 @@ const translations = {
     "label.entityType": "Entity type",
     "label.entitySearch": "Entity search",
     "label.entityPicker": "Entity picker",
+    "label.haCardPreview": "HA card preview",
     "label.haCardCode": "HA card code",
     "label.expertHaCardCode": "Expert HA card code",
     "label.expertCardName": "Expert card name",
@@ -402,6 +404,7 @@ const translations = {
     "message.clipboardReadFailed": "Clipboard could not be read.",
     "message.styleBlocksDetected": "Styles detected: {global} global, {cards} card, {layout} layout.",
     "message.noStyleBlocksDetected": "No card_mod/UIX style blocks detected.",
+    "message.entityStylesAssigned": "{count} entity style blocks are assigned in the preview.",
     "message.hacsBundleInspected": "HACS bundle checked: {count} files, script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS bundle rejected: {reason}",
     "message.invalidDragPayload": "Could not read dragged card.",
@@ -542,6 +545,7 @@ const translations = {
     "label.entityType": "Entitaetstyp",
     "label.entitySearch": "Entitaet suchen",
     "label.entityPicker": "Entitaetsauswahl",
+    "label.haCardPreview": "HA-Card-Vorschau",
     "label.haCardCode": "HA-Card-Code",
     "label.expertHaCardCode": "Expert-HA-Card-Code",
     "label.expertCardName": "Expert-Card-Name",
@@ -756,6 +760,7 @@ const translations = {
     "message.clipboardReadFailed": "Zwischenablage konnte nicht gelesen werden.",
     "message.styleBlocksDetected": "Styles erkannt: {global} global, {cards} Card, {layout} Layout.",
     "message.noStyleBlocksDetected": "Keine card_mod/UIX-Style-Bloecke erkannt.",
+    "message.entityStylesAssigned": "{count} Entity-Style-Bloecke sind in der Vorschau zugeordnet.",
     "message.hacsBundleInspected": "HACS-Bundle geprueft: {count} Dateien, Script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS-Bundle abgelehnt: {reason}",
     "message.invalidDragPayload": "Gezogene Card konnte nicht gelesen werden.",
@@ -1007,6 +1012,7 @@ let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let activeEditorMode = "simple";
 let importedSimpleCard;
+let importedSimpleStyleInspection;
 let expertPaletteShowAllCards = false;
 let expertPaletteSearchQuery = "";
 let selectedExpertFieldIndex = -1;
@@ -1939,6 +1945,7 @@ function currentHaCardScriptFilename() {
 function renderHaCardPreview() {
   if (cardPreviewEntityIds().length === 0) {
     haCardPreview.textContent = emptyEntitySelectionMessage;
+    renderSimpleHaCardVisualPreview(undefined);
     haCardDependency.dataset.required = "false";
     haCardDependency.dataset.status = "not-required";
     haCardDependency.textContent = emptyEntitySelectionMessage;
@@ -1947,8 +1954,126 @@ function renderHaCardPreview() {
   }
 
   const card = createHaCardConfig();
+  renderSimpleHaCardVisualPreview(card);
   haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   renderHaCardDependency(card);
+}
+
+function renderSimpleHaCardVisualPreview(card) {
+  haCardVisualPreview.replaceChildren();
+  if (!card) {
+    const empty = document.createElement("span");
+    empty.textContent = emptyEntitySelectionMessage;
+    haCardVisualPreview.append(empty);
+    return;
+  }
+  haCardVisualPreview.append(createSimpleHaCardPreviewCard(card));
+}
+
+function createSimpleHaCardPreviewCard(card) {
+  const wrapper = document.createElement("article");
+  wrapper.className = "ha-card-visual-card";
+
+  const header = document.createElement("header");
+  const title = document.createElement("strong");
+  title.textContent = getSimplePreviewCardTitle(card);
+  const type = document.createElement("span");
+  type.className = "ha-card-visual-type";
+  type.textContent = card.type;
+  header.append(title, type);
+  wrapper.append(header);
+
+  const entities = getSimplePreviewCardEntities(card);
+  if (entities.length) {
+    const list = document.createElement("div");
+    list.className = "ha-card-visual-entities";
+    for (const entity of entities) {
+      list.append(createSimpleHaCardPreviewEntityRow(entity));
+    }
+    wrapper.append(list);
+  }
+
+  return wrapper;
+}
+
+function createSimpleHaCardPreviewEntityRow(entity) {
+  const row = document.createElement("div");
+  row.className = "ha-card-visual-row";
+
+  const text = document.createElement("div");
+  const name = document.createElement("strong");
+  name.textContent = entity.name || formatEntityIdAsTitle(entity.entity) || entity.entity;
+  const id = document.createElement("small");
+  id.textContent = entity.entity;
+  text.append(name, id);
+  row.append(text);
+
+  const styles = getImportedEntityStyleBlocks(entity.entity);
+  if (styles.length) {
+    const badge = document.createElement("span");
+    badge.className = "ha-card-entity-style-badge";
+    badge.textContent = `${styles.length} style`;
+    row.append(badge);
+
+    const details = document.createElement("details");
+    details.className = "ha-card-entity-style";
+    const summary = document.createElement("summary");
+    summary.textContent = "Entity style";
+    const code = document.createElement("pre");
+    code.textContent = styles.map(block => block.code).join("\n\n");
+    details.append(summary, code);
+    row.append(details);
+  }
+
+  return row;
+}
+
+function getSimplePreviewCardTitle(card) {
+  if (typeof card.title === "string" && card.title.trim()) return card.title.trim();
+  if (typeof card.name === "string" && card.name.trim()) return card.name.trim();
+  if (typeof card.primary === "string" && card.primary.trim()) return card.primary.trim();
+  if (card.type === "custom:tabbed-card-v2") return card.tabs?.[0]?.attributes?.label ?? "Tabbed Card V2";
+  return String(card.type).replace(/^custom:/, "");
+}
+
+function getSimplePreviewCardEntities(card) {
+  if (Array.isArray(card.entities)) {
+    return card.entities
+      .map(entity => typeof entity === "string"
+        ? { entity }
+        : entity && typeof entity === "object" && typeof entity.entity === "string"
+          ? { entity: entity.entity, name: typeof entity.name === "string" ? entity.name : "" }
+          : undefined)
+      .filter(Boolean);
+  }
+  return collectSimplePreviewCardEntities(card);
+}
+
+function collectSimplePreviewCardEntities(value, key = "") {
+  if (typeof value === "string") {
+    return /^entity\d*$/i.test(key) && /^[a-z_][a-z0-9_]*\.[a-z0-9_]+$/i.test(value.trim())
+      ? [{ entity: value.trim() }]
+      : [];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap(item => collectSimplePreviewCardEntities(item));
+  }
+  if (!value || typeof value !== "object") {
+    return [];
+  }
+  const seen = new Set();
+  return Object.entries(value).flatMap(([entryKey, entryValue]) =>
+    collectSimplePreviewCardEntities(entryValue, entryKey),
+  ).filter(item => {
+    if (seen.has(item.entity)) return false;
+    seen.add(item.entity);
+    return true;
+  });
+}
+
+function getImportedEntityStyleBlocks(entityId) {
+  if (!importedSimpleStyleInspection?.cardStyles?.length) return [];
+  return importedSimpleStyleInspection.cardStyles.filter(block => block.label === entityId);
 }
 
 function renderHaCardDependency(card) {
@@ -2096,7 +2221,7 @@ function formatHacsBundlePackageReadReview(packageRead) {
 }
 
 function importHaCardTextIntoEditor(text) {
-  renderHaCardStyleInspection(text);
+  const styleInspection = renderHaCardStyleInspection(text);
   const decision = renderHaCardImportDecision(text);
   if (decision.action !== "import") {
     statusMessage.textContent = decision.action === "review"
@@ -2106,6 +2231,7 @@ function importHaCardTextIntoEditor(text) {
   }
 
   const summary = summarizeHomeAssistantCardImport(text);
+  importedSimpleStyleInspection = styleInspection.hasStyles ? styleInspection : undefined;
   applyHomeAssistantCardImportSummary(summary);
   return true;
 }
@@ -2122,30 +2248,35 @@ function clearHaCardStyleInspection() {
 function renderHaCardStyleInspection(text) {
   const inspection = inspectHomeAssistantCardStyleBlocks(text);
   const content = formatHaCardStyleInspection(inspection);
-  haCardStyleReview.hidden = !inspection.hasStyles;
+  const showReview = content.trim().length > 0;
+  haCardStyleReview.hidden = !showReview;
   haCardStyleReview.textContent = content;
   if (haCardPasteStyleReview) {
-    haCardPasteStyleReview.hidden = !inspection.hasStyles;
+    haCardPasteStyleReview.hidden = !showReview;
     haCardPasteStyleReview.textContent = content;
   }
   return inspection;
 }
 
 function formatHaCardStyleInspection(inspection) {
-  if (!inspection.hasStyles) return t("message.noStyleBlocksDetected");
+  if (!inspection.hasStyles) return "";
   const sections = [
     formatHaCardStyleInspectionSection("Global", inspection.globalStyles),
-    formatHaCardStyleInspectionSection("Card", inspection.cardStyles),
     formatHaCardStyleInspectionSection("Layout", inspection.layoutOptions),
   ].filter(Boolean);
+  const entityStyleMessage = inspection.cardStyles.length
+    ? t("message.entityStylesAssigned", { count: inspection.cardStyles.length })
+    : "";
+  if (!sections.length && !entityStyleMessage) return "";
   return [
     t("message.styleBlocksDetected", {
       global: inspection.globalStyles.length,
       cards: inspection.cardStyles.length,
       layout: inspection.layoutOptions.length,
     }),
+    entityStyleMessage,
     ...sections,
-  ].join("\n\n");
+  ].filter(Boolean).join("\n\n");
 }
 
 function formatHaCardStyleInspectionSection(label, blocks) {
@@ -4839,6 +4970,7 @@ refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 checkHaCardResources.addEventListener("click", () => checkLiveLovelaceResources());
 homeAssistantGroup.addEventListener("change", () => {
   importedSimpleCard = undefined;
+  importedSimpleStyleInspection = undefined;
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   if (group) {
     homeAssistantEntity.value = group.entityIds.join(", ");
@@ -4854,6 +4986,7 @@ expertCardName.addEventListener("input", () => {
 diagnosticsPanel.addEventListener("toggle", persistConfiguration);
 haCardTarget.addEventListener("change", () => {
   importedSimpleCard = undefined;
+  importedSimpleStyleInspection = undefined;
   syncCardLayoutState();
   persistConfiguration();
   renderEntityList();

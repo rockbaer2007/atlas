@@ -1540,6 +1540,9 @@ function inspectHomeAssistantCardStyleBlocksFromText(text: string): HomeAssistan
     if (!isStyleInspectionKey(key)) continue;
 
     const indent = line.match(/^ */)?.[0].length ?? 0;
+    if ((key === "style" || key === "styles") && isNestedInStyleInspectionContainer(lines, index, indent)) {
+      continue;
+    }
     const scope = key === "grid_options"
       ? "layout"
       : indent === 0 && !trimmed.startsWith("- ")
@@ -1559,6 +1562,18 @@ function inspectHomeAssistantCardStyleBlocksFromText(text: string): HomeAssistan
   }
 
   return dedupeStyleInspectionBlocks(blocks);
+}
+
+function isNestedInStyleInspectionContainer(lines: readonly string[], index: number, indent: number): boolean {
+  for (let parentIndex = index - 1; parentIndex >= 0; parentIndex -= 1) {
+    const line = lines[parentIndex] ?? "";
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const parentIndent = line.match(/^ */)?.[0].length ?? 0;
+    if (parentIndent >= indent) continue;
+    return /^(card_mod|uix|uix_style):/.test(trimmed);
+  }
+  return false;
 }
 
 function isStyleInspectionKey(key: string): boolean {
