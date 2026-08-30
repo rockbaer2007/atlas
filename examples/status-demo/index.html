@@ -416,6 +416,10 @@
         align-items: flex-start;
       }
 
+      .connection-actions.action-row + .connection-actions.action-row {
+        margin-top: 6px;
+      }
+
       .connection-actions.uniform-actions button,
       .connection-actions.uniform-actions .import-button {
         box-sizing: border-box;
@@ -468,6 +472,12 @@
       .connection-actions button.action-export {
         border-color: #7f1d1d;
         background: #7f1d1d;
+        color: #ffffff;
+      }
+
+      .connection-actions button.action-resource {
+        border-color: #9a3412;
+        background: #9a3412;
         color: #ffffff;
       }
 
@@ -565,6 +575,31 @@
         display: grid;
         gap: 6px;
         margin: 4px 0 0;
+      }
+
+      .preview-heading-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .preview-heading-row label {
+        margin: 0;
+      }
+
+      .preview-reset-button {
+        min-height: 30px;
+        padding: 5px 10px;
+        border: 1px solid #7f1d1d;
+        border-radius: 4px;
+        background: #7f1d1d;
+        color: #ffffff;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.2;
+        cursor: pointer;
       }
 
       .ha-card-preview[hidden] {
@@ -1870,18 +1905,22 @@
           <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
         </fieldset>
         <output id="ha-card-dependency" aria-live="polite"></output>
-        <div class="connection-actions uniform-actions">
+        <div class="connection-actions uniform-actions action-row">
           <button id="save-home-assistant-group" class="action-group" type="button" data-i18n="button.saveGroup">Save group</button>
           <button id="delete-home-assistant-group" class="action-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
           <button id="duplicate-home-assistant-group" class="action-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
+        </div>
+        <div class="connection-actions uniform-actions action-row">
           <button id="export-home-assistant-config" class="action-export" type="button" data-i18n="button.export">Export</button>
           <button id="export-ha-card-config" class="action-export" type="button" data-i18n="button.exportHaCard">Export HA card</button>
           <button id="export-ha-card-package" class="action-export" type="button" data-i18n="button.exportCardPackage">Export card package</button>
           <button id="export-ha-card-script" class="action-export" type="button" data-i18n="button.exportCardScript">Export card script</button>
           <button id="export-ha-card-bundle" class="action-export" type="button" data-i18n="button.exportCardBundle">Export HACS bundle</button>
           <button id="copy-ha-card-config" class="action-export" type="button" data-i18n="button.copyHaCard">Copy HA card</button>
-          <button id="copy-ha-card-resources" class="action-export" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
-          <button id="check-ha-card-resources" class="action-export" type="button" disabled data-i18n="button.checkResources">Check resources</button>
+          <button id="copy-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
+          <button id="check-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.checkResources">Check resources</button>
+        </div>
+        <div class="connection-actions uniform-actions action-row">
           <label class="import-button action-import" for="import-home-assistant-config" data-i18n="button.import">Import</label>
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
           <label class="import-button action-import" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
@@ -1925,7 +1964,10 @@
           <button type="button" data-editor-mode="expert" aria-pressed="false" data-i18n="button.expertMode">Expert</button>
         </div>
         <div id="simple-card-section" class="ha-card-preview">
-          <label for="ha-card-visual-preview" data-i18n="label.haCardPreview">HA card preview</label>
+          <div class="preview-heading-row">
+            <label for="ha-card-visual-preview" data-i18n="label.haCardPreview">HA card preview</label>
+            <button id="reset-simple-preview" class="preview-reset-button" type="button" data-i18n="button.resetPreview">Reset preview</button>
+          </div>
           <div id="ha-card-visual-preview" class="ha-card-visual-preview" aria-live="polite"></div>
           <label for="ha-card-preview" data-i18n="label.haCardCode">HA card code</label>
           <pre id="ha-card-preview" aria-live="polite"></pre>
@@ -2009,7 +2051,10 @@
             <output id="expert-editor-summary" aria-live="polite"></output>
             <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
             <div class="ha-card-preview">
-              <label for="expert-editor-preview" data-i18n="label.expertHaCardCode">Expert HA card code</label>
+              <div class="preview-heading-row">
+                <label for="expert-editor-preview" data-i18n="label.expertHaCardCode">Expert HA card code</label>
+                <button id="reset-expert-preview" class="preview-reset-button" type="button" data-i18n="button.resetPreview">Reset preview</button>
+              </div>
               <pre id="expert-editor-preview" aria-live="polite"></pre>
             </div>
           </section>

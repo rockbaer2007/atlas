@@ -117,6 +117,7 @@ const haCardPasteImportStatus = document.querySelector("#ha-card-paste-import-st
 const haCardPasteStyleReview = document.querySelector("#ha-card-paste-style-review");
 const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardVisualPreview = document.querySelector("#ha-card-visual-preview");
+const resetSimplePreview = document.querySelector("#reset-simple-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const haCardStyleReview = document.querySelector("#ha-card-style-review");
@@ -158,6 +159,7 @@ const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
 const expertFieldList = document.querySelector("#expert-field-list");
 const expertEditorPreview = document.querySelector("#expert-editor-preview");
+const resetExpertPreview = document.querySelector("#reset-expert-preview");
 const tabbedCardSettingsBackdrop = document.querySelector("#tabbed-card-settings-backdrop");
 const closeTabbedCardSettings = document.querySelector("#close-tabbed-card-settings");
 const tabbedCardTabList = document.querySelector("#tabbed-card-tab-list");
@@ -258,6 +260,7 @@ const translations = {
     "button.autoArrange": "Auto arrange",
     "button.resetSize": "Reset size",
     "button.clearPreview": "Clear preview",
+    "button.resetPreview": "Reset preview",
     "button.applyTitle": "Apply title",
     "button.useEntityName": "Use entity name",
     "button.addTab": "Add tab",
@@ -399,6 +402,8 @@ const translations = {
     "message.entityStateUpdated": "Entity state updated: {state}.",
     "message.titleCopied": "{title} copied from the selected entity.",
     "message.expertPreviewCleared": "Expert editor preview cleared.",
+    "message.previewReset": "Preview reset.",
+    "message.confirmPreviewReset": "Do you really want to do this?",
     "message.groupRequiresNameAndEntity": "A group name and at least one entity are required.",
     "message.groupSaved": "Group {title} saved.",
     "message.builtInGroupsCannotDelete": "Built-in groups cannot be deleted.",
@@ -626,6 +631,7 @@ const translations = {
     "button.autoArrange": "Automatisch anordnen",
     "button.resetSize": "Groesse zuruecksetzen",
     "button.clearPreview": "Vorschau leeren",
+    "button.resetPreview": "Vorschau zuruecksetzen",
     "button.applyTitle": "Titel uebernehmen",
     "button.useEntityName": "Entitaetsname nutzen",
     "button.addTab": "Tab hinzufuegen",
@@ -767,6 +773,8 @@ const translations = {
     "message.entityStateUpdated": "Entitaetsstatus aktualisiert: {state}.",
     "message.titleCopied": "{title} aus der ausgewaehlten Entitaet kopiert.",
     "message.expertPreviewCleared": "Expert-Editor-Vorschau geleert.",
+    "message.previewReset": "Vorschau zurueckgesetzt.",
+    "message.confirmPreviewReset": "Willst du es wirklich tun?",
     "message.groupRequiresNameAndEntity": "Gruppenname und mindestens eine Entitaet werden benoetigt.",
     "message.groupSaved": "Gruppe {title} gespeichert.",
     "message.builtInGroupsCannotDelete": "Eingebaute Gruppen koennen nicht geloescht werden.",
@@ -1951,6 +1959,41 @@ function clearImportedSimplePreviewState() {
   importedSimpleCodePreview = undefined;
   importedSimpleStyleInspection = undefined;
   importedSimpleEntityNames = new Map();
+}
+
+function confirmPreviewReset() {
+  return window.confirm(t("message.confirmPreviewReset"));
+}
+
+function resetSimplePreviewState() {
+  if (!confirmPreviewReset()) return;
+  clearImportedSimplePreviewState();
+  homeAssistantEntity.value = "";
+  selectedStackEntities.clear();
+  clearHaCardStyleInspection();
+  haCardImportReview.textContent = "";
+  haCardImportReview.removeAttribute("data-action");
+  renderEntityList();
+  renderHaCardPreview();
+  persistConfiguration();
+  statusMessage.textContent = t("message.previewReset");
+}
+
+function resetExpertPreviewState() {
+  if (!confirmPreviewReset()) return;
+  expertEditorFields.length = 0;
+  selectedExpertFieldIndex = -1;
+  selectedContainerCardRef = undefined;
+  expertFieldEditing = false;
+  expertTitle.value = "";
+  expertEntity.value = "";
+  clearImportedSimplePreviewState();
+  clearHaCardStyleInspection();
+  haCardImportReview.textContent = "";
+  haCardImportReview.removeAttribute("data-action");
+  renderExpertEditorPreview();
+  persistConfiguration();
+  statusMessage.textContent = t("message.previewReset");
 }
 
 function formatSimpleHaCardCodePreview(card) {
@@ -5326,15 +5369,9 @@ applyTabbedCardTab.addEventListener("click", applyActiveTabbedCardTab);
 tabbedCardFullWidth.addEventListener("change", applyTabbedCardContainerOptions);
 tabbedCardAutoHeight.addEventListener("change", applyTabbedCardContainerOptions);
 window.addEventListener("resize", applyExpertEditorSurfaceSize);
-clearExpertFields.addEventListener("click", () => {
-  expertEditorFields.length = 0;
-  selectedExpertFieldIndex = -1;
-  expertFieldEditing = false;
-  expertTitle.value = "";
-  persistConfiguration();
-  renderExpertEditorPreview();
-  statusMessage.textContent = t("message.expertPreviewCleared");
-});
+resetSimplePreview.addEventListener("click", resetSimplePreviewState);
+resetExpertPreview.addEventListener("click", resetExpertPreviewState);
+clearExpertFields.addEventListener("click", resetExpertPreviewState);
 expertEditorDropzone.addEventListener("dragover", event => {
   event.preventDefault();
   expertEditorDropzone.classList.add("drag-over");
