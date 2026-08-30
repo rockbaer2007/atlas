@@ -1534,18 +1534,19 @@
       }
 
       .ha-card-export-style-options {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        display: flex;
+        flex-wrap: wrap;
         gap: 8px;
       }
 
       .ha-card-export-style-option {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: 8px;
-        min-height: 38px;
+        min-width: 116px;
+        min-height: 34px;
         box-sizing: border-box;
-        padding: 8px 10px;
+        padding: 7px 10px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
         background: #ffffff;
