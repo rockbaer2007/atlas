@@ -231,6 +231,19 @@ async function handleHomeAssistantLovelaceResourcesRequest(request, response) {
     return;
   }
 
+  const websocketResult = await requestHomeAssistantLovelaceResourcesViaWebSocket(
+    adminConnectionSettings.url,
+    adminConnectionSettings.token,
+  );
+  if (websocketResult.ok) {
+    writeJsonResponse(response, 200, {
+      source: "admin-websocket",
+      command: websocketResult.command,
+      resources: websocketResult.resources,
+    });
+    return;
+  }
+
   const url = deriveHomeAssistantRestApiUrl(adminConnectionSettings.url, "/api/lovelace/config");
   if (!url) {
     writeJsonResponse(response, 400, { error: "home assistant url is invalid" });
@@ -247,7 +260,10 @@ async function handleHomeAssistantLovelaceResourcesRequest(request, response) {
     const body = await homeAssistantResponse.json().catch(() => undefined);
     if (!homeAssistantResponse.ok) {
       writeJsonResponse(response, homeAssistantResponse.status, {
-        error: body?.message ?? body?.error ?? `Home Assistant returned HTTP ${homeAssistantResponse.status}`,
+        error: [
+          websocketResult.error ? `Admin WebSocket failed: ${websocketResult.error}` : "",
+          body?.message ?? body?.error ?? `Home Assistant returned HTTP ${homeAssistantResponse.status}`,
+        ].filter(Boolean).join(". "),
       });
       return;
     }
@@ -258,7 +274,10 @@ async function handleHomeAssistantLovelaceResourcesRequest(request, response) {
     });
   } catch (error) {
     writeJsonResponse(response, 502, {
-      error: error instanceof Error ? error.message : "Home Assistant resource request failed",
+      error: [
+        websocketResult.error ? `Admin WebSocket failed: ${websocketResult.error}` : "",
+        error instanceof Error ? error.message : "Home Assistant resource request failed",
+      ].filter(Boolean).join(". "),
     });
   }
 }
@@ -348,6 +367,109 @@ function deriveHomeAssistantRestApiUrl(sourceUrl, pathname) {
   } catch {
     return "";
   }
+}
+
+function deriveHomeAssistantWebSocketApiUrl(sourceUrl) {
+  try {
+    const url = new URL(sourceUrl);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return "";
+    }
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    url.pathname = "/api/websocket";
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+async function requestHomeAssistantLovelaceResourcesViaWebSocket(sourceUrl, token) {
+  const websocketUrl = deriveHomeAssistantWebSocketApiUrl(sourceUrl);
+  if (!websocketUrl) {
+    return { ok: false, error: "home assistant websocket url is invalid" };
+  }
+  if (typeof WebSocket !== "function") {
+    return { ok: false, error: "server WebSocket runtime is unavailable" };
+  }
+
+  const commands = ["lovelace/resources", "lovelace/resources/list"];
+  const failures = [];
+  for (const command of commands) {
+    const result = await requestHomeAssistantLovelaceResourcesCommand(websocketUrl, token, command);
+    if (result.ok) return result;
+    failures.push(`${command}: ${result.error}`);
+  }
+  return { ok: false, error: failures.join("; ") };
+}
+
+function requestHomeAssistantLovelaceResourcesCommand(websocketUrl, token, command) {
+  return new Promise(resolveRequest => {
+    let settled = false;
+    let requestSent = false;
+    const socket = new WebSocket(websocketUrl);
+    const timeout = setTimeout(() => {
+      finish({ ok: false, command, error: "timeout after 8s" });
+    }, 8000);
+
+    const finish = result => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timeout);
+      try {
+        socket.close();
+      } catch {
+        // Ignore close errors after a failed Home Assistant connection.
+      }
+      resolveRequest(result);
+    };
+
+    socket.addEventListener("message", event => {
+      let message;
+      try {
+        message = JSON.parse(String(event.data));
+      } catch {
+        return;
+      }
+
+      if (message?.type === "auth_required") {
+        socket.send(JSON.stringify({ type: "auth", access_token: token }));
+        return;
+      }
+
+      if (message?.type === "auth_invalid") {
+        finish({ ok: false, command, error: message.message ?? "auth invalid" });
+        return;
+      }
+
+      if (message?.type === "auth_ok" && !requestSent) {
+        requestSent = true;
+        socket.send(JSON.stringify({ id: 1, type: command }));
+        return;
+      }
+
+      if (message?.id === 1 && message?.type === "result") {
+        if (!message.success) {
+          finish({ ok: false, command, error: message.message ?? "command failed" });
+          return;
+        }
+        finish({
+          ok: true,
+          command,
+          resources: extractLovelaceResourcesFromPayload(message.result),
+        });
+      }
+    });
+
+    socket.addEventListener("error", () => {
+      finish({ ok: false, command, error: "websocket error" });
+    });
+
+    socket.addEventListener("close", () => {
+      if (!settled) finish({ ok: false, command, error: "websocket closed" });
+    });
+  });
 }
 
 function extractLovelaceResourcesFromPayload(payload) {

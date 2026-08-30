@@ -2229,11 +2229,11 @@ function requestLovelaceResourcesListFallback() {
 
 async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
   if (!adminConnectionToken) {
-    addLovelaceResourceDebugEvent("Admin REST skipped: no admin token handoff");
+    addLovelaceResourceDebugEvent("Admin proxy skipped: no admin token handoff");
     renderTemporaryHaCardResourceList("failed", initialReason || t("message.tokenRequired"));
     return;
   }
-  addLovelaceResourceDebugEvent("Admin REST request sent: /api/homeassistant/lovelace-resources");
+  addLovelaceResourceDebugEvent("Admin proxy request sent: /api/homeassistant/lovelace-resources");
   renderTemporaryHaCardResourceList("rest-loading");
   try {
     const response = await fetch(`${adminOrigin}/api/homeassistant/lovelace-resources`, {
@@ -2247,11 +2247,13 @@ async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
     }
     lovelaceResources = Array.isArray(payload?.resources) ? payload.resources : [];
     lovelaceResourcesChecked = true;
-    addLovelaceResourceDebugEvent(`Admin REST response: ${response.status}, ${lovelaceResources.length} resources`);
+    addLovelaceResourceDebugEvent(
+      `Admin proxy response: ${response.status}, ${payload?.source ?? "unknown"}, ${lovelaceResources.length} resources`,
+    );
     const scannedCards = refreshScannedExpertPaletteCards();
     renderHaCardPreview();
     renderExpertTemplatePalette();
-    renderTemporaryHaCardResourceList("ready", "Admin REST");
+    renderTemporaryHaCardResourceList("ready", payload?.source ?? "Admin proxy");
     statusMessage.textContent = t("message.loadedResources", {
       count: lovelaceResources.length,
       total: scannedCards.total,
@@ -2260,8 +2262,8 @@ async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
   } catch (error) {
     lovelaceResourcesChecked = false;
     const reason = error instanceof Error ? error.message : String(error);
-    const combinedReason = initialReason ? `${initialReason} REST: ${reason}` : reason;
-    addLovelaceResourceDebugEvent(`Admin REST failed: ${combinedReason}`);
+    const combinedReason = initialReason ? `${initialReason} Admin proxy: ${reason}` : reason;
+    addLovelaceResourceDebugEvent(`Admin proxy failed: ${combinedReason}`);
     renderTemporaryHaCardResourceList("failed", combinedReason);
     statusMessage.textContent = t("text.temporaryResourceDebugFailed", { reason: combinedReason });
   }
