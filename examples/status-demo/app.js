@@ -95,7 +95,7 @@ const exportHaCardBundle = document.querySelector("#export-ha-card-bundle");
 const haCardExportBackdrop = document.querySelector("#ha-card-export-backdrop");
 const closeHaCardExport = document.querySelector("#close-ha-card-export");
 const haCardExportStyleControl = document.querySelector("#ha-card-export-style-control");
-const haCardExportStyle = document.querySelector("#ha-card-export-style");
+const haCardExportStyleInputs = Array.from(document.querySelectorAll("input[name='ha-card-export-style']"));
 const saveHaCardExportAs = document.querySelector("#save-ha-card-export-as");
 const downloadHaCardExport = document.querySelector("#download-ha-card-export");
 const haCardExportStatus = document.querySelector("#ha-card-export-status");
@@ -4645,14 +4645,14 @@ function createHaCardExportPayload() {
 }
 
 function openHaCardExportDialog() {
-  haCardExportStyle.value = haCardStyleExport.value;
+  setHaCardExportDialogStyle(haCardStyleExport.value);
   haCardExportStyleControl.hidden = !(activeEditorMode === "expert" && haCardFormat.value === "yaml");
   saveHaCardExportAs.disabled = typeof window.showSaveFilePicker !== "function";
   haCardExportStatus.textContent = saveHaCardExportAs.disabled ? t("message.savePickerUnavailable") : "";
   haCardExportBackdrop.hidden = false;
   (haCardExportStyleControl.hidden
     ? (saveHaCardExportAs.disabled ? downloadHaCardExport : saveHaCardExportAs)
-    : haCardExportStyle).focus();
+    : (haCardExportStyleInputs.find(input => input.checked) ?? haCardExportStyleInputs[0])).focus();
 }
 
 function closeHaCardExportDialog() {
@@ -4661,9 +4661,20 @@ function closeHaCardExportDialog() {
 
 function syncHaCardExportStyleSelection() {
   if (activeEditorMode === "expert" && haCardFormat.value === "yaml") {
-    haCardStyleExport.value = haCardExportStyle.value;
+    haCardStyleExport.value = getHaCardExportDialogStyle();
     persistConfiguration();
     renderExpertEditorPreview();
+  }
+}
+
+function getHaCardExportDialogStyle() {
+  return haCardExportStyleInputs.find(input => input.checked)?.value ?? "card-mod";
+}
+
+function setHaCardExportDialogStyle(value) {
+  const normalizedValue = value === "uix-style" ? "uix-style" : "card-mod";
+  for (const input of haCardExportStyleInputs) {
+    input.checked = input.value === normalizedValue;
   }
 }
 
@@ -5602,7 +5613,9 @@ haCardExportBackdrop.addEventListener("click", event => {
     closeHaCardExportDialog();
   }
 });
-haCardExportStyle.addEventListener("change", syncHaCardExportStyleSelection);
+for (const input of haCardExportStyleInputs) {
+  input.addEventListener("change", syncHaCardExportStyleSelection);
+}
 saveHaCardExportAs.addEventListener("click", () => {
   void exportHaCardPayload(true);
 });

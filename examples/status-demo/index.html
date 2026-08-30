@@ -1533,6 +1533,34 @@
         background: #475569;
       }
 
+      .ha-card-export-style-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .ha-card-export-style-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 38px;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #172033;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .ha-card-export-style-option input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
       .expert-surface-field-remove {
         position: absolute;
         top: 5px;
@@ -2119,11 +2147,17 @@
             </header>
             <div class="tabbed-card-dialog-body single-column">
               <div id="ha-card-export-style-control" class="field-pair">
-                <label for="ha-card-export-style" data-i18n="label.cardStyleExport">Style export</label>
-                <select id="ha-card-export-style">
-                  <option value="card-mod">card-mod</option>
-                  <option value="uix-style">uix:</option>
-                </select>
+                <span class="field-label" data-i18n="label.cardStyleExport">Style export</span>
+                <div class="ha-card-export-style-options" role="radiogroup" aria-labelledby="ha-card-export-title">
+                  <label class="ha-card-export-style-option">
+                    <input type="radio" name="ha-card-export-style" value="card-mod" checked>
+                    <span>card-mod</span>
+                  </label>
+                  <label class="ha-card-export-style-option">
+                    <input type="radio" name="ha-card-export-style" value="uix-style">
+                    <span>uix:</span>
+                  </label>
+                </div>
               </div>
               <p id="ha-card-export-path-hint" class="dialog-hint" data-i18n="message.exportPathHint">Choose a save location if your browser supports it, or use the normal download fallback.</p>
               <div class="connection-actions">
