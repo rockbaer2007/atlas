@@ -945,9 +945,11 @@
       }
 
       .expert-surface-field.tabbed-container {
+        grid-template-rows: auto auto 1fr;
         border-style: solid;
         border-color: #2563eb;
         background: #f8fbff;
+        cursor: default;
       }
 
       .expert-surface-field.tabbed-container.drag-over {
@@ -986,7 +988,15 @@
         margin-top: 2px;
       }
 
+      .expert-tab-inline {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
       .expert-tab-chip {
+        min-height: 24px;
+        border: 1px solid #bfdbfe;
         max-width: 100%;
         padding: 2px 6px;
         border-radius: 999px;
@@ -995,6 +1005,49 @@
         font-size: 11px;
         font-weight: 700;
         overflow-wrap: anywhere;
+        cursor: pointer;
+      }
+
+      .expert-tab-chip.active {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .expert-tab-preview {
+        display: grid;
+        gap: 5px;
+        min-height: 34px;
+        margin-top: 4px;
+        padding: 6px;
+        border: 1px dashed #93c5fd;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .expert-tab-preview.drag-over {
+        border-color: #2563eb;
+        background: #eff6ff;
+      }
+
+      .expert-tab-preview-card {
+        display: grid;
+        gap: 2px;
+        padding: 5px 6px;
+        border: 1px solid #dbeafe;
+        border-radius: 5px;
+        background: #f8fbff;
+      }
+
+      .expert-tab-preview-card strong {
+        font-size: 12px;
+        line-height: 1.15;
+      }
+
+      .expert-tab-preview-card small {
+        color: #536079;
+        font-size: 11px;
+        line-height: 1.2;
       }
 
       .modal-backdrop {
