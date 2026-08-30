@@ -5,6 +5,7 @@ import type {
 
 export interface HomeAssistantEntitiesCardEntity {
   readonly entity: string;
+  readonly name?: string;
 }
 
 export type HomeAssistantCardTarget =
@@ -1114,10 +1115,8 @@ function normalizeHomeAssistantCardConfiguration(
   }
 
   if ((card.type === "entities" || card.type === "glance") && Array.isArray(card.entities)) {
-    const entityIds = dedupeEntityIds(card.entities
-      .map(entity => typeof entity === "string" ? entity : isRecord(entity) ? entity.entity : undefined)
-      .filter((entity): entity is string => typeof entity === "string"));
-    if (entityIds.length === 0) {
+    const entities = readHomeAssistantEntityItems(card.entities);
+    if (entities.length === 0) {
       throw new Error("Home Assistant card has no entities.");
     }
 
@@ -1129,7 +1128,7 @@ function normalizeHomeAssistantCardConfiguration(
           ...(typeof card.show_name === "boolean" ? { show_name: card.show_name } : {}),
           ...(typeof card.show_icon === "boolean" ? { show_icon: card.show_icon } : {}),
           ...(typeof card.show_state === "boolean" ? { show_state: card.show_state } : {}),
-          entities: entityIds.map(entity => ({ entity })),
+          entities,
         },
         target: "glance",
         layout: "single",
@@ -1137,10 +1136,11 @@ function normalizeHomeAssistantCardConfiguration(
     }
 
     return {
-      card: createHomeAssistantEntitiesCardConfiguration({
+      card: {
+        type: "entities",
         title: typeof card.title === "string" ? card.title : "Imported HA card",
-        entityIds,
-      }),
+        entities,
+      },
       target: "entities",
       layout: "single",
     };
@@ -1157,6 +1157,7 @@ function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardC
   ];
   for (const item of card.entities) {
     lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
+    if (item.name) lines.push(`    name: ${JSON.stringify(item.name)}`);
   }
   return lines.join("\n");
 }
@@ -1172,6 +1173,7 @@ function serializeHomeAssistantGlanceCardYaml(card: HomeAssistantGlanceCardConfi
   lines.push("entities:");
   for (const item of card.entities) {
     lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
+    if (item.name) lines.push(`    name: ${JSON.stringify(item.name)}`);
   }
   return lines.join("\n");
 }
@@ -1624,6 +1626,25 @@ function collectHomeAssistantEntityIdsFromUnknown(value: unknown, key = ""): str
   return dedupeEntityIds(Object.entries(value).flatMap(([entryKey, entryValue]) =>
     collectHomeAssistantEntityIdsFromUnknown(entryValue, entryKey),
   ));
+}
+
+function readHomeAssistantEntityItems(values: readonly unknown[]): HomeAssistantEntitiesCardEntity[] {
+  const seen = new Set<string>();
+  const entities: HomeAssistantEntitiesCardEntity[] = [];
+  for (const value of values) {
+    const entity = typeof value === "string"
+      ? value.trim()
+      : isRecord(value) && typeof value.entity === "string"
+        ? value.entity.trim()
+        : "";
+    if (!entity || seen.has(entity)) continue;
+    seen.add(entity);
+    const name = isRecord(value) && typeof value.name === "string" && value.name.trim()
+      ? value.name.trim()
+      : undefined;
+    entities.push({ entity, ...(name ? { name } : {}) });
+  }
+  return entities;
 }
 
 function looksLikeHomeAssistantEntityId(value: string): boolean {

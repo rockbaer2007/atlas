@@ -1545,6 +1545,16 @@ describe("Home Assistant entities card configuration", () => {
         show_name: true,
         show_icon: true,
         show_state: true,
+        entities: [
+          {
+            entity: "sensor.hyper_2000_eg_1_solar_input_power",
+            name: "Leistung",
+          },
+          {
+            entity: "binary_sensor.hyper_2000_eg_1_heat_state",
+            name: "Akkuhzg.",
+          },
+        ],
       },
     });
   });
