@@ -55,6 +55,7 @@ export interface HomeAssistantCardArtifactBlockMapping {
     | "thermostat-card"
     | "link-card"
     | "webpage-card"
+    | "tabbed-card-v2"
     | "vertical-stack"
     | "horizontal-stack";
   readonly confidence: "high" | "medium" | "low";
@@ -303,7 +304,7 @@ function parseJsonRecord(text: string): Record<string, unknown> | undefined {
 }
 
 function looksLikeHomeAssistantCardYaml(text: string): boolean {
-  return /^type:\s*(entities|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card)\b/m.test(text);
+  return /^type:\s*(entities|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card|custom:tabbed-card-v2)\b/m.test(text);
 }
 
 function isHomeAssistantCardRecord(value: Record<string, unknown>): boolean {
@@ -311,7 +312,8 @@ function isHomeAssistantCardRecord(value: Record<string, unknown>): boolean {
     || value.type === "horizontal-stack"
     || value.type === "vertical-stack"
     || value.type === "custom:mushroom-template-card"
-    || value.type === "custom:bubble-card";
+    || value.type === "custom:bubble-card"
+    || value.type === "custom:tabbed-card-v2";
 }
 
 function looksLikeExternalCardBuilderArtifact(value: Record<string, unknown>): boolean {
@@ -420,6 +422,16 @@ function mapExternalBlock(
       templateId: "grid",
       confidence: "medium",
       reason: "Grid-like blocks map to the ATLAS grid template.",
+    };
+  }
+
+  if (block.type.includes("tab")) {
+    return {
+      sourceId: block.id,
+      sourceType: block.type,
+      templateId: "tabbed-card-v2",
+      confidence: "medium",
+      reason: "Tabbed layout blocks can map to the ATLAS Tabbed Card V2 template.",
     };
   }
 

@@ -16,7 +16,8 @@ export type HomeAssistantCardTarget =
   | "link"
   | "webpage"
   | "mushroom-template"
-  | "bubble";
+  | "bubble"
+  | "tabbed-card-v2";
 export type HomeAssistantCardLayout = "single" | "horizontal-stack" | "vertical-stack";
 export type HomeAssistantBubbleButtonType = "name" | "slider" | "state" | "switch";
 
@@ -81,6 +82,24 @@ export interface HomeAssistantBubbleCardConfiguration {
   readonly show_state?: true;
 }
 
+export interface HomeAssistantTabbedCardV2TabAttributes {
+  readonly label: string;
+  readonly icon?: string;
+}
+
+export interface HomeAssistantTabbedCardV2Tab {
+  readonly attributes: HomeAssistantTabbedCardV2TabAttributes;
+  readonly card: HomeAssistantCardConfiguration;
+}
+
+export interface HomeAssistantTabbedCardV2Configuration {
+  readonly type: "custom:tabbed-card-v2";
+  readonly options: {
+    readonly defaultTabIndex: number;
+  };
+  readonly tabs: readonly HomeAssistantTabbedCardV2Tab[];
+}
+
 export interface HomeAssistantGridCardConfiguration {
   readonly type: "grid";
   readonly columns?: number;
@@ -114,12 +133,14 @@ export type HomeAssistantSingleCardConfiguration =
   | HomeAssistantWebpageCardConfiguration
   | HomeAssistantMushroomTemplateCardConfiguration
   | HomeAssistantBubbleCardConfiguration
+  | HomeAssistantTabbedCardV2Configuration
   | HomeAssistantGridCardConfiguration
   | HomeAssistantConditionalCardConfiguration;
 
 export type HomeAssistantCustomCardConfiguration =
   | HomeAssistantMushroomTemplateCardConfiguration
-  | HomeAssistantBubbleCardConfiguration;
+  | HomeAssistantBubbleCardConfiguration
+  | HomeAssistantTabbedCardV2Configuration;
 
 export type HomeAssistantCardConfiguration =
   | HomeAssistantSingleCardConfiguration
@@ -143,7 +164,7 @@ export interface HomeAssistantEntitiesCardInput {
 }
 
 export interface HomeAssistantCardDependency {
-  readonly id: "home-assistant" | "mushroom" | "bubble-card";
+  readonly id: "home-assistant" | "mushroom" | "bubble-card" | "tabbed-card-v2";
   readonly label: string;
   readonly required: boolean;
   readonly resourcePaths: readonly string[];
@@ -321,6 +342,21 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
       installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
     },
   },
+  {
+    target: "tabbed-card-v2",
+    label: "Tabbed Card V2",
+    type: "custom:tabbed-card-v2",
+    dependency: {
+      id: "tabbed-card-v2",
+      label: "Tabbed Card V2",
+      required: true,
+      resourcePaths: ["/hacsfiles/tabbed-card-v2/tabbed-card-v2.js"],
+      installPaths: [
+        "HACS > Custom repositories > https://github.com/rockbaer2007/tabbed-card-v2 > Lovelace",
+        "/hacsfiles/tabbed-card-v2/tabbed-card-v2.js",
+      ],
+    },
+  },
 ];
 
 export function listHomeAssistantCardTargets(): readonly HomeAssistantCardTargetDescriptor[] {
@@ -390,6 +426,27 @@ function createHomeAssistantSingleCardConfiguration(
       name: title,
       entity: primaryEntity,
       show_state: true,
+    };
+  }
+
+  if (input.target === "tabbed-card-v2") {
+    const tabEntityIds = entityIds.length > 0 ? entityIds : [primaryEntity];
+    return {
+      type: "custom:tabbed-card-v2",
+      options: {
+        defaultTabIndex: 0,
+      },
+      tabs: tabEntityIds.map((entityId, index) => ({
+        attributes: {
+          label: tabEntityIds.length === 1 ? title : entityId,
+          icon: index === 0 ? "mdi:tab" : "mdi:tab-plus",
+        },
+        card: createHomeAssistantSingleCardConfiguration({
+          target: "entity",
+          title: tabEntityIds.length === 1 ? title : entityId,
+          entityIds: [entityId],
+        }),
+      })),
     };
   }
 
@@ -698,6 +755,7 @@ export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration)
   }
   if (card.type === "custom:mushroom-template-card") return "mushroom-template";
   if (card.type === "custom:bubble-card") return "bubble";
+  if (card.type === "custom:tabbed-card-v2") return "tabbed-card-v2";
   if (card.type === "entity") return "entity";
   if (card.type === "sensor") return "sensor";
   if (card.type === "thermostat") return "thermostat";
@@ -719,6 +777,9 @@ export function getHomeAssistantCardEntityIds(card: HomeAssistantCardConfigurati
       ...card.conditions.map(condition => condition.entity ?? ""),
       ...getHomeAssistantCardEntityIds(card.card),
     ]);
+  }
+  if (isHomeAssistantTabbedCardV2Configuration(card)) {
+    return dedupeEntityIds(card.tabs.flatMap(tab => getHomeAssistantCardEntityIds(tab.card)));
   }
 
   if (card.type === "entities") {
@@ -749,6 +810,10 @@ export function getHomeAssistantCardTitle(card: HomeAssistantCardConfiguration):
 
   if (card.type === "custom:mushroom-template-card") {
     return card.primary;
+  }
+
+  if (card.type === "custom:tabbed-card-v2") {
+    return card.tabs[0]?.attributes.label ?? "Tabbed Card V2";
   }
 
   if (card.type === "iframe") {
@@ -857,6 +922,44 @@ function normalizeHomeAssistantCardConfiguration(
     };
   }
 
+  if (card.type === "custom:tabbed-card-v2" && Array.isArray(card.tabs)) {
+    const tabs = card.tabs
+      .filter(isRecord)
+      .map((tab, index) => {
+        const attributes = isRecord(tab.attributes) ? tab.attributes : {};
+        const child = isRecord(tab.card)
+          ? normalizeHomeAssistantCardConfiguration(tab.card).card
+          : createHomeAssistantCardConfiguration({
+              target: "entity",
+              title: `Tab ${index + 1}`,
+              entityIds: [""],
+            });
+        return {
+          attributes: {
+            label: typeof attributes.label === "string" && attributes.label.trim() ? attributes.label.trim() : `Tab ${index + 1}`,
+            ...(typeof attributes.icon === "string" && attributes.icon.trim() ? { icon: attributes.icon.trim() } : {}),
+          },
+          card: child,
+        };
+      });
+    if (tabs.length === 0) {
+      throw new Error("Tabbed Card V2 has no supported tabs.");
+    }
+    return {
+      card: {
+        type: "custom:tabbed-card-v2",
+        options: {
+          defaultTabIndex: isRecord(card.options) && typeof card.options.defaultTabIndex === "number"
+            ? Math.max(0, Math.floor(card.options.defaultTabIndex))
+            : 0,
+        },
+        tabs,
+      },
+      target: "tabbed-card-v2",
+      layout: "single",
+    };
+  }
+
   if (card.type === "entity" || card.type === "sensor" || card.type === "thermostat") {
     const entity = typeof card.entity === "string" ? card.entity.trim() : "";
     if (!entity) throw new Error("Home Assistant core card has no entity.");
@@ -945,10 +1048,34 @@ function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardC
 function serializeHomeAssistantCustomCardYaml(
   card: HomeAssistantCustomCardConfiguration,
 ): string {
+  if (isHomeAssistantTabbedCardV2Configuration(card)) {
+    return serializeHomeAssistantTabbedCardV2Yaml(card);
+  }
+
   return Object.entries(card)
     .filter(([, value]) => value !== undefined)
     .map(([key, value]) => `${key}: ${serializeYamlScalar(value)}`)
     .join("\n");
+}
+
+function serializeHomeAssistantTabbedCardV2Yaml(card: HomeAssistantTabbedCardV2Configuration): string {
+  const lines = [
+    "type: \"custom:tabbed-card-v2\"",
+    "options:",
+    `  defaultTabIndex: ${serializeYamlScalar(card.options.defaultTabIndex)}`,
+    "tabs:",
+  ];
+  for (const tab of card.tabs) {
+    lines.push("  - attributes:");
+    lines.push(`      label: ${serializeYamlScalar(tab.attributes.label)}`);
+    if (tab.attributes.icon) lines.push(`      icon: ${serializeYamlScalar(tab.attributes.icon)}`);
+    lines.push("    card:");
+    const childLines = serializeHomeAssistantEntitiesCardConfiguration(tab.card, "yaml").split("\n");
+    childLines.forEach(line => {
+      lines.push(`      ${line}`);
+    });
+  }
+  return lines.join("\n");
 }
 
 function serializeHomeAssistantCoreCardYaml(
@@ -1168,7 +1295,7 @@ function parseYamlList(
     if (parsed.value === "" || isYamlBlockScalar(parsed.value)) {
       item[parsed.key] = isYamlBlockScalar(parsed.value)
         ? parseYamlBlockScalar(lines, cursor, line.indent, parsed.value)
-        : {};
+        : parseYamlNestedValue(lines, cursor, line.indent);
     } else {
       item[parsed.key] = parseYamlScalar(parsed.value);
     }
@@ -1180,6 +1307,18 @@ function parseYamlList(
   }
 
   return values;
+}
+
+function parseYamlNestedValue(
+  lines: readonly ParsedYamlLine[],
+  cursor: { index: number },
+  parentIndent: number,
+): unknown {
+  const next = lines[cursor.index];
+  if (!next || next.indent <= parentIndent) return {};
+  return next.text.startsWith("- ")
+    ? parseYamlList(lines, cursor, next.indent)
+    : parseYamlMap(lines, cursor, next.indent);
 }
 
 function parseYamlKeyValue(text: string): { readonly key: string; readonly value: string } | undefined {
@@ -1265,7 +1404,15 @@ function isHomeAssistantConditionalCardConfiguration(
 function isHomeAssistantCustomCardConfiguration(
   card: HomeAssistantCardConfiguration,
 ): card is HomeAssistantCustomCardConfiguration {
-  return card.type === "custom:mushroom-template-card" || card.type === "custom:bubble-card";
+  return card.type === "custom:mushroom-template-card"
+    || card.type === "custom:bubble-card"
+    || card.type === "custom:tabbed-card-v2";
+}
+
+function isHomeAssistantTabbedCardV2Configuration(
+  card: HomeAssistantCardConfiguration,
+): card is HomeAssistantTabbedCardV2Configuration {
+  return card.type === "custom:tabbed-card-v2";
 }
 
 function isHomeAssistantCoreSingleCardConfiguration(

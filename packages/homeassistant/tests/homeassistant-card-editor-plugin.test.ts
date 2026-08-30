@@ -71,7 +71,9 @@ describe("Home Assistant card editor plugin", () => {
     expect(service.cardTargets.map(target => target.target)).toContain("entities");
     expect(service.cardTargets.map(target => target.target)).toContain("mushroom-template");
     expect(service.cardTargets.map(target => target.target)).toContain("bubble");
+    expect(service.cardTargets.map(target => target.target)).toContain("tabbed-card-v2");
     expect(service.templates.map(template => template.id)).toContain("vertical-stack");
+    expect(service.templates.map(template => template.id)).toContain("tabbed-card-v2");
     expect(service.bubbleButtonTypes).toEqual([
       "state",
       "switch",

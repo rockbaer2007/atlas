@@ -112,7 +112,7 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
-  it("creates Mushroom and Bubble card targets", () => {
+  it("creates Mushroom, Bubble and Tabbed Card V2 targets", () => {
     const mushroom = createHomeAssistantCardConfiguration({
       target: "mushroom-template",
       title: "Office climate",
@@ -122,6 +122,11 @@ describe("Home Assistant entities card configuration", () => {
       target: "bubble",
       title: "Office light",
       entityIds: ["light.office"],
+    });
+    const tabbed = createHomeAssistantCardConfiguration({
+      target: "tabbed-card-v2",
+      title: "Office tabs",
+      entityIds: ["light.office", "sensor.office_temperature"],
     });
 
     expect(mushroom).toEqual({
@@ -138,6 +143,36 @@ describe("Home Assistant entities card configuration", () => {
       entity: "light.office",
       show_state: true,
     });
+    expect(tabbed).toEqual({
+      type: "custom:tabbed-card-v2",
+      options: {
+        defaultTabIndex: 0,
+      },
+      tabs: [
+        {
+          attributes: {
+            label: "light.office",
+            icon: "mdi:tab",
+          },
+          card: {
+            type: "entity",
+            name: "light.office",
+            entity: "light.office",
+          },
+        },
+        {
+          attributes: {
+            label: "sensor.office_temperature",
+            icon: "mdi:tab-plus",
+          },
+          card: {
+            type: "entity",
+            name: "sensor.office_temperature",
+            entity: "sensor.office_temperature",
+          },
+        },
+      ],
+    });
     expect(inspectHomeAssistantCardDependency(mushroom)).toEqual({
       id: "mushroom",
       label: "Mushroom",
@@ -151,6 +186,16 @@ describe("Home Assistant entities card configuration", () => {
       required: true,
       resourcePaths: ["/hacsfiles/Bubble-Card/bubble-card.js"],
       installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
+    });
+    expect(inspectHomeAssistantCardDependency(tabbed)).toEqual({
+      id: "tabbed-card-v2",
+      label: "Tabbed Card V2",
+      required: true,
+      resourcePaths: ["/hacsfiles/tabbed-card-v2/tabbed-card-v2.js"],
+      installPaths: [
+        "HACS > Custom repositories > https://github.com/rockbaer2007/tabbed-card-v2 > Lovelace",
+        "/hacsfiles/tabbed-card-v2/tabbed-card-v2.js",
+      ],
     });
   });
 
@@ -389,8 +434,24 @@ describe("Home Assistant entities card configuration", () => {
           installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
         },
       },
+      {
+        target: "tabbed-card-v2",
+        label: "Tabbed Card V2",
+        type: "custom:tabbed-card-v2",
+        dependency: {
+          id: "tabbed-card-v2",
+          label: "Tabbed Card V2",
+          required: true,
+          resourcePaths: ["/hacsfiles/tabbed-card-v2/tabbed-card-v2.js"],
+          installPaths: [
+            "HACS > Custom repositories > https://github.com/rockbaer2007/tabbed-card-v2 > Lovelace",
+            "/hacsfiles/tabbed-card-v2/tabbed-card-v2.js",
+          ],
+        },
+      },
     ]);
     expect(findHomeAssistantCardTargetDescriptor("bubble")?.label).toBe("Bubble button");
+    expect(findHomeAssistantCardTargetDescriptor("tabbed-card-v2")?.label).toBe("Tabbed Card V2");
   });
 
   it("inspects custom card dependency availability from Lovelace resources", () => {
@@ -428,6 +489,13 @@ describe("Home Assistant entities card configuration", () => {
       matchedResourcePaths: [],
       missingResourcePaths: ["/hacsfiles/lovelace-mushroom/mushroom.js"],
     });
+    expect(inspectHomeAssistantCardDependencyAvailability("tabbed-card-v2", [
+      "/hacsfiles/tabbed-card-v2/tabbed-card-v2.js?v=0.1.7",
+    ])).toMatchObject({
+      status: "installed",
+      matchedResourcePaths: ["/hacsfiles/tabbed-card-v2/tabbed-card-v2.js"],
+      missingResourcePaths: [],
+    });
   });
 
   it("creates copy-ready Lovelace resource references for custom card targets", () => {
@@ -448,6 +516,12 @@ describe("Home Assistant entities card configuration", () => {
         type: "module",
       },
     ], null, 2));
+    expect(createHomeAssistantLovelaceResourceReferences("tabbed-card-v2")).toEqual([
+      {
+        url: "/hacsfiles/tabbed-card-v2/tabbed-card-v2.js",
+        type: "module",
+      },
+    ]);
   });
 
   it("creates export manifests with stable filenames and dependency metadata", () => {
@@ -1239,7 +1313,7 @@ describe("Home Assistant entities card configuration", () => {
     ]);
   });
 
-  it("parses Mushroom and Bubble cards", () => {
+  it("parses Mushroom, Bubble and Tabbed Card V2 cards", () => {
     expect(parseHomeAssistantEntitiesCardConfiguration([
       "type: custom:mushroom-template-card",
       "primary: Office climate",
@@ -1273,6 +1347,58 @@ describe("Home Assistant entities card configuration", () => {
         name: "Office light",
         entity: "light.office",
         show_state: true,
+      },
+    });
+    expect(parseHomeAssistantEntitiesCardConfiguration([
+      "type: custom:tabbed-card-v2",
+      "options:",
+      "  defaultTabIndex: 1",
+      "tabs:",
+      "  - attributes:",
+      "      label: Light",
+      "      icon: mdi:lightbulb",
+      "    card:",
+      "      type: entity",
+      "      name: Office light",
+      "      entity: light.office",
+      "  - attributes:",
+      "      label: Climate",
+      "    card:",
+      "      type: sensor",
+      "      name: Office temperature",
+      "      entity: sensor.office_temperature",
+    ].join("\n"))).toEqual({
+      format: "yaml",
+      target: "tabbed-card-v2",
+      layout: "single",
+      card: {
+        type: "custom:tabbed-card-v2",
+        options: {
+          defaultTabIndex: 1,
+        },
+        tabs: [
+          {
+            attributes: {
+              label: "Light",
+              icon: "mdi:lightbulb",
+            },
+            card: {
+              type: "entity",
+              name: "Office light",
+              entity: "light.office",
+            },
+          },
+          {
+            attributes: {
+              label: "Climate",
+            },
+            card: {
+              type: "sensor",
+              name: "Office temperature",
+              entity: "sensor.office_temperature",
+            },
+          },
+        ],
       },
     });
   });

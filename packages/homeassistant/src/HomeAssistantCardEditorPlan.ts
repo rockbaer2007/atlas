@@ -20,6 +20,7 @@ export type HomeAssistantCardEditorTemplateId =
   | "thermostat-card"
   | "link-card"
   | "webpage-card"
+  | "tabbed-card-v2"
   | "vertical-stack"
   | "horizontal-stack";
 
@@ -160,6 +161,7 @@ const defaultSupportedFieldTargets = [
   "webpage",
   "bubble",
   "mushroom-template",
+  "tabbed-card-v2",
 ] as const satisfies readonly HomeAssistantCardTarget[];
 
 const defaultGridBounds: HomeAssistantCardEditorGridBounds = {
@@ -241,6 +243,15 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     defaultWidth: 8,
     defaultHeight: 4,
     preview: ["iframe", "URL"],
+  },
+  {
+    id: "tabbed-card-v2",
+    label: "Tabbed Card V2",
+    layout: "vertical-stack",
+    target: "tabbed-card-v2",
+    defaultWidth: 8,
+    defaultHeight: 3,
+    preview: ["Tab 1", "Tab 2"],
   },
   {
     id: "state-button",
@@ -639,6 +650,14 @@ function createSurfaceFieldCardConfiguration(
 ): HomeAssistantCardConfiguration | undefined {
   const layout = field.layout ?? "card";
   const entries = (field.entries ?? []).filter(entry => entry.entityId);
+  if (field.target === "tabbed-card-v2" && entries.length > 0) {
+    return createHomeAssistantCardConfiguration({
+      target: "tabbed-card-v2",
+      title: field.id,
+      entityIds: entries.map(entry => entry.entityId),
+    });
+  }
+
   if (layout !== "card" && entries.length > 0) {
     if (layout === "grid") {
       return {

@@ -432,6 +432,7 @@ const translations = {
     "palette.community-bubble-switch": "Bubble switch",
     "palette.community-bubble-slider": "Bubble slider",
     "palette.community-bubble-name": "Bubble name",
+    "palette.community-tabbed-card-v2": "Tabbed Card V2",
     "target.entities": "Entities",
     "target.entity": "Entity",
     "target.button": "Button",
@@ -441,6 +442,7 @@ const translations = {
     "target.webpage": "Webpage",
     "target.mushroom-template": "Mushroom template",
     "target.bubble": "Bubble",
+    "target.tabbed-card-v2": "Tabbed Card V2",
     "template.entity-list": "Entity list",
     "template.entity-card": "Entity",
     "template.button-card": "Button",
@@ -451,6 +453,7 @@ const translations = {
     "template.thermostat-card": "Thermostat",
     "template.link-card": "Link",
     "template.webpage-card": "Webpage",
+    "template.tabbed-card-v2": "Tabbed Card V2",
     "template.state-button": "State button",
     "template.switch-button": "Switch button",
   },
@@ -739,6 +742,7 @@ const translations = {
     "palette.community-bubble-switch": "Bubble Switch",
     "palette.community-bubble-slider": "Bubble Slider",
     "palette.community-bubble-name": "Bubble Name",
+    "palette.community-tabbed-card-v2": "Tabbed Card V2",
     "target.entities": "Entitaeten",
     "target.entity": "Entitaet",
     "target.button": "Button",
@@ -748,6 +752,7 @@ const translations = {
     "target.webpage": "Webseite",
     "target.mushroom-template": "Mushroom Template",
     "target.bubble": "Bubble",
+    "target.tabbed-card-v2": "Tabbed Card V2",
     "template.entity-list": "Entitaetenliste",
     "template.entity-card": "Entitaet",
     "template.button-card": "Button",
@@ -758,6 +763,7 @@ const translations = {
     "template.thermostat-card": "Thermostat",
     "template.link-card": "Verknuepfung",
     "template.webpage-card": "Webseite",
+    "template.tabbed-card-v2": "Tabbed Card V2",
     "template.state-button": "Status-Button",
     "template.switch-button": "Switch-Button",
   },
@@ -841,6 +847,7 @@ let expertPaletteCards = [
   { id: "core-link", category: "Core", label: "Link", templateId: "link-card", target: "link", preview: ["navigate"] },
   { id: "core-webpage", category: "Core", label: "Webpage", templateId: "webpage-card", target: "webpage", preview: ["type: iframe"] },
   { id: "community-mushroom-template", category: "Community", label: "Mushroom template", templateId: "state-button", target: "mushroom-template", preview: ["Primary / secondary"] },
+  { id: "community-tabbed-card-v2", category: "Community", label: "Tabbed Card V2", templateId: "tabbed-card-v2", target: "tabbed-card-v2", preview: ["custom:tabbed-card-v2", "tabs"] },
   { id: "community-bubble-state", category: "Community", label: "Bubble state", templateId: "state-button", target: "bubble", bubbleButtonType: "state", preview: ["button_type: state"] },
   { id: "community-bubble-switch", category: "Community", label: "Bubble switch", templateId: "switch-button", target: "bubble", bubbleButtonType: "switch", preview: ["button_type: switch"] },
   { id: "community-bubble-slider", category: "Community", label: "Bubble slider", templateId: "state-button", target: "bubble", bubbleButtonType: "slider", preview: ["button_type: slider"] },
@@ -1695,7 +1702,9 @@ function isMappedLovelaceResourceUrl(url) {
   return url.includes("/bubble-card/")
     || url.includes("bubble-card.js")
     || url.includes("/lovelace-mushroom/")
-    || url.includes("mushroom.js");
+    || url.includes("mushroom.js")
+    || url.includes("/tabbed-card-v2/")
+    || url.includes("tabbed-card-v2.js");
 }
 
 function createScannedExpertPaletteCards(resources) {
