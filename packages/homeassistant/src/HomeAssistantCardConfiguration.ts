@@ -754,7 +754,7 @@ export function inspectHomeAssistantCardStyleBlocks(text: string): HomeAssistant
 
 export function convertHomeAssistantCardModStylesToUixStyle(text: string): string {
   return text.replace(/^(\s*)card_mod:(.*)$/gm, (_match, indent: string, suffix: string) =>
-    `${indent}uix_style:${suffix}`,
+    `${indent}uix:${suffix}`,
   );
 }
 
