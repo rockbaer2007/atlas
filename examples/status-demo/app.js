@@ -188,6 +188,7 @@ const stackSelectionSummary = document.querySelector("#stack-selection-summary")
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
+const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCache";
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const adminOrigin = "http://127.0.0.1:4175";
 const adminConnectionApiUrl = `${adminOrigin}/api/admin-connection`;
@@ -415,6 +416,7 @@ const translations = {
     "message.commandFailed": "Command failed for {entityId}: {reason}",
     "message.unknownError": "Unknown error.",
     "message.loadedEntities": "Loaded {count} entities from Home Assistant.",
+    "message.loadedEntitiesWithChanges": "Loaded {count} entities from Home Assistant. Cache: +{added}, -{removed}.",
     "message.entityListFailed": "Entity list failed: {reason}",
     "message.loadedResources": "Loaded {count} Lovelace resources from Home Assistant. {total} palette entries detected, including {hacs} /hacsfiles resources.",
     "message.lovelaceFailed": "Lovelace resources failed: {reason}",
@@ -819,6 +821,7 @@ const translations = {
     "message.commandFailed": "Befehl für {entityId} fehlgeschlagen: {reason}",
     "message.unknownError": "Unbekannter Fehler.",
     "message.loadedEntities": "{count} Entitäten aus Home Assistant geladen.",
+    "message.loadedEntitiesWithChanges": "{count} Entitäten aus Home Assistant geladen. Cache: +{added}, -{removed}.",
     "message.entityListFailed": "Entitätsliste fehlgeschlagen: {reason}",
     "message.loadedResources": "{count} Lovelace-Ressourcen aus Home Assistant geladen. {total} Palette-Einträge erkannt, davon {hacs} /hacsfiles-Ressourcen.",
     "message.lovelaceFailed": "Lovelace-Ressourcen fehlgeschlagen: {reason}",
@@ -1211,6 +1214,12 @@ let expertFieldEditing = false;
 let selectedContainerCardRef;
 const entitySnapshots = new Map();
 const knownEntityIds = new Set();
+const cachedHomeAssistantEntityIds = new Set();
+let entityCatalogRevision = 0;
+let cachedEntityPickerCatalog = [];
+let cachedEntityPickerDomains = [];
+let cachedEntityPickerSignature = "";
+let entityPickerRenderTimer;
 const stackSelectedEntityIds = new Set();
 let statusPreviewEntityId;
 let pendingImport;
@@ -1227,6 +1236,7 @@ for (const group of panelGroups) {
     knownEntityIds.add(entityId);
   }
 }
+loadCachedEntityCatalog();
 
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
@@ -1799,16 +1809,116 @@ function knownEntityPickerIds() {
   ])].sort((left, right) => left.localeCompare(right));
 }
 
+function loadCachedEntityCatalog() {
+  try {
+    const cached = JSON.parse(localStorage.getItem(entityCatalogCacheStorageKey) ?? "null");
+    if (!cached || cached.version !== 1 || !Array.isArray(cached.entities)) return;
+    for (const entity of cached.entities) {
+      if (!entity || typeof entity.entityId !== "string") continue;
+      const normalized = {
+        entityId: entity.entityId,
+        state: entity.state || "unknown",
+        ...(typeof entity.value === "string" ? { value: entity.value } : {}),
+        ...(typeof entity.name === "string" ? { name: entity.name } : {}),
+        ...(typeof entity.unit === "string" ? { unit: entity.unit } : {}),
+        updatedAt: entity.updatedAt || cached.updatedAt || Date.now(),
+        cached: true,
+      };
+      entitySnapshots.set(normalized.entityId, normalized);
+      knownEntityIds.add(normalized.entityId);
+      cachedHomeAssistantEntityIds.add(normalized.entityId);
+    }
+    entityCatalogRevision += 1;
+  } catch {
+    // The editor falls back to live/demo entities when the cache is unavailable.
+  }
+}
+
+function saveCachedEntityCatalog() {
+  try {
+    const entities = [...entitySnapshots.values()]
+      .filter(entity => typeof entity.entityId === "string" && cachedHomeAssistantEntityIds.has(entity.entityId))
+      .map(entity => ({
+        entityId: entity.entityId,
+        state: entity.state || "unknown",
+        ...(typeof entity.value === "string" ? { value: entity.value } : {}),
+        ...(typeof entity.name === "string" ? { name: entity.name } : {}),
+        ...(typeof entity.unit === "string" ? { unit: entity.unit } : {}),
+        updatedAt: entity.updatedAt || Date.now(),
+      }));
+    localStorage.setItem(entityCatalogCacheStorageKey, JSON.stringify({
+      version: 1,
+      updatedAt: Date.now(),
+      entities,
+    }));
+  } catch {
+    // Cache persistence is best-effort.
+  }
+}
+
+function entityPickerCatalogSignature() {
+  return JSON.stringify({
+    revision: entityCatalogRevision,
+    tracked: trackedEntityIds(),
+    groups: panelGroups.map(group => [group.id, ...group.entityIds]),
+  });
+}
+
 function createEntityPickerCatalog() {
-  return createHomeAssistantEntityCatalog({
+  const signature = entityPickerCatalogSignature();
+  if (signature === cachedEntityPickerSignature) {
+    return cachedEntityPickerCatalog;
+  }
+  cachedEntityPickerCatalog = createHomeAssistantEntityCatalog({
     entityIds: knownEntityPickerIds(),
     entities: [...entitySnapshots.values()],
   });
+  cachedEntityPickerDomains = listHomeAssistantEntityCatalogDomains(cachedEntityPickerCatalog);
+  cachedEntityPickerSignature = signature;
+  return cachedEntityPickerCatalog;
+}
+
+function createEntityPickerCatalogDomains() {
+  createEntityPickerCatalog();
+  return cachedEntityPickerDomains;
+}
+
+function invalidateEntityPickerCatalog() {
+  entityCatalogRevision += 1;
+}
+
+function replaceLiveEntitySnapshots(entities) {
+  const previous = new Set(cachedHomeAssistantEntityIds);
+  const next = new Set();
+  for (const entityId of cachedHomeAssistantEntityIds) {
+    knownEntityIds.delete(entityId);
+    entitySnapshots.delete(entityId);
+  }
+  cachedHomeAssistantEntityIds.clear();
+  for (const entity of entities) {
+    if (!entity?.entityId) continue;
+    next.add(entity.entityId);
+    knownEntityIds.add(entity.entityId);
+    cachedHomeAssistantEntityIds.add(entity.entityId);
+    entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now(), cached: false });
+  }
+  invalidateEntityPickerCatalog();
+  saveCachedEntityCatalog();
+  return {
+    count: next.size,
+    added: [...next].filter(entityId => !previous.has(entityId)).length,
+    removed: [...previous].filter(entityId => !next.has(entityId)).length,
+  };
+}
+
+function scheduleEntityPickerOptionsRender(delay = 140) {
+  window.clearTimeout(entityPickerRenderTimer);
+  entityPickerRenderTimer = window.setTimeout(renderEntityPickerOptions, delay);
 }
 
 function renderEntityDomainOptions() {
   const selected = homeAssistantEntityDomain.value || "all";
-  const domains = listHomeAssistantEntityCatalogDomains(createEntityPickerCatalog());
+  const domains = createEntityPickerCatalogDomains();
 
   homeAssistantEntityDomain.replaceChildren();
   const allOption = document.createElement("option");
@@ -3600,8 +3710,10 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
 
   let entries = [...(field.entries ?? [])].map(entry => ({ ...entry }));
   let selectedPickerDomain = "all";
+  let pickerRenderTimer;
 
   const closeDialog = () => {
+    window.clearTimeout(pickerRenderTimer);
     backdrop.remove();
   };
   const renderPicker = () => {
@@ -3662,6 +3774,10 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
       pickerResults.append(empty);
     }
   };
+  const schedulePickerRender = () => {
+    window.clearTimeout(pickerRenderTimer);
+    pickerRenderTimer = window.setTimeout(renderPicker, 120);
+  };
   const renderRows = () => {
     list.replaceChildren();
     entries.forEach((entry, index) => {
@@ -3696,7 +3812,7 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
       pickerSearch.focus();
     }
   });
-  pickerSearch.addEventListener("input", renderPicker);
+  pickerSearch.addEventListener("input", schedulePickerRender);
   save.addEventListener("click", () => {
     const normalizedEntries = entries
       .map((entry, index) => ({
@@ -6150,7 +6266,6 @@ function bindSelectedEntity(nextTransport) {
   lovelaceResourcesChecked = false;
   renderExpertTemplatePalette();
   activeTransport = nextTransport;
-  entitySnapshots.clear();
   if (trackedEntityIds().length === 0) {
     renderEmptyStatusPreview();
     selectedEntity.textContent = emptyEntitySelectionMessage;
@@ -6172,9 +6287,14 @@ function bindSelectedEntity(nextTransport) {
       return;
     }
 
-    entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now() });
+    entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now(), cached: false });
     knownEntityIds.add(entity.entityId);
-    renderEntityPickerOptions();
+    if (activeTransport !== transport) {
+      cachedHomeAssistantEntityIds.add(entity.entityId);
+      saveCachedEntityCatalog();
+    }
+    invalidateEntityPickerCatalog();
+    scheduleEntityPickerOptionsRender();
     renderEntityList();
   });
   const usingLiveTransport = activeTransport !== transport;
@@ -6188,15 +6308,14 @@ function bindSelectedEntity(nextTransport) {
         });
     });
     removeEntityStateListListener = connection?.getClient()?.subscribeEntityStateList(result => {
-      for (const entity of result.entities) {
-        knownEntityIds.add(entity.entityId);
-        entitySnapshots.set(entity.entityId, { ...entity, updatedAt: Date.now() });
+      if (result.success) {
+        const changes = replaceLiveEntitySnapshots(result.entities);
+        renderEntityPickerOptions();
+        renderEntityList();
+        statusMessage.textContent = t("message.loadedEntitiesWithChanges", changes);
+        return;
       }
-      renderEntityPickerOptions();
-      renderEntityList();
-      statusMessage.textContent = result.success
-        ? t("message.loadedEntities", { count: result.entities.length })
-        : t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
+      statusMessage.textContent = t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
     });
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
       lovelaceResources = result.resources;
@@ -6337,7 +6456,7 @@ homeAssistantEntityDomainShortcuts.addEventListener("click", event => {
 });
 homeAssistantEntitySearch.addEventListener("input", () => {
   persistConfiguration();
-  renderEntityPickerOptions();
+  scheduleEntityPickerOptionsRender();
 });
 clearHomeAssistantEntitySearch.addEventListener("click", () => {
   homeAssistantEntitySearch.value = "";
