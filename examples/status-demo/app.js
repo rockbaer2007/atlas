@@ -513,6 +513,7 @@ const translations = {
     "text.cardOptions": "Options",
     "text.containedCards": "Contained cards",
     "text.entityEntries": "Entities",
+    "text.entityPicker": "Entity picker",
     "text.styleCode": "Style code",
     "text.noSelectedCard": "Select a card on the editor surface.",
     "text.waiting": "Waiting",
@@ -916,6 +917,7 @@ const translations = {
     "text.cardOptions": "Optionen",
     "text.containedCards": "Enthaltene Cards",
     "text.entityEntries": "Entitäten",
+    "text.entityPicker": "Entitätsauswahl",
     "text.styleCode": "Style-Code",
     "text.noSelectedCard": "Wähle eine Card auf der Editor-Fläche aus.",
     "text.waiting": "Wartet",
@@ -3562,6 +3564,23 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
   list.className = "overview-entity-editor-list";
   body.append(list);
 
+  const picker = document.createElement("section");
+  picker.className = "overview-entity-picker";
+  picker.hidden = true;
+  const pickerTitle = document.createElement("strong");
+  pickerTitle.textContent = t("text.entityPicker");
+  const pickerSearch = document.createElement("input");
+  pickerSearch.type = "search";
+  pickerSearch.autocomplete = "off";
+  pickerSearch.spellcheck = false;
+  pickerSearch.placeholder = t("label.entitySearch");
+  const pickerDomains = document.createElement("div");
+  pickerDomains.className = "overview-entity-domain-filters";
+  const pickerResults = document.createElement("div");
+  pickerResults.className = "overview-entity-picker-results";
+  picker.append(pickerTitle, pickerSearch, pickerDomains, pickerResults);
+  body.append(picker);
+
   const actions = document.createElement("div");
   actions.className = "connection-actions";
   const add = document.createElement("button");
@@ -3580,9 +3599,68 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
   document.body.append(backdrop);
 
   let entries = [...(field.entries ?? [])].map(entry => ({ ...entry }));
+  let selectedPickerDomain = "all";
 
   const closeDialog = () => {
     backdrop.remove();
+  };
+  const renderPicker = () => {
+    const catalog = createEntityPickerCatalog();
+    const domains = listHomeAssistantEntityCatalogDomains(catalog);
+    const shortcutDomains = listHomeAssistantEntityDomainShortcuts(domains);
+    if (selectedPickerDomain !== "all" && !domains.includes(selectedPickerDomain)) {
+      selectedPickerDomain = "all";
+    }
+    pickerDomains.replaceChildren();
+    for (const domain of shortcutDomains) {
+      const label = document.createElement("label");
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "overview-entity-picker-domain";
+      radio.value = domain;
+      radio.checked = domain === selectedPickerDomain;
+      const text = document.createElement("span");
+      text.textContent = domain === "all" ? t("text.all") : domain;
+      radio.addEventListener("change", () => {
+        selectedPickerDomain = domain;
+        renderPicker();
+      });
+      label.append(radio, text);
+      pickerDomains.append(label);
+    }
+
+    const entityEntries = filterHomeAssistantEntityCatalog(catalog, {
+      domain: selectedPickerDomain,
+      search: pickerSearch.value,
+    });
+    pickerResults.replaceChildren();
+    for (const entityEntry of entityEntries) {
+      const result = document.createElement("button");
+      result.type = "button";
+      const title = document.createElement("strong");
+      const detail = document.createElement("small");
+      title.textContent = entityEntry.label;
+      detail.textContent = `${entityEntry.entityId} · ${entityIcon(entityEntry.entityId)}`;
+      result.append(title, detail);
+      result.addEventListener("click", () => {
+        entries.push({
+          id: entityEntry.label,
+          target: "entity",
+          entityId: entityEntry.entityId,
+          icon: entityIcon(entityEntry.entityId),
+        });
+        renderRows();
+      });
+      pickerResults.append(result);
+    }
+    if (entityEntries.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "dialog-hint";
+      const domainLabel = selectedPickerDomain === "all" ? t("message.allTypes") : selectedPickerDomain;
+      const searchSuffix = pickerSearch.value.trim() ? t("message.entitySearchSuffix", { search: pickerSearch.value.trim() }) : "";
+      empty.textContent = t("message.noEntitiesFound", { domain: domainLabel, search: searchSuffix });
+      pickerResults.append(empty);
+    }
   };
   const renderRows = () => {
     list.replaceChildren();
@@ -3612,16 +3690,13 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
   };
 
   add.addEventListener("click", () => {
-    const entityId = expertEntity.value.trim() || currentEntityId();
-    if (!entityId) return;
-    entries.push({
-      id: entityDisplayName(entityId),
-      target: "entity",
-      entityId,
-      icon: entityIcon(entityId),
-    });
-    renderRows();
+    picker.hidden = !picker.hidden;
+    if (!picker.hidden) {
+      renderPicker();
+      pickerSearch.focus();
+    }
   });
+  pickerSearch.addEventListener("input", renderPicker);
   save.addEventListener("click", () => {
     const normalizedEntries = entries
       .map((entry, index) => ({
