@@ -198,6 +198,7 @@ describe("Home Assistant frontend integration planning", () => {
       ],
       supportedFieldTargets: [
         "entities",
+        "glance",
         "entity",
         "button",
         "sensor",

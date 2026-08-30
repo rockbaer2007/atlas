@@ -60,7 +60,6 @@ entities:
     icon: mdi:heat-wave
 grid_options:
   rows: auto
-  columns: 18
 title: hyper 2000 EG 1
 state_color: true
 columns: 8

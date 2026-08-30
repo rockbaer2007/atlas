@@ -496,12 +496,16 @@ const translations = {
     "text.none": "none",
     "text.entityName": "Entity name",
     "text.entityId": "Entity ID",
+    "text.cardIcon": "Icon",
+    "text.cardTitle": "Title",
     "text.cardName": "Card name",
     "text.cardType": "Card type",
     "text.cardSettings": "Settings",
     "text.cardColumns": "Columns",
     "text.cardRows": "Rows",
+    "text.cardOptions": "Options",
     "text.containedCards": "Contained cards",
+    "text.entityEntries": "Entities",
     "text.styleCode": "Style code",
     "text.noSelectedCard": "Select a card on the editor surface.",
     "text.waiting": "Waiting",
@@ -566,6 +570,7 @@ const translations = {
     "palette.community-bubble-name": "Bubble name",
     "palette.community-tabbed-card-v2": "Tabbed Card V2",
     "target.entities": "Entities",
+    "target.glance": "Overview / Glance",
     "target.entity": "Entity",
     "target.button": "Button",
     "target.sensor": "Sensor",
@@ -887,12 +892,16 @@ const translations = {
     "text.none": "keine",
     "text.entityName": "Entitätsname",
     "text.entityId": "Entitäts-ID",
+    "text.cardIcon": "Icon",
+    "text.cardTitle": "Titel",
     "text.cardName": "Cardname",
     "text.cardType": "Cardtyp",
     "text.cardSettings": "Einstellungen",
     "text.cardColumns": "Spalten",
     "text.cardRows": "Zeilen",
+    "text.cardOptions": "Optionen",
     "text.containedCards": "Enthaltene Cards",
+    "text.entityEntries": "Entitäten",
     "text.styleCode": "Style-Code",
     "text.noSelectedCard": "Wähle eine Card auf der Editor-Fläche aus.",
     "text.waiting": "Wartet",
@@ -957,6 +966,7 @@ const translations = {
     "palette.community-bubble-name": "Bubble Name",
     "palette.community-tabbed-card-v2": "Tabbed Card V2",
     "target.entities": "Entitäten",
+    "target.glance": "Übersicht / Glance",
     "target.entity": "Entität",
     "target.button": "Button",
     "target.sensor": "Sensor",
@@ -2294,7 +2304,12 @@ function getSimplePreviewCardEntities(card) {
       .map(entity => typeof entity === "string"
         ? { entity }
         : entity && typeof entity === "object" && typeof entity.entity === "string"
-          ? { entity: entity.entity, name: typeof entity.name === "string" ? entity.name : "" }
+          ? {
+              entity: entity.entity,
+              name: typeof entity.name === "string" ? entity.name : "",
+              icon: typeof entity.icon === "string" ? entity.icon : "",
+              show_last_changed: typeof entity.show_last_changed === "boolean" ? entity.show_last_changed : undefined,
+            }
           : undefined)
       .filter(Boolean);
   }
@@ -2313,6 +2328,9 @@ function collectImportedSimpleEntityNames(card) {
 
 function createExpertFieldsFromImportedCard(card) {
   const entities = getSimplePreviewCardEntities(card);
+  if (card?.type === "glance") {
+    return [createImportedOverviewExpertField(card, entities)];
+  }
   return entities.map((entity, index) => createHomeAssistantCardEditorFieldFromTemplate({
     template: "entity-card",
     target: "entity",
@@ -2323,6 +2341,35 @@ function createExpertFieldsFromImportedCard(card) {
     width: 4,
     height: 2,
   }));
+}
+
+function createImportedOverviewExpertField(card, entities) {
+  const title = getSimplePreviewCardTitle(card) || "Glance 1";
+  return {
+    id: title,
+    target: "glance",
+    importedCardType: "glance",
+    entityId: "",
+    layout: "card",
+    entries: entities.map((entity, index) => ({
+      id: entity.name || formatEntityIdAsTitle(entity.entity) || `Entity ${index + 1}`,
+      target: "entity",
+      entityId: entity.entity,
+      ...(entity.icon ? { icon: entity.icon } : {}),
+      ...(typeof entity.show_last_changed === "boolean" ? { show_last_changed: entity.show_last_changed } : {}),
+    })),
+    importedOptions: {
+      ...(typeof card.show_name === "boolean" ? { show_name: card.show_name } : {}),
+      ...(typeof card.show_icon === "boolean" ? { show_icon: card.show_icon } : {}),
+      ...(typeof card.show_state === "boolean" ? { show_state: card.show_state } : {}),
+      ...(typeof card.columns === "number" ? { columns: card.columns } : {}),
+      ...(typeof card.state_color === "boolean" ? { state_color: card.state_color } : {}),
+    },
+    column: 0,
+    row: 0,
+    width: 8,
+    height: Math.max(2, Math.ceil(Math.max(1, entities.length) / 4) * 2),
+  };
 }
 
 function collectSimplePreviewCardEntities(value, key = "") {
@@ -4147,6 +4194,25 @@ function entityDisplayName(entityId) {
   return importedSimpleEntityNames.get(entityId) ?? entityId;
 }
 
+function entityIcon(entityId) {
+  if (!entityId) return "";
+  const domain = entityId.split(".")[0];
+  const fallbackByDomain = {
+    binary_sensor: "mdi:radiobox-marked",
+    sensor: "mdi:eye",
+    switch: "mdi:toggle-switch",
+    light: "mdi:lightbulb",
+    climate: "mdi:thermostat",
+    input_number: "mdi:numeric",
+    input_boolean: "mdi:toggle-switch-outline",
+  };
+  return fallbackByDomain[domain] ?? "mdi:home-assistant";
+}
+
+function cardIcon(card) {
+  return card?.icon || entityIcon(card?.entityId);
+}
+
 function appendDetailRow(list, label, value, className) {
   const term = document.createElement("dt");
   const description = document.createElement("dd");
@@ -4188,6 +4254,18 @@ function expertContainerRowsText(field) {
   return String(typeof field.rows === "number" ? field.rows : field.height);
 }
 
+function expertImportedOptionsText(field) {
+  const options = field.importedOptions ?? {};
+  return Object.entries(options)
+    .filter(([, value]) => value !== undefined && value !== "")
+    .map(([key, value]) => `${key}: ${value}`)
+    .join(" · ");
+}
+
+function isOverviewField(field) {
+  return field?.target === "glance" || field?.importedCardType === "glance";
+}
+
 function renderExpertSelectedCardDetails() {
   expertSelectedCardDetails.replaceChildren();
   const context = selectedExpertDetailContext();
@@ -4208,9 +4286,13 @@ function renderExpertSelectedCardDetails() {
   const details = document.createElement("dl");
   appendDetailRow(details, t("text.cardName"), selectedCard.id);
   appendDetailRow(details, t("text.cardType"), variant.label ?? translateCardTarget(selectedCard.target, selectedCard.target), "detail-card-type");
+  appendDetailRow(details, t("text.cardIcon"), cardIcon(selectedCard));
   appendDetailRow(details, t("text.entityName"), entityDisplayName(entityId));
   appendDetailRow(details, t("text.entityId"), entityId || t("text.noEntity"));
   appendDetailRow(details, t("text.cardSettings"), expertDetailSettingsText(field, card));
+  if (!card && isOverviewField(field)) {
+    appendDetailRow(details, t("text.cardOptions"), expertImportedOptionsText(field));
+  }
   if (!card && isEditableContainerField(field)) {
     appendDetailRow(details, t("text.cardColumns"), expertContainerColumnsText(field));
     appendDetailRow(details, t("text.cardRows"), expertContainerRowsText(field));
@@ -4226,6 +4308,9 @@ function renderExpertSelectedCardDetails() {
 
   if (!card && isEditableContainerField(field)) {
     expertSelectedCardDetails.append(createExpertDetailContainedCards(field, fieldIndex));
+  }
+  if (!card && isOverviewField(field)) {
+    expertSelectedCardDetails.append(createExpertDetailEntityEntries(field));
   }
 
   if (styles.length) {
@@ -4263,6 +4348,34 @@ function renderExpertSelectedCardDetails() {
   });
   actions.append(remove);
   expertSelectedCardDetails.append(actions);
+}
+
+function createExpertDetailEntityEntries(field) {
+  const section = document.createElement("section");
+  section.className = "expert-detail-card-list";
+  const title = document.createElement("strong");
+  title.textContent = t("text.entityEntries");
+  const list = document.createElement("ul");
+  section.append(title, list);
+  for (const [index, entry] of (field.entries ?? []).entries()) {
+    const item = document.createElement("li");
+    item.className = "expert-detail-card-item";
+    const entityId = entry.entityId || "";
+    const parts = [
+      `${index + 1}. ${entry.id || entityDisplayName(entityId)}`,
+      entityId,
+      entry.icon || entityIcon(entityId),
+      typeof entry.show_last_changed === "boolean" ? `show_last_changed: ${entry.show_last_changed}` : "",
+    ].filter(Boolean);
+    item.textContent = parts.join(" · ");
+    list.append(item);
+  }
+  if (list.children.length === 0) {
+    const empty = document.createElement("small");
+    empty.textContent = t("message.dragCard");
+    section.append(empty);
+  }
+  return section;
 }
 
 function createExpertDetailContainedCards(field, fieldIndex) {

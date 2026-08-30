@@ -1604,16 +1604,20 @@ describe("Home Assistant entities card configuration", () => {
         show_name: true,
         show_icon: true,
         show_state: true,
+        columns: 8,
+        state_color: true,
       },
     });
     expect(summary.card.type === "glance" ? summary.card.entities : []).toHaveLength(8);
     expect(summary.card.type === "glance" ? summary.card.entities : []).toContainEqual({
       entity: "sensor.hyper_2000_eg_1_solar_input_power",
       name: "Leistung",
+      show_last_changed: false,
     });
     expect(summary.card.type === "glance" ? summary.card.entities : []).toContainEqual({
       entity: "sensor.hyper_2000_eg_1_output_home_power",
       name: "ins Haus",
+      icon: "mdi:home",
     });
     const styleInspection = inspectHomeAssistantCardStyleBlocks(text);
     expect(styleInspection.globalStyles).toHaveLength(1);

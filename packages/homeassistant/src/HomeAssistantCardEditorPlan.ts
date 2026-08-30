@@ -59,6 +59,7 @@ export interface HomeAssistantCardEditorSurfaceFieldEntry {
   readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
   readonly entityId?: string;
   readonly icon?: string;
+  readonly show_last_changed?: boolean;
   readonly cards?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
 }
 
@@ -158,6 +159,7 @@ const defaultSupportedCardEditorLayouts = [
 
 const defaultSupportedFieldTargets = [
   "entities",
+  "glance",
   "entity",
   "button",
   "sensor",
@@ -578,6 +580,7 @@ function normalizeSurfaceFieldEntry(
     ...(target === "bubble" ? { bubbleButtonType: normalizeBubbleButtonType(entry.bubbleButtonType) } : {}),
     ...(entityId ? { entityId } : {}),
     ...(entry.icon?.trim() ? { icon: entry.icon.trim() } : {}),
+    ...(typeof entry.show_last_changed === "boolean" ? { show_last_changed: entry.show_last_changed } : {}),
     ...(entry.cards?.length ? { cards: entry.cards.map(normalizeSurfaceFieldEntry) } : {}),
   };
 }
@@ -700,6 +703,22 @@ function createSurfaceFieldCardConfiguration(
       ...(field.columns === "full" ? { columns: "full" as const } : {}),
       ...(field.rows === "auto" ? { rows: "auto" as const } : {}),
       tabs,
+    };
+  }
+
+  if (field.target === "glance" && entries.some(entry => entry.entityId)) {
+    return {
+      type: "glance",
+      title: field.id,
+      show_name: true,
+      show_icon: true,
+      show_state: true,
+      entities: entries.flatMap(entry => entry.entityId ? [{
+        entity: entry.entityId,
+        ...(entry.id ? { name: entry.id } : {}),
+        ...(entry.icon ? { icon: entry.icon } : {}),
+        ...(typeof entry.show_last_changed === "boolean" ? { show_last_changed: entry.show_last_changed } : {}),
+      }] : []),
     };
   }
 

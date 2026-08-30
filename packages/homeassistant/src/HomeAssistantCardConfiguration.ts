@@ -6,6 +6,8 @@ import type {
 export interface HomeAssistantEntitiesCardEntity {
   readonly entity: string;
   readonly name?: string;
+  readonly icon?: string;
+  readonly show_last_changed?: boolean;
 }
 
 export type HomeAssistantCardTarget =
@@ -36,6 +38,8 @@ export interface HomeAssistantGlanceCardConfiguration {
   readonly show_name?: boolean;
   readonly show_icon?: boolean;
   readonly show_state?: boolean;
+  readonly columns?: number;
+  readonly state_color?: boolean;
   readonly entities: readonly HomeAssistantEntitiesCardEntity[];
 }
 
@@ -497,6 +501,17 @@ function createHomeAssistantSingleCardConfiguration(
           entityIds: [entityId],
         }),
       })),
+    };
+  }
+
+  if (input.target === "glance") {
+    return {
+      type: "glance",
+      title,
+      show_name: true,
+      show_icon: true,
+      show_state: true,
+      entities: entityIds.map(entity => ({ entity })),
     };
   }
 
@@ -1138,6 +1153,8 @@ function normalizeHomeAssistantCardConfiguration(
           ...(typeof card.show_name === "boolean" ? { show_name: card.show_name } : {}),
           ...(typeof card.show_icon === "boolean" ? { show_icon: card.show_icon } : {}),
           ...(typeof card.show_state === "boolean" ? { show_state: card.show_state } : {}),
+          ...(typeof card.columns === "number" ? { columns: card.columns } : {}),
+          ...(typeof card.state_color === "boolean" ? { state_color: card.state_color } : {}),
           entities,
         },
         target: "glance",
@@ -1168,6 +1185,8 @@ function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardC
   for (const item of card.entities) {
     lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
     if (item.name) lines.push(`    name: ${JSON.stringify(item.name)}`);
+    if (item.icon) lines.push(`    icon: ${JSON.stringify(item.icon)}`);
+    if (item.show_last_changed !== undefined) lines.push(`    show_last_changed: ${serializeYamlScalar(item.show_last_changed)}`);
   }
   return lines.join("\n");
 }
@@ -1180,10 +1199,14 @@ function serializeHomeAssistantGlanceCardYaml(card: HomeAssistantGlanceCardConfi
   if (card.show_name !== undefined) lines.push(`show_name: ${serializeYamlScalar(card.show_name)}`);
   if (card.show_icon !== undefined) lines.push(`show_icon: ${serializeYamlScalar(card.show_icon)}`);
   if (card.show_state !== undefined) lines.push(`show_state: ${serializeYamlScalar(card.show_state)}`);
+  if (card.columns !== undefined) lines.push(`columns: ${serializeYamlScalar(card.columns)}`);
+  if (card.state_color !== undefined) lines.push(`state_color: ${serializeYamlScalar(card.state_color)}`);
   lines.push("entities:");
   for (const item of card.entities) {
     lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
     if (item.name) lines.push(`    name: ${JSON.stringify(item.name)}`);
+    if (item.icon) lines.push(`    icon: ${JSON.stringify(item.icon)}`);
+    if (item.show_last_changed !== undefined) lines.push(`    show_last_changed: ${serializeYamlScalar(item.show_last_changed)}`);
   }
   return lines.join("\n");
 }
@@ -1654,7 +1677,18 @@ function readHomeAssistantEntityItems(values: readonly unknown[]): HomeAssistant
     const name = isRecord(value) && typeof value.name === "string" && value.name.trim()
       ? value.name.trim()
       : undefined;
-    entities.push({ entity, ...(name ? { name } : {}) });
+    const icon = isRecord(value) && typeof value.icon === "string" && value.icon.trim()
+      ? value.icon.trim()
+      : undefined;
+    const showLastChanged = isRecord(value) && typeof value.show_last_changed === "boolean"
+      ? value.show_last_changed
+      : undefined;
+    entities.push({
+      entity,
+      ...(name ? { name } : {}),
+      ...(icon ? { icon } : {}),
+      ...(showLastChanged !== undefined ? { show_last_changed: showLastChanged } : {}),
+    });
   }
   return entities;
 }
