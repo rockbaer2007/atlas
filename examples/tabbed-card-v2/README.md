@@ -67,3 +67,12 @@ tabs:
 ```
 
 The built-in Home Assistant editor is intentionally small. The full visual editor should be delivered as a separate HACS panel so complex tab layouts, nested cards, previews, imports and dependency checks do not overload the Lovelace card dialog.
+
+## HACS package targets
+
+This demo now contains two HACS-oriented package targets:
+
+- `hacs-card/`: Lovelace card package for HACS category `Dashboard`.
+- `hacs-app/`: Home Assistant integration package for HACS category `Integration`, including a sidebar panel at `/tabbed-card-v2`.
+
+The current Atlas repo keeps both package targets as source folders. For direct HACS installation they should be split or published as dedicated repositories.

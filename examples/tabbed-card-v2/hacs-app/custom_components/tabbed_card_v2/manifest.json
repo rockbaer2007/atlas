@@ -1,0 +1,13 @@
+{
+  "domain": "tabbed_card_v2",
+  "name": "Tabbed Card V2 App",
+  "codeowners": ["@rockbaer2007"],
+  "config_flow": false,
+  "dependencies": ["frontend", "http", "panel_custom"],
+  "documentation": "https://github.com/rockbaer2007/tabbed-card-v2",
+  "integration_type": "helper",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/rockbaer2007/tabbed-card-v2/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}
