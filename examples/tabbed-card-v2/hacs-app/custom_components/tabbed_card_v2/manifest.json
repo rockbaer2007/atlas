@@ -4,9 +4,9 @@
   "codeowners": ["@rockbaer2007"],
   "config_flow": true,
   "dependencies": ["frontend", "http", "panel_custom"],
-  "documentation": "https://github.com/rockbaer2007/tabbed-card-v2",
+  "documentation": "https://github.com/rockbaer2007/tabbed-card-v2-app",
   "iot_class": "local_push",
-  "issue_tracker": "https://github.com/rockbaer2007/tabbed-card-v2/issues",
+  "issue_tracker": "https://github.com/rockbaer2007/tabbed-card-v2-app/issues",
   "requirements": [],
-  "version": "0.1.2"
+  "version": "0.1.3"
 }

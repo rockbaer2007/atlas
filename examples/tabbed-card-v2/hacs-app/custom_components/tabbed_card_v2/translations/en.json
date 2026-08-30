@@ -6,6 +6,18 @@
         "title": "Tabbed Card V2 Editor",
         "description": "Adds the Tabbed Card V2 editor to the Home Assistant sidebar."
       }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Tabbed Card V2 Editor",
+          "description": "Settings for the Tabbed Card V2 Editor.",
+          "data": {
+            "show_in_sidebar": "Show in sidebar",
+            "show_update_hint": "Show HACS update hint in the editor"
+          }
+        }
+      }
     }
   }
 }

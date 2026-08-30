@@ -15,6 +15,7 @@ class TabbedCardV2Panel extends HTMLElement {
 
   set panel(panel) {
     this._panel = panel;
+    this._render();
   }
 
   connectedCallback() {
@@ -217,6 +218,9 @@ class TabbedCardV2Panel extends HTMLElement {
             <h1>Tabbed Card V2</h1>
             <p>Visual Editor fuer tabbasierte Lovelace-Karten.</p>
           </div>
+          ${this._panel?.config?.showUpdateHint === false ? "" : `
+            <p>Updates steuerst du in HACS bei diesem Repository. Aktiviere dort Auto-Update, wenn neue Releases automatisch installiert werden sollen.</p>
+          `}
           <div class="toolbar">
             <button class="primary" data-action="copy" type="button">YAML kopieren</button>
             <button data-action="download" type="button">YAML exportieren</button>

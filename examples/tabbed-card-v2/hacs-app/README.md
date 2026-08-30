@@ -17,6 +17,13 @@ After installation:
 3. Add **Tabbed Card V2 Editor**.
 4. Open **Tabbed Card V2** in the sidebar.
 
+The sidebar entry is enabled automatically after setup. You can change it later in the integration options:
+
+- `Show in sidebar`
+- `Show HACS update hint in the editor`
+
+Repository auto-updates are controlled by HACS itself. Open this repository in HACS and enable auto-update there if you want new releases to install automatically.
+
 The integration also serves the card module from:
 
 ```yaml
