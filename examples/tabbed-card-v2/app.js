@@ -321,21 +321,70 @@ function syncCardForm() {
     .filter(Boolean);
   const tapAction = elements.tapAction.value;
 
-  const card = cleanObject({
+  selectedTab().card = createCardConfig({
     type,
     title,
-    entity: type === "entities" || type === "markdown" ? "" : entity,
-    entities: type === "entities" ? entities : undefined,
-    content: type === "markdown" ? (title ? `# ${title}` : "Markdown content") : undefined,
-    button_type: type === "custom:bubble-card" ? elements.bubbleType.value : undefined,
-    tap_action: tapAction ? { action: tapAction } : undefined,
-    show_name: supportsDisplayToggles(type) ? elements.showName.checked : undefined,
-    show_icon: supportsDisplayToggles(type) ? elements.showIcon.checked : undefined,
-    show_state: supportsDisplayToggles(type) ? elements.showState.checked : undefined,
+    entity,
+    entities,
+    tapAction,
+    bubbleType: elements.bubbleType.value,
+    showName: elements.showName.checked,
+    showIcon: elements.showIcon.checked,
+    showState: elements.showState.checked,
   });
-
-  selectedTab().card = card;
   persistAndRender();
+}
+
+function createCardConfig(options) {
+  const action = options.tapAction ? { action: options.tapAction } : undefined;
+  if (options.type === "custom:bubble-card") {
+    return cleanObject({
+      type: "custom:bubble-card",
+      card_type: "button",
+      button_type: options.bubbleType || "state",
+      entity: options.entity,
+      name: options.title,
+      tap_action: action,
+      show_name: options.showName,
+      show_icon: options.showIcon,
+      show_state: options.showState,
+    });
+  }
+
+  if (options.type === "custom:mushroom-entity-card") {
+    return cleanObject({
+      type: "custom:mushroom-entity-card",
+      entity: options.entity,
+      name: options.title,
+      tap_action: action,
+    });
+  }
+
+  if (options.type === "markdown") {
+    return cleanObject({
+      type: "markdown",
+      title: options.title,
+      content: options.title ? `# ${options.title}` : "Markdown content",
+    });
+  }
+
+  if (options.type === "entities") {
+    return cleanObject({
+      type: "entities",
+      title: options.title,
+      entities: options.entities,
+    });
+  }
+
+  return cleanObject({
+    type: options.type,
+    title: options.title,
+    entity: options.entity,
+    tap_action: action,
+    show_name: supportsDisplayToggles(options.type) ? options.showName : undefined,
+    show_icon: supportsDisplayToggles(options.type) ? options.showIcon : undefined,
+    show_state: supportsDisplayToggles(options.type) ? options.showState : undefined,
+  });
 }
 
 function updateStyle(name, value) {

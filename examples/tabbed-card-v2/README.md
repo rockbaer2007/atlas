@@ -68,6 +68,17 @@ tabs:
 
 The built-in Home Assistant editor is intentionally small. The full visual editor is delivered as a standalone app so complex tab layouts, nested cards, previews, imports and dependency checks do not overload the Lovelace card dialog.
 
+## Bubble Card and Mushroom
+
+Bubble Card and Mushroom can be used inside tabs because Tabbed Card V2 renders normal Home Assistant card configs.
+
+Install the dependencies in Home Assistant before using these presets:
+
+- Bubble Card: `type: custom:bubble-card` with `card_type: button`
+- Mushroom Entity: `type: custom:mushroom-entity-card`
+
+If the dependency is missing, Home Assistant will show a custom-element error for that nested card.
+
 ## Individual card export
 
 The editor can export individual Home Assistant card files. Enter a suffix such as `wohnzimmer`; the generated card type becomes:

@@ -304,6 +304,13 @@
         accent-color: #087f8c;
       }
 
+      .field-note {
+        margin: 0;
+        color: #627083;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
       .preview-shell {
         display: grid;
         gap: 12px;
@@ -649,19 +656,20 @@
                       <option value="navigate">navigate</option>
                     </select>
                   </div>
-                  <div class="field">
-                    <label for="bubble-type">Bubble Button</label>
-                    <select id="bubble-type">
-                      <option value="state">state</option>
-                      <option value="switch">switch</option>
-                      <option value="slider">slider</option>
-                      <option value="name">name</option>
-                    </select>
-                  </div>
+                <div class="field">
+                  <label for="bubble-type">Bubble Button</label>
+                  <select id="bubble-type">
+                    <option value="state">state</option>
+                    <option value="switch">switch</option>
+                    <option value="slider">slider</option>
+                    <option value="name">name</option>
+                  </select>
                 </div>
-                <div class="toggle-grid">
-                  <label class="toggle"><input id="show-name" type="checkbox" checked> Name zeigen</label>
-                  <label class="toggle"><input id="show-icon" type="checkbox" checked> Icon zeigen</label>
+              </div>
+              <p class="field-note">Bubble Card und Mushroom muessen in Home Assistant als eigene HACS-Resources installiert sein.</p>
+              <div class="toggle-grid">
+                <label class="toggle"><input id="show-name" type="checkbox" checked> Name zeigen</label>
+                <label class="toggle"><input id="show-icon" type="checkbox" checked> Icon zeigen</label>
                   <label class="toggle"><input id="show-state" type="checkbox" checked> State zeigen</label>
                 </div>
               </fieldset>
