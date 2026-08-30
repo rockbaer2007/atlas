@@ -204,7 +204,6 @@ const translations = {
   en: {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Build Simple or Expert Home Assistant cards from live or local entities.",
-    "heading.entitySelection": "Entity selection",
     "label.haUrl": "Home Assistant URL",
     "label.panelGroup": "Panel group",
     "label.groupName": "Group name",
@@ -616,7 +615,6 @@ const translations = {
   de: {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Erstelle Simple- oder Expert-Home-Assistant-Cards aus Live- oder lokalen Entitäten.",
-    "heading.entitySelection": "Entitäten auswählen",
     "label.haUrl": "Home Assistant URL",
     "label.panelGroup": "Panel-Gruppe",
     "label.groupName": "Gruppenname",
@@ -1418,8 +1416,7 @@ function renderEditorMode(mode = "simple") {
   saveHomeAssistantGroup.hidden = expert;
   deleteHomeAssistantGroup.hidden = expert;
   duplicateHomeAssistantGroup.hidden = expert;
-  simpleEntityControls.hidden = false;
-  simpleEntityControls.open = !expert;
+  simpleEntityControls.hidden = expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
   for (const button of editorModeButtons) {
