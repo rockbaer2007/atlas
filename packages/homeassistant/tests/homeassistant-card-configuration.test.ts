@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -30,6 +32,11 @@ import {
 } from "../src";
 
 describe("Home Assistant entities card configuration", () => {
+  const importedGlanceCardFixture = readFileSync(
+    new URL("./fixtures/imported-glance-card.yaml", import.meta.url),
+    "utf8",
+  );
+
   it("creates and serializes Home Assistant entities cards", () => {
     const card = createHomeAssistantEntitiesCardConfiguration({
       title: "Office",
@@ -1499,33 +1506,7 @@ describe("Home Assistant entities card configuration", () => {
   });
 
   it("imports glance cards with style blocks as supported Home Assistant cards", () => {
-    const text = [
-      "show_name: true",
-      "show_icon: true",
-      "show_state: true",
-      "type: glance",
-      "entities:",
-      "  - entity: sensor.hyper_2000_eg_1_solar_input_power",
-      "    show_last_changed: false",
-      "    name: Leistung",
-      "    card_mod:",
-      "      style: |",
-      "        :host {",
-      "          --card-mod-icon-color: lightblue;",
-      "          --mdc-icon-size: 48px;",
-      "        }",
-      "  - entity: binary_sensor.hyper_2000_eg_1_heat_state",
-      "    name: Akkuhzg.",
-      "grid_options:",
-      "  rows: auto",
-      "  columns: 18",
-      "card_mod:",
-      "  style: |",
-      "    ha-card {",
-      "      border: 0.2px solid var(--primary-color);",
-      "      border-radius: 12px",
-      "    }",
-    ].join("\n");
+    const text = importedGlanceCardFixture;
 
     expect(decideHomeAssistantCardArtifactImport(text)).toMatchObject({
       action: "import",
@@ -1534,29 +1515,40 @@ describe("Home Assistant entities card configuration", () => {
         importable: true,
       },
     });
-    expect(summarizeHomeAssistantCardImport(text)).toMatchObject({
+    const summary = summarizeHomeAssistantCardImport(text);
+    expect(summary).toMatchObject({
       target: "glance",
       entityIds: [
         "sensor.hyper_2000_eg_1_solar_input_power",
+        "sensor.hyper_2000_eg_1_output_home_power",
+        "sensor.hyper_2000_eg_1_pack_input_power",
+        "sensor.hyper_2000_eg_1_output_pack_power",
+        "sensor.ab2000x_16609_soc_level",
+        "sensor.ab2000x_20030_soc_level",
+        "binary_sensor.hyper_2000_eg_1_hems_state",
         "binary_sensor.hyper_2000_eg_1_heat_state",
       ],
       card: {
         type: "glance",
+        title: "hyper 2000 EG 1",
         show_name: true,
         show_icon: true,
         show_state: true,
-        entities: [
-          {
-            entity: "sensor.hyper_2000_eg_1_solar_input_power",
-            name: "Leistung",
-          },
-          {
-            entity: "binary_sensor.hyper_2000_eg_1_heat_state",
-            name: "Akkuhzg.",
-          },
-        ],
       },
     });
+    expect(summary.card.type === "glance" ? summary.card.entities : []).toHaveLength(8);
+    expect(summary.card.type === "glance" ? summary.card.entities : []).toContainEqual({
+      entity: "sensor.hyper_2000_eg_1_solar_input_power",
+      name: "Leistung",
+    });
+    expect(summary.card.type === "glance" ? summary.card.entities : []).toContainEqual({
+      entity: "sensor.hyper_2000_eg_1_output_home_power",
+      name: "ins Haus",
+    });
+    const styleInspection = inspectHomeAssistantCardStyleBlocks(text);
+    expect(styleInspection.globalStyles).toHaveLength(1);
+    expect(styleInspection.cardStyles).toHaveLength(6);
+    expect(styleInspection.layoutOptions).toHaveLength(1);
   });
 
   it("imports raw custom HACS cards and extracts nested entity references", () => {
