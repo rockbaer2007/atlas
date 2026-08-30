@@ -885,7 +885,9 @@ function translateTemplateLabel(templateId, fallback = templateId) {
 }
 
 function translatePaletteCardLabel(card) {
-  return maybeTranslate(`palette.${card.id}`, translateTemplateLabel(card.templateId, card.label));
+  return card.scanned === true
+    ? card.label
+    : maybeTranslate(`palette.${card.id}`, card.label);
 }
 
 function translatePaletteCategory(category) {
