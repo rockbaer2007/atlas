@@ -607,7 +607,7 @@ function listSurfaceFieldOverlaps(
     for (let secondIndex = firstIndex + 1; secondIndex < fields.length; secondIndex += 1) {
       const first = fields[firstIndex]!;
       const second = fields[secondIndex]!;
-      if (first.target === "tabbed-card-v2" || second.target === "tabbed-card-v2") {
+      if (isSurfaceContainerField(first) || isSurfaceContainerField(second)) {
         continue;
       }
       if (surfaceFieldsOverlap(first, second)) {
@@ -619,6 +619,12 @@ function listSurfaceFieldOverlaps(
     }
   }
   return overlaps;
+}
+
+function isSurfaceContainerField(field: HomeAssistantCardEditorSurfaceField): boolean {
+  return field.target === "tabbed-card-v2"
+    || field.layout === "horizontal-stack"
+    || field.layout === "vertical-stack";
 }
 
 function findFirstAvailableSurfacePlacement(

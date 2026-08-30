@@ -466,7 +466,7 @@ describe("Home Assistant frontend integration planning", () => {
     });
   });
 
-  it("does not count Tabbed Card V2 containers as overlap conflicts", () => {
+  it("does not count nested card containers as overlap conflicts", () => {
     expect(analyzeHomeAssistantCardEditorSurface([
       {
         id: "Room tabs",
@@ -484,6 +484,40 @@ describe("Home Assistant frontend integration planning", () => {
         column: 2,
         row: 1,
         width: 3,
+        height: 2,
+      },
+      {
+        id: "Vertical stack",
+        target: "entities",
+        entityId: "",
+        layout: "vertical-stack",
+        entries: [
+          {
+            id: "Stack card",
+            target: "entity",
+            entityId: "sensor.stack",
+          },
+        ],
+        column: 1,
+        row: 1,
+        width: 4,
+        height: 2,
+      },
+      {
+        id: "Horizontal stack",
+        target: "entities",
+        entityId: "",
+        layout: "horizontal-stack",
+        entries: [
+          {
+            id: "Row card",
+            target: "entity",
+            entityId: "sensor.row",
+          },
+        ],
+        column: 2,
+        row: 2,
+        width: 4,
         height: 2,
       },
     ])).toMatchObject({

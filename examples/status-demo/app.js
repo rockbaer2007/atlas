@@ -3346,10 +3346,10 @@ function renderExpertEditorSurface() {
     tile.classList.toggle("editing", index === selectedExpertFieldIndex && expertFieldEditing);
     tile.classList.toggle("tabbed-container", isTabbedCardField(field));
     tile.classList.toggle("stack-container", isStackContainerField(field));
-    tile.classList.toggle("conflict", overlappingFieldIds.has(field.id) && !isTabbedCardField(field));
+    tile.classList.toggle("conflict", overlappingFieldIds.has(field.id) && !isEditableContainerField(field));
     tile.dataset.expertFieldIndex = String(index);
     tile.setAttribute("role", "button");
-    const conflictLabel = overlappingFieldIds.has(field.id) && !isTabbedCardField(field) ? `, ${t("text.overlappingField")}` : "";
+    const conflictLabel = overlappingFieldIds.has(field.id) && !isEditableContainerField(field) ? `, ${t("text.overlappingField")}` : "";
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
