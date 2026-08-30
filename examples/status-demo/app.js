@@ -2195,76 +2195,28 @@ function checkLiveLovelaceResources(options = {}) {
   }
 }
 
-function deriveHomeAssistantRestApiUrl(pathname) {
-  try {
-    const url = new URL(homeAssistantUrl.value);
-    url.pathname = pathname;
-    url.search = "";
-    url.hash = "";
-    return url.toString();
-  } catch {
-    return "";
-  }
-}
-
-function extractLovelaceResourcesFromRestPayload(payload) {
-  const resources = [];
-  const visit = value => {
-    if (!value || typeof value !== "object") return;
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        if (item && typeof item === "object" && typeof item.url === "string") {
-          resources.push({ url: item.url, ...(typeof item.type === "string" ? { type: item.type } : {}) });
-        }
-      }
-      return;
-    }
-    for (const [key, child] of Object.entries(value)) {
-      if (key === "resources" && Array.isArray(child)) {
-        visit(child);
-      } else if (child && typeof child === "object" && !Array.isArray(child)) {
-        visit(child);
-      }
-    }
-  };
-  visit(payload);
-  const seen = new Set();
-  return resources.filter(resource => {
-    const key = normalizeLovelaceResourceUrl(resource);
-    if (!key || seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-}
-
 async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
   if (!adminConnectionToken) {
     renderTemporaryHaCardResourceList("failed", initialReason || t("message.tokenRequired"));
     return;
   }
-  const url = deriveHomeAssistantRestApiUrl("/api/lovelace/config");
-  if (!url) {
-    renderTemporaryHaCardResourceList("failed", initialReason || t("message.invalidConnectionUrl"));
-    return;
-  }
   renderTemporaryHaCardResourceList("rest-loading");
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${adminOrigin}/api/homeassistant/lovelace-resources`, {
       headers: {
-        Authorization: `Bearer ${adminConnectionToken}`,
         Accept: "application/json",
       },
     });
+    const payload = await response.json().catch(() => undefined);
     if (!response.ok) {
-      throw new Error(`REST ${response.status} ${response.statusText}`.trim());
+      throw new Error(payload?.error ?? `Admin REST ${response.status} ${response.statusText}`.trim());
     }
-    const payload = await response.json();
-    lovelaceResources = extractLovelaceResourcesFromRestPayload(payload);
+    lovelaceResources = Array.isArray(payload?.resources) ? payload.resources : [];
     lovelaceResourcesChecked = true;
     const scannedCards = refreshScannedExpertPaletteCards();
     renderHaCardPreview();
     renderExpertTemplatePalette();
-    renderTemporaryHaCardResourceList("ready", "REST");
+    renderTemporaryHaCardResourceList("ready", "Admin REST");
     statusMessage.textContent = t("message.loadedResources", {
       count: lovelaceResources.length,
       total: scannedCards.total,

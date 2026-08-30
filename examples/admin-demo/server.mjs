@@ -107,6 +107,10 @@ createServer((request, response) => {
     void handleCardTranslationRequest(request, response);
     return;
   }
+  if (requestUrl.pathname === "/api/homeassistant/lovelace-resources") {
+    void handleHomeAssistantLovelaceResourcesRequest(request, response);
+    return;
+  }
   if (requestUrl.pathname === "/api/admin-device") {
     void handleAdminDeviceRequest(request, response);
     return;
@@ -208,6 +212,57 @@ async function handleAdminDeviceRequest(request, response) {
   response.end(JSON.stringify(getAdminDeviceBinding()));
 }
 
+async function handleHomeAssistantLovelaceResourcesRequest(request, response) {
+  writeCorsHeaders(response);
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
+  if (request.method !== "GET") {
+    writeJsonResponse(response, 405, { error: "method not allowed" });
+    return;
+  }
+
+  if (!adminConnectionSettings?.url || !adminConnectionSettings?.token) {
+    writeJsonResponse(response, 409, { error: "admin connection is not configured" });
+    return;
+  }
+
+  const url = deriveHomeAssistantRestApiUrl(adminConnectionSettings.url, "/api/lovelace/config");
+  if (!url) {
+    writeJsonResponse(response, 400, { error: "home assistant url is invalid" });
+    return;
+  }
+
+  try {
+    const homeAssistantResponse = await fetch(url, {
+      headers: {
+        authorization: `Bearer ${adminConnectionSettings.token}`,
+        accept: "application/json",
+      },
+    });
+    const body = await homeAssistantResponse.json().catch(() => undefined);
+    if (!homeAssistantResponse.ok) {
+      writeJsonResponse(response, homeAssistantResponse.status, {
+        error: body?.message ?? body?.error ?? `Home Assistant returned HTTP ${homeAssistantResponse.status}`,
+      });
+      return;
+    }
+
+    writeJsonResponse(response, 200, {
+      source: "admin-rest",
+      resources: extractLovelaceResourcesFromPayload(body),
+    });
+  } catch (error) {
+    writeJsonResponse(response, 502, {
+      error: error instanceof Error ? error.message : "Home Assistant resource request failed",
+    });
+  }
+}
+
 async function handleCardTranslationRequest(request, response) {
   writeCorsHeaders(response);
 
@@ -276,8 +331,56 @@ function writeJsonResponse(response, statusCode, body) {
 
 function writeCorsHeaders(response) {
   response.setHeader("access-control-allow-origin", editorOrigin);
-  response.setHeader("access-control-allow-methods", "GET, PUT, DELETE, OPTIONS");
+  response.setHeader("access-control-allow-methods", "GET, PUT, POST, DELETE, OPTIONS");
   response.setHeader("access-control-allow-headers", "content-type");
+}
+
+function deriveHomeAssistantRestApiUrl(sourceUrl, pathname) {
+  try {
+    const url = new URL(sourceUrl);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return "";
+    }
+    url.pathname = pathname;
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return "";
+  }
+}
+
+function extractLovelaceResourcesFromPayload(payload) {
+  const resources = [];
+  const visit = value => {
+    if (!value || typeof value !== "object") return;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        if (item && typeof item === "object" && typeof item.url === "string" && item.url.trim()) {
+          resources.push({
+            url: item.url.trim(),
+            ...(typeof item.type === "string" && item.type.trim() ? { type: item.type.trim() } : {}),
+          });
+        }
+      }
+      return;
+    }
+    for (const [key, child] of Object.entries(value)) {
+      if (key === "resources" && Array.isArray(child)) {
+        visit(child);
+      } else if (child && typeof child === "object" && !Array.isArray(child)) {
+        visit(child);
+      }
+    }
+  };
+  visit(payload);
+  const seen = new Set();
+  return resources.filter(resource => {
+    const key = resource.url.split("?")[0].toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function getAdminDeviceBinding() {
