@@ -13,6 +13,7 @@ import {
   createHomeAssistantCardEditorPackagePlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardLocaleFiles,
+  convertHomeAssistantCardModStylesToUixStyle,
   decideHomeAssistantCardArtifactImport,
   findHomeAssistantCardTargetDescriptor,
   formatHomeAssistantCardArtifactReviewLines,
@@ -1503,6 +1504,31 @@ describe("Home Assistant entities card configuration", () => {
       key: "grid_options",
     });
     expect(inspection.globalStyles.some(block => block.code.includes("ha-card"))).toBe(true);
+  });
+
+  it("converts card_mod style containers to uix_style while preserving YAML content", () => {
+    const converted = convertHomeAssistantCardModStylesToUixStyle([
+      "type: glance",
+      "entities:",
+      "  - entity: sensor.power",
+      "    card_mod:",
+      "      style: |",
+      "        :host {",
+      "          --mdc-icon-size: 48px;",
+      "        }",
+      "card_mod:",
+      "  style: |",
+      "    ha-card {",
+      "      border-radius: 12px",
+      "    }",
+    ].join("\n"));
+
+    expect(converted).not.toContain("card_mod:");
+    expect(converted).toContain("    uix_style:");
+    expect(converted).toContain("uix_style:");
+    expect(converted).toContain("      style: |");
+    expect(converted).toContain("          --mdc-icon-size: 48px;");
+    expect(converted).toContain("      border-radius: 12px");
   });
 
   it("imports glance cards with style blocks as supported Home Assistant cards", () => {

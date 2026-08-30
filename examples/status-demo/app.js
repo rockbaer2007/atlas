@@ -35,6 +35,7 @@ import {
   listHomeAssistantBubbleButtonTypes,
   normalizeHomeAssistantCardEditorScriptFilename,
   createInMemoryHomeAssistantEntityStateTransport,
+  convertHomeAssistantCardModStylesToUixStyle,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
   inspectHomeAssistantCardStyleBlocks,
@@ -76,6 +77,8 @@ const homeAssistantGroupName = document.querySelector("#home-assistant-group-nam
 const haCardTarget = document.querySelector("#ha-card-target");
 const haCardLayout = document.querySelector("#ha-card-layout");
 const haCardFormat = document.querySelector("#ha-card-format");
+const cardStyleExportControl = document.querySelector("#card-style-export-control");
+const haCardStyleExport = document.querySelector("#ha-card-style-export");
 const haCardScriptFilename = document.querySelector("#ha-card-script-filename");
 const cardExportLanguageInputs = Array.from(document.querySelectorAll("[data-card-export-language]"));
 const cardAutoTranslate = document.querySelector("#card-auto-translate");
@@ -182,6 +185,7 @@ const translations = {
     "label.cardTarget": "Card target",
     "label.cardLayout": "Card layout",
     "label.cardFormat": "Card format",
+    "label.cardStyleExport": "Style export",
     "label.scriptFilename": "HACS script filename",
     "label.cardExportLanguages": "Card export languages",
     "label.autoTranslateCardLanguages": "Run automatic translation on export",
@@ -538,6 +542,7 @@ const translations = {
     "label.cardTarget": "Card-Ziel",
     "label.cardLayout": "Card-Layout",
     "label.cardFormat": "Card-Format",
+    "label.cardStyleExport": "Style-Export",
     "label.scriptFilename": "HACS-Script-Dateiname",
     "label.cardExportLanguages": "Card-Export-Sprachen",
     "label.autoTranslateCardLanguages": "Automatische Uebersetzung beim Export ausfuehren",
@@ -1116,6 +1121,9 @@ try {
   if (savedConfiguration?.cardFormat === "json" || savedConfiguration?.cardFormat === "yaml") {
     haCardFormat.value = savedConfiguration.cardFormat;
   }
+  if (savedConfiguration?.cardStyleExport === "card-mod" || savedConfiguration?.cardStyleExport === "uix-style") {
+    haCardStyleExport.value = savedConfiguration.cardStyleExport;
+  }
   if (typeof savedConfiguration?.cardScriptFilename === "string") {
     haCardScriptFilename.value = savedConfiguration.cardScriptFilename;
   }
@@ -1193,6 +1201,7 @@ function renderEditorMode(mode = "simple") {
   groupNameControl.hidden = expert;
   cardTargetControl.hidden = expert;
   cardLayoutControl.hidden = expert;
+  cardStyleExportControl.hidden = !expert;
   saveHomeAssistantGroup.hidden = expert;
   deleteHomeAssistantGroup.hidden = expert;
   duplicateHomeAssistantGroup.hidden = expert;
@@ -4247,8 +4256,14 @@ function renderExpertEditorPreview() {
 
 function formatExpertHaCardCodePreview(card) {
   return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
-    ? importedSimpleCodePreview
+    ? formatExpertImportedYamlForStyleExport(importedSimpleCodePreview)
     : serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+}
+
+function formatExpertImportedYamlForStyleExport(text) {
+  return haCardStyleExport.value === "uix-style"
+    ? convertHomeAssistantCardModStylesToUixStyle(text)
+    : text;
 }
 
 function addExpertEditorField() {
@@ -4464,8 +4479,8 @@ function createHaCardExportPayload() {
     format: haCardFormat.value,
     name: currentHaCardExportName(),
   });
-  return haCardFormat.value === "yaml" && importedSimpleCodePreview
-    ? { ...payload, content: importedSimpleCodePreview }
+  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
+    ? { ...payload, content: formatExpertImportedYamlForStyleExport(importedSimpleCodePreview) }
     : payload;
 }
 
@@ -4595,8 +4610,8 @@ function createHaCardExportPackage() {
     editorPlan,
     script: createHomeAssistantCardEditorScriptExport(editorPlan),
   });
-  return haCardFormat.value === "yaml" && importedSimpleCodePreview
-    ? { ...cardPackage, content: importedSimpleCodePreview }
+  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
+    ? { ...cardPackage, content: formatExpertImportedYamlForStyleExport(importedSimpleCodePreview) }
     : cardPackage;
 }
 
@@ -5118,6 +5133,10 @@ haCardFormat.addEventListener("change", () => {
   renderHaCardPreview();
   renderExpertEditorPreview();
 });
+haCardStyleExport.addEventListener("change", () => {
+  persistConfiguration();
+  renderExpertEditorPreview();
+});
 haCardScriptFilename.addEventListener("input", () => {
   persistConfiguration();
   statusMessage.textContent = t("message.scriptFilenameNormalized", { scriptFilename: currentHaCardScriptFilename() });
@@ -5274,6 +5293,7 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardTarget: haCardTarget.value,
     cardLayout: haCardLayout.value,
     cardFormat: haCardFormat.value,
+    cardStyleExport: haCardStyleExport.value,
     cardScriptFilename: haCardScriptFilename.value,
     stackEntityIds: selectedStackEntityIds(),
     expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
@@ -5449,6 +5469,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     }
     if (pendingImport.cardFormat === "json" || pendingImport.cardFormat === "yaml") {
       haCardFormat.value = pendingImport.cardFormat;
+    }
+    if (pendingImport.cardStyleExport === "card-mod" || pendingImport.cardStyleExport === "uix-style") {
+      haCardStyleExport.value = pendingImport.cardStyleExport;
     }
     if (typeof pendingImport.cardScriptFilename === "string") {
       haCardScriptFilename.value = pendingImport.cardScriptFilename;
