@@ -99,6 +99,7 @@ const haCardPasteImportBackdrop = document.querySelector("#ha-card-paste-import-
 const closeHaCardPasteImport = document.querySelector("#close-ha-card-paste-import");
 const haCardPasteImportText = document.querySelector("#ha-card-paste-import-text");
 const pasteHaCardFromClipboard = document.querySelector("#paste-ha-card-from-clipboard");
+const clearHaCardPasteImport = document.querySelector("#clear-ha-card-paste-import");
 const applyHaCardPasteImport = document.querySelector("#apply-ha-card-paste-import");
 const haCardPasteImportStatus = document.querySelector("#ha-card-paste-import-status");
 const haCardPasteStyleReview = document.querySelector("#ha-card-paste-style-review");
@@ -223,6 +224,7 @@ const translations = {
     "button.importHaCard": "Import HA card",
     "button.pasteHaCard": "Paste YAML",
     "button.pasteClipboard": "Paste from clipboard",
+    "button.clearPasteImport": "Clear",
     "button.applyImport": "Import into editor",
     "button.addEntity": "Add entity",
     "button.refreshEntities": "Refresh entities",
@@ -576,6 +578,7 @@ const translations = {
     "button.importHaCard": "HA-Card importieren",
     "button.pasteHaCard": "YAML einfuegen",
     "button.pasteClipboard": "Aus Zwischenablage einfuegen",
+    "button.clearPasteImport": "Leeren",
     "button.applyImport": "In Editor importieren",
     "button.addEntity": "Entitaet hinzufuegen",
     "button.refreshEntities": "Entitaeten aktualisieren",
@@ -5305,6 +5308,12 @@ pasteHaCardFromClipboard.addEventListener("click", async () => {
   } catch {
     haCardPasteImportStatus.textContent = t("message.clipboardReadFailed");
   }
+});
+clearHaCardPasteImport.addEventListener("click", () => {
+  haCardPasteImportText.value = "";
+  haCardPasteImportStatus.textContent = "";
+  clearHaCardStyleInspection();
+  haCardPasteImportText.focus();
 });
 haCardPasteImportText.addEventListener("input", () => {
   if (haCardPasteImportText.value.trim()) {
