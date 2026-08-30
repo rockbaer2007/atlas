@@ -459,6 +459,25 @@
         outline-offset: 1px;
       }
 
+      .connection-actions button.action-group {
+        border-color: #1e3a8a;
+        background: #1e3a8a;
+        color: #ffffff;
+      }
+
+      .connection-actions button.action-export {
+        border-color: #7f1d1d;
+        background: #7f1d1d;
+        color: #ffffff;
+      }
+
+      .connection-actions button.action-import,
+      .connection-actions .import-button.action-import {
+        border-color: #0f766e;
+        background: #0f766e;
+        color: #ffffff;
+      }
+
       .connection-actions button:disabled {
         cursor: not-allowed;
         opacity: 0.55;
@@ -1852,22 +1871,22 @@
         </fieldset>
         <output id="ha-card-dependency" aria-live="polite"></output>
         <div class="connection-actions uniform-actions">
-          <button id="save-home-assistant-group" type="button" data-i18n="button.saveGroup">Save group</button>
-          <button id="delete-home-assistant-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
-          <button id="duplicate-home-assistant-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
-          <button id="export-home-assistant-config" type="button" data-i18n="button.export">Export</button>
-          <button id="export-ha-card-config" type="button" data-i18n="button.exportHaCard">Export HA card</button>
-          <button id="export-ha-card-package" type="button" data-i18n="button.exportCardPackage">Export card package</button>
-          <button id="export-ha-card-script" type="button" data-i18n="button.exportCardScript">Export card script</button>
-          <button id="export-ha-card-bundle" type="button" data-i18n="button.exportCardBundle">Export HACS bundle</button>
-          <button id="copy-ha-card-config" type="button" data-i18n="button.copyHaCard">Copy HA card</button>
-          <button id="copy-ha-card-resources" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
-          <button id="check-ha-card-resources" type="button" disabled data-i18n="button.checkResources">Check resources</button>
-          <label class="import-button" for="import-home-assistant-config" data-i18n="button.import">Import</label>
+          <button id="save-home-assistant-group" class="action-group" type="button" data-i18n="button.saveGroup">Save group</button>
+          <button id="delete-home-assistant-group" class="action-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
+          <button id="duplicate-home-assistant-group" class="action-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
+          <button id="export-home-assistant-config" class="action-export" type="button" data-i18n="button.export">Export</button>
+          <button id="export-ha-card-config" class="action-export" type="button" data-i18n="button.exportHaCard">Export HA card</button>
+          <button id="export-ha-card-package" class="action-export" type="button" data-i18n="button.exportCardPackage">Export card package</button>
+          <button id="export-ha-card-script" class="action-export" type="button" data-i18n="button.exportCardScript">Export card script</button>
+          <button id="export-ha-card-bundle" class="action-export" type="button" data-i18n="button.exportCardBundle">Export HACS bundle</button>
+          <button id="copy-ha-card-config" class="action-export" type="button" data-i18n="button.copyHaCard">Copy HA card</button>
+          <button id="copy-ha-card-resources" class="action-export" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
+          <button id="check-ha-card-resources" class="action-export" type="button" disabled data-i18n="button.checkResources">Check resources</button>
+          <label class="import-button action-import" for="import-home-assistant-config" data-i18n="button.import">Import</label>
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
-          <label class="import-button" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
+          <label class="import-button action-import" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
           <input id="import-ha-card-config" type="file" accept="application/json,application/zip,.json,.yaml,.yml,.zip" hidden>
-          <button id="open-ha-card-paste-import" type="button" data-i18n="button.pasteHaCard">Paste YAML</button>
+          <button id="open-ha-card-paste-import" class="action-import" type="button" data-i18n="button.pasteHaCard">Paste YAML</button>
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
         <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
