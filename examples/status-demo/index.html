@@ -1093,7 +1093,8 @@
         max-height: min(860px, calc(100vh - 300px));
         overflow-y: auto;
         overscroll-behavior: contain;
-        padding-right: 4px;
+        scrollbar-gutter: stable;
+        padding-right: 8px;
       }
 
       .expert-palette-toolbar {
@@ -1142,9 +1143,10 @@
 
       .expert-template-card {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(112px, 0.95fr);
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
         align-items: start;
         gap: 8px;
+        max-width: 100%;
         min-height: 44px;
         box-sizing: border-box;
         padding: 7px 8px;
@@ -1237,9 +1239,12 @@
 
       .expert-template-card small,
       .expert-template-card span {
+        max-width: 100%;
         color: #536079;
         font-size: 12px;
         line-height: 1.25;
+        overflow-wrap: anywhere;
+        word-break: break-word;
       }
 
       .expert-editor-surface {
