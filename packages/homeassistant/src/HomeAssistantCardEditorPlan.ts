@@ -55,9 +55,9 @@ export interface HomeAssistantCardEditorTemplatePlacementInput {
 
 export interface HomeAssistantCardEditorSurfaceFieldEntry {
   readonly id: string;
-  readonly target: HomeAssistantCardTarget;
+  readonly target?: HomeAssistantCardTarget;
   readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
-  readonly entityId: string;
+  readonly entityId?: string;
   readonly icon?: string;
   readonly cards?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
 }
@@ -561,11 +561,13 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
 function normalizeSurfaceFieldEntry(
   entry: HomeAssistantCardEditorSurfaceFieldEntry,
 ): HomeAssistantCardEditorSurfaceFieldEntry {
+  const target = entry.target ?? "entity";
+  const entityId = entry.entityId?.trim() ?? "";
   return {
-    id: entry.id.trim() || `${entry.target}-${entry.entityId}`,
-    target: entry.target,
-    ...(entry.target === "bubble" ? { bubbleButtonType: normalizeBubbleButtonType(entry.bubbleButtonType) } : {}),
-    entityId: entry.entityId.trim(),
+    id: entry.id.trim() || (entityId ? `${target}-${entityId}` : "Tab"),
+    ...(entry.target ? { target } : {}),
+    ...(target === "bubble" ? { bubbleButtonType: normalizeBubbleButtonType(entry.bubbleButtonType) } : {}),
+    ...(entityId ? { entityId } : {}),
     ...(entry.icon?.trim() ? { icon: entry.icon.trim() } : {}),
     ...(entry.cards?.length ? { cards: entry.cards.map(normalizeSurfaceFieldEntry) } : {}),
   };
@@ -583,14 +585,14 @@ function compareSurfaceFields(
 }
 
 function listSurfaceFieldTargets(field: HomeAssistantCardEditorSurfaceField): HomeAssistantCardTarget[] {
-  const entryTargets = (field.entries ?? []).map(entry => entry.target);
+  const entryTargets = (field.entries ?? []).flatMap(entry => entry.target ? [entry.target] : []);
   return entryTargets.length > 0 ? entryTargets : [field.target];
 }
 
 function hasSurfaceFieldContent(field: HomeAssistantCardEditorSurfaceField): boolean {
   if (field.entityId) return true;
   if (field.target === "link" || field.target === "webpage") return true;
-  return (field.entries ?? []).some(entry => Boolean(entry.entityId));
+  return (field.entries ?? []).some(entry => Boolean(entry.entityId) || (entry.cards ?? []).some(card => Boolean(card.entityId)));
 }
 
 function listSurfaceFieldOverlaps(
@@ -658,45 +660,51 @@ function createSurfaceFieldCardConfiguration(
   field: HomeAssistantCardEditorSurfaceField,
 ): HomeAssistantCardConfiguration | undefined {
   const layout = field.layout ?? "card";
-  const entries = (field.entries ?? []).filter(entry => entry.entityId);
+  const entries = field.entries ?? [];
   if (field.target === "tabbed-card-v2" && entries.length > 0) {
-    return {
-      type: "custom:tabbed-card-v2",
-      options: {
-        defaultTabIndex: normalizeTabIndex(field.activeTabIndex, entries.length),
-      },
-      tabs: entries.map((entry, index) => ({
+    const tabs = entries.flatMap((entry, index) => {
+      const card = createTabbedCardTabContent(entry);
+      return card ? [{
         attributes: {
           label: entry.id,
           icon: entry.icon ?? (index === 0 ? "mdi:tab" : "mdi:tab-plus"),
         },
-        card: createTabbedCardTabContent(entry),
-      })),
+        card,
+      }] : [];
+    });
+    if (tabs.length === 0) return undefined;
+    return {
+      type: "custom:tabbed-card-v2",
+      options: {
+        defaultTabIndex: normalizeTabIndex(field.activeTabIndex, tabs.length),
+      },
+      tabs,
     };
   }
 
-  if (layout !== "card" && entries.length > 0) {
+  const populatedEntries = entries.filter(entry => entry.entityId);
+  if (layout !== "card" && populatedEntries.length > 0) {
     if (layout === "grid") {
       return {
         type: "grid",
-        columns: Math.min(4, Math.max(1, entries.length)),
+        columns: Math.min(4, Math.max(1, populatedEntries.length)),
         square: false,
-        cards: entries.map(entry => createHomeAssistantCardConfiguration({
-          target: entry.target,
+        cards: populatedEntries.map(entry => createHomeAssistantCardConfiguration({
+          target: entry.target ?? "entity",
           bubbleButtonType: entry.bubbleButtonType,
           title: entry.id,
-          entityIds: [entry.entityId],
+          entityIds: [entry.entityId ?? ""],
         })),
       };
     }
 
     return {
       type: layout,
-      cards: entries.map(entry => createHomeAssistantCardConfiguration({
-        target: entry.target,
+      cards: populatedEntries.map(entry => createHomeAssistantCardConfiguration({
+        target: entry.target ?? "entity",
         bubbleButtonType: entry.bubbleButtonType,
         title: entry.id,
-        entityIds: [entry.entityId],
+        entityIds: [entry.entityId ?? ""],
       })),
     };
   }
@@ -710,22 +718,18 @@ function createSurfaceFieldCardConfiguration(
   });
 }
 
-function createTabbedCardTabContent(entry: HomeAssistantCardEditorSurfaceFieldEntry): HomeAssistantCardConfiguration {
+function createTabbedCardTabContent(entry: HomeAssistantCardEditorSurfaceFieldEntry): HomeAssistantCardConfiguration | undefined {
   const cards = (entry.cards?.length ? entry.cards : [entry])
     .filter(cardEntry => cardEntry.entityId)
     .map(cardEntry => createHomeAssistantCardConfiguration({
-      target: cardEntry.target === "tabbed-card-v2" ? "entity" : cardEntry.target,
+      target: cardEntry.target === "tabbed-card-v2" ? "entity" : cardEntry.target ?? "entity",
       bubbleButtonType: cardEntry.bubbleButtonType,
       title: cardEntry.id,
-      entityIds: [cardEntry.entityId],
+      entityIds: [cardEntry.entityId ?? ""],
     }));
 
   if (cards.length === 0) {
-    return createHomeAssistantCardConfiguration({
-      target: "entity",
-      title: entry.id,
-      entityIds: [entry.entityId],
-    });
+    return undefined;
   }
   if (cards.length === 1) return cards[0]!;
   return {

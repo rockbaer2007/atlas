@@ -903,6 +903,61 @@ describe("Home Assistant frontend integration planning", () => {
     });
   });
 
+  it("creates Tabbed Card V2 tabs as labels for nested cards", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "Room tabs",
+          target: "tabbed-card-v2",
+          entityId: "",
+          layout: "vertical-stack",
+          activeTabIndex: 0,
+          entries: [
+            {
+              id: "Light",
+              icon: "mdi:lightbulb",
+              cards: [
+                {
+                  id: "Living light",
+                  target: "entity",
+                  entityId: "light.living_room",
+                },
+              ],
+            },
+            {
+              id: "Empty",
+              icon: "mdi:tab",
+              cards: [],
+            },
+          ],
+          column: 0,
+          row: 0,
+          width: 8,
+          height: 3,
+        },
+      ],
+    })).toEqual({
+      type: "custom:tabbed-card-v2",
+      options: {
+        defaultTabIndex: 0,
+      },
+      tabs: [
+        {
+          attributes: {
+            label: "Light",
+            icon: "mdi:lightbulb",
+          },
+          card: {
+            type: "entity",
+            name: "Living light",
+            entity: "light.living_room",
+          },
+        },
+      ],
+    });
+  });
+
   it("creates nested horizontal and vertical stacks from an arbitrary expert surface", () => {
     expect(createHomeAssistantCardEditorConfiguration({
       editorMode: "expert",
