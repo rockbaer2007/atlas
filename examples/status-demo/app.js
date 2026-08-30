@@ -5297,7 +5297,16 @@ function createGroupId(title) {
 function renderEntityList() {
   entityList.replaceChildren();
   reconcileStackEntitySelection();
-  const entityIds = trackedEntityIds();
+  const selectedEntityIds = trackedEntityIds();
+  const selectedEntitySet = new Set(selectedEntityIds);
+  const useLiveCatalogList = activeTransport !== transport && entitySnapshots.size > 0;
+  const catalogEntries = useLiveCatalogList
+    ? filterHomeAssistantEntityCatalog(createEntityPickerCatalog(), {
+        domain: homeAssistantEntityDomain.value || "all",
+        search: homeAssistantEntitySearch.value,
+      })
+    : selectedEntityIds.map(entityId => ({ entityId }));
+  const entityIds = catalogEntries.map(entry => entry.entityId);
   if (entityIds.length === 0) {
     const emptyState = document.createElement("div");
     emptyState.className = "empty-selection-state";
@@ -5358,7 +5367,7 @@ function renderEntityList() {
     });
     controls.className = "atlas-entity-card-actions";
     card.append(name, value, detail);
-    const position = entityIds.indexOf(entityId);
+    const position = selectedEntityIds.indexOf(entityId);
     if (entityId === currentEntityId()) {
       card.dataset.primary = "true";
     }
@@ -5406,10 +5415,21 @@ function renderEntityList() {
       event.stopPropagation();
       removeEntity(entityId);
     });
-    if (usesStackEntitySelection()) controls.append(stackToggle);
-    if (position > 0) controls.append(moveUp);
-    if (position < entityIds.length - 1) controls.append(moveDown);
-    controls.append(remove);
+    if (selectedEntitySet.has(entityId)) {
+      if (usesStackEntitySelection()) controls.append(stackToggle);
+      if (position > 0) controls.append(moveUp);
+      if (position >= 0 && position < selectedEntityIds.length - 1) controls.append(moveDown);
+      controls.append(remove);
+    } else {
+      const add = document.createElement("button");
+      add.type = "button";
+      add.textContent = t("button.addEntity");
+      add.addEventListener("click", event => {
+        event.stopPropagation();
+        addSelectedEntityToTrackedList(entityId);
+      });
+      controls.append(add);
+    }
     if (entity && activeTransport !== transport && (entityId.startsWith("light.") || entityId.startsWith("switch."))) {
       const action = document.createElement("button");
       const service = entity.state === "on" ? "turn_off" : "turn_on";
@@ -5479,6 +5499,16 @@ function addEntityForStatusPreview(entityId) {
   statusPreviewEntityId = entityId;
   homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = t("message.selectedForDiagnosticsWithStack", { entityId });
+}
+
+function addSelectedEntityToTrackedList(entityId) {
+  const entityIds = trackedEntityIds();
+  if (!entityIds.includes(entityId)) {
+    homeAssistantEntity.value = [...entityIds, entityId].join(", ");
+  }
+  stackSelectedEntityIds.add(entityId);
+  homeAssistantEntity.dispatchEvent(new Event("input"));
+  statusMessage.textContent = t("message.selectedForHaPreview", { entityId });
 }
 
 function setStackEntitySelected(entityId, selected) {
