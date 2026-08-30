@@ -1,12 +1,15 @@
 # Tabbed Card V2 Editor
 
-[![HACS Custom](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/hacs/integration)
+Private/internal Home Assistant sidebar integration prototype for Tabbed Card V2.
 
-[![Open your Home Assistant instance and add this repository to HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=rockbaer2007&repository=tabbed-card-v2-app&category=integration)
+The public direction is now:
 
-Tabbed Card V2 Editor is a Home Assistant integration that adds a sidebar editor panel for building `custom:tabbed-card-v2` Lovelace YAML.
+- `tabbed-card-v2`: public HACS Lovelace card.
+- `tabbed-card-v2-editor`: standalone visual editor app.
 
-## HACS
+This integration target remains in Atlas as an internal test bed only.
+
+## Internal HACS Test
 
 Add this repository as a HACS custom repository with category `Integration`.
 

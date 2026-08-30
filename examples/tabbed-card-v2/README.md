@@ -37,7 +37,7 @@ url: /local/tabbed-card-v2.js
 type: module
 ```
 
-Then create a manual card. The Home Assistant editor shows a compact pointer to the external editor and keeps YAML editing available through Home Assistant's code editor. You can paste YAML like this:
+Then create a manual card. The Home Assistant editor shows a compact pointer to the standalone editor app and keeps YAML editing available through Home Assistant's code editor. You can paste YAML like this:
 
 ```yaml
 type: custom:tabbed-card-v2
@@ -66,13 +66,13 @@ tabs:
         - sensor.living_room_humidity
 ```
 
-The built-in Home Assistant editor is intentionally small. The full visual editor should be delivered as a separate HACS panel so complex tab layouts, nested cards, previews, imports and dependency checks do not overload the Lovelace card dialog.
+The built-in Home Assistant editor is intentionally small. The full visual editor is delivered as a standalone app so complex tab layouts, nested cards, previews, imports and dependency checks do not overload the Lovelace card dialog.
 
 ## HACS package targets
 
-This demo now contains two HACS-oriented package targets:
+This demo contains the public HACS card target and a private/internal Home Assistant integration prototype:
 
 - `hacs-card/`: Lovelace card package for HACS category `Dashboard`.
-- `hacs-app/`: Home Assistant integration package for HACS category `Integration`, including a sidebar panel at `/tabbed-card-v2`.
+- `hacs-app/`: private/internal Home Assistant sidebar integration prototype.
 
-The current Atlas repo keeps both package targets as source folders. For direct HACS installation they should be split or published as dedicated repositories.
+The standalone editor app is published separately as `tabbed-card-v2-editor`.
