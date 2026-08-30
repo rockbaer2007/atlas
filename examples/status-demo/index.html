@@ -1699,6 +1699,9 @@
       .overview-entity-editor-list {
         display: grid;
         gap: 8px;
+        max-height: min(420px, 52vh);
+        overflow: auto;
+        padding-right: 4px;
       }
 
       .overview-entity-editor-row {
@@ -1796,7 +1799,7 @@
       .overview-entity-picker-results {
         display: grid;
         gap: 5px;
-        max-height: 260px;
+        max-height: min(360px, 44vh);
         overflow: auto;
       }
 
