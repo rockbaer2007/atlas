@@ -3777,7 +3777,15 @@ function openImportedEntityStyleDialog(field, styles) {
   const code = document.createElement("pre");
   code.className = "imported-style-code";
   code.textContent = styles.map(block => block.code).join("\n\n");
-  body.append(entity, code);
+  const detectedStyles = document.createElement("div");
+  detectedStyles.className = "imported-style-detection";
+  for (const styleType of listImportedStyleTypes(styles)) {
+    const badge = document.createElement("span");
+    badge.className = `imported-style-detection-badge ${styleType.className}`;
+    badge.textContent = styleType.label;
+    detectedStyles.append(badge);
+  }
+  body.append(entity, code, detectedStyles);
   dialog.append(header, body);
   backdrop.append(dialog);
 
@@ -3795,6 +3803,22 @@ function openImportedEntityStyleDialog(field, styles) {
   document.addEventListener("keydown", handleKeydown);
   document.body.append(backdrop);
   close.focus();
+}
+
+function listImportedStyleTypes(styles) {
+  const types = [];
+  const hasCardMod = styles.some(block => block.key === "card_mod" || /^card_mod:/m.test(block.code));
+  const hasUix = styles.some(block => block.key === "uix" || block.key === "uix_style" || /^(uix|uix_style):/m.test(block.code));
+  if (hasCardMod) {
+    types.push({ className: "card-mod", label: "card-mod style erkannt" });
+  }
+  if (hasUix) {
+    types.push({ className: "uix-style", label: "UIX Style erkannt" });
+  }
+  if (!types.length) {
+    types.push({ className: "unknown", label: "Style erkannt" });
+  }
+  return types;
 }
 
 function createStackContainerInlineView(field, fieldIndex) {
