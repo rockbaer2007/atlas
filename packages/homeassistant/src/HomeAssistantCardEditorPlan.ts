@@ -58,6 +58,8 @@ export interface HomeAssistantCardEditorSurfaceFieldEntry {
   readonly target: HomeAssistantCardTarget;
   readonly bubbleButtonType?: HomeAssistantBubbleButtonType;
   readonly entityId: string;
+  readonly icon?: string;
+  readonly cards?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
 }
 
 export interface HomeAssistantCardEditorSurfaceField {
@@ -67,6 +69,7 @@ export interface HomeAssistantCardEditorSurfaceField {
   readonly entityId: string;
   readonly layout?: HomeAssistantCardEditorSurfaceFieldLayout;
   readonly entries?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
+  readonly activeTabIndex?: number;
   readonly column: number;
   readonly row: number;
   readonly width: number;
@@ -547,6 +550,7 @@ function normalizeSurfaceField(field: HomeAssistantCardEditorSurfaceField): Home
     entityId: field.entityId.trim(),
     layout: field.layout ?? "card",
     entries: (field.entries ?? []).map(normalizeSurfaceFieldEntry),
+    ...(field.target === "tabbed-card-v2" ? { activeTabIndex: normalizeTabIndex(field.activeTabIndex, field.entries?.length ?? 0) } : {}),
     column: Math.max(0, Math.floor(field.column)),
     row: Math.max(0, Math.floor(field.row)),
     width: Math.max(1, Math.floor(field.width)),
@@ -562,6 +566,8 @@ function normalizeSurfaceFieldEntry(
     target: entry.target,
     ...(entry.target === "bubble" ? { bubbleButtonType: normalizeBubbleButtonType(entry.bubbleButtonType) } : {}),
     entityId: entry.entityId.trim(),
+    ...(entry.icon?.trim() ? { icon: entry.icon.trim() } : {}),
+    ...(entry.cards?.length ? { cards: entry.cards.map(normalizeSurfaceFieldEntry) } : {}),
   };
 }
 
@@ -595,6 +601,9 @@ function listSurfaceFieldOverlaps(
     for (let secondIndex = firstIndex + 1; secondIndex < fields.length; secondIndex += 1) {
       const first = fields[firstIndex]!;
       const second = fields[secondIndex]!;
+      if (first.target === "tabbed-card-v2" || second.target === "tabbed-card-v2") {
+        continue;
+      }
       if (surfaceFieldsOverlap(first, second)) {
         overlaps.push({
           firstFieldId: first.id,
@@ -651,11 +660,19 @@ function createSurfaceFieldCardConfiguration(
   const layout = field.layout ?? "card";
   const entries = (field.entries ?? []).filter(entry => entry.entityId);
   if (field.target === "tabbed-card-v2" && entries.length > 0) {
-    return createHomeAssistantCardConfiguration({
-      target: "tabbed-card-v2",
-      title: field.id,
-      entityIds: entries.map(entry => entry.entityId),
-    });
+    return {
+      type: "custom:tabbed-card-v2",
+      options: {
+        defaultTabIndex: normalizeTabIndex(field.activeTabIndex, entries.length),
+      },
+      tabs: entries.map((entry, index) => ({
+        attributes: {
+          label: entry.id,
+          icon: entry.icon ?? (index === 0 ? "mdi:tab" : "mdi:tab-plus"),
+        },
+        card: createTabbedCardTabContent(entry),
+      })),
+    };
   }
 
   if (layout !== "card" && entries.length > 0) {
@@ -691,6 +708,36 @@ function createSurfaceFieldCardConfiguration(
     title: field.id,
     entityIds: [field.entityId || defaultEntityForTarget(field.target)],
   });
+}
+
+function createTabbedCardTabContent(entry: HomeAssistantCardEditorSurfaceFieldEntry): HomeAssistantCardConfiguration {
+  const cards = (entry.cards?.length ? entry.cards : [entry])
+    .filter(cardEntry => cardEntry.entityId)
+    .map(cardEntry => createHomeAssistantCardConfiguration({
+      target: cardEntry.target === "tabbed-card-v2" ? "entity" : cardEntry.target,
+      bubbleButtonType: cardEntry.bubbleButtonType,
+      title: cardEntry.id,
+      entityIds: [cardEntry.entityId],
+    }));
+
+  if (cards.length === 0) {
+    return createHomeAssistantCardConfiguration({
+      target: "entity",
+      title: entry.id,
+      entityIds: [entry.entityId],
+    });
+  }
+  if (cards.length === 1) return cards[0]!;
+  return {
+    type: "vertical-stack",
+    cards,
+  };
+}
+
+function normalizeTabIndex(value: number | undefined, tabCount: number): number {
+  const numericValue = Number(value);
+  const index = Number.isFinite(numericValue) ? Math.floor(numericValue) : 0;
+  return Math.max(0, Math.min(Math.max(0, tabCount - 1), index));
 }
 
 function defaultEntityForTarget(target: HomeAssistantCardTarget): string {

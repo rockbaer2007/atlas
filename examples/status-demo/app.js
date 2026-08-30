@@ -133,6 +133,20 @@ const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
 const expertFieldList = document.querySelector("#expert-field-list");
 const expertEditorPreview = document.querySelector("#expert-editor-preview");
+const tabbedCardSettingsBackdrop = document.querySelector("#tabbed-card-settings-backdrop");
+const closeTabbedCardSettings = document.querySelector("#close-tabbed-card-settings");
+const tabbedCardTabList = document.querySelector("#tabbed-card-tab-list");
+const addTabbedCardTab = document.querySelector("#add-tabbed-card-tab");
+const moveTabbedCardTabUp = document.querySelector("#move-tabbed-card-tab-up");
+const moveTabbedCardTabDown = document.querySelector("#move-tabbed-card-tab-down");
+const removeTabbedCardTab = document.querySelector("#remove-tabbed-card-tab");
+const tabbedCardTabLabel = document.querySelector("#tabbed-card-tab-label");
+const tabbedCardTabIcon = document.querySelector("#tabbed-card-tab-icon");
+const tabbedCardTabTarget = document.querySelector("#tabbed-card-tab-target");
+const tabbedCardTabEntity = document.querySelector("#tabbed-card-tab-entity");
+const applyTabbedCardTab = document.querySelector("#apply-tabbed-card-tab");
+const addCurrentCardToTab = document.querySelector("#add-current-card-to-tab");
+const tabbedCardSettingsStatus = document.querySelector("#tabbed-card-settings-status");
 const entityList = document.querySelector("#atlas-entity-list");
 const stackSelectionSummary = document.querySelector("#stack-selection-summary");
 const groupSummary = document.querySelector("#group-summary");
@@ -171,6 +185,10 @@ const translations = {
     "label.bubbleButtonType": "Bubble button type",
     "label.title": "Title",
     "label.entity": "Entity",
+    "label.tabLabel": "Tab label",
+    "label.tabIcon": "Tab icon",
+    "label.tabCardFamily": "Card in tab",
+    "label.tabEntity": "Tab entity",
     "label.column": "Column",
     "label.row": "Row",
     "label.width": "Width",
@@ -209,6 +227,12 @@ const translations = {
     "button.clearPreview": "Clear preview",
     "button.applyTitle": "Apply title",
     "button.useEntityName": "Use entity name",
+    "button.addTab": "Add tab",
+    "button.removeTab": "Remove",
+    "button.moveTabUp": "Up",
+    "button.moveTabDown": "Down",
+    "button.applyTab": "Apply tab",
+    "button.addCurrentCardToTab": "Add selected card to active tab",
     "button.off": "Off",
     "button.on": "On",
     "button.unavailable": "Unavailable",
@@ -219,6 +243,8 @@ const translations = {
     "link.openAdmin": "Open Atlas Administration",
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
+    "heading.tabbedCardSettings": "Tabbed Card V2 settings",
+    "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnostics",
     "heading.statusPreview": "ATLAS Status Preview",
     "heading.selectedEntities": "Selected entities",
@@ -242,6 +268,7 @@ const translations = {
     "aria.expertTemplates": "Expert editor templates",
     "aria.expertSurface": "Expert editor surface",
     "aria.resizeExpertSurface": "Resize Expert editor surface",
+    "aria.closeTabbedCardSettings": "Close Tabbed Card V2 settings",
     "aria.showStatusPreview": "Show {entityId} in the ATLAS Status Preview",
     "aria.moveEntityUp": "Move {entityId} up",
     "aria.moveEntityDown": "Move {entityId} down",
@@ -286,6 +313,14 @@ const translations = {
     "message.selectFieldBeforeResize": "Select an Expert field before changing its size.",
     "message.fieldResized": "{field} resized to {width}x{height}.",
     "message.fieldMoved": "{field} moved on the Expert editor surface.",
+    "message.tabbedCardSettingsOpened": "Tabbed Card V2 settings opened for {field}.",
+    "message.selectTabbedCardFirst": "Select a Tabbed Card V2 field first.",
+    "message.tabAdded": "Tab {label} added.",
+    "message.tabRemoved": "Tab removed.",
+    "message.tabUpdated": "Tab {label} updated.",
+    "message.tabMoved": "Tab moved.",
+    "message.cardAddedToTab": "{card} added to tab {tab}.",
+    "message.tabbedCardNeedsTab": "Add a tab before placing cards inside Tabbed Card V2.",
     "message.groupStatus": "Group status: {ready} ready, {pending} pending, {blocked} blocked.",
     "message.needsAttention": "Needs attention: {entities}.",
     "message.selectedForHaPreview": "{entityId} selected for the HA card preview.",
@@ -417,6 +452,7 @@ const translations = {
     "text.expertFieldsZero": "Expert fields: 0.",
     "text.fieldAdded": "{field} added to the Expert editor preview.",
     "text.fieldPlaced": "{field} placed on the Expert editor surface.",
+    "text.tabbedCardContainer": "{count} tabs",
     "palette.core-entity": "Entity",
     "palette.core-entities": "Entities",
     "palette.core-button": "Button",
@@ -481,6 +517,10 @@ const translations = {
     "label.bubbleButtonType": "Bubble-Button-Typ",
     "label.title": "Titel",
     "label.entity": "Entitaet",
+    "label.tabLabel": "Tab-Label",
+    "label.tabIcon": "Tab-Icon",
+    "label.tabCardFamily": "Card im Tab",
+    "label.tabEntity": "Tab-Entitaet",
     "label.column": "Spalte",
     "label.row": "Zeile",
     "label.width": "Breite",
@@ -519,6 +559,12 @@ const translations = {
     "button.clearPreview": "Vorschau leeren",
     "button.applyTitle": "Titel uebernehmen",
     "button.useEntityName": "Entitaetsname nutzen",
+    "button.addTab": "Tab hinzufuegen",
+    "button.removeTab": "Entfernen",
+    "button.moveTabUp": "Hoch",
+    "button.moveTabDown": "Runter",
+    "button.applyTab": "Tab uebernehmen",
+    "button.addCurrentCardToTab": "Ausgewaehlte Card in aktiven Tab",
     "button.off": "Aus",
     "button.on": "Ein",
     "button.unavailable": "Nicht verfuegbar",
@@ -529,6 +575,8 @@ const translations = {
     "link.openAdmin": "Atlas Administration oeffnen",
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
+    "heading.tabbedCardSettings": "Tabbed Card V2 Einstellungen",
+    "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnose",
     "heading.statusPreview": "ATLAS Status Vorschau",
     "heading.selectedEntities": "Ausgewaehlte Entitaeten",
@@ -552,6 +600,7 @@ const translations = {
     "aria.expertTemplates": "Expert-Editor-Templates",
     "aria.expertSurface": "Expert-Editor-Flaeche",
     "aria.resizeExpertSurface": "Expert-Editor-Flaeche vergroessern",
+    "aria.closeTabbedCardSettings": "Tabbed Card V2 Einstellungen schliessen",
     "aria.showStatusPreview": "{entityId} in der ATLAS Status Vorschau anzeigen",
     "aria.moveEntityUp": "{entityId} nach oben verschieben",
     "aria.moveEntityDown": "{entityId} nach unten verschieben",
@@ -596,6 +645,14 @@ const translations = {
     "message.selectFieldBeforeResize": "Waehle ein Expert-Feld aus, bevor du seine Groesse aenderst.",
     "message.fieldResized": "{field} auf {width}x{height} geaendert.",
     "message.fieldMoved": "{field} auf der Expert-Editor-Flaeche verschoben.",
+    "message.tabbedCardSettingsOpened": "Tabbed Card V2 Einstellungen fuer {field} geoeffnet.",
+    "message.selectTabbedCardFirst": "Waehle zuerst ein Tabbed Card V2 Feld aus.",
+    "message.tabAdded": "Tab {label} hinzugefuegt.",
+    "message.tabRemoved": "Tab entfernt.",
+    "message.tabUpdated": "Tab {label} aktualisiert.",
+    "message.tabMoved": "Tab verschoben.",
+    "message.cardAddedToTab": "{card} in Tab {tab} eingefuegt.",
+    "message.tabbedCardNeedsTab": "Fuege erst einen Tab hinzu, bevor Cards in Tabbed Card V2 abgelegt werden.",
     "message.groupStatus": "Gruppenstatus: {ready} bereit, {pending} wartend, {blocked} blockiert.",
     "message.needsAttention": "Braucht Aufmerksamkeit: {entities}.",
     "message.selectedForHaPreview": "{entityId} fuer die HA-Card-Vorschau ausgewaehlt.",
@@ -727,6 +784,7 @@ const translations = {
     "text.expertFieldsZero": "Expert-Felder: 0.",
     "text.fieldAdded": "{field} zur Expert-Editor-Vorschau hinzugefuegt.",
     "text.fieldPlaced": "{field} auf der Expert-Editor-Flaeche platziert.",
+    "text.tabbedCardContainer": "{count} Tabs",
     "palette.core-entity": "Entitaet",
     "palette.core-entities": "Entitaeten",
     "palette.core-button": "Button",
@@ -1114,12 +1172,27 @@ function renderExpertEditorOptions() {
   }
   expertBubbleButtonType.value = bubbleButtonTypes.includes(selectedBubbleButtonType) ? selectedBubbleButtonType : "state";
   syncExpertBubbleTypeControl();
+  renderTabbedCardTargetOptions();
 }
 
 function syncExpertBubbleTypeControl() {
   const isBubble = expertTarget.value === "bubble";
   expertBubbleTypeControl.hidden = !isBubble;
   expertBubbleButtonType.disabled = !isBubble;
+}
+
+function renderTabbedCardTargetOptions() {
+  const selectedTarget = tabbedCardTabTarget.value || "entity";
+  tabbedCardTabTarget.replaceChildren();
+  for (const descriptor of cardTargets.filter(descriptor => descriptor.target !== "tabbed-card-v2")) {
+    const option = document.createElement("option");
+    option.value = descriptor.target;
+    option.textContent = translateCardTarget(descriptor.target, descriptor.label);
+    tabbedCardTabTarget.append(option);
+  }
+  tabbedCardTabTarget.value = cardTargets.some(descriptor => descriptor.target === selectedTarget && descriptor.target !== "tabbed-card-v2")
+    ? selectedTarget
+    : "entity";
 }
 
 function syncCardLayoutState() {
@@ -2368,6 +2441,288 @@ function renameExpertFieldEntries(field, title) {
   }));
 }
 
+function isTabbedCardField(field) {
+  return field?.target === "tabbed-card-v2";
+}
+
+function selectedTabbedCardField() {
+  const field = expertEditorFields[selectedExpertFieldIndex];
+  return isTabbedCardField(field) ? field : undefined;
+}
+
+function normalizeTabbedCardTabIndex(field) {
+  const count = field?.entries?.length ?? 0;
+  const index = Math.floor(Number(field?.activeTabIndex ?? 0));
+  return Math.max(0, Math.min(Math.max(0, count - 1), Number.isFinite(index) ? index : 0));
+}
+
+function updateSelectedTabbedCardField(updater) {
+  const field = selectedTabbedCardField();
+  if (!field) {
+    statusMessage.textContent = t("message.selectTabbedCardFirst");
+    return undefined;
+  }
+  const nextField = updater(field);
+  expertEditorFields[selectedExpertFieldIndex] = nextField;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  renderTabbedCardSettings();
+  return nextField;
+}
+
+function createTabbedCardEntry(input = {}) {
+  const entityId = input.entityId?.trim() || expertEntity.value.trim() || currentEntityId();
+  const title = input.title?.trim() || currentExpertEntityTitle(entityId);
+  const target = input.target && input.target !== "tabbed-card-v2" ? input.target : "entity";
+  return {
+    id: title,
+    target,
+    ...(target === "bubble" ? { bubbleButtonType: input.bubbleButtonType ?? expertBubbleButtonType.value ?? "state" } : {}),
+    entityId,
+    icon: input.icon?.trim() || "mdi:tab",
+  };
+}
+
+function addTabbedCardEntryToField(field, entry) {
+  const entries = [...(field.entries ?? [])];
+  const activeTabIndex = entries.length;
+  entries.push(entry);
+  return {
+    ...field,
+    entityId: entries[0]?.entityId ?? field.entityId,
+    entries,
+    activeTabIndex,
+  };
+}
+
+function addCardEntryToActiveTabInField(field, cardEntry) {
+  const entries = [...(field.entries ?? [])];
+  if (entries.length === 0) {
+    return addTabbedCardEntryToField(field, {
+      ...cardEntry,
+      icon: cardEntry.icon ?? "mdi:tab",
+      cards: [cardEntry],
+    });
+  }
+  const activeTabIndex = normalizeTabbedCardTabIndex(field);
+  const activeEntry = entries[activeTabIndex];
+  const tabCards = activeEntry.cards?.length ? [...activeEntry.cards] : [{
+    id: activeEntry.id,
+    target: activeEntry.target,
+    ...(activeEntry.bubbleButtonType ? { bubbleButtonType: activeEntry.bubbleButtonType } : {}),
+    entityId: activeEntry.entityId,
+  }];
+  tabCards.push(cardEntry);
+  entries[activeTabIndex] = {
+    ...activeEntry,
+    cards: tabCards,
+  };
+  return {
+    ...field,
+    entityId: entries[0]?.entityId ?? field.entityId,
+    entries,
+    activeTabIndex,
+  };
+}
+
+function addCurrentExpertSelectionToActiveTabbedCard(input = {}) {
+  const field = selectedTabbedCardField();
+  if (!field) {
+    statusMessage.textContent = t("message.selectTabbedCardFirst");
+    return false;
+  }
+  const entry = createTabbedCardEntry(input);
+  const tab = field.entries?.[normalizeTabbedCardTabIndex(field)] ?? entry;
+  addCardToTabbedCardFieldAt(selectedExpertFieldIndex, entry);
+  expertEntity.value = "";
+  statusMessage.textContent = t("message.cardAddedToTab", { card: entry.id, tab: tab.id });
+  return true;
+}
+
+function addEntryToTabbedCardFieldAt(fieldIndex, entry) {
+  const field = expertEditorFields[fieldIndex];
+  if (!isTabbedCardField(field)) return false;
+  expertEditorFields[fieldIndex] = addTabbedCardEntryToField(field, entry);
+  selectedExpertFieldIndex = fieldIndex;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  renderTabbedCardSettings();
+  return true;
+}
+
+function addCardToTabbedCardFieldAt(fieldIndex, entry) {
+  const field = expertEditorFields[fieldIndex];
+  if (!isTabbedCardField(field)) return false;
+  expertEditorFields[fieldIndex] = addCardEntryToActiveTabInField(field, entry);
+  selectedExpertFieldIndex = fieldIndex;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  renderTabbedCardSettings();
+  return true;
+}
+
+function addPaletteCardToTabbedCardField(fieldIndex, paletteCardId) {
+  const card = expertPaletteCards.find(candidate => candidate.id === paletteCardId);
+  const template = cardEditorTemplates.find(candidate => candidate.id === card?.templateId);
+  if (!card || !template || card.disabled === true || card.target === "tabbed-card-v2") return false;
+  const entityId = expertEntity.value.trim() || currentEntityId();
+  const entry = createTabbedCardEntry({
+    title: expertTitle.value.trim() || translatePaletteCardLabel(card),
+    entityId,
+    target: card.target,
+    bubbleButtonType: card.bubbleButtonType,
+  });
+  const tab = expertEditorFields[fieldIndex]?.entries?.[normalizeTabbedCardTabIndex(expertEditorFields[fieldIndex])] ?? entry;
+  const added = addCardToTabbedCardFieldAt(fieldIndex, entry);
+  if (added) {
+    statusMessage.textContent = t("message.cardAddedToTab", { card: entry.id, tab: tab.id });
+  }
+  return added;
+}
+
+function moveExpertFieldIntoTabbedCard(fieldIndex, tabbedFieldIndex) {
+  const field = expertEditorFields[fieldIndex];
+  const container = expertEditorFields[tabbedFieldIndex];
+  if (!field || !isTabbedCardField(container) || fieldIndex === tabbedFieldIndex || field.target === "tabbed-card-v2") return false;
+  const entry = createTabbedCardEntry({
+    title: field.id,
+    entityId: field.entityId || field.entries?.[0]?.entityId || currentEntityId(),
+    target: field.target,
+    bubbleButtonType: field.bubbleButtonType,
+  });
+  const tab = container.entries?.[normalizeTabbedCardTabIndex(container)] ?? entry;
+  expertEditorFields[tabbedFieldIndex] = addCardEntryToActiveTabInField(container, entry);
+  expertEditorFields.splice(fieldIndex, 1);
+  selectedExpertFieldIndex = fieldIndex < tabbedFieldIndex ? tabbedFieldIndex - 1 : tabbedFieldIndex;
+  persistConfiguration();
+  renderExpertEditorPreview();
+  renderTabbedCardSettings();
+  statusMessage.textContent = t("message.cardAddedToTab", { card: entry.id, tab: tab.id });
+  return true;
+}
+
+function openTabbedCardSettings() {
+  const field = selectedTabbedCardField();
+  if (!field) {
+    statusMessage.textContent = t("message.selectTabbedCardFirst");
+    return;
+  }
+  tabbedCardSettingsBackdrop.hidden = false;
+  renderTabbedCardSettings();
+  statusMessage.textContent = t("message.tabbedCardSettingsOpened", { field: field.id });
+}
+
+function closeTabbedCardSettingsDialog() {
+  tabbedCardSettingsBackdrop.hidden = true;
+}
+
+function renderTabbedCardSettings() {
+  if (tabbedCardSettingsBackdrop.hidden) return;
+  const field = selectedTabbedCardField();
+  tabbedCardTabList.replaceChildren();
+  if (!field) {
+    tabbedCardSettingsBackdrop.hidden = true;
+    return;
+  }
+  const entries = field.entries ?? [];
+  const activeIndex = normalizeTabbedCardTabIndex(field);
+  entries.forEach((entry, index) => {
+    const row = document.createElement("div");
+    row.className = "tabbed-card-tab-row";
+    row.classList.toggle("selected", index === activeIndex);
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = `${entry.icon ?? "mdi:tab"} ${entry.id}`;
+    button.addEventListener("click", () => {
+      updateSelectedTabbedCardField(current => ({ ...current, activeTabIndex: index }));
+    });
+    const detail = document.createElement("small");
+    detail.textContent = translateCardTarget(entry.target, entry.target);
+    row.append(button, detail);
+    tabbedCardTabList.append(row);
+  });
+
+  const activeEntry = entries[activeIndex];
+  tabbedCardTabLabel.value = activeEntry?.id ?? "";
+  tabbedCardTabIcon.value = activeEntry?.icon ?? "mdi:tab";
+  tabbedCardTabTarget.value = activeEntry?.target && activeEntry.target !== "tabbed-card-v2" ? activeEntry.target : "entity";
+  tabbedCardTabEntity.value = activeEntry?.entityId ?? "";
+  removeTabbedCardTab.disabled = entries.length === 0;
+  moveTabbedCardTabUp.disabled = activeIndex <= 0;
+  moveTabbedCardTabDown.disabled = activeIndex >= entries.length - 1;
+  applyTabbedCardTab.disabled = entries.length === 0;
+}
+
+function handleAddTabbedCardTab() {
+  const index = selectedTabbedCardField()?.entries?.length ?? 0;
+  const entry = createTabbedCardEntry({
+    title: `Tab ${index + 1}`,
+    entityId: expertEntity.value.trim() || currentEntityId(),
+    target: tabbedCardTabTarget.value || "entity",
+    icon: "mdi:tab",
+  });
+  updateSelectedTabbedCardField(field => addTabbedCardEntryToField(field, entry));
+  tabbedCardSettingsStatus.textContent = t("message.tabAdded", { label: entry.id });
+}
+
+function removeActiveTabbedCardTab() {
+  updateSelectedTabbedCardField(field => {
+    const entries = [...(field.entries ?? [])];
+    if (entries.length === 0) return field;
+    const activeIndex = normalizeTabbedCardTabIndex(field);
+    entries.splice(activeIndex, 1);
+    return {
+      ...field,
+      entityId: entries[0]?.entityId ?? "",
+      entries,
+      activeTabIndex: Math.max(0, Math.min(activeIndex, entries.length - 1)),
+    };
+  });
+  tabbedCardSettingsStatus.textContent = t("message.tabRemoved");
+}
+
+function moveActiveTabbedCardTab(direction) {
+  updateSelectedTabbedCardField(field => {
+    const entries = [...(field.entries ?? [])];
+    const activeIndex = normalizeTabbedCardTabIndex(field);
+    const nextIndex = activeIndex + direction;
+    if (nextIndex < 0 || nextIndex >= entries.length) return field;
+    [entries[activeIndex], entries[nextIndex]] = [entries[nextIndex], entries[activeIndex]];
+    return {
+      ...field,
+      entries,
+      activeTabIndex: nextIndex,
+    };
+  });
+  tabbedCardSettingsStatus.textContent = t("message.tabMoved");
+}
+
+function applyActiveTabbedCardTab() {
+  const label = tabbedCardTabLabel.value.trim();
+  const entityId = tabbedCardTabEntity.value.trim();
+  const target = tabbedCardTabTarget.value === "tabbed-card-v2" ? "entity" : tabbedCardTabTarget.value;
+  updateSelectedTabbedCardField(field => {
+    const activeIndex = normalizeTabbedCardTabIndex(field);
+    const entries = [...(field.entries ?? [])];
+    const current = entries[activeIndex];
+    if (!current) return field;
+    entries[activeIndex] = {
+      ...current,
+      id: label || current.id,
+      target,
+      ...(target === "bubble" ? { bubbleButtonType: current.bubbleButtonType ?? expertBubbleButtonType.value ?? "state" } : { bubbleButtonType: undefined }),
+      entityId: entityId || current.entityId,
+      icon: tabbedCardTabIcon.value.trim() || "mdi:tab",
+    };
+    return {
+      ...field,
+      entityId: entries[0]?.entityId ?? field.entityId,
+      entries,
+    };
+  });
+  tabbedCardSettingsStatus.textContent = t("message.tabUpdated", { label: label || tabbedCardTabLabel.value });
+}
+
 function updateSelectedExpertFieldTarget() {
   syncExpertBubbleTypeControl();
   const field = expertEditorFields[selectedExpertFieldIndex];
@@ -2616,6 +2971,11 @@ function selectExpertEditorField(index) {
   persistConfiguration();
   renderExpertFieldList();
   renderExpertEditorSurface();
+  renderTabbedCardSettings();
+  if (isTabbedCardField(field) && tabbedCardSettingsBackdrop.hidden) {
+    openTabbedCardSettings();
+    return;
+  }
   statusMessage.textContent = t("text.fieldSelected", { field: field.id });
 }
 
@@ -2625,6 +2985,11 @@ function toggleExpertFieldEditing() {
     expertFieldEditing = false;
     renderExpertEditButton();
     statusMessage.textContent = t("text.selectFieldBeforeEditing");
+    return;
+  }
+
+  if (isTabbedCardField(field)) {
+    openTabbedCardSettings();
     return;
   }
 
@@ -2658,10 +3023,11 @@ function renderExpertEditorSurface() {
     tile.className = "expert-surface-field";
     tile.classList.toggle("selected", index === selectedExpertFieldIndex);
     tile.classList.toggle("editing", index === selectedExpertFieldIndex && expertFieldEditing);
-    tile.classList.toggle("conflict", overlappingFieldIds.has(field.id));
+    tile.classList.toggle("tabbed-container", isTabbedCardField(field));
+    tile.classList.toggle("conflict", overlappingFieldIds.has(field.id) && !isTabbedCardField(field));
     tile.dataset.expertFieldIndex = String(index);
     tile.setAttribute("role", "button");
-    const conflictLabel = overlappingFieldIds.has(field.id) ? `, ${t("text.overlappingField")}` : "";
+    const conflictLabel = overlappingFieldIds.has(field.id) && !isTabbedCardField(field) ? `, ${t("text.overlappingField")}` : "";
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
@@ -2674,6 +3040,19 @@ function renderExpertEditorSurface() {
     const entity = document.createElement("small");
     entity.textContent = field.entityId || t("text.demoEntity");
     tile.append(title, target, entity);
+    if (isTabbedCardField(field)) {
+      const tabs = document.createElement("div");
+      tabs.className = "expert-tab-summary";
+      for (const entry of (field.entries ?? []).slice(0, 4)) {
+        const chip = document.createElement("span");
+        chip.className = "expert-tab-chip";
+        chip.textContent = entry.id;
+        tabs.append(chip);
+      }
+      const count = document.createElement("small");
+      count.textContent = t("text.tabbedCardContainer", { count: field.entries?.length ?? 0 });
+      tile.append(count, tabs);
+    }
     tile.addEventListener("click", () => {
       selectExpertEditorField(index);
     });
@@ -2691,6 +3070,36 @@ function renderExpertEditorSurface() {
       tile.classList.remove("dragging");
       expertDragFieldOffset = { column: 0, row: 0 };
     });
+    if (isTabbedCardField(field)) {
+      tile.addEventListener("dragover", event => {
+        event.preventDefault();
+        tile.classList.add("drag-over");
+      });
+      tile.addEventListener("dragleave", event => {
+        if (!(event.relatedTarget instanceof Node) || !tile.contains(event.relatedTarget)) {
+          tile.classList.remove("drag-over");
+        }
+      });
+      tile.addEventListener("drop", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        tile.classList.remove("drag-over");
+        expertEditorDropzone.classList.remove("drag-over");
+        const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
+        if (fieldIndex && moveExpertFieldIntoTabbedCard(Number(fieldIndex), index)) return;
+        const paletteCardId = event.dataTransfer?.getData("application/x-atlas-palette-card");
+        if (paletteCardId && addPaletteCardToTabbedCardField(index, paletteCardId)) return;
+        const templateId = event.dataTransfer?.getData("application/x-atlas-template") || event.dataTransfer?.getData("text/plain");
+        const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+        if (template && template.id !== "tabbed-card-v2") {
+          addCardToTabbedCardFieldAt(index, createTabbedCardEntry({
+            title: translateTemplateLabel(template.id, template.label),
+            target: template.target === "tabbed-card-v2" ? "entity" : template.target,
+            entityId: expertEntity.value.trim() || currentEntityId(),
+          }));
+        }
+      });
+    }
     if (index === selectedExpertFieldIndex && expertFieldEditing) {
       const handle = document.createElement("span");
       handle.className = "expert-resize-handle";
@@ -2917,6 +3326,15 @@ function renderExpertEditorPreview() {
 }
 
 function addExpertEditorField() {
+  if (selectedTabbedCardField() && expertTemplate.value !== "tabbed-card-v2") {
+    addCurrentExpertSelectionToActiveTabbedCard({
+      title: expertTitle.value.trim() || undefined,
+      target: expertTarget.value,
+      bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+    });
+    return;
+  }
+
   const entityId = expertEntity.value.trim() || currentEntityId();
   const sizing = resolveExpertTemplateSizing(expertTemplate.value);
   const fieldTitle = expertTitle.value.trim() || undefined;
@@ -2944,6 +3362,8 @@ function createExpertEditorField(input) {
   const supportsMultipleEntries = template?.layout === "horizontal-stack"
     || template?.layout === "vertical-stack"
     || template?.layout === "grid";
+  const isTabbedTemplate = input.templateId === "tabbed-card-v2" || expertTarget.value === "tabbed-card-v2";
+  const entryTarget = isTabbedTemplate ? "entity" : expertTarget.value;
   const stackEntityIds = supportsMultipleEntries
     ? selectedStackEntityIds()
     : [];
@@ -2973,15 +3393,25 @@ function createExpertEditorField(input) {
       entityId: "",
       entries: stackEntityIds.map((entityId, index) => ({
         id: `${field.id} ${index + 1}`,
-        target: expertTarget.value,
+        target: entryTarget,
         ...(expertTarget.value === "bubble" ? { bubbleButtonType: expertBubbleButtonType.value } : {}),
         entityId,
+        ...(isTabbedTemplate ? { icon: index === 0 ? "mdi:tab" : "mdi:tab-plus" } : {}),
       })),
+      ...(isTabbedTemplate ? { activeTabIndex: 0 } : {}),
     };
   }
   return {
     ...fieldWithResizeBase,
-    entries: renameExpertFieldEntries(field, field.id),
+    entries: isTabbedTemplate
+      ? [createTabbedCardEntry({
+          title: field.id,
+          entityId: input.entityId,
+          target: "entity",
+          icon: "mdi:tab",
+        })]
+      : renameExpertFieldEntries(field, field.id),
+    ...(isTabbedTemplate ? { activeTabIndex: 0 } : {}),
   };
 }
 
@@ -2989,6 +3419,16 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
   if (!options.preserveSelection) {
     selectExpertTemplate(templateId);
   }
+  if (!options.forceSurface && selectedTabbedCardField() && templateId !== "tabbed-card-v2") {
+    const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+    addCurrentExpertSelectionToActiveTabbedCard({
+      title: expertTitle.value.trim() || (template ? translateTemplateLabel(template.id, template.label) : undefined),
+      target: expertTarget.value,
+      bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+    });
+    return;
+  }
+
   const sizing = resolveExpertTemplateSizing(templateId);
   const fieldTitle = expertTitle.value.trim() || undefined;
   const field = createExpertEditorField({
@@ -3745,6 +4185,24 @@ showAllExpertPaletteCards.addEventListener("click", toggleExpertPaletteAllCards)
 scanExpertPaletteCards.addEventListener("click", scanExpertPaletteCardsFromHomeAssistant);
 resetExpertTemplateSizing.addEventListener("click", resetExpertTemplateSizingSelection);
 resetExpertPaletteFavorites.addEventListener("click", resetExpertPaletteFavoriteSelection);
+closeTabbedCardSettings.addEventListener("click", closeTabbedCardSettingsDialog);
+tabbedCardSettingsBackdrop.addEventListener("click", event => {
+  if (event.target === tabbedCardSettingsBackdrop) {
+    closeTabbedCardSettingsDialog();
+  }
+});
+addTabbedCardTab.addEventListener("click", handleAddTabbedCardTab);
+removeTabbedCardTab.addEventListener("click", removeActiveTabbedCardTab);
+moveTabbedCardTabUp.addEventListener("click", () => moveActiveTabbedCardTab(-1));
+moveTabbedCardTabDown.addEventListener("click", () => moveActiveTabbedCardTab(1));
+applyTabbedCardTab.addEventListener("click", applyActiveTabbedCardTab);
+addCurrentCardToTab.addEventListener("click", () => {
+  addCurrentExpertSelectionToActiveTabbedCard({
+    title: expertTitle.value.trim() || undefined,
+    target: expertTarget.value === "tabbed-card-v2" ? tabbedCardTabTarget.value : expertTarget.value,
+    bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+  });
+});
 window.addEventListener("resize", applyExpertEditorSurfaceSize);
 clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;

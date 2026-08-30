@@ -466,6 +466,33 @@ describe("Home Assistant frontend integration planning", () => {
     });
   });
 
+  it("does not count Tabbed Card V2 containers as overlap conflicts", () => {
+    expect(analyzeHomeAssistantCardEditorSurface([
+      {
+        id: "Room tabs",
+        target: "tabbed-card-v2",
+        entityId: "light.room",
+        column: 0,
+        row: 0,
+        width: 8,
+        height: 3,
+      },
+      {
+        id: "Dropped card",
+        target: "entity",
+        entityId: "sensor.room",
+        column: 2,
+        row: 1,
+        width: 3,
+        height: 2,
+      },
+    ])).toMatchObject({
+      overlapCount: 0,
+      overlappingFieldIds: [],
+      overlaps: [],
+    });
+  });
+
   it("arranges expert editor fields into free grid positions", () => {
     const arrangedFields = arrangeHomeAssistantCardEditorSurfaceFields([
       {
@@ -783,6 +810,94 @@ describe("Home Assistant frontend integration planning", () => {
           name: "Door",
           entity: "binary_sensor.atlas_door",
           show_state: true,
+        },
+      ],
+    });
+  });
+
+  it("creates Tabbed Card V2 containers with stacked cards inside tabs", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "Room tabs",
+          target: "tabbed-card-v2",
+          entityId: "light.living_room",
+          layout: "vertical-stack",
+          activeTabIndex: 1,
+          entries: [
+            {
+              id: "Light",
+              target: "entity",
+              entityId: "light.living_room",
+              icon: "mdi:lightbulb",
+              cards: [
+                {
+                  id: "Living light",
+                  target: "entity",
+                  entityId: "light.living_room",
+                },
+                {
+                  id: "Living switch",
+                  target: "bubble",
+                  bubbleButtonType: "switch",
+                  entityId: "switch.living_room",
+                },
+              ],
+            },
+            {
+              id: "Climate",
+              target: "sensor",
+              entityId: "sensor.living_room_temperature",
+              icon: "mdi:thermometer",
+            },
+          ],
+          column: 0,
+          row: 0,
+          width: 8,
+          height: 3,
+        },
+      ],
+    })).toEqual({
+      type: "custom:tabbed-card-v2",
+      options: {
+        defaultTabIndex: 1,
+      },
+      tabs: [
+        {
+          attributes: {
+            label: "Light",
+            icon: "mdi:lightbulb",
+          },
+          card: {
+            type: "vertical-stack",
+            cards: [
+              {
+                type: "entity",
+                name: "Living light",
+                entity: "light.living_room",
+              },
+              {
+                type: "custom:bubble-card",
+                card_type: "button",
+                button_type: "switch",
+                name: "Living switch",
+                entity: "switch.living_room",
+                show_state: true,
+              },
+            ],
+          },
+        },
+        {
+          attributes: {
+            label: "Climate",
+            icon: "mdi:thermometer",
+          },
+          card: {
+            type: "sensor",
+            name: "Climate",
+            entity: "sensor.living_room_temperature",
+          },
         },
       ],
     });
