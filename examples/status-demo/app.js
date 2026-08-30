@@ -4285,13 +4285,11 @@ function renderExpertEditorPreview() {
 }
 
 function formatExpertHaCardCodePreview(card) {
-  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
-    ? formatExpertImportedYamlForStyleExport(importedSimpleCodePreview)
-    : serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+  return formatExpertYamlForStyleExport(serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value));
 }
 
-function formatExpertImportedYamlForStyleExport(text) {
-  return haCardStyleExport.value === "uix-style"
+function formatExpertYamlForStyleExport(text) {
+  return haCardFormat.value === "yaml" && haCardStyleExport.value === "uix-style"
     ? convertHomeAssistantCardModStylesToUixStyle(text)
     : text;
 }
@@ -4509,9 +4507,13 @@ function createHaCardExportPayload() {
     format: haCardFormat.value,
     name: currentHaCardExportName(),
   });
-  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
-    ? { ...payload, content: formatExpertImportedYamlForStyleExport(importedSimpleCodePreview) }
-    : payload;
+  if (activeEditorMode === "simple" && haCardFormat.value === "yaml" && importedSimpleCodePreview) {
+    return { ...payload, content: importedSimpleCodePreview };
+  }
+  if (activeEditorMode === "expert") {
+    return { ...payload, content: formatExpertYamlForStyleExport(payload.content) };
+  }
+  return payload;
 }
 
 function selectedCardExportLanguages() {
@@ -4640,9 +4642,13 @@ function createHaCardExportPackage() {
     editorPlan,
     script: createHomeAssistantCardEditorScriptExport(editorPlan),
   });
-  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
-    ? { ...cardPackage, content: formatExpertImportedYamlForStyleExport(importedSimpleCodePreview) }
-    : cardPackage;
+  if (activeEditorMode === "simple" && haCardFormat.value === "yaml" && importedSimpleCodePreview) {
+    return { ...cardPackage, content: importedSimpleCodePreview };
+  }
+  if (activeEditorMode === "expert") {
+    return { ...cardPackage, content: formatExpertYamlForStyleExport(cardPackage.content) };
+  }
+  return cardPackage;
 }
 
 function canExportHaCard() {
