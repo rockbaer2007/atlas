@@ -1,10 +1,10 @@
-const storageKey = "tabbed-card-editor.demo.config";
+const storageKey = "tabbed-card-v2.demo.config";
 
 const initialState = {
   selectedIndex: 0,
   outputMode: "yaml",
   config: {
-    type: "custom:tabbed-card",
+    type: "custom:tabbed-card-v2",
     options: { defaultTabIndex: 0 },
     styles: {
       "--mdc-theme-primary": "#087f8c",
@@ -36,7 +36,7 @@ const initialState = {
         card: {
           type: "markdown",
           title: "Hinweis",
-          content: "Tabbed Card visuell gebaut. Entities bitte an deine Home-Assistant-Installation anpassen.",
+          content: "Tabbed Card V2 visuell gebaut. Entities bitte an deine Home-Assistant-Installation anpassen.",
         },
       },
     ],
@@ -400,7 +400,7 @@ function downloadOutput() {
   const contentType = state.outputMode === "json" ? "application/json" : "application/yaml";
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([elements.yamlOutput.textContent], { type: `${contentType}; charset=utf-8` }));
-  link.download = `tabbed-card.${extension}`;
+  link.download = `tabbed-card-v2.${extension}`;
   link.click();
   URL.revokeObjectURL(link.href);
   elements.statusMessage.textContent = "Export erstellt.";
@@ -467,7 +467,7 @@ function normalizeImportedConfig(config) {
     : deepClone(initialState.config.tabs);
 
   return cleanObject({
-    type: "custom:tabbed-card",
+    type: "custom:tabbed-card-v2",
     options: {
       defaultTabIndex: clampIndex(config.options?.defaultTabIndex ?? 0, tabs.length),
     },
@@ -602,7 +602,7 @@ function formatYamlScalar(value) {
 
 function parseGeneratedYaml(text) {
   const lines = text.split(/\r?\n/);
-  const config = { type: "custom:tabbed-card", options: {}, styles: {}, tabs: [] };
+  const config = { type: "custom:tabbed-card-v2", options: {}, styles: {}, tabs: [] };
   let currentTab = null;
   let currentSection = "";
   let currentCardSubsection = "";

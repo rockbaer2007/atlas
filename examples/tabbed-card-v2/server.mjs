@@ -3,8 +3,8 @@ import { createServer } from "node:http";
 import { extname, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
-const port = Number(process.env.TABBED_CARD_EDITOR_PORT ?? "4176");
-const basePath = "/examples/tabbed-card-editor";
+const port = Number(process.env.TABBED_CARD_V2_PORT ?? process.env.TABBED_CARD_EDITOR_PORT ?? "4176");
+const basePath = "/examples/tabbed-card-v2";
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -32,7 +32,7 @@ createServer((request, response) => {
   });
   createReadStream(filePath).pipe(response);
 }).listen(port, "127.0.0.1", () => {
-  console.log(`Tabbed Card Visual Editor: http://127.0.0.1:${port}/`);
+  console.log(`Tabbed Card V2 Visual Editor: http://127.0.0.1:${port}/`);
 });
 
 function resolveRequestFilePath(requestedFilePath) {
