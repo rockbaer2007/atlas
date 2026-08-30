@@ -2073,10 +2073,17 @@ function renderSimpleHaCardVisualPreview(card) {
 function createSimpleHaCardPreviewCard(card) {
   const wrapper = document.createElement("article");
   wrapper.className = "ha-card-visual-card";
-  const bubbleType = getBubblePreviewType(card);
-  if (bubbleType) {
+  const variant = getSimplePreviewCardVariant(card);
+  if (variant.kind) {
+    wrapper.classList.add("card-kind-preview");
+    wrapper.dataset.cardKind = variant.kind;
+  }
+  if (variant.detail) {
+    wrapper.dataset.cardVariant = variant.detail;
+  }
+  if (variant.kind === "bubble") {
     wrapper.classList.add("bubble-card-preview");
-    wrapper.dataset.bubbleType = bubbleType;
+    wrapper.dataset.bubbleType = variant.detail;
   }
 
   const header = document.createElement("header");
@@ -2084,7 +2091,7 @@ function createSimpleHaCardPreviewCard(card) {
   title.textContent = getSimplePreviewCardTitle(card);
   const type = document.createElement("span");
   type.className = "ha-card-visual-type";
-  type.textContent = bubbleType ? `Bubble ${bubbleType}` : card.type;
+  type.textContent = variant.label || card.type;
   header.append(title, type);
   wrapper.append(header);
 
@@ -2142,9 +2149,22 @@ function getSimplePreviewCardTitle(card) {
   return String(card.type).replace(/^custom:/, "");
 }
 
-function getBubblePreviewType(card) {
-  if (!card || typeof card !== "object" || card.type !== "custom:bubble-card") return "";
-  return bubbleButtonTypes.includes(card.button_type) ? card.button_type : "state";
+function getSimplePreviewCardVariant(card) {
+  if (!card || typeof card !== "object") {
+    return { kind: "", detail: "", label: "" };
+  }
+  if (card.type === "custom:bubble-card") {
+    const detail = bubbleButtonTypes.includes(card.button_type) ? card.button_type : "state";
+    return { kind: "bubble", detail, label: `Bubble ${detail}` };
+  }
+  if (card.type === "custom:mushroom-template-card") {
+    return { kind: "mushroom", detail: "template", label: "Mushroom template" };
+  }
+  if (card.type === "custom:tabbed-card-v2") {
+    return { kind: "tabbed", detail: "v2", label: "Tabbed Card V2" };
+  }
+  const type = typeof card.type === "string" ? card.type.replace(/^custom:/, "") : "";
+  return { kind: type ? "core" : "", detail: type, label: type || "" };
 }
 
 function getSimplePreviewCardEntities(card) {
@@ -3733,9 +3753,17 @@ function renderExpertEditorSurface() {
     tile.classList.toggle("editing", index === selectedExpertFieldIndex && expertFieldEditing);
     tile.classList.toggle("tabbed-container", isTabbedCardField(field));
     tile.classList.toggle("stack-container", isStackContainerField(field));
-    tile.classList.toggle("bubble-card-preview", field.target === "bubble");
-    if (field.target === "bubble") {
-      tile.dataset.bubbleType = field.bubbleButtonType ?? "state";
+    const variant = getExpertPreviewVariant(field);
+    if (variant.kind) {
+      tile.classList.add("card-kind-preview");
+      tile.dataset.cardKind = variant.kind;
+    }
+    if (variant.detail) {
+      tile.dataset.cardVariant = variant.detail;
+    }
+    tile.classList.toggle("bubble-card-preview", variant.kind === "bubble");
+    if (variant.kind === "bubble") {
+      tile.dataset.bubbleType = variant.detail;
     }
     tile.classList.toggle("conflict", overlappingFieldIds.has(field.id) && !isEditableContainerField(field));
     tile.dataset.expertFieldIndex = String(index);
@@ -3764,8 +3792,8 @@ function renderExpertEditorSurface() {
     });
     tile.append(remove);
     tile.append(title, target, entity);
-    if (field.target === "bubble") {
-      tile.append(createBubbleTypeBadge(field.bubbleButtonType));
+    if (variant.label) {
+      tile.append(createCardTypeBadge(variant));
     }
     const styles = getImportedEntityStyleBlocks(field.entityId);
     if (styles.length) {
@@ -4050,9 +4078,17 @@ function createTabbedCardInlineView(field, fieldIndex) {
 function createContainerPreviewCard(card, options = {}) {
   const item = document.createElement("article");
   item.className = "expert-tab-preview-card";
-  item.classList.toggle("bubble-card-preview", card.target === "bubble");
-  if (card.target === "bubble") {
-    item.dataset.bubbleType = card.bubbleButtonType ?? "state";
+  const variant = getExpertPreviewVariant(card);
+  if (variant.kind) {
+    item.classList.add("card-kind-preview");
+    item.dataset.cardKind = variant.kind;
+  }
+  if (variant.detail) {
+    item.dataset.cardVariant = variant.detail;
+  }
+  item.classList.toggle("bubble-card-preview", variant.kind === "bubble");
+  if (variant.kind === "bubble") {
+    item.dataset.bubbleType = variant.detail;
   }
   item.classList.toggle("selected", options.selected === true);
   item.tabIndex = 0;
@@ -4083,8 +4119,8 @@ function createContainerPreviewCard(card, options = {}) {
   });
   actions.append(moveOut, remove);
   item.append(actions, title, detail);
-  if (card.target === "bubble") {
-    item.append(createBubbleTypeBadge(card.bubbleButtonType));
+  if (variant.label) {
+    item.append(createCardTypeBadge(variant));
   }
   item.addEventListener("click", event => {
     event.stopPropagation();
@@ -4105,12 +4141,27 @@ function createContainerPreviewCard(card, options = {}) {
   return item;
 }
 
-function createBubbleTypeBadge(value) {
-  const type = bubbleButtonTypes.includes(value) ? value : "state";
+function getExpertPreviewVariant(card) {
+  const target = card?.target ?? "entity";
+  if (target === "bubble") {
+    const detail = bubbleButtonTypes.includes(card.bubbleButtonType) ? card.bubbleButtonType : "state";
+    return { kind: "bubble", detail, label: `Bubble: ${detail}` };
+  }
+  if (target === "mushroom-template") {
+    return { kind: "mushroom", detail: "template", label: "Mushroom template" };
+  }
+  if (target === "tabbed-card-v2") {
+    return { kind: "tabbed", detail: "v2", label: "Tabbed Card V2" };
+  }
+  return { kind: "core", detail: target, label: translateCardTarget(target, target) };
+}
+
+function createCardTypeBadge(variant) {
   const badge = document.createElement("span");
-  badge.className = "bubble-type-badge";
-  badge.dataset.bubbleType = type;
-  badge.textContent = `Bubble: ${type}`;
+  badge.className = "card-type-badge";
+  if (variant.kind) badge.dataset.cardKind = variant.kind;
+  if (variant.detail) badge.dataset.cardVariant = variant.detail;
+  badge.textContent = variant.label;
   return badge;
 }
 
