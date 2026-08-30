@@ -66,4 +66,12 @@ tabs:
         - sensor.living_room_humidity
 ```
 
-Home Assistant also shows a built-in visual editor for this card. It supports creating, selecting, reordering and deleting tabs, editing tab labels/icons/options, choosing simple card types, selecting entities from the current Home Assistant state list, and changing common card options.
+Home Assistant also shows a built-in visual editor for this card. It supports creating, selecting, reordering and deleting tabs, editing tab labels/icons/options, selecting entities from the current Home Assistant state list, and changing common card options.
+
+Built-in editor card choices:
+
+- Core: `entity`, `entities`, `button`, `tile`, `sensor`, `gauge`, `markdown`, `glance`, `history-graph`, `statistics-graph`, `thermostat`, `weather-forecast`, `picture`, `picture-entity`, `picture-elements`, `media-control`, `alarm-panel`, `map`, `logbook`
+- Layout: `vertical-stack`, `horizontal-stack`, `grid`, `conditional`, `custom:tabbed-card-v2`
+- Community / HACS: `custom:bubble-card`, `custom:mushroom-entity-card`, `custom:mushroom-template-card`, `custom:mushroom-chips-card`, `custom:mushroom-light-card`, `custom:mushroom-cover-card`, `custom:mushroom-climate-card`, `custom:mini-graph-card`, `custom:apexcharts-card`, `custom:button-card`, `custom:layout-card`
+
+Layout and conditional cards can be edited with simple child-card lines in the form `type | entity | title`. Community cards show the required HACS resource path in the editor.

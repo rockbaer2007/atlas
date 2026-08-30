@@ -245,6 +245,110 @@ class TabbedCardV2 extends HTMLElement {
   }
 }
 
+const editorCardGroups = [
+  {
+    label: "Core",
+    cards: [
+      "entity",
+      "entities",
+      "button",
+      "tile",
+      "sensor",
+      "gauge",
+      "markdown",
+      "glance",
+      "history-graph",
+      "statistics-graph",
+      "thermostat",
+      "weather-forecast",
+      "picture",
+      "picture-entity",
+      "picture-elements",
+      "media-control",
+      "alarm-panel",
+      "map",
+      "logbook",
+    ],
+  },
+  {
+    label: "Layout",
+    cards: [
+      "vertical-stack",
+      "horizontal-stack",
+      "grid",
+      "conditional",
+      "custom:tabbed-card-v2",
+    ],
+  },
+  {
+    label: "Community / HACS",
+    cards: [
+      "custom:bubble-card",
+      "custom:mushroom-entity-card",
+      "custom:mushroom-template-card",
+      "custom:mushroom-chips-card",
+      "custom:mushroom-light-card",
+      "custom:mushroom-cover-card",
+      "custom:mushroom-climate-card",
+      "custom:mini-graph-card",
+      "custom:apexcharts-card",
+      "custom:button-card",
+      "custom:layout-card",
+    ],
+  },
+];
+
+const editorCommunityResources = {
+  "custom:bubble-card": "/hacsfiles/Bubble-Card/bubble-card.js",
+  "custom:mushroom-entity-card": "/hacsfiles/lovelace-mushroom/mushroom.js",
+  "custom:mushroom-template-card": "/hacsfiles/lovelace-mushroom/mushroom.js",
+  "custom:mushroom-chips-card": "/hacsfiles/lovelace-mushroom/mushroom.js",
+  "custom:mushroom-light-card": "/hacsfiles/lovelace-mushroom/mushroom.js",
+  "custom:mushroom-cover-card": "/hacsfiles/lovelace-mushroom/mushroom.js",
+  "custom:mushroom-climate-card": "/hacsfiles/lovelace-mushroom/mushroom.js",
+  "custom:mini-graph-card": "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js",
+  "custom:apexcharts-card": "/hacsfiles/apexcharts-card/apexcharts-card.js",
+  "custom:button-card": "/hacsfiles/button-card/button-card.js",
+  "custom:layout-card": "/hacsfiles/lovelace-layout-card/layout-card.js",
+};
+
+const editorEntityCardTypes = new Set([
+  "entity",
+  "button",
+  "tile",
+  "sensor",
+  "gauge",
+  "thermostat",
+  "weather-forecast",
+  "picture-entity",
+  "media-control",
+  "alarm-panel",
+  "custom:bubble-card",
+  "custom:mushroom-entity-card",
+  "custom:mushroom-template-card",
+  "custom:mushroom-light-card",
+  "custom:mushroom-cover-card",
+  "custom:mushroom-climate-card",
+  "custom:mini-graph-card",
+  "custom:apexcharts-card",
+  "custom:button-card",
+]);
+const editorEntitiesCardTypes = new Set(["entities", "glance", "history-graph", "statistics-graph", "map", "logbook"]);
+const editorLayoutCardTypes = new Set(["vertical-stack", "horizontal-stack", "grid", "custom:layout-card"]);
+const editorNestedTabbedCardTypes = new Set(["custom:tabbed-card-v2"]);
+const editorPictureCardTypes = new Set(["picture", "picture-entity", "picture-elements"]);
+const editorDisplayToggleCardTypes = new Set([
+  "entity",
+  "button",
+  "tile",
+  "sensor",
+  "picture-entity",
+  "custom:mushroom-entity-card",
+  "custom:mushroom-light-card",
+  "custom:mushroom-cover-card",
+  "custom:mushroom-climate-card",
+]);
+
 class TabbedCardV2Editor extends HTMLElement {
   constructor() {
     super();
@@ -272,7 +376,9 @@ class TabbedCardV2Editor extends HTMLElement {
     const tab = this._config.tabs[this._selectedIndex] ?? this._config.tabs[0];
     const attributes = tab.attributes ?? {};
     const card = tab.card ?? {};
+    const cardType = card.type ?? "entity";
     const entities = listEditorEntities(this._hass);
+    const resourceHint = editorCommunityResources[cardType] ?? "";
 
     this.shadowRoot.innerHTML = `
       <style>
@@ -365,6 +471,23 @@ class TabbedCardV2Editor extends HTMLElement {
 
         .field.full {
           grid-column: 1 / -1;
+        }
+
+        .hint {
+          margin: 0;
+          color: var(--secondary-text-color);
+          font-size: 12px;
+          line-height: 1.35;
+        }
+
+        .resource-hint {
+          margin: 0;
+          padding: 8px 10px;
+          border: 1px solid var(--warning-color, #f0b429);
+          border-radius: 6px;
+          color: var(--primary-text-color);
+          font-size: 12px;
+          line-height: 1.35;
         }
 
         label {
@@ -490,25 +613,59 @@ class TabbedCardV2Editor extends HTMLElement {
             <div class="field">
               <label for="card-type">Card-Typ</label>
               <select id="card-type" data-card="type">
-                ${["entity", "button", "entities", "sensor", "markdown", "custom:bubble-card", "custom:mushroom-entity-card"].map(type => `
-                  <option value="${type}" ${card.type === type ? "selected" : ""}>${type}</option>
-                `).join("")}
+                ${renderEditorCardTypeOptions(cardType)}
               </select>
             </div>
             <div class="field">
               <label for="card-title">Titel</label>
               <input id="card-title" data-card="title" value="${escapeAttribute(card.title ?? card.name ?? "")}">
             </div>
-            <div class="field full">
+            <div class="field">
+              <label for="card-name">Name</label>
+              <input id="card-name" data-card="name" value="${escapeAttribute(card.name ?? "")}">
+            </div>
+            <div class="field">
+              <label for="card-icon">Icon</label>
+              <input id="card-icon" data-card="icon" value="${escapeAttribute(card.icon ?? "")}" placeholder="mdi:home">
+            </div>
+            <div class="field full" ${editorEntityCardTypes.has(cardType) ? "" : "hidden"}>
               <label for="card-entity">Entity</label>
               <input id="card-entity" data-card="entity" list="tabbed-card-v2-entities" value="${escapeAttribute(card.entity ?? "")}" placeholder="light.bed_light">
               <datalist id="tabbed-card-v2-entities">
                 ${entities.map(entityId => `<option value="${escapeAttribute(entityId)}"></option>`).join("")}
               </datalist>
             </div>
-            <div class="field full">
+            <div class="field full" ${editorEntitiesCardTypes.has(cardType) ? "" : "hidden"}>
               <label for="card-entities">Entities-Liste</label>
               <textarea id="card-entities" data-card="entities" placeholder="sensor.temperature&#10;binary_sensor.motion">${escapeTextarea(editorEntityLines(card.entities))}</textarea>
+            </div>
+            <div class="field full" ${cardType === "markdown" ? "" : "hidden"}>
+              <label for="card-content">Markdown-Inhalt</label>
+              <textarea id="card-content" data-card="content" placeholder="## Status&#10;Alles im Blick.">${escapeTextarea(card.content ?? "")}</textarea>
+            </div>
+            <div class="field full" ${editorPictureCardTypes.has(cardType) ? "" : "hidden"}>
+              <label for="card-image">Bild oder Kamera</label>
+              <input id="card-image" data-card="image" value="${escapeAttribute(card.image ?? card.camera_image ?? "")}" placeholder="/local/image.jpg oder camera.front_door">
+            </div>
+            <div class="field full" ${editorLayoutCardTypes.has(cardType) || editorNestedTabbedCardTypes.has(cardType) || cardType === "conditional" ? "" : "hidden"}>
+              <label for="child-cards">Unterkarten</label>
+              <textarea id="child-cards" data-card="cards" placeholder="button | light.kitchen | Kueche&#10;entity | sensor.temperature | Temperatur">${escapeTextarea(serializeEditorCards(cardType === "conditional" ? [card.card].filter(Boolean) : editorNestedTabbedCardTypes.has(cardType) ? editorCardsFromNestedTabs(card.tabs) : card.cards))}</textarea>
+              <p class="hint">Eine Unterkarte pro Zeile: type | entity | title. Bei verschachtelter Tabbed Card wird daraus je eine innere Registerkarte.</p>
+            </div>
+            <div class="field" ${cardType === "grid" || cardType === "custom:layout-card" ? "" : "hidden"}>
+              <label for="grid-columns">Spalten</label>
+              <input id="grid-columns" data-card="columns" type="number" min="1" max="12" value="${escapeAttribute(card.columns ?? 2)}">
+            </div>
+            <div class="field" ${cardType === "grid" ? "" : "hidden"}>
+              <label class="check"><input data-card="square" type="checkbox" ${card.square === true ? "checked" : ""}>Quadratisch</label>
+            </div>
+            <div class="field" ${cardType === "conditional" ? "" : "hidden"}>
+              <label for="condition-entity">Bedingungs-Entity</label>
+              <input id="condition-entity" data-card="condition_entity" list="tabbed-card-v2-entities" value="${escapeAttribute(card.conditions?.[0]?.entity ?? "")}" placeholder="binary_sensor.motion">
+            </div>
+            <div class="field" ${cardType === "conditional" ? "" : "hidden"}>
+              <label for="condition-state">Bedingungs-State</label>
+              <input id="condition-state" data-card="condition_state" value="${escapeAttribute(card.conditions?.[0]?.state ?? "on")}">
             </div>
             <div class="field">
               <label for="tap-action">Tap Action</label>
@@ -518,7 +675,11 @@ class TabbedCardV2Editor extends HTMLElement {
                 `).join("")}
               </select>
             </div>
-            <div class="field">
+            <div class="field" ${card.tap_action?.action === "navigate" ? "" : "hidden"}>
+              <label for="navigation-path">Navigation Path</label>
+              <input id="navigation-path" data-card="navigation_path" value="${escapeAttribute(card.tap_action?.navigation_path ?? "")}" placeholder="/lovelace/energy">
+            </div>
+            <div class="field" ${cardType === "custom:bubble-card" ? "" : "hidden"}>
               <label for="bubble-type">Bubble Button</label>
               <select id="bubble-type" data-card="button_type">
                 ${["state", "switch", "slider", "name"].map(type => `
@@ -526,8 +687,21 @@ class TabbedCardV2Editor extends HTMLElement {
                 `).join("")}
               </select>
             </div>
+            <div class="field" ${cardType === "gauge" ? "" : "hidden"}>
+              <label for="gauge-min">Gauge Min</label>
+              <input id="gauge-min" data-card="min" type="number" value="${escapeAttribute(card.min ?? 0)}">
+            </div>
+            <div class="field" ${cardType === "gauge" ? "" : "hidden"}>
+              <label for="gauge-max">Gauge Max</label>
+              <input id="gauge-max" data-card="max" type="number" value="${escapeAttribute(card.max ?? 100)}">
+            </div>
+            <div class="field" ${cardType === "history-graph" || cardType === "statistics-graph" || cardType === "custom:mini-graph-card" ? "" : "hidden"}>
+              <label for="hours-to-show">Stunden anzeigen</label>
+              <input id="hours-to-show" data-card="hours_to_show" type="number" min="1" max="168" value="${escapeAttribute(card.hours_to_show ?? 24)}">
+            </div>
           </div>
-          <div class="checks">
+          ${resourceHint ? `<p class="resource-hint">HACS Resource noetig: ${escapeHtml(resourceHint)}</p>` : ""}
+          <div class="checks" ${editorDisplayToggleCardTypes.has(cardType) ? "" : "hidden"}>
             <label class="check"><input data-card="show_name" type="checkbox" ${card.show_name !== false ? "checked" : ""}>Name zeigen</label>
             <label class="check"><input data-card="show_icon" type="checkbox" ${card.show_icon !== false ? "checked" : ""}>Icon zeigen</label>
             <label class="check"><input data-card="show_state" type="checkbox" ${card.show_state !== false ? "checked" : ""}>State zeigen</label>
@@ -609,13 +783,30 @@ class TabbedCardV2Editor extends HTMLElement {
   _updateCardValue(card, input) {
     const key = input.dataset.card;
     const nextCard = { ...card };
+    if (key === "type") {
+      nextCard.type = input.value;
+      return normalizeEditorCard(nextCard);
+    }
     if (key === "tap_action") {
       if (input.value) {
-        nextCard.tap_action = { action: input.value };
+        nextCard.tap_action = {
+          action: input.value,
+          ...(input.value === "navigate" && card.tap_action?.navigation_path
+            ? { navigation_path: card.tap_action.navigation_path }
+            : {}),
+        };
       } else {
         delete nextCard.tap_action;
       }
-      return nextCard;
+      return normalizeEditorCard(nextCard);
+    }
+    if (key === "navigation_path") {
+      nextCard.tap_action = cleanEditorObject({
+        ...(nextCard.tap_action ?? { action: "navigate" }),
+        action: "navigate",
+        navigation_path: input.value.trim(),
+      });
+      return normalizeEditorCard(nextCard);
     }
     if (key === "entities") {
       const entities = input.value.split(/\r?\n|,/).map(value => value.trim()).filter(Boolean);
@@ -624,11 +815,61 @@ class TabbedCardV2Editor extends HTMLElement {
       } else {
         delete nextCard.entities;
       }
-      return nextCard;
+      return normalizeEditorCard(nextCard);
+    }
+    if (key === "cards") {
+      const cards = parseEditorCards(input.value);
+      if (nextCard.type === "conditional") {
+        nextCard.card = cards[0] ?? nextCard.card ?? { type: "entity", entity: "sun.sun" };
+      } else if (editorNestedTabbedCardTypes.has(nextCard.type)) {
+        nextCard.tabs = cards.length
+          ? cards.map((card, index) => ({
+              attributes: {
+                label: card.title || card.name || `Tab ${index + 1}`,
+              },
+              card,
+            }))
+          : undefined;
+      } else if (cards.length) {
+        nextCard.cards = cards;
+      } else {
+        delete nextCard.cards;
+      }
+      return normalizeEditorCard(nextCard);
+    }
+    if (key === "condition_entity" || key === "condition_state") {
+      const currentCondition = nextCard.conditions?.[0] ?? { condition: "state" };
+      const condition = cleanEditorObject({
+        condition: "state",
+        entity: key === "condition_entity" ? input.value.trim() : currentCondition.entity,
+        state: key === "condition_state" ? input.value.trim() : currentCondition.state ?? "on",
+      });
+      nextCard.conditions = condition.entity ? [condition] : [];
+      return normalizeEditorCard(nextCard);
     }
     if (input.type === "checkbox") {
       nextCard[key] = input.checked;
-      return nextCard;
+      return normalizeEditorCard(nextCard);
+    }
+    if (input.type === "number") {
+      const value = Number(input.value);
+      if (Number.isFinite(value)) {
+        nextCard[key] = value;
+      } else {
+        delete nextCard[key];
+      }
+      return normalizeEditorCard(nextCard);
+    }
+    if (key === "image") {
+      const value = input.value.trim();
+      delete nextCard.image;
+      delete nextCard.camera_image;
+      if (value.startsWith("camera.")) {
+        nextCard.camera_image = value;
+      } else if (value) {
+        nextCard.image = value;
+      }
+      return normalizeEditorCard(nextCard);
     }
     if (input.value.trim()) {
       nextCard[key] = input.value.trim();
@@ -679,20 +920,147 @@ function normalizeEditorConfig(config) {
   };
 }
 
+function renderEditorCardTypeOptions(selectedType) {
+  return editorCardGroups.map(group => `
+    <optgroup label="${escapeAttribute(group.label)}">
+      ${group.cards.map(type => `
+        <option value="${escapeAttribute(type)}" ${selectedType === type ? "selected" : ""}>${escapeHtml(type)}</option>
+      `).join("")}
+    </optgroup>
+  `).join("");
+}
+
+function serializeEditorCards(cards) {
+  if (!Array.isArray(cards)) {
+    return "";
+  }
+  return cards.map(card => {
+    if (!card || typeof card !== "object") {
+      return "";
+    }
+    const type = card.type ?? "entity";
+    const entity = card.entity ?? editorEntityLines(card.entities);
+    const title = card.title ?? card.name ?? "";
+    return [type, entity, title].filter(value => String(value ?? "").trim()).join(" | ");
+  }).filter(Boolean).join("\n");
+}
+
+function editorCardsFromNestedTabs(tabs) {
+  if (!Array.isArray(tabs)) {
+    return [];
+  }
+  return tabs.map(tab => cleanEditorObject({
+    ...(tab?.card ?? {}),
+    title: tab?.card?.title ?? tab?.card?.name ?? tab?.attributes?.label,
+  }));
+}
+
+function parseEditorCards(value) {
+  return String(value ?? "")
+    .split(/\r?\n/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(line => {
+      if (line.startsWith("{")) {
+        try {
+          return normalizeEditorCard(JSON.parse(line));
+        } catch {
+          return undefined;
+        }
+      }
+      const [typeValue, entityValue, titleValue] = line.split("|").map(part => part.trim());
+      return normalizeEditorCard(cleanEditorObject({
+        type: typeValue || "entity",
+        entity: entityValue && !entityValue.includes(",") ? entityValue : undefined,
+        entities: entityValue?.includes(",") ? entityValue.split(",").map(entity => entity.trim()).filter(Boolean) : undefined,
+        title: titleValue,
+      }));
+    })
+    .filter(Boolean);
+}
+
 function normalizeEditorCard(card = {}) {
   const nextCard = {
     ...card,
     type: typeof card.type === "string" ? card.type : "entity",
   };
-  if (nextCard.type === "entities" && !Array.isArray(nextCard.entities)) {
+  if (editorEntitiesCardTypes.has(nextCard.type) && !Array.isArray(nextCard.entities)) {
     nextCard.entities = nextCard.entity ? [nextCard.entity] : ["sun.sun"];
     delete nextCard.entity;
   }
-  if (nextCard.type !== "entities") {
+  if (!editorEntitiesCardTypes.has(nextCard.type)) {
     delete nextCard.entities;
+  }
+  if (editorEntityCardTypes.has(nextCard.type) && !nextCard.entity) {
+    nextCard.entity = "sun.sun";
+  }
+  if (!editorEntityCardTypes.has(nextCard.type)) {
+    delete nextCard.entity;
+  }
+  if (editorLayoutCardTypes.has(nextCard.type) && !Array.isArray(nextCard.cards)) {
+    nextCard.cards = [{ type: "entity", entity: "sun.sun" }];
+  }
+  if (!editorLayoutCardTypes.has(nextCard.type)) {
+    delete nextCard.cards;
+  }
+  if (editorNestedTabbedCardTypes.has(nextCard.type)) {
+    nextCard.tabs = Array.isArray(nextCard.tabs) && nextCard.tabs.length
+      ? nextCard.tabs.map((tab, index) => ({
+          attributes: cleanEditorObject({
+            label: tab?.attributes?.label ?? tab?.card?.title ?? tab?.card?.name ?? `Tab ${index + 1}`,
+            icon: tab?.attributes?.icon ?? "",
+          }),
+          card: normalizeEditorCard(tab?.card ?? { type: "entity", entity: "sun.sun" }),
+        }))
+      : [
+          {
+            attributes: { label: "Tab 1" },
+            card: { type: "entity", entity: "sun.sun" },
+          },
+        ];
+  } else {
+    delete nextCard.tabs;
+  }
+  if (nextCard.type === "conditional") {
+    nextCard.conditions = Array.isArray(nextCard.conditions) && nextCard.conditions.length
+      ? nextCard.conditions
+      : [{ condition: "state", entity: "sun.sun", state: "above_horizon" }];
+    nextCard.card = nextCard.card ?? { type: "entity", entity: "sun.sun" };
+  } else {
+    delete nextCard.conditions;
+    delete nextCard.card;
+  }
+  if (nextCard.type === "markdown" && !nextCard.content) {
+    nextCard.content = "## Status\nAlles im Blick.";
+  }
+  if (nextCard.type !== "markdown") {
+    delete nextCard.content;
+  }
+  if (!editorPictureCardTypes.has(nextCard.type)) {
+    delete nextCard.image;
+    delete nextCard.camera_image;
+  }
+  if (nextCard.type === "gauge") {
+    nextCard.min = Number.isFinite(Number(nextCard.min)) ? Number(nextCard.min) : 0;
+    nextCard.max = Number.isFinite(Number(nextCard.max)) ? Number(nextCard.max) : 100;
+  } else {
+    delete nextCard.min;
+    delete nextCard.max;
   }
   if (nextCard.type === "custom:bubble-card" && !nextCard.button_type) {
     nextCard.button_type = "state";
+  } else if (nextCard.type !== "custom:bubble-card") {
+    delete nextCard.button_type;
+  }
+  if (!["history-graph", "statistics-graph", "custom:mini-graph-card"].includes(nextCard.type)) {
+    delete nextCard.hours_to_show;
+  } else if (nextCard.hours_to_show !== undefined) {
+    nextCard.hours_to_show = Number(nextCard.hours_to_show);
+  }
+  if (!editorDisplayToggleCardTypes.has(nextCard.type)) {
+    delete nextCard.show_name;
+    delete nextCard.show_icon;
+    delete nextCard.show_state;
   }
   return cleanEditorObject(nextCard);
 }
@@ -713,7 +1081,7 @@ function cleanEditorConfig(config) {
 
 function cleanEditorObject(object) {
   return Object.fromEntries(Object.entries(object)
-    .filter(([key, value]) => value !== undefined && value !== "" && (value !== false || ["show_name", "show_icon", "show_state"].includes(key)))
+    .filter(([key, value]) => value !== undefined && value !== "" && (value !== false || ["show_name", "show_icon", "show_state", "square"].includes(key)))
     .map(([key, value]) => [key, value && typeof value === "object" && !Array.isArray(value) ? cleanEditorObject(value) : value])
     .filter(([, value]) => !(value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length === 0)));
 }
