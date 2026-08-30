@@ -1585,6 +1585,7 @@ describe("Home Assistant entities card configuration", () => {
     const summary = summarizeHomeAssistantCardImport(text);
     const styleInspection = inspectHomeAssistantCardStyleBlocks(text);
     expect(summary).toMatchObject({
+      sourceContent: text,
       target: "custom-card",
       title: "gauge-card-pro",
       entityIds: [

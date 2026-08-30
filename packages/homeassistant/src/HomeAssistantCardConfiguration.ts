@@ -285,6 +285,7 @@ export interface HomeAssistantCardLocaleContent {
 
 export interface HomeAssistantCardImportSummary {
   readonly card: HomeAssistantCardConfiguration;
+  readonly sourceContent: string;
   readonly title: string;
   readonly entityIds: readonly string[];
   readonly format: HomeAssistantCardExportFormat;
@@ -727,11 +728,11 @@ export function parseHomeAssistantEntitiesCardConfiguration(
 
 export function summarizeHomeAssistantCardImport(text: string): HomeAssistantCardImportSummary {
   const packageCandidate = parseHomeAssistantCardExportPackage(text);
-  const parsed = packageCandidate
-    ? parseHomeAssistantEntitiesCardConfiguration(packageCandidate.content)
-    : parseHomeAssistantEntitiesCardConfiguration(text);
+  const sourceContent = packageCandidate?.content ?? text;
+  const parsed = parseHomeAssistantEntitiesCardConfiguration(sourceContent);
   return {
     ...parsed,
+    sourceContent,
     title: getHomeAssistantCardTitle(parsed.card),
     entityIds: getHomeAssistantCardEntityIds(parsed.card),
     dependency: inspectHomeAssistantCardDependency(parsed.card),
