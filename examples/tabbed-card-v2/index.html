@@ -406,8 +406,21 @@
         box-shadow: none;
       }
 
+      .mock-card.mock-vertical-stack,
+      .mock-card.mock-horizontal-stack {
+        width: 100%;
+        max-width: none;
+      }
+
       .mock-horizontal-stack > .mock-card-body {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        display: flex;
+        align-items: stretch;
+        overflow-x: auto;
+      }
+
+      .mock-horizontal-stack > .mock-card-body > .mock-card {
+        flex: 1 1 220px;
+        min-width: 180px;
       }
 
       .mock-card-header {
