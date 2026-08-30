@@ -1969,9 +1969,9 @@ function renderHaCardPreview() {
     return;
   }
 
-  const card = createHaCardConfig();
+  const card = importedSimpleCard ?? createHaCardConfig();
   renderSimpleHaCardVisualPreview(card);
-  haCardPreview.textContent = formatSimpleHaCardCodePreview(card);
+  haCardPreview.textContent = formatSimpleHaCardCodePreview(createHaCardConfig());
   renderHaCardDependency(card);
 }
 
@@ -2018,7 +2018,8 @@ function createSimpleHaCardPreviewEntityRow(entity) {
 
   const text = document.createElement("div");
   const name = document.createElement("strong");
-  name.textContent = entity.name || formatEntityIdAsTitle(entity.entity) || entity.entity;
+  const importedName = importedSimpleEntityNames.get(entity.entity);
+  name.textContent = entity.name || importedName || formatEntityIdAsTitle(entity.entity) || entity.entity;
   const id = document.createElement("small");
   id.textContent = entity.entity;
   text.append(name, id);
@@ -2073,6 +2074,20 @@ function collectImportedSimpleEntityNames(card) {
     }
   }
   return names;
+}
+
+function createExpertFieldsFromImportedCard(card) {
+  const entities = getSimplePreviewCardEntities(card);
+  return entities.map((entity, index) => createHomeAssistantCardEditorFieldFromTemplate({
+    template: "entity-card",
+    target: "entity",
+    entityId: entity.entity,
+    id: entity.name || formatEntityIdAsTitle(entity.entity) || entity.entity,
+    column: (index % 3) * 4,
+    row: Math.floor(index / 3) * 2,
+    width: 4,
+    height: 2,
+  }));
 }
 
 function collectSimplePreviewCardEntities(value, key = "") {
@@ -5519,7 +5534,7 @@ function applyHomeAssistantCardImportSummary(summary) {
   haCardTarget.value = summary.target;
   haCardLayout.value = summary.layout;
   haCardFormat.value = summary.format;
-  importedSimpleCard = summary.target === "custom-card" ? summary.card : undefined;
+  importedSimpleCard = summary.card;
   importedSimpleEntityNames = collectImportedSimpleEntityNames(summary.card);
   if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
     haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
@@ -5534,8 +5549,9 @@ function applyHomeAssistantCardImportSummary(summary) {
     expertFieldEditing = false;
     renderEditorMode("expert");
   } else {
-    expertEditorFields.length = 0;
-    selectedExpertFieldIndex = -1;
+    const importedExpertFields = createExpertFieldsFromImportedCard(summary.card);
+    expertEditorFields.splice(0, expertEditorFields.length, ...importedExpertFields);
+    selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
     expertCardName.value = "";
     expertFieldEditing = false;
     renderEditorMode("simple");
