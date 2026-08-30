@@ -91,6 +91,8 @@ custom:mushroom-entity-card | light.living_room | Living room
 custom:bubble-card | switch.coffee_machine | Coffee machine
 ```
 
+You can also use the child-card row below the list: choose the child card type, enter an entity and optional title, then click **Unterkarte hinzufuegen**.
+
 The export uses Home Assistant's normal stack syntax:
 
 ```yaml

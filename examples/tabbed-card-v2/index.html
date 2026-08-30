@@ -214,6 +214,17 @@
         grid-template-columns: repeat(5, minmax(90px, 1fr));
       }
 
+      .child-card-actions {
+        display: grid;
+        grid-template-columns: minmax(120px, 160px) minmax(160px, 1fr) minmax(130px, 180px) auto;
+        gap: 8px;
+        align-items: end;
+      }
+
+      .child-card-actions button {
+        min-width: 150px;
+      }
+
       .tabs-body {
         display: grid;
         gap: 10px;
@@ -523,6 +534,10 @@
           grid-template-columns: 1fr 1fr;
         }
 
+        .child-card-actions {
+          grid-template-columns: 1fr;
+        }
+
         .tab-item {
           flex-basis: 150px;
         }
@@ -657,6 +672,28 @@
                   <div class="field full">
                   <label for="card-entities">Entities / Unterkarten</label>
                   <textarea id="card-entities" spellcheck="false" placeholder="sensor.temperature&#10;binary_sensor.motion&#10;entity | sensor.temperature | Temperatur"></textarea>
+                  </div>
+                  <div class="field full child-card-actions">
+                    <div class="field">
+                      <label for="child-card-type">Unterkarten-Typ</label>
+                      <select id="child-card-type">
+                        <option value="entity">Entity</option>
+                        <option value="button">Button</option>
+                        <option value="sensor">Sensor</option>
+                        <option value="custom:mushroom-entity-card">Mushroom Entity</option>
+                        <option value="custom:bubble-card">Bubble Card</option>
+                        <option value="markdown">Markdown</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="child-card-entity">Unterkarten-Entity</label>
+                      <input id="child-card-entity" type="text" autocomplete="off" placeholder="sensor.temperature">
+                    </div>
+                    <div class="field">
+                      <label for="child-card-title">Titel</label>
+                      <input id="child-card-title" type="text" autocomplete="off" placeholder="Temperatur">
+                    </div>
+                    <button id="add-child-card" type="button">Unterkarte hinzufuegen</button>
                   </div>
                   <div class="field">
                     <label for="tap-action">Tap Action</label>

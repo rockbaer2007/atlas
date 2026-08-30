@@ -68,6 +68,10 @@ const elements = {
   cardTitle: document.querySelector("#card-title"),
   cardEntity: document.querySelector("#card-entity"),
   cardEntities: document.querySelector("#card-entities"),
+  childCardType: document.querySelector("#child-card-type"),
+  childCardEntity: document.querySelector("#child-card-entity"),
+  childCardTitle: document.querySelector("#child-card-title"),
+  addChildCard: document.querySelector("#add-child-card"),
   tapAction: document.querySelector("#tap-action"),
   bubbleType: document.querySelector("#bubble-type"),
   showName: document.querySelector("#show-name"),
@@ -117,6 +121,7 @@ function bindEvents() {
   elements.cardTitle.addEventListener("input", syncCardForm);
   elements.cardEntity.addEventListener("input", syncCardForm);
   elements.cardEntities.addEventListener("input", syncCardForm);
+  elements.addChildCard.addEventListener("click", addChildCard);
   elements.tapAction.addEventListener("change", syncCardForm);
   elements.bubbleType.addEventListener("change", syncCardForm);
   elements.showName.addEventListener("change", syncCardForm);
@@ -248,9 +253,12 @@ function renderOutput() {
 
 function renderButtons() {
   const oneTab = state.config.tabs.length <= 1;
+  const type = selectedTab().card?.type;
   elements.moveTabUp.disabled = state.selectedIndex === 0;
   elements.moveTabDown.disabled = state.selectedIndex >= state.config.tabs.length - 1;
   elements.deleteTab.disabled = oneTab;
+  elements.addChildCard.textContent = isStackCard(type) ? "Unterkarte hinzufuegen" : "Entity hinzufuegen";
+  elements.childCardType.disabled = !isStackCard(type);
 }
 
 function createMockCard(card) {
@@ -402,6 +410,30 @@ function createCardConfig(options) {
     show_icon: supportsDisplayToggles(options.type) ? options.showIcon : undefined,
     show_state: supportsDisplayToggles(options.type) ? options.showState : undefined,
   });
+}
+
+function addChildCard() {
+  const type = selectedTab().card?.type;
+  const entity = elements.childCardEntity.value.trim();
+  const title = elements.childCardTitle.value.trim();
+  if (!entity && elements.childCardType.value !== "markdown") {
+    elements.statusMessage.textContent = "Bitte eine Entity fuer die Unterkarte eintragen.";
+    return;
+  }
+
+  const nextLine = isStackCard(type)
+    ? [elements.childCardType.value, entity, title].filter(Boolean).join(" | ")
+    : entity;
+  elements.cardEntities.value = [
+    elements.cardEntities.value.trim(),
+    nextLine,
+  ].filter(Boolean).join("\n");
+  elements.childCardEntity.value = "";
+  elements.childCardTitle.value = "";
+  syncCardForm();
+  elements.statusMessage.textContent = isStackCard(type)
+    ? "Unterkarte hinzugefuegt."
+    : "Entity hinzugefuegt.";
 }
 
 function updateStyle(name, value) {
