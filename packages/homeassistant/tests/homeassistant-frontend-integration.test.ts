@@ -341,15 +341,9 @@ describe("Home Assistant frontend integration planning", () => {
     })).toMatchObject({
       id: "Vertical stack",
       target: "bubble",
-      entityId: "switch.office_fan",
+      entityId: "",
       layout: "vertical-stack",
-      entries: [
-        {
-          id: "Vertical stack item",
-          target: "bubble",
-          entityId: "switch.office_fan",
-        },
-      ],
+      entries: [],
       column: 2,
       row: 1,
       width: 4,
@@ -577,13 +571,7 @@ describe("Home Assistant frontend integration planning", () => {
       id: "Office temperature",
       column: 0,
       row: 0,
-    }).entries).toEqual([
-      {
-        id: "Office temperature item",
-        target: "mushroom-template",
-        entityId: "sensor.office_temperature",
-      },
-    ]);
+    }).entries).toEqual([]);
   });
 
   it("clamps surface placement inside the editor grid", () => {

@@ -319,13 +319,17 @@ export function createHomeAssistantCardEditorFieldFromTemplate(
 
   const target = input.target ?? template.target;
   const bubbleButtonType = target === "bubble" ? input.bubbleButtonType ?? "state" : undefined;
+  const isContainer = target === "tabbed-card-v2"
+    || template.layout === "horizontal-stack"
+    || template.layout === "vertical-stack"
+    || template.layout === "grid";
   return normalizeSurfaceField({
     id: input.id ?? template.label,
     target,
     ...(bubbleButtonType ? { bubbleButtonType } : {}),
-    entityId: input.entityId ?? "",
+    entityId: isContainer ? "" : input.entityId ?? "",
     layout: template.layout,
-    entries: template.layout === "card" ? [] : [
+    entries: isContainer ? [] : template.layout === "card" ? [] : [
       {
         id: `${input.id ?? template.label} item`,
         target,

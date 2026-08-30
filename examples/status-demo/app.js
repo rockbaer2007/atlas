@@ -2893,6 +2893,7 @@ function updateSelectedExpertFieldTitle(title) {
 
 function renameExpertFieldEntries(field, title) {
   if ((field.layout ?? "card") === "card" || !field.entries?.length) return field.entries;
+  if (isEditableContainerField(field)) return field.entries;
   return field.entries.map((entry, index) => ({
     ...entry,
     id: field.entries.length === 1 ? title : `${title} ${index + 1}`,
@@ -2988,7 +2989,7 @@ function addTabbedCardEntryToField(field, entry) {
   entries.push(entry);
   return {
     ...field,
-    entityId: entries[0]?.entityId ?? field.entityId,
+    entityId: field.entityId ?? "",
     entries,
     activeTabIndex,
   };
@@ -3019,7 +3020,7 @@ function addCardEntryToActiveTabInField(field, cardEntry) {
   };
   return {
     ...field,
-    entityId: entries[0]?.entityId ?? field.entityId,
+    entityId: field.entityId ?? "",
     entries,
     activeTabIndex,
   };
@@ -3056,7 +3057,7 @@ function addEntryToStackContainerFieldAt(fieldIndex, entry) {
   const entries = [...(field.entries ?? []), entry];
   expertEditorFields[fieldIndex] = normalizeStackContainerLayout({
     ...field,
-    entityId: entries[0]?.entityId ?? field.entityId,
+    entityId: field.entityId ?? "",
     entries,
   });
   selectedExpertFieldIndex = fieldIndex;
@@ -4750,6 +4751,7 @@ function createExpertEditorField(input) {
     || template?.layout === "vertical-stack"
     || template?.layout === "grid";
   const isTabbedTemplate = input.templateId === "tabbed-card-v2" || expertTarget.value === "tabbed-card-v2";
+  const isContainerTemplate = isTabbedTemplate || supportsMultipleEntries;
   const entryTarget = isTabbedTemplate ? "entity" : expertTarget.value;
   const stackEntityIds = supportsMultipleEntries
     ? selectedStackEntityIds()
@@ -4761,7 +4763,7 @@ function createExpertEditorField(input) {
     template: input.templateId,
     target: expertTarget.value,
     bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
-    entityId: input.entityId,
+    entityId: isContainerTemplate ? "" : input.entityId,
     id: input.title ?? `${expertTemplate.options[expertTemplate.selectedIndex]?.textContent ?? "Field"} ${expertEditorFields.length + 1}`,
     column: input.column,
     row: input.row,
@@ -4802,6 +4804,8 @@ function createExpertEditorField(input) {
           title: field.id,
           icon: "mdi:tab",
         })]
+      : supportsMultipleEntries
+        ? []
       : renameExpertFieldEntries(field, field.id),
     ...(isTabbedTemplate ? { activeTabIndex: 0 } : {}),
   };
