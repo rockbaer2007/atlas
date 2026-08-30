@@ -122,6 +122,7 @@ const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardVisualPreview = document.querySelector("#ha-card-visual-preview");
 const resetSimplePreview = document.querySelector("#reset-simple-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
+const temporaryHaCardResourceList = document.querySelector("#temporary-ha-card-resource-list");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const haCardStyleReview = document.querySelector("#ha-card-style-review");
 const diagnosticsPanel = document.querySelector("#diagnostics-panel");
@@ -206,6 +207,7 @@ const translations = {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Build Simple or Expert Home Assistant cards from live or local entities.",
     "heading.resourceHint": "Resource hint",
+    "heading.temporaryResourceDebug": "Temporary HA card resource check",
     "label.haUrl": "Home Assistant URL",
     "label.panelGroup": "Panel group",
     "label.groupName": "Group name",
@@ -509,6 +511,12 @@ const translations = {
     "text.resourceUnchecked": "Resource unchecked",
     "text.resourceInstalled": "Resource installed",
     "text.resourceMissing": "Resource missing",
+    "text.temporaryResourceDebugUnchecked": "Temporary check: no Lovelace resources loaded yet. Click Check resources while Home Assistant is connected.",
+    "text.temporaryResourceDebugLoading": "Temporary check: Lovelace resources requested, waiting for Home Assistant...",
+    "text.temporaryResourceDebugSummary": "Temporary check: {total} Lovelace resources, {hacs} HACS resources, {known} known cards, {scanOnly} scan-only resources, {ignored} ignored/non-card resources.",
+    "text.temporaryResourceKnown": "Known cards",
+    "text.temporaryResourceScanOnly": "Scan-only resources",
+    "text.temporaryResourceIgnored": "Ignored / non-card resources",
     "text.demoEntity": "demo entity",
     "text.noEntity": "no entity",
     "text.none": "none",
@@ -618,6 +626,7 @@ const translations = {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Erstelle Simple- oder Expert-Home-Assistant-Cards aus Live- oder lokalen Entitäten.",
     "heading.resourceHint": "Ressourcen-Hinweis",
+    "heading.temporaryResourceDebug": "Temporärer HA-Card-Ressourcencheck",
     "label.haUrl": "Home Assistant URL",
     "label.panelGroup": "Panel-Gruppe",
     "label.groupName": "Gruppenname",
@@ -921,6 +930,12 @@ const translations = {
     "text.resourceUnchecked": "Ressource ungeprüft",
     "text.resourceInstalled": "Ressource installiert",
     "text.resourceMissing": "Ressource fehlt",
+    "text.temporaryResourceDebugUnchecked": "Temporärer Check: Noch keine Lovelace-Ressourcen geladen. Klicke Ressourcen prüfen, während Home Assistant verbunden ist.",
+    "text.temporaryResourceDebugLoading": "Temporärer Check: Lovelace-Ressourcen angefordert, warte auf Home Assistant...",
+    "text.temporaryResourceDebugSummary": "Temporärer Check: {total} Lovelace-Ressourcen, {hacs} HACS-Ressourcen, {known} bekannte Cards, {scanOnly} Scan-only-Ressourcen, {ignored} ignorierte/Nicht-Card-Ressourcen.",
+    "text.temporaryResourceKnown": "Bekannte Cards",
+    "text.temporaryResourceScanOnly": "Scan-only-Ressourcen",
+    "text.temporaryResourceIgnored": "Ignoriert / keine Card",
     "text.demoEntity": "Demo-Entität",
     "text.noEntity": "keine Entität",
     "text.none": "keine",
@@ -1071,6 +1086,7 @@ function setLanguage(language) {
   renderEntityList();
   renderConnectionReadiness();
   renderCardTranslationModuleStatus();
+  renderTemporaryHaCardResourceList();
   persistConfiguration();
 }
 
@@ -2157,6 +2173,7 @@ function checkLiveLovelaceResources(options = {}) {
     : message;
   if (result?.accepted) {
     lovelaceResourcesChecked = false;
+    renderTemporaryHaCardResourceList("loading");
     renderHaCardPreview();
   }
 }
@@ -2252,6 +2269,70 @@ function isMappedLovelaceResourceUrl(url) {
     || url.includes("mushroom.js")
     || url.includes("/tabbed-card-v2/")
     || url.includes("tabbed-card-v2.js");
+}
+
+function describeMappedLovelaceResource(url) {
+  if (url.includes("/bubble-card/") || url.includes("bubble-card.js")) return "Bubble Card";
+  if (url.includes("/lovelace-mushroom/") || url.includes("mushroom.js")) return "Mushroom";
+  if (url.includes("/tabbed-card-v2/") || url.includes("tabbed-card-v2.js")) return "Tabbed Card V2";
+  return "";
+}
+
+function analyzeTemporaryHaCardResources(resources) {
+  const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))];
+  const known = [];
+  const scanOnly = [];
+  const ignored = [];
+  for (const url of urls) {
+    const mappedLabel = describeMappedLovelaceResource(url);
+    if (mappedLabel) {
+      known.push(`${mappedLabel}: ${url}`);
+    } else if (shouldIgnoreLovelaceResourceUrl(url) || url.includes("/atlas/") || url.includes("atlas-card")) {
+      ignored.push(url);
+    } else {
+      scanOnly.push(url);
+    }
+  }
+  return {
+    total: urls.length,
+    hacs: urls.filter(isHacsLovelaceResourceUrl).length,
+    known,
+    scanOnly,
+    ignored,
+  };
+}
+
+function formatTemporaryResourceSection(label, entries) {
+  if (!entries.length) return `${label}: -`;
+  return [
+    `${label}:`,
+    ...entries.map((entry, index) => `${index + 1}. ${entry}`),
+  ].join("\n");
+}
+
+function renderTemporaryHaCardResourceList(state = lovelaceResourcesChecked ? "ready" : "unchecked") {
+  if (!temporaryHaCardResourceList) return;
+  if (state === "loading") {
+    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugLoading");
+    return;
+  }
+  if (!lovelaceResourcesChecked) {
+    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugUnchecked");
+    return;
+  }
+  const analysis = analyzeTemporaryHaCardResources(lovelaceResources);
+  temporaryHaCardResourceList.textContent = [
+    t("text.temporaryResourceDebugSummary", {
+      total: analysis.total,
+      hacs: analysis.hacs,
+      known: analysis.known.length,
+      scanOnly: analysis.scanOnly.length,
+      ignored: analysis.ignored.length,
+    }),
+    formatTemporaryResourceSection(t("text.temporaryResourceKnown"), analysis.known),
+    formatTemporaryResourceSection(t("text.temporaryResourceScanOnly"), analysis.scanOnly),
+    formatTemporaryResourceSection(t("text.temporaryResourceIgnored"), analysis.ignored),
+  ].join("\n\n");
 }
 
 function createScannedExpertPaletteCards(resources) {
@@ -6456,6 +6537,7 @@ function bindSelectedEntity(nextTransport) {
   removeLovelaceResourceListener = undefined;
   lovelaceResources = [];
   lovelaceResourcesChecked = false;
+  renderTemporaryHaCardResourceList();
   renderExpertTemplatePalette();
   activeTransport = nextTransport;
   if (trackedEntityIds().length === 0) {
@@ -6520,6 +6602,7 @@ function bindSelectedEntity(nextTransport) {
       const scannedCards = result.success ? refreshScannedExpertPaletteCards() : { total: 0, hacs: 0 };
       renderHaCardPreview();
       renderExpertTemplatePalette();
+      renderTemporaryHaCardResourceList();
       statusMessage.textContent = result.success
         ? t("message.loadedResources", {
           count: result.resources.length,
@@ -7287,6 +7370,7 @@ void applyStoredAdminConnectionSettings();
 renderAdminHandoffState();
 renderCardTranslationModuleStatus();
 renderEditorMode(initialEditorMode);
+renderTemporaryHaCardResourceList();
 
 let adminHandoffRequestAttempts = 0;
 const adminHandoffRequestTimer = window.setInterval(() => {

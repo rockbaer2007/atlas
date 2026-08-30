@@ -664,6 +664,34 @@
         color: #a16207;
       }
 
+      .temporary-resource-debug {
+        display: grid;
+        gap: 6px;
+        margin: 8px 0 0;
+        padding: 10px 12px;
+        border: 1px dashed #64748b;
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .temporary-resource-debug summary {
+        cursor: pointer;
+        color: #172033;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      #temporary-ha-card-resource-list {
+        max-height: 220px;
+        margin: 2px 0 0;
+        overflow: auto;
+        color: #536079;
+        font-size: 12px;
+        line-height: 1.45;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+
       #ha-card-import-review {
         min-height: 20px;
         color: #536079;
@@ -2410,6 +2438,10 @@
           <strong data-i18n="heading.resourceHint">Resource hint</strong>
           <output id="ha-card-dependency" aria-live="polite"></output>
         </div>
+        <details class="temporary-resource-debug" open>
+          <summary data-i18n="heading.temporaryResourceDebug">Temporary HA card resource check</summary>
+          <output id="temporary-ha-card-resource-list" aria-live="polite"></output>
+        </details>
         <div class="connection-actions uniform-actions action-row">
           <label class="import-button action-import" for="import-home-assistant-config" data-i18n="button.import">Import</label>
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
