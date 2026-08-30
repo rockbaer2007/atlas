@@ -304,11 +304,12 @@ function parseJsonRecord(text: string): Record<string, unknown> | undefined {
 }
 
 function looksLikeHomeAssistantCardYaml(text: string): boolean {
-  return /^type:\s*(entities|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card|custom:tabbed-card-v2)\b/m.test(text);
+  return /^type:\s*(entities|glance|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card|custom:tabbed-card-v2)\b/m.test(text);
 }
 
 function isHomeAssistantCardRecord(value: Record<string, unknown>): boolean {
   return value.type === "entities"
+    || value.type === "glance"
     || value.type === "horizontal-stack"
     || value.type === "vertical-stack"
     || value.type === "custom:mushroom-template-card"

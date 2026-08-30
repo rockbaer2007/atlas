@@ -9,6 +9,7 @@ export interface HomeAssistantEntitiesCardEntity {
 
 export type HomeAssistantCardTarget =
   | "entities"
+  | "glance"
   | "entity"
   | "button"
   | "sensor"
@@ -24,6 +25,15 @@ export type HomeAssistantBubbleButtonType = "name" | "slider" | "state" | "switc
 export interface HomeAssistantEntitiesCardConfiguration {
   readonly type: "entities";
   readonly title: string;
+  readonly entities: readonly HomeAssistantEntitiesCardEntity[];
+}
+
+export interface HomeAssistantGlanceCardConfiguration {
+  readonly type: "glance";
+  readonly title?: string;
+  readonly show_name?: boolean;
+  readonly show_icon?: boolean;
+  readonly show_state?: boolean;
   readonly entities: readonly HomeAssistantEntitiesCardEntity[];
 }
 
@@ -128,6 +138,7 @@ export interface HomeAssistantStackCardConfiguration {
 
 export type HomeAssistantSingleCardConfiguration =
   | HomeAssistantEntitiesCardConfiguration
+  | HomeAssistantGlanceCardConfiguration
   | HomeAssistantEntityCardConfiguration
   | HomeAssistantButtonCardConfiguration
   | HomeAssistantSensorCardConfiguration
@@ -296,6 +307,12 @@ const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
     target: "entities",
     label: "Entities",
     type: "entities",
+    dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
+  },
+  {
+    target: "glance",
+    label: "Glance",
+    type: "glance",
     dependency: { id: "home-assistant", label: "Home Assistant built-in", required: false, resourcePaths: [], installPaths: [] },
   },
   {
@@ -547,6 +564,10 @@ export function serializeHomeAssistantEntitiesCardConfiguration(
     return serializeHomeAssistantEntitiesCardYaml(card);
   }
 
+  if (card.type === "glance") {
+    return serializeHomeAssistantGlanceCardYaml(card);
+  }
+
   if (isHomeAssistantStackCardConfiguration(card)) {
     return serializeHomeAssistantStackCardYaml(card);
   }
@@ -782,6 +803,7 @@ export function getHomeAssistantCardTarget(card: HomeAssistantCardConfiguration)
   if (card.type === "custom:mushroom-template-card") return "mushroom-template";
   if (card.type === "custom:bubble-card") return "bubble";
   if (card.type === "custom:tabbed-card-v2") return "tabbed-card-v2";
+  if (card.type === "glance") return "glance";
   if (card.type === "entity") return "entity";
   if (card.type === "sensor") return "sensor";
   if (card.type === "thermostat") return "thermostat";
@@ -808,7 +830,7 @@ export function getHomeAssistantCardEntityIds(card: HomeAssistantCardConfigurati
     return dedupeEntityIds(card.tabs.flatMap(tab => getHomeAssistantCardEntityIds(tab.card)));
   }
 
-  if (card.type === "entities") {
+  if (card.type === "entities" || card.type === "glance") {
     return dedupeEntityIds(card.entities.map(entity => entity.entity));
   }
 
@@ -828,6 +850,10 @@ export function getHomeAssistantCardTitle(card: HomeAssistantCardConfiguration):
 
   if (card.type === "entities") {
     return card.title;
+  }
+
+  if (card.type === "glance") {
+    return card.title ?? "Imported glance card";
   }
 
   if (card.type === "custom:bubble-card") {
@@ -1040,25 +1066,40 @@ function normalizeHomeAssistantCardConfiguration(
     };
   }
 
-  if (card.type !== "entities" || !Array.isArray(card.entities)) {
-    throw new Error("Unsupported Home Assistant card.");
+  if ((card.type === "entities" || card.type === "glance") && Array.isArray(card.entities)) {
+    const entityIds = dedupeEntityIds(card.entities
+      .map(entity => typeof entity === "string" ? entity : isRecord(entity) ? entity.entity : undefined)
+      .filter((entity): entity is string => typeof entity === "string"));
+    if (entityIds.length === 0) {
+      throw new Error("Home Assistant card has no entities.");
+    }
+
+    if (card.type === "glance") {
+      return {
+        card: {
+          type: "glance",
+          ...(typeof card.title === "string" && card.title.trim() ? { title: card.title.trim() } : {}),
+          ...(typeof card.show_name === "boolean" ? { show_name: card.show_name } : {}),
+          ...(typeof card.show_icon === "boolean" ? { show_icon: card.show_icon } : {}),
+          ...(typeof card.show_state === "boolean" ? { show_state: card.show_state } : {}),
+          entities: entityIds.map(entity => ({ entity })),
+        },
+        target: "glance",
+        layout: "single",
+      };
+    }
+
+    return {
+      card: createHomeAssistantEntitiesCardConfiguration({
+        title: typeof card.title === "string" ? card.title : "Imported HA card",
+        entityIds,
+      }),
+      target: "entities",
+      layout: "single",
+    };
   }
 
-  const entityIds = dedupeEntityIds(card.entities
-    .map(entity => typeof entity === "string" ? entity : isRecord(entity) ? entity.entity : undefined)
-    .filter((entity): entity is string => typeof entity === "string"));
-  if (entityIds.length === 0) {
-    throw new Error("Home Assistant card has no entities.");
-  }
-
-  return {
-    card: createHomeAssistantEntitiesCardConfiguration({
-      title: typeof card.title === "string" ? card.title : "Imported HA card",
-      entityIds,
-    }),
-    target: "entities",
-    layout: "single",
-  };
+  throw new Error("Unsupported Home Assistant card.");
 }
 
 function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardConfiguration): string {
@@ -1067,6 +1108,21 @@ function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardC
     `title: ${JSON.stringify(card.title)}`,
     "entities:",
   ];
+  for (const item of card.entities) {
+    lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
+  }
+  return lines.join("\n");
+}
+
+function serializeHomeAssistantGlanceCardYaml(card: HomeAssistantGlanceCardConfiguration): string {
+  const lines = [
+    "type: glance",
+  ];
+  if (card.title) lines.push(`title: ${JSON.stringify(card.title)}`);
+  if (card.show_name !== undefined) lines.push(`show_name: ${serializeYamlScalar(card.show_name)}`);
+  if (card.show_icon !== undefined) lines.push(`show_icon: ${serializeYamlScalar(card.show_icon)}`);
+  if (card.show_state !== undefined) lines.push(`show_state: ${serializeYamlScalar(card.show_state)}`);
+  lines.push("entities:");
   for (const item of card.entities) {
     lines.push(`  - entity: ${JSON.stringify(item.entity)}`);
   }
@@ -1529,7 +1585,7 @@ function isHomeAssistantTabbedCardV2Configuration(
 
 function isHomeAssistantCoreSingleCardConfiguration(
   card: HomeAssistantCardConfiguration,
-): card is Exclude<HomeAssistantSingleCardConfiguration, HomeAssistantEntitiesCardConfiguration | HomeAssistantCustomCardConfiguration | HomeAssistantGridCardConfiguration | HomeAssistantConditionalCardConfiguration> {
+): card is Exclude<HomeAssistantSingleCardConfiguration, HomeAssistantEntitiesCardConfiguration | HomeAssistantGlanceCardConfiguration | HomeAssistantCustomCardConfiguration | HomeAssistantGridCardConfiguration | HomeAssistantConditionalCardConfiguration> {
   return card.type === "entity"
     || card.type === "button"
     || card.type === "sensor"

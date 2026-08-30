@@ -376,6 +376,12 @@ describe("Home Assistant entities card configuration", () => {
         dependency: builtInDependency,
       },
       {
+        target: "glance",
+        label: "Glance",
+        type: "glance",
+        dependency: builtInDependency,
+      },
+      {
         target: "entity",
         label: "Entity",
         type: "entity",
@@ -1484,6 +1490,57 @@ describe("Home Assistant entities card configuration", () => {
       key: "grid_options",
     });
     expect(inspection.globalStyles.some(block => block.code.includes("ha-card"))).toBe(true);
+  });
+
+  it("imports glance cards with style blocks as supported Home Assistant cards", () => {
+    const text = [
+      "show_name: true",
+      "show_icon: true",
+      "show_state: true",
+      "type: glance",
+      "entities:",
+      "  - entity: sensor.hyper_2000_eg_1_solar_input_power",
+      "    show_last_changed: false",
+      "    name: Leistung",
+      "    card_mod:",
+      "      style: |",
+      "        :host {",
+      "          --card-mod-icon-color: lightblue;",
+      "          --mdc-icon-size: 48px;",
+      "        }",
+      "  - entity: binary_sensor.hyper_2000_eg_1_heat_state",
+      "    name: Akkuhzg.",
+      "grid_options:",
+      "  rows: auto",
+      "  columns: 18",
+      "card_mod:",
+      "  style: |",
+      "    ha-card {",
+      "      border: 0.2px solid var(--primary-color);",
+      "      border-radius: 12px",
+      "    }",
+    ].join("\n");
+
+    expect(decideHomeAssistantCardArtifactImport(text)).toMatchObject({
+      action: "import",
+      inspection: {
+        kind: "home-assistant-card",
+        importable: true,
+      },
+    });
+    expect(summarizeHomeAssistantCardImport(text)).toMatchObject({
+      target: "glance",
+      entityIds: [
+        "sensor.hyper_2000_eg_1_solar_input_power",
+        "binary_sensor.hyper_2000_eg_1_heat_state",
+      ],
+      card: {
+        type: "glance",
+        show_name: true,
+        show_icon: true,
+        show_state: true,
+      },
+    });
   });
 
   it("rejects cards without supported entities", () => {
