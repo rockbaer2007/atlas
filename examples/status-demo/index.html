@@ -1197,6 +1197,21 @@
         line-height: 1.45;
       }
 
+      .ha-card-style-review {
+        max-height: 260px;
+        overflow: auto;
+        margin: 0;
+        padding: 10px;
+        border: 1px solid #bfdbfe;
+        border-radius: 6px;
+        background: #f8fbff;
+        color: #172033;
+        font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        line-height: 1.45;
+        white-space: pre-wrap;
+      }
+
       .tabbed-card-tab-list,
       .tabbed-card-tab-editor {
         display: grid;
@@ -1684,6 +1699,7 @@
           <button id="open-ha-card-paste-import" type="button" data-i18n="button.pasteHaCard">Paste YAML</button>
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
+        <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
         <div class="field-grid two-column">
           <div class="field-pair">
             <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
@@ -1859,6 +1875,7 @@
             </header>
             <div class="tabbed-card-dialog-body single-column">
               <textarea id="ha-card-paste-import-text" class="ha-card-paste-import-text" autocomplete="off" spellcheck="false" placeholder="Paste YAML or JSON card configuration here" data-i18n-placeholder="placeholder.haCardYamlPaste"></textarea>
+              <pre id="ha-card-paste-style-review" class="ha-card-style-review" hidden></pre>
               <div class="connection-actions">
                 <button id="paste-ha-card-from-clipboard" type="button" data-i18n="button.pasteClipboard">Paste from clipboard</button>
                 <button id="apply-ha-card-paste-import" type="button" data-i18n="button.applyImport">Import into editor</button>

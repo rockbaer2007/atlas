@@ -17,6 +17,7 @@ import {
   inspectHomeAssistantCardArtifact,
   inspectHomeAssistantCardDependency,
   inspectHomeAssistantCardDependencyAvailability,
+  inspectHomeAssistantCardStyleBlocks,
   listHomeAssistantBubbleButtonTypes,
   listHomeAssistantCardTargets,
   normalizeHomeAssistantCardExportLanguages,
@@ -1440,6 +1441,49 @@ describe("Home Assistant entities card configuration", () => {
         installPaths: ["HACS > Frontend > Bubble Card", "/hacsfiles/Bubble-Card/bubble-card.js"],
       },
     });
+  });
+
+  it("inspects card_mod and layout style blocks from pasted YAML", () => {
+    const inspection = inspectHomeAssistantCardStyleBlocks([
+      "show_name: true",
+      "show_icon: true",
+      "show_state: true",
+      "type: glance",
+      "entities:",
+      "- entity: sensor.hyper_2000_eg_1_solar_input_power",
+      "  name: Leistung",
+      "  card_mod:",
+      "  style: |",
+      "    :host {",
+      "      --card-mod-icon-color: lightblue;",
+      "      --mdc-icon-size: 48px;",
+      "    }",
+      "- entity: sensor.hyper_2000_eg_1_output_home_power",
+      "  name: ins Haus",
+      "  icon: mdi:home",
+      "  card_mod:",
+      "  style: |",
+      "    :host {",
+      "      --card-mod-icon-color: yellow;",
+      "    }",
+      "grid_options:",
+      "  rows: auto",
+      "  columns: 18",
+      "card_mod:",
+      "style: |",
+      "  ha-card {",
+      "    border: 0.2px solid var(--primary-color);",
+      "  }",
+    ].join("\n"));
+
+    expect(inspection.hasStyles).toBe(true);
+    expect(inspection.cardStyles.map(block => block.label)).toContain("sensor.hyper_2000_eg_1_solar_input_power");
+    expect(inspection.cardStyles.map(block => block.label)).toContain("sensor.hyper_2000_eg_1_output_home_power");
+    expect(inspection.layoutOptions[0]).toMatchObject({
+      scope: "layout",
+      key: "grid_options",
+    });
+    expect(inspection.globalStyles.some(block => block.code.includes("ha-card"))).toBe(true);
   });
 
   it("rejects cards without supported entities", () => {

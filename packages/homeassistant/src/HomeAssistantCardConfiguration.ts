@@ -277,6 +277,20 @@ export interface HomeAssistantCardImportSummary {
   readonly script?: HomeAssistantCardEditorScriptExport;
 }
 
+export interface HomeAssistantCardStyleBlock {
+  readonly scope: "global" | "card" | "layout";
+  readonly label: string;
+  readonly key: string;
+  readonly code: string;
+}
+
+export interface HomeAssistantCardStyleInspection {
+  readonly hasStyles: boolean;
+  readonly globalStyles: readonly HomeAssistantCardStyleBlock[];
+  readonly cardStyles: readonly HomeAssistantCardStyleBlock[];
+  readonly layoutOptions: readonly HomeAssistantCardStyleBlock[];
+}
+
 const cardTargetDescriptors: readonly HomeAssistantCardTargetDescriptor[] = [
   {
     target: "entities",
@@ -677,6 +691,16 @@ export function summarizeHomeAssistantCardImport(text: string): HomeAssistantCar
     packaged: packageCandidate !== undefined,
     ...(packageCandidate?.editorPlan ? { editorPlan: packageCandidate.editorPlan } : {}),
     ...(packageCandidate?.script ? { script: packageCandidate.script } : {}),
+  };
+}
+
+export function inspectHomeAssistantCardStyleBlocks(text: string): HomeAssistantCardStyleInspection {
+  const blocks = inspectHomeAssistantCardStyleBlocksFromText(text);
+  return {
+    hasStyles: blocks.length > 0,
+    globalStyles: blocks.filter(block => block.scope === "global"),
+    cardStyles: blocks.filter(block => block.scope === "card"),
+    layoutOptions: blocks.filter(block => block.scope === "layout"),
   };
 }
 
@@ -1379,6 +1403,88 @@ function parseYamlScalar(value: string): unknown {
     return value.slice(1, -1).replace(/''/g, "'");
   }
   return value;
+}
+
+function inspectHomeAssistantCardStyleBlocksFromText(text: string): HomeAssistantCardStyleBlock[] {
+  const lines = text.split(/\r?\n/);
+  const blocks: HomeAssistantCardStyleBlock[] = [];
+  let currentCardLabel = "Card";
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index] ?? "";
+    const trimmed = line.trim();
+    const entityMatch = trimmed.match(/^-\s+entity:\s*(.+)$/);
+    if (entityMatch) {
+      currentCardLabel = cleanYamlPreviewScalar(entityMatch[1] ?? "Card");
+    }
+
+    const keyMatch = trimmed.match(/^([A-Za-z0-9_-]+):(?:\s*(.*))?$/);
+    if (!keyMatch) continue;
+    const key = keyMatch[1] ?? "";
+    if (!isStyleInspectionKey(key)) continue;
+
+    const indent = line.match(/^ */)?.[0].length ?? 0;
+    const scope = key === "grid_options"
+      ? "layout"
+      : indent === 0 && !trimmed.startsWith("- ")
+        ? "global"
+        : "card";
+    const label = scope === "global"
+      ? "Global card style"
+      : scope === "layout"
+        ? "Grid/layout options"
+        : currentCardLabel;
+    blocks.push({
+      scope,
+      label,
+      key,
+      code: collectStyleInspectionBlock(lines, index),
+    });
+  }
+
+  return dedupeStyleInspectionBlocks(blocks);
+}
+
+function isStyleInspectionKey(key: string): boolean {
+  return key === "card_mod"
+    || key === "style"
+    || key === "styles"
+    || key === "uix"
+    || key === "uix_style"
+    || key === "grid_options";
+}
+
+function collectStyleInspectionBlock(lines: readonly string[], startIndex: number): string {
+  const start = lines[startIndex] ?? "";
+  const startIndent = start.match(/^ */)?.[0].length ?? 0;
+  const values = [start.trimEnd()];
+  for (let index = startIndex + 1; index < lines.length; index += 1) {
+    const line = lines[index] ?? "";
+    const trimmed = line.trim();
+    if (!trimmed) {
+      values.push(line);
+      continue;
+    }
+    const indent = line.match(/^ */)?.[0].length ?? 0;
+    if (trimmed.startsWith("- ") && indent <= startIndent) break;
+    if (indent <= startIndent && /^[A-Za-z0-9_-]+:/.test(trimmed)) break;
+    values.push(line.trimEnd());
+  }
+  return values.join("\n").trim();
+}
+
+function cleanYamlPreviewScalar(value: string): string {
+  return value.trim().replace(/^["']|["']$/g, "");
+}
+
+function dedupeStyleInspectionBlocks(blocks: readonly HomeAssistantCardStyleBlock[]): HomeAssistantCardStyleBlock[] {
+  const seen = new Set<string>();
+  return blocks.filter(block => {
+    const key = `${block.scope}:${block.label}:${block.key}:${block.code}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function dedupeEntityIds(entityIds: readonly string[]): string[] {
