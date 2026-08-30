@@ -1087,28 +1087,32 @@
       .expert-editor-dropzone {
         --expert-editor-extra-width: 0px;
         --expert-editor-extra-height: 0px;
+        --expert-grid-cell-size: 40px;
         position: relative;
-        width: calc(100% + var(--expert-editor-extra-width));
+        width: calc(552px + var(--expert-editor-extra-width));
+        max-width: 100%;
+        overflow: auto;
         padding: 14px;
         border: 1px dashed #0f766e;
         border-radius: 6px;
         background: #f8fffd;
         color: #115e59;
         box-sizing: border-box;
-        min-height: calc(448px + var(--expert-editor-extra-height));
+        min-height: calc(552px + var(--expert-editor-extra-height));
         text-align: center;
       }
 
       .expert-surface-grid {
         display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        grid-template-rows: repeat(12, minmax(32px, 1fr));
+        grid-template-columns: repeat(12, var(--expert-grid-cell-size));
+        grid-template-rows: repeat(12, var(--expert-grid-cell-size));
         gap: 4px;
-        min-height: calc(420px + var(--expert-editor-extra-height));
+        width: max-content;
+        min-height: calc(524px + var(--expert-editor-extra-height));
         background:
           linear-gradient(to right, rgba(15, 118, 110, 0.16) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(15, 118, 110, 0.16) 1px, transparent 1px);
-        background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+        background-size: var(--expert-grid-cell-size) 100%, 100% var(--expert-grid-cell-size);
       }
 
       .expert-editor-surface-resize-handle {

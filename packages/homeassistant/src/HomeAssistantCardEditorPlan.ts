@@ -181,7 +181,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "entities",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["Entity", "Value"],
   },
   {
@@ -190,7 +190,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "entity",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["State", "Attributes"],
   },
   {
@@ -199,7 +199,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "button",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["Icon", "Tap action"],
   },
   {
@@ -217,7 +217,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "sensor",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     defaultEntityDomain: "sensor",
     preview: ["Graph", "State"],
   },
@@ -237,7 +237,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "link",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["Navigation", "Tap"],
   },
   {
@@ -264,7 +264,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "bubble",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["Name", "State"],
   },
   {
@@ -273,7 +273,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "card",
     target: "bubble",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     defaultEntityDomain: "switch",
     preview: ["Switch", "On/off"],
   },
@@ -283,7 +283,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "vertical-stack",
     target: "entities",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["Card", "Card", "Card"],
   },
   {
@@ -292,7 +292,7 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     layout: "horizontal-stack",
     target: "entities",
     defaultWidth: 4,
-    defaultHeight: 2,
+    defaultHeight: 3,
     preview: ["Card | Card"],
   },
 ];

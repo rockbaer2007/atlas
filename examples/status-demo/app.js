@@ -1052,7 +1052,8 @@ const expertGridColumns = 12;
 const expertGridRows = 12;
 const expertFieldMaxResizeDelta = 5;
 const expertEditorSurfaceMaxResizeDelta = 5;
-const expertEditorSurfaceHeightStep = 40;
+const expertGridCellSize = 40;
+const expertEditorSurfaceHeightStep = expertGridCellSize;
 let expertEditorSurfaceSize = { columns: 0, rows: 0 };
 let expertDragFieldOffset = { column: 0, row: 0 };
 let connection;
@@ -3542,9 +3543,9 @@ function calculateStackContainerAutoHeight(field) {
   if (entries === 0) return 2;
   if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
     const cardsPerRow = Math.max(1, Math.floor(Math.max(1, field.width) / 4));
-    return Math.max(2, 2 + Math.ceil(entries / cardsPerRow) * 2);
+    return Math.max(3, 2 + Math.ceil(entries / cardsPerRow) * 3);
   }
-  return Math.max(2, 2 + entries * 2);
+  return Math.max(3, 2 + entries * 3);
 }
 
 function updateSelectedExpertFieldTarget() {
@@ -3634,8 +3635,7 @@ function clampExpertEditorSurfaceDelta(value) {
 }
 
 function expertEditorSurfaceWidthStep() {
-  const containerWidth = expertEditorDropzone.parentElement?.clientWidth || expertEditorDropzone.clientWidth || 672;
-  return Math.max(48, Math.round(containerWidth / expertGridColumns));
+  return expertGridCellSize;
 }
 
 function applyExpertEditorSurfaceSize() {
