@@ -156,6 +156,7 @@ const scanExpertPaletteCards = document.querySelector("#scan-expert-palette-card
 const resetExpertTemplateSizing = document.querySelector("#reset-expert-template-sizing");
 const resetExpertPaletteFavorites = document.querySelector("#reset-expert-palette-favorites");
 const expertEditorDropzone = document.querySelector("#expert-editor-dropzone");
+const expertEditorCanvasRow = document.querySelector(".expert-editor-canvas-row");
 const expertSelectedCardDetails = document.querySelector("#expert-selected-card-details");
 const expertEditorSummary = document.querySelector("#expert-editor-summary");
 const expertFieldList = document.querySelector("#expert-field-list");
@@ -3746,11 +3747,19 @@ function clampExpertEditorSurfaceDelta(value) {
 }
 
 function expertEditorSurfaceWidthStep() {
-  const containerWidth = expertEditorDropzone.parentElement?.clientWidth || expertEditorDropzone.clientWidth || 672;
+  const configuredBaseWidth = Number.parseFloat(expertEditorDropzone.style.getPropertyValue("--expert-editor-base-width"));
+  const containerWidth = Number.isFinite(configuredBaseWidth) && configuredBaseWidth > 0
+    ? configuredBaseWidth
+    : expertEditorDropzone.clientWidth || 672;
   return Math.max(48, Math.round(containerWidth / expertGridColumns));
 }
 
 function applyExpertEditorSurfaceSize() {
+  const detailWidth = expertSelectedCardDetails?.offsetWidth || 320;
+  const rowGap = 12;
+  const availableWidth = expertEditorCanvasRow?.parentElement?.clientWidth || 972;
+  const baseWidth = Math.max(640, availableWidth - detailWidth - rowGap);
+  expertEditorDropzone.style.setProperty("--expert-editor-base-width", `${baseWidth}px`);
   expertEditorDropzone.style.setProperty(
     "--expert-editor-extra-width",
     `${expertEditorSurfaceSize.columns * expertEditorSurfaceWidthStep()}px`,
@@ -4034,6 +4043,11 @@ function renderExpertEditorSurface() {
       : `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
     tile.style.gridRow = `${field.row + 1} / span ${Math.min(expertGridRows, field.height)}`;
     tile.append(createExpertSurfaceFieldHeader(field));
+    if (isTabbedCardField(field)) {
+      tile.append(createTabbedCardInlineView(field, index));
+    } else if (isStackContainerField(field)) {
+      tile.append(createStackContainerInlineView(field, index));
+    }
     tile.addEventListener("click", () => {
       selectExpertEditorField(index);
     });
