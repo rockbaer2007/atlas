@@ -178,6 +178,7 @@ const stackSelectionSummary = document.querySelector("#stack-selection-summary")
 const groupSummary = document.querySelector("#group-summary");
 const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
+const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const adminOrigin = "http://127.0.0.1:4175";
 const adminConnectionApiUrl = `${adminOrigin}/api/admin-connection`;
 const adminConnectionCookieName = "atlas_admin_connection";
@@ -4656,11 +4657,14 @@ function syncHaCardExportStyleSelection() {
 }
 
 function downloadHaCardPayload(payload) {
+  const filename = nextHaCardExportFilename(payload.manifest.filename);
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([payload.content], { type: payload.manifest.mimeType }));
-  link.download = payload.manifest.filename;
+  link.download = filename;
   link.click();
   URL.revokeObjectURL(link.href);
+  rememberHaCardExportFilename(payload.manifest.filename);
+  return filename;
 }
 
 async function saveHaCardPayloadWithPicker(payload) {
@@ -4670,8 +4674,9 @@ async function saveHaCardPayloadWithPicker(payload) {
   }
 
   const extension = payload.manifest.format === "yaml" ? ".yaml" : ".json";
+  const filename = nextHaCardExportFilename(payload.manifest.filename);
   const handle = await window.showSaveFilePicker({
-    suggestedName: payload.manifest.filename,
+    suggestedName: filename,
     types: [{
       description: payload.manifest.format === "yaml" ? "YAML" : "JSON",
       accept: { [payload.manifest.mimeType]: [extension] },
@@ -4680,21 +4685,61 @@ async function saveHaCardPayloadWithPicker(payload) {
   const writable = await handle.createWritable();
   await writable.write(new Blob([payload.content], { type: payload.manifest.mimeType }));
   await writable.close();
-  return true;
+  rememberHaCardExportFilename(payload.manifest.filename);
+  return filename;
+}
+
+function splitExportFilename(filename) {
+  const match = filename.match(/^(.*?)(\.[^.]+)?$/);
+  return {
+    base: match?.[1] || filename,
+    extension: match?.[2] || "",
+  };
+}
+
+function readExportFilenameHistory() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(exportFilenameHistoryStorageKey) ?? "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function nextHaCardExportFilename(filename) {
+  const history = readExportFilenameHistory();
+  const count = Number.isInteger(history[filename]) ? history[filename] : 0;
+  if (count <= 0) return filename;
+  const { base, extension } = splitExportFilename(filename);
+  return `${base} (${count + 1})${extension}`;
+}
+
+function rememberHaCardExportFilename(filename) {
+  try {
+    const history = readExportFilenameHistory();
+    const count = Number.isInteger(history[filename]) ? history[filename] : 0;
+    localStorage.setItem(exportFilenameHistoryStorageKey, JSON.stringify({
+      ...history,
+      [filename]: count + 1,
+    }));
+  } catch {
+  }
 }
 
 async function exportHaCardPayload(useSavePicker) {
   syncHaCardExportStyleSelection();
   const payload = createHaCardExportPayload();
+  let filename = payload.manifest.filename;
   try {
     if (useSavePicker) {
-      const saved = await saveHaCardPayloadWithPicker(payload);
-      if (!saved) return;
+      const savedFilename = await saveHaCardPayloadWithPicker(payload);
+      if (!savedFilename) return;
+      filename = savedFilename;
     } else {
-      downloadHaCardPayload(payload);
+      filename = downloadHaCardPayload(payload);
     }
     closeHaCardExportDialog();
-    statusMessage.textContent = t("message.haCardExported", { filename: payload.manifest.filename });
+    statusMessage.textContent = t("message.haCardExported", { filename });
   } catch (error) {
     haCardExportStatus.textContent = error?.name === "AbortError"
       ? t("message.exportCancelled")
