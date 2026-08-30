@@ -73,6 +73,7 @@ const homeAssistantEntityPicker = document.querySelector("#home-assistant-entity
 const homeAssistantEntityPickerStatus = document.querySelector("#home-assistant-entity-picker-status");
 const addHomeAssistantEntity = document.querySelector("#add-home-assistant-entity");
 const refreshHomeAssistantEntities = document.querySelector("#refresh-home-assistant-entities");
+const simpleEntityControls = document.querySelector("#simple-entity-controls");
 const homeAssistantGroup = document.querySelector("#home-assistant-group");
 const homeAssistantGroupName = document.querySelector("#home-assistant-group-name");
 const haCardTarget = document.querySelector("#ha-card-target");
@@ -1415,6 +1416,7 @@ function renderEditorMode(mode = "simple") {
   saveHomeAssistantGroup.hidden = expert;
   deleteHomeAssistantGroup.hidden = expert;
   duplicateHomeAssistantGroup.hidden = expert;
+  simpleEntityControls.hidden = expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
   for (const button of editorModeButtons) {

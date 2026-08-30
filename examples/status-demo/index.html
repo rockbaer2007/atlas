@@ -2366,36 +2366,38 @@
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
         <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
-        <div class="field-grid two-column">
-          <div class="field-pair">
-            <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
-            <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
-          </div>
-          <div class="field-pair">
-            <label for="home-assistant-entity-domain" data-i18n="label.entityType">Entity type</label>
-            <select id="home-assistant-entity-domain"></select>
-          </div>
-        </div>
-        <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts" data-i18n-aria-label="aria.entityTypeShortcuts"></div>
-        <div class="field-grid two-column">
-          <div class="field-pair">
-            <label for="home-assistant-entity-search" data-i18n="label.entitySearch">Entity search</label>
-            <div class="entity-search-control">
-              <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID" data-i18n-placeholder="placeholder.entitySearch">
-              <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" data-i18n-aria-label="aria.clearEntitySearch" data-i18n-title="aria.clearEntitySearch" disabled>&times;</button>
+        <div id="simple-entity-controls">
+          <div class="field-grid two-column">
+            <div class="field-pair">
+              <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
+              <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="field-pair">
+              <label for="home-assistant-entity-domain" data-i18n="label.entityType">Entity type</label>
+              <select id="home-assistant-entity-domain"></select>
             </div>
           </div>
-          <div class="field-pair">
-            <label for="home-assistant-entity-picker" data-i18n="label.entityPicker">Entity picker</label>
-            <select id="home-assistant-entity-picker"></select>
+          <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts" data-i18n-aria-label="aria.entityTypeShortcuts"></div>
+          <div class="field-grid two-column">
+            <div class="field-pair">
+              <label for="home-assistant-entity-search" data-i18n="label.entitySearch">Entity search</label>
+              <div class="entity-search-control">
+                <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID" data-i18n-placeholder="placeholder.entitySearch">
+                <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" data-i18n-aria-label="aria.clearEntitySearch" data-i18n-title="aria.clearEntitySearch" disabled>&times;</button>
+              </div>
+            </div>
+            <div class="field-pair">
+              <label for="home-assistant-entity-picker" data-i18n="label.entityPicker">Entity picker</label>
+              <select id="home-assistant-entity-picker"></select>
+            </div>
           </div>
+          <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
+          <div class="connection-actions uniform-actions">
+            <button id="add-home-assistant-entity" type="button" data-i18n="button.addEntity">Add entity</button>
+            <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
+          </div>
+          <output id="selected-entity" aria-live="polite"></output>
         </div>
-        <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
-        <div class="connection-actions uniform-actions">
-          <button id="add-home-assistant-entity" type="button" data-i18n="button.addEntity">Add entity</button>
-          <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
-        </div>
-        <output id="selected-entity" aria-live="polite"></output>
         <div class="editor-mode-toggle" role="group" aria-label="Card editor mode" data-i18n-aria-label="aria.cardEditorMode">
           <button type="button" data-editor-mode="simple" aria-pressed="true" data-i18n="button.simpleMode">Simple</button>
           <button type="button" data-editor-mode="expert" aria-pressed="false" data-i18n="button.expertMode">Expert</button>
