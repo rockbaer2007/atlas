@@ -744,6 +744,16 @@
         gap: 6px;
       }
 
+      .expert-palette-search {
+        margin: 0 0 8px;
+      }
+
+      .expert-palette-search input {
+        width: 100%;
+        min-height: 34px;
+        box-sizing: border-box;
+      }
+
       .expert-template-card {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(112px, 0.95fr);
@@ -1172,6 +1182,22 @@
 
       .tabbed-card-tab-editor .connection-actions {
         margin-top: 0;
+      }
+
+      .tabbed-card-tab-editor .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 34px;
+        color: #536079;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .tabbed-card-tab-editor .checkbox-row input {
+        width: 15px;
+        height: 15px;
+        accent-color: #2563eb;
       }
 
       @media (max-width: 760px) {
@@ -1636,6 +1662,9 @@
                 <button id="reset-expert-palette-favorites" type="button" data-i18n="button.resetFavorites">Reset favorites</button>
               </div>
             </div>
+            <div class="expert-palette-search">
+              <input id="expert-palette-search" type="search" autocomplete="off" spellcheck="false" placeholder="Search cards" data-i18n-placeholder="placeholder.cardSearch">
+            </div>
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates" data-i18n-aria-label="aria.expertTemplates"></div>
           </aside>
           <section class="expert-editor-surface" aria-label="Expert editor surface" data-i18n-aria-label="aria.expertSurface">
@@ -1731,6 +1760,14 @@
                     <label for="tabbed-card-tab-icon" data-i18n="label.tabIcon">Tab icon</label>
                     <input id="tabbed-card-tab-icon" type="text" autocomplete="off" spellcheck="false" placeholder="mdi:tab">
                   </div>
+                  <label class="checkbox-row">
+                    <input id="tabbed-card-full-width" type="checkbox">
+                    <span data-i18n="label.tabbedCardFullWidth">Full width</span>
+                  </label>
+                  <label class="checkbox-row">
+                    <input id="tabbed-card-auto-height" type="checkbox">
+                    <span data-i18n="label.tabbedCardAutoHeight">Automatic height</span>
+                  </label>
                 </div>
                 <div class="connection-actions">
                   <button id="apply-tabbed-card-tab" type="button" data-i18n="button.applyTab">Apply tab</button>

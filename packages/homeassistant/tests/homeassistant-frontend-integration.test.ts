@@ -913,6 +913,8 @@ describe("Home Assistant frontend integration planning", () => {
           entityId: "",
           layout: "vertical-stack",
           activeTabIndex: 0,
+          fullWidth: true,
+          autoHeight: true,
           entries: [
             {
               id: "Light",
@@ -941,6 +943,8 @@ describe("Home Assistant frontend integration planning", () => {
       type: "custom:tabbed-card-v2",
       options: {
         defaultTabIndex: 0,
+        fullWidth: true,
+        autoHeight: true,
       },
       tabs: [
         {

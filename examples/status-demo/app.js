@@ -124,6 +124,7 @@ const arrangeExpertFields = document.querySelector("#arrange-expert-fields");
 const resetExpertSurfaceSize = document.querySelector("#reset-expert-surface-size");
 const clearExpertFields = document.querySelector("#clear-expert-fields");
 const expertTemplatePalette = document.querySelector("#expert-template-palette");
+const expertPaletteSearch = document.querySelector("#expert-palette-search");
 const saveExpertPaletteFavorites = document.querySelector("#save-expert-palette-favorites");
 const showAllExpertPaletteCards = document.querySelector("#show-all-expert-palette-cards");
 const scanExpertPaletteCards = document.querySelector("#scan-expert-palette-cards");
@@ -142,6 +143,8 @@ const moveTabbedCardTabDown = document.querySelector("#move-tabbed-card-tab-down
 const removeTabbedCardTab = document.querySelector("#remove-tabbed-card-tab");
 const tabbedCardTabLabel = document.querySelector("#tabbed-card-tab-label");
 const tabbedCardTabIcon = document.querySelector("#tabbed-card-tab-icon");
+const tabbedCardFullWidth = document.querySelector("#tabbed-card-full-width");
+const tabbedCardAutoHeight = document.querySelector("#tabbed-card-auto-height");
 const applyTabbedCardTab = document.querySelector("#apply-tabbed-card-tab");
 const tabbedCardSettingsStatus = document.querySelector("#tabbed-card-settings-status");
 const entityList = document.querySelector("#atlas-entity-list");
@@ -184,6 +187,8 @@ const translations = {
     "label.entity": "Entity",
     "label.tabLabel": "Tab label",
     "label.tabIcon": "Tab icon",
+    "label.tabbedCardFullWidth": "Full width",
+    "label.tabbedCardAutoHeight": "Automatic height",
     "label.column": "Column",
     "label.row": "Row",
     "label.width": "Width",
@@ -255,6 +260,7 @@ const translations = {
     "placeholder.expertCardName": "ATLAS Expert card",
     "placeholder.expertTitle": "Use template title when empty",
     "placeholder.expertEntity": "Use current entity when empty",
+    "placeholder.cardSearch": "Search cards",
     "aria.entityTypeShortcuts": "Entity type shortcuts",
     "aria.clearEntitySearch": "Clear entity search",
     "aria.language": "Language",
@@ -421,6 +427,7 @@ const translations = {
     "text.scannedCardUnavailable": "{label} is registered in Home Assistant, but ATLAS does not map this custom card yet.",
     "text.paletteCardSelected": "{label} selected from the card list.",
     "text.paletteSelectionChanged": "Favorite selection changed. Use Save favorites to apply it.",
+    "text.noPaletteSearchResults": "No matching cards found.",
     "text.fullCardListVisible": "Full Core and Community card list is visible for favorite selection.",
     "text.savedFavoritesVisible": "Saved favorites are visible.",
     "text.favoritesSaved": "{count} favorite cards saved.",
@@ -519,6 +526,8 @@ const translations = {
     "label.entity": "Entitaet",
     "label.tabLabel": "Tab-Label",
     "label.tabIcon": "Tab-Icon",
+    "label.tabbedCardFullWidth": "Volle Breite",
+    "label.tabbedCardAutoHeight": "Automatische Hoehe",
     "label.column": "Spalte",
     "label.row": "Zeile",
     "label.width": "Breite",
@@ -590,6 +599,7 @@ const translations = {
     "placeholder.expertCardName": "ATLAS Expert Card",
     "placeholder.expertTitle": "Template-Titel nutzen, wenn leer",
     "placeholder.expertEntity": "Aktuelle Entitaet nutzen, wenn leer",
+    "placeholder.cardSearch": "Cards suchen",
     "aria.entityTypeShortcuts": "Entitaetstyp-Schnellauswahl",
     "aria.clearEntitySearch": "Entitaetssuche loeschen",
     "aria.language": "Sprache",
@@ -756,6 +766,7 @@ const translations = {
     "text.scannedCardUnavailable": "{label} ist in Home Assistant registriert, aber ATLAS mappt diese Custom Card noch nicht.",
     "text.paletteCardSelected": "{label} aus der Card-Liste ausgewaehlt.",
     "text.paletteSelectionChanged": "Favoritenauswahl geaendert. Nutze Favoriten speichern, um sie anzuwenden.",
+    "text.noPaletteSearchResults": "Keine passenden Cards gefunden.",
     "text.fullCardListVisible": "Die volle Core- und Community-Card-Liste ist zur Favoritenauswahl sichtbar.",
     "text.savedFavoritesVisible": "Gespeicherte Favoriten sind sichtbar.",
     "text.favoritesSaved": "{count} Favoriten-Cards gespeichert.",
@@ -955,6 +966,7 @@ let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let activeEditorMode = "simple";
 let expertPaletteShowAllCards = false;
+let expertPaletteSearchQuery = "";
 let selectedExpertFieldIndex = -1;
 let expertFieldEditing = false;
 let selectedContainerCardRef;
@@ -1759,7 +1771,7 @@ function normalizeLovelaceResourceSearchText(url) {
 
 function shouldIgnoreLovelaceResourceUrl(url) {
   const normalizedUrl = normalizeLovelaceResourceSearchText(url);
-  return ignoredLovelaceResourceTerms.some(term => normalizedUrl.includes(term));
+  return /\.zip(?:$|[?#])/i.test(url) || ignoredLovelaceResourceTerms.some(term => normalizedUrl.includes(term));
 }
 
 function isMappedLovelaceResourceUrl(url) {
@@ -2038,16 +2050,43 @@ function formatHacsBundlePackageReadReview(packageRead) {
   return formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).join("\n");
 }
 
+function expertPaletteCardMatchesSearch(card, template, query) {
+  if (!query) return true;
+  const normalizedQuery = query.toLowerCase();
+  return [
+    translatePaletteCardLabel(card),
+    translatePaletteCategory(card.category),
+    translateTemplateLabel(template.id, template.label),
+    translateTemplateLabel(template.id, template.layout),
+    translateCardTarget(card.target, card.target),
+    card.target,
+    card.templateId,
+    card.bubbleButtonType,
+    card.resourceUrl,
+    ...(card.preview ?? []),
+  ].some(value => String(value ?? "").toLowerCase().includes(normalizedQuery));
+}
+
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
-  const visibleCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
+  const baseCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
     ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
     : expertPaletteCards;
+  const visibleCards = baseCards.filter(card => {
+    const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
+    return template ? expertPaletteCardMatchesSearch(card, template, expertPaletteSearchQuery.trim()) : false;
+  });
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   showAllExpertPaletteCards.disabled = expertPaletteFavoriteIds.size === 0;
   showAllExpertPaletteCards.textContent = expertPaletteShowAllCards ? t("button.showFavorites") : t("button.showAllCards");
   resetExpertTemplateSizing.disabled = !isExpertTemplateSizingDirty();
   resetExpertPaletteFavorites.disabled = expertPaletteFavoriteIds.size === 0;
+  if (visibleCards.length === 0) {
+    const empty = document.createElement("small");
+    empty.textContent = t("text.noPaletteSearchResults");
+    expertTemplatePalette.append(empty);
+    return;
+  }
   for (const card of visibleCards) {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
     if (!template) continue;
@@ -2795,6 +2834,8 @@ function renderTabbedCardSettings() {
   const activeEntry = entries[activeIndex];
   tabbedCardTabLabel.value = activeEntry?.id ?? "";
   tabbedCardTabIcon.value = activeEntry?.icon ?? "mdi:tab";
+  tabbedCardFullWidth.checked = field.fullWidth === true;
+  tabbedCardAutoHeight.checked = field.autoHeight === true;
   removeTabbedCardTab.disabled = entries.length === 0;
   moveTabbedCardTabUp.disabled = activeIndex <= 0;
   moveTabbedCardTabDown.disabled = activeIndex >= entries.length - 1;
@@ -2862,6 +2903,17 @@ function applyActiveTabbedCardTab() {
     };
   });
   tabbedCardSettingsStatus.textContent = t("message.tabUpdated", { label: label || tabbedCardTabLabel.value });
+}
+
+function applyTabbedCardContainerOptions() {
+  updateSelectedTabbedCardField(field => ({
+    ...field,
+    fullWidth: tabbedCardFullWidth.checked,
+    autoHeight: tabbedCardAutoHeight.checked,
+    ...(tabbedCardFullWidth.checked ? { column: 0, width: expertGridColumns } : {}),
+  }));
+  renderExpertEditButton();
+  tabbedCardSettingsStatus.textContent = t("message.tabUpdated", { label: tabbedCardTabLabel.value || selectedTabbedCardField()?.id || "Tabbed Card V2" });
 }
 
 function updateSelectedExpertFieldTarget() {
@@ -3196,7 +3248,9 @@ function renderExpertEditorSurface() {
     tile.setAttribute("aria-label", `${field.id} on column ${field.column + 1}, row ${field.row + 1}${conflictLabel}`);
     tile.setAttribute("aria-pressed", String(index === selectedExpertFieldIndex));
     tile.draggable = true;
-    tile.style.gridColumn = `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
+    tile.style.gridColumn = field.fullWidth === true && isTabbedCardField(field)
+      ? `1 / span ${expertGridColumns}`
+      : `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
     tile.style.gridRow = `${field.row + 1} / span ${Math.min(expertGridRows, field.height)}`;
     const title = document.createElement("strong");
     title.textContent = field.id;
@@ -4575,6 +4629,10 @@ showAllExpertPaletteCards.addEventListener("click", toggleExpertPaletteAllCards)
 scanExpertPaletteCards.addEventListener("click", scanExpertPaletteCardsFromHomeAssistant);
 resetExpertTemplateSizing.addEventListener("click", resetExpertTemplateSizingSelection);
 resetExpertPaletteFavorites.addEventListener("click", resetExpertPaletteFavoriteSelection);
+expertPaletteSearch.addEventListener("input", () => {
+  expertPaletteSearchQuery = expertPaletteSearch.value;
+  renderExpertTemplatePalette();
+});
 closeTabbedCardSettings.addEventListener("click", closeTabbedCardSettingsDialog);
 tabbedCardSettingsBackdrop.addEventListener("click", event => {
   if (event.target === tabbedCardSettingsBackdrop) {
@@ -4586,6 +4644,8 @@ removeTabbedCardTab.addEventListener("click", removeActiveTabbedCardTab);
 moveTabbedCardTabUp.addEventListener("click", () => moveActiveTabbedCardTab(-1));
 moveTabbedCardTabDown.addEventListener("click", () => moveActiveTabbedCardTab(1));
 applyTabbedCardTab.addEventListener("click", applyActiveTabbedCardTab);
+tabbedCardFullWidth.addEventListener("change", applyTabbedCardContainerOptions);
+tabbedCardAutoHeight.addEventListener("change", applyTabbedCardContainerOptions);
 window.addEventListener("resize", applyExpertEditorSurfaceSize);
 clearExpertFields.addEventListener("click", () => {
   expertEditorFields.length = 0;

@@ -18,6 +18,8 @@ class TabbedCardV2 extends HTMLElement {
       type: "custom:tabbed-card-v2",
       options: {
         defaultTabIndex: 0,
+        fullWidth: false,
+        autoHeight: true,
       },
       tabs: [
         {
@@ -51,7 +53,11 @@ class TabbedCardV2 extends HTMLElement {
 
     this._config = {
       ...config,
-      options: config.options ?? {},
+      options: {
+        defaultTabIndex: Number(config.options?.defaultTabIndex ?? 0),
+        fullWidth: config.options?.fullWidth === true,
+        autoHeight: config.options?.autoHeight !== false,
+      },
       styles: config.styles ?? {},
       attributes: config.attributes ?? {},
       tabs: config.tabs.map((tab) => ({
@@ -72,6 +78,9 @@ class TabbedCardV2 extends HTMLElement {
   }
 
   getCardSize() {
+    if (this._config?.options?.autoHeight === false) {
+      return 3;
+    }
     const activeCard = this._cards[this._selectedTabIndex];
     if (activeCard?.getCardSize) {
       return activeCard.getCardSize() + 1;
@@ -145,11 +154,13 @@ class TabbedCardV2 extends HTMLElement {
       <style>
         :host {
           display: block;
+          ${this._config.options.fullWidth ? "width: 100%; max-width: none;" : ""}
           ${Object.entries(styleValues).map(([key, value]) => `${key}: ${value};`).join("\n")}
         }
 
         ha-card {
           display: block;
+          ${this._config.options.fullWidth ? "width: 100%;" : ""}
           overflow: hidden;
         }
 

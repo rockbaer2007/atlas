@@ -96,6 +96,8 @@ export interface HomeAssistantTabbedCardV2Configuration {
   readonly type: "custom:tabbed-card-v2";
   readonly options: {
     readonly defaultTabIndex: number;
+    readonly fullWidth?: boolean;
+    readonly autoHeight?: boolean;
   };
   readonly tabs: readonly HomeAssistantTabbedCardV2Tab[];
 }
@@ -952,6 +954,8 @@ function normalizeHomeAssistantCardConfiguration(
           defaultTabIndex: isRecord(card.options) && typeof card.options.defaultTabIndex === "number"
             ? Math.max(0, Math.floor(card.options.defaultTabIndex))
             : 0,
+          ...(isRecord(card.options) && card.options.fullWidth === true ? { fullWidth: true } : {}),
+          ...(isRecord(card.options) && card.options.autoHeight === true ? { autoHeight: true } : {}),
         },
         tabs,
       },
@@ -1063,8 +1067,10 @@ function serializeHomeAssistantTabbedCardV2Yaml(card: HomeAssistantTabbedCardV2C
     "type: \"custom:tabbed-card-v2\"",
     "options:",
     `  defaultTabIndex: ${serializeYamlScalar(card.options.defaultTabIndex)}`,
-    "tabs:",
   ];
+  if (card.options.fullWidth === true) lines.push(`  fullWidth: ${serializeYamlScalar(true)}`);
+  if (card.options.autoHeight === true) lines.push(`  autoHeight: ${serializeYamlScalar(true)}`);
+  lines.push("tabs:");
   for (const tab of card.tabs) {
     lines.push("  - attributes:");
     lines.push(`      label: ${serializeYamlScalar(tab.attributes.label)}`);

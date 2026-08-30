@@ -6,7 +6,7 @@ const initialState = {
   cardName: "meine-card",
   config: {
     type: "custom:tabbed-card-v2-meine-card",
-    options: { defaultTabIndex: 0 },
+    options: { defaultTabIndex: 0, fullWidth: false, autoHeight: true },
     styles: {
       "--mdc-theme-primary": "#087f8c",
       "--mdc-tab-text-label-color-default": "rgba(var(--rgb-primary-text-color), 0.72)",
@@ -54,6 +54,8 @@ const elements = {
   duplicateTab: document.querySelector("#duplicate-tab"),
   deleteTab: document.querySelector("#delete-tab"),
   defaultTab: document.querySelector("#default-tab"),
+  fullWidth: document.querySelector("#full-width"),
+  autoHeight: document.querySelector("#auto-height"),
   primaryColor: document.querySelector("#primary-color"),
   inactiveColor: document.querySelector("#inactive-color"),
   fontSize: document.querySelector("#font-size"),
@@ -102,6 +104,14 @@ function bindEvents() {
   elements.defaultTab.addEventListener("change", () => {
     state.config.options.defaultTabIndex = Number(elements.defaultTab.value);
     persistAndRender("Start-Tab aktualisiert.");
+  });
+  elements.fullWidth.addEventListener("change", () => {
+    state.config.options.fullWidth = elements.fullWidth.checked;
+    persistAndRender("Breite aktualisiert.");
+  });
+  elements.autoHeight.addEventListener("change", () => {
+    state.config.options.autoHeight = elements.autoHeight.checked;
+    persistAndRender("Hoehe aktualisiert.");
   });
   elements.outputMode.addEventListener("change", () => {
     state.outputMode = elements.outputMode.value;
@@ -192,6 +202,8 @@ function renderForms() {
   elements.primaryColor.value = normalizeColorInput(styles["--mdc-theme-primary"] ?? "#087f8c");
   elements.inactiveColor.value = styles["--mdc-tab-text-label-color-default"] ?? "";
   elements.fontSize.value = styles["--mdc-typography-button-font-size"] ?? "";
+  elements.fullWidth.checked = state.config.options.fullWidth === true;
+  elements.autoHeight.checked = state.config.options.autoHeight !== false;
   elements.cardName.value = state.cardName ?? "";
   elements.tabLabel.value = attributes.label ?? "";
   elements.tabIcon.value = attributes.icon ?? "";
@@ -601,6 +613,8 @@ function normalizeImportedConfig(config) {
     type: typeof config.type === "string" ? config.type : "custom:tabbed-card-v2-meine-card",
     options: {
       defaultTabIndex: clampIndex(config.options?.defaultTabIndex ?? 0, tabs.length),
+      fullWidth: config.options?.fullWidth === true,
+      autoHeight: config.options?.autoHeight !== false,
     },
     styles: cleanObject({
       "--mdc-theme-primary": config.styles?.["--mdc-theme-primary"] ?? "#087f8c",
