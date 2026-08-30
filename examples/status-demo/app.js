@@ -3668,7 +3668,7 @@ function renderExpertEditorSurface() {
     tile.append(title, target, entity);
     const styles = getImportedEntityStyleBlocks(field.entityId);
     if (styles.length) {
-      tile.append(createImportedEntityStyleDetails(styles));
+      tile.append(createImportedEntityStyleButton(field, styles));
     }
     if (isTabbedCardField(field)) {
       tile.append(createTabbedCardInlineView(field, index));
@@ -3729,15 +3729,63 @@ function renderExpertEditorSurface() {
   appendExpertEditorSurfaceResizeHandle();
 }
 
-function createImportedEntityStyleDetails(styles) {
-  const details = document.createElement("details");
-  details.className = "expert-entity-style";
-  const summary = document.createElement("summary");
-  summary.textContent = `Entity style (${styles.length})`;
+function createImportedEntityStyleButton(field, styles) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "expert-entity-style-button";
+  button.textContent = `Style (${styles.length})`;
+  button.addEventListener("click", event => {
+    event.stopPropagation();
+    openImportedEntityStyleDialog(field, styles);
+  });
+  return button;
+}
+
+function openImportedEntityStyleDialog(field, styles) {
+  const backdrop = document.createElement("div");
+  backdrop.className = "modal-backdrop";
+  const dialog = document.createElement("section");
+  dialog.className = "tabbed-card-dialog imported-style-dialog";
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+
+  const header = document.createElement("header");
+  const title = document.createElement("h2");
+  title.textContent = field.id || field.entityId || "Entity style";
+  const close = document.createElement("button");
+  close.type = "button";
+  close.className = "icon-button";
+  close.setAttribute("aria-label", "Close style preview");
+  close.title = "Close style preview";
+  close.textContent = "\u00d7";
+  header.append(title, close);
+
+  const body = document.createElement("div");
+  body.className = "tabbed-card-dialog-body single-column";
+  const entity = document.createElement("p");
+  entity.className = "imported-style-entity";
+  entity.textContent = field.entityId || "";
   const code = document.createElement("pre");
+  code.className = "imported-style-code";
   code.textContent = styles.map(block => block.code).join("\n\n");
-  details.append(summary, code);
-  return details;
+  body.append(entity, code);
+  dialog.append(header, body);
+  backdrop.append(dialog);
+
+  const closeDialog = () => {
+    backdrop.remove();
+    document.removeEventListener("keydown", handleKeydown);
+  };
+  const handleKeydown = event => {
+    if (event.key === "Escape") closeDialog();
+  };
+  close.addEventListener("click", closeDialog);
+  backdrop.addEventListener("click", event => {
+    if (event.target === backdrop) closeDialog();
+  });
+  document.addEventListener("keydown", handleKeydown);
+  document.body.append(backdrop);
+  close.focus();
 }
 
 function createStackContainerInlineView(field, fieldIndex) {
@@ -4191,10 +4239,16 @@ function renderExpertEditorPreview() {
     t("text.targetsSummary", { targets: surfaceAnalysis.usedTargets.map(target => translateCardTarget(target, target)).join(", ") }),
     t("text.layoutsSummary", { layouts: surfaceAnalysis.layouts.join(", ") }),
   ].join(". ");
-  expertEditorPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
+  expertEditorPreview.textContent = formatExpertHaCardCodePreview(card);
   if (activeEditorMode === "expert") renderHaCardDependency(card);
   renderExpertFieldList();
   renderExpertEditorSurface();
+}
+
+function formatExpertHaCardCodePreview(card) {
+  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
+    ? importedSimpleCodePreview
+    : serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
 }
 
 function addExpertEditorField() {
@@ -4405,11 +4459,14 @@ function moveExpertEditorField(index, placement) {
 
 function createHaCardExportPayload() {
   const card = createActiveHaCardConfig();
-  return createHomeAssistantCardExportPayload({
+  const payload = createHomeAssistantCardExportPayload({
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
   });
+  return haCardFormat.value === "yaml" && importedSimpleCodePreview
+    ? { ...payload, content: importedSimpleCodePreview }
+    : payload;
 }
 
 function selectedCardExportLanguages() {
@@ -4530,7 +4587,7 @@ function mergeTranslatedCardLocales(cardPackage, translatedLocales) {
 function createHaCardExportPackage() {
   const card = createActiveHaCardConfig();
   const editorPlan = createActiveCardEditorPlan();
-  return createHomeAssistantCardExportPackage({
+  const cardPackage = createHomeAssistantCardExportPackage({
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
@@ -4538,6 +4595,9 @@ function createHaCardExportPackage() {
     editorPlan,
     script: createHomeAssistantCardEditorScriptExport(editorPlan),
   });
+  return haCardFormat.value === "yaml" && importedSimpleCodePreview
+    ? { ...cardPackage, content: importedSimpleCodePreview }
+    : cardPackage;
 }
 
 function canExportHaCard() {

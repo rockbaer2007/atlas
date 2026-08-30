@@ -1394,27 +1394,41 @@
         font-weight: 700;
       }
 
-      .expert-entity-style {
-        min-width: 0;
-      }
-
-      .expert-entity-style summary {
-        cursor: pointer;
+      .expert-entity-style-button {
+        justify-self: start;
+        min-height: 24px;
+        padding: 3px 8px;
+        border: 1px solid #99f6e4;
+        border-radius: 999px;
+        background: #f0fdfa;
         color: #0f766e;
         font-size: 11px;
-        font-weight: 700;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
       }
 
-      .expert-entity-style pre {
-        max-height: 96px;
+      .imported-style-dialog {
+        width: min(760px, 100%);
+      }
+
+      .imported-style-entity {
+        margin: 0;
+        color: #536079;
+        font-size: 13px;
+      }
+
+      .imported-style-code {
+        max-height: min(520px, calc(100vh - 190px));
         overflow: auto;
         box-sizing: border-box;
-        margin: 4px 0 0;
-        padding: 6px;
-        border-radius: 4px;
+        margin: 0;
+        padding: 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
         background: #0f172a;
         color: #eef6ff;
-        font: 11px/1.35 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        font: 12.5px/1.45 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
         white-space: pre-wrap;
         overflow-wrap: anywhere;
       }
