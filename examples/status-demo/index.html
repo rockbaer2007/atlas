@@ -828,6 +828,13 @@
         align-items: start;
       }
 
+      .expert-editor-canvas-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+        gap: 12px;
+        align-items: stretch;
+      }
+
       .expert-editor-controls .wide {
         grid-column: 1 / -1;
       }
@@ -1143,8 +1150,7 @@
 
       .expert-surface-field {
         display: grid;
-        grid-template-rows: auto auto 1fr auto;
-        gap: 5px;
+        place-items: center;
         position: relative;
         min-height: 54px;
         padding: 8px;
@@ -1152,7 +1158,7 @@
         border-radius: 6px;
         background: #ffffff;
         color: #172033;
-        text-align: left;
+        text-align: center;
         cursor: grab;
       }
 
@@ -1192,80 +1198,12 @@
         min-height: 96px;
       }
 
-      .expert-surface-field-header,
-      .expert-surface-field-meta,
-      .expert-surface-field-footer {
-        min-width: 0;
-      }
-
-      .expert-surface-field-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 8px;
-      }
-
       .expert-surface-field-title {
         min-width: 0;
         color: #172033;
         font-size: 14px;
         line-height: 1.15;
         overflow-wrap: anywhere;
-      }
-
-      .expert-surface-field-meta {
-        display: grid;
-        gap: 2px;
-        align-content: start;
-      }
-
-      .expert-surface-field-meta span,
-      .expert-surface-field-meta small {
-        min-width: 0;
-        font-size: 11px;
-        line-height: 1.25;
-        overflow-wrap: anywhere;
-      }
-
-      .expert-surface-field-meta span {
-        color: #9a3412;
-        font-weight: 700;
-      }
-
-      .expert-surface-field-meta small {
-        color: #536079;
-      }
-
-      .expert-surface-field-footer {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 6px;
-        align-self: end;
-        min-height: 24px;
-      }
-
-      .expert-surface-style-summary {
-        min-height: 20px;
-        min-width: 0;
-        color: #0f766e;
-        font-size: 11px;
-        font-weight: 700;
-        line-height: 1.2;
-        overflow-wrap: anywhere;
-      }
-
-      .expert-surface-style-summary:empty::before {
-        content: "";
-      }
-
-      .expert-surface-field-actions {
-        display: inline-flex;
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 5px;
-        margin-left: auto;
       }
 
       .expert-surface-field.tabbed-container.drag-over,
@@ -1321,6 +1259,111 @@
         color: #1e40af;
         font-size: 11px;
         font-weight: 700;
+      }
+
+      .expert-selected-card-details {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+        min-width: 0;
+        padding: 12px;
+        border: 1px solid #2563eb;
+        border-radius: 6px;
+        background: #f8fbff;
+        color: #172033;
+      }
+
+      .expert-selected-card-details h3 {
+        margin: 0;
+        color: #172033;
+        font-size: 15px;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+
+      .expert-selected-card-details dl {
+        display: grid;
+        grid-template-columns: minmax(78px, auto) minmax(0, 1fr);
+        gap: 6px 10px;
+        margin: 0;
+      }
+
+      .expert-selected-card-details dt {
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .expert-selected-card-details dd {
+        margin: 0;
+        min-width: 0;
+        color: #172033;
+        font-size: 12px;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+      }
+
+      .expert-selected-card-details .detail-card-type {
+        color: #9a3412;
+        font-weight: 800;
+      }
+
+      .expert-selected-card-details .detail-style-state {
+        color: #0f766e;
+        font-weight: 800;
+      }
+
+      .expert-detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: flex-end;
+      }
+
+      .expert-detail-actions button {
+        min-height: 26px;
+        padding: 4px 9px;
+      }
+
+      .expert-detail-delete {
+        border-color: #fecaca;
+        background: #dc2626;
+        color: #ffffff;
+      }
+
+      .expert-detail-card-list {
+        display: grid;
+        gap: 5px;
+      }
+
+      .expert-detail-card-list button {
+        width: 100%;
+        border: 1px solid #dbeafe;
+        border-radius: 5px;
+        background: #ffffff;
+        color: #172033;
+        padding: 6px 8px;
+        text-align: left;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .expert-detail-card-list button[aria-pressed="true"] {
+        border-color: #2563eb;
+        box-shadow: inset 0 0 0 1px #2563eb;
+      }
+
+      .expert-detail-style-code {
+        max-height: 220px;
+        margin: 0;
+        overflow: auto;
+        border-radius: 6px;
+        background: #0f172a;
+        color: #e2e8f0;
+        font-size: 11px;
+        line-height: 1.35;
+        white-space: pre-wrap;
       }
 
       .expert-tab-chip {
@@ -1732,23 +1775,6 @@
         accent-color: #0f766e;
       }
 
-      .expert-surface-field-remove {
-        flex: 0 0 auto;
-        display: inline-grid;
-        place-items: center;
-        width: 20px;
-        height: 20px;
-        padding: 0;
-        border: 0;
-        border-radius: 999px;
-        background: #dc2626;
-        color: #ffffff;
-        font-size: 11px;
-        font-weight: 800;
-        line-height: 1;
-        cursor: pointer;
-      }
-
       .expert-editor-dropzone.drag-over {
         background: #dcfce7;
         box-shadow: inset 0 0 0 1px #0f766e;
@@ -1985,6 +2011,10 @@
         .expert-editor-workbench {
           grid-template-columns: 1fr;
         }
+
+        .expert-editor-canvas-row {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
     <script type="importmap">
@@ -2196,7 +2226,10 @@
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates" data-i18n-aria-label="aria.expertTemplates"></div>
           </aside>
           <section class="expert-editor-surface" aria-label="Expert editor surface" data-i18n-aria-label="aria.expertSurface">
-            <div id="expert-editor-dropzone" class="expert-editor-dropzone"></div>
+            <div class="expert-editor-canvas-row">
+              <div id="expert-editor-dropzone" class="expert-editor-dropzone"></div>
+              <aside id="expert-selected-card-details" class="expert-selected-card-details" aria-live="polite"></aside>
+            </div>
             <div class="expert-editor-controls">
               <div class="field-pair span-2">
                 <label for="expert-card-name" data-i18n="label.expertCardName">Expert card name</label>
