@@ -197,7 +197,9 @@ function renderForms() {
   elements.cardType.value = knownCardType(card.type) ? card.type : "entity";
   elements.cardTitle.value = card.title ?? card.name ?? "";
   elements.cardEntity.value = card.entity ?? "";
-  elements.cardEntities.value = arrayFromEntities(card.entities).join("\n");
+  elements.cardEntities.value = isStackCard(card.type)
+    ? serializeChildCards(card.cards)
+    : arrayFromEntities(card.entities).join("\n");
   elements.tapAction.value = card.tap_action?.action ?? "";
   elements.bubbleType.value = card.button_type ?? "state";
   elements.showName.checked = card.show_name !== false;
@@ -262,7 +264,15 @@ function createMockCard(card) {
   const body = document.createElement("div");
   body.className = "mock-card-body";
 
-  if (card.type === "button" || card.type === "entity" || card.type === "sensor" || card.type?.includes("mushroom") || card.type?.includes("bubble")) {
+  if (isStackCard(card.type)) {
+    root.classList.add(card.type === "horizontal-stack" ? "mock-horizontal-stack" : "mock-vertical-stack");
+    const cards = Array.isArray(card.cards) && card.cards.length
+      ? card.cards
+      : [{ type: "entity", entity: "sensor.example", title: "Unterkarte" }];
+    for (const childCard of cards) {
+      body.append(createMockCard(childCard));
+    }
+  } else if (card.type === "button" || card.type === "entity" || card.type === "sensor" || card.type?.includes("mushroom") || card.type?.includes("bubble")) {
     const preview = document.createElement("div");
     preview.className = "button-preview";
     const icon = document.createElement("div");
@@ -373,6 +383,13 @@ function createCardConfig(options) {
       type: "entities",
       title: options.title,
       entities: options.entities,
+    });
+  }
+
+  if (isStackCard(options.type)) {
+    return cleanObject({
+      type: options.type,
+      cards: parseChildCards(options.entities),
     });
   }
 
@@ -570,6 +587,7 @@ function normalizeCard(card = {}) {
     type,
     entity: typeof card.entity === "string" ? card.entity : undefined,
     entities: Array.isArray(card.entities) ? card.entities : undefined,
+    cards: Array.isArray(card.cards) ? card.cards.map(normalizeCard) : undefined,
     title: typeof card.title === "string" ? card.title : undefined,
   });
 }
@@ -659,6 +677,10 @@ function supportsDisplayToggles(type) {
   return ["button", "entity", "sensor", "custom:bubble-card", "custom:mushroom-entity-card"].includes(type);
 }
 
+function isStackCard(type) {
+  return type === "vertical-stack" || type === "horizontal-stack";
+}
+
 function knownCardType(type) {
   return Array.from(elements.cardType.options).some(option => option.value === type);
 }
@@ -666,6 +688,54 @@ function knownCardType(type) {
 function arrayFromEntities(entities) {
   if (!Array.isArray(entities)) return [];
   return entities.map(entity => typeof entity === "string" ? entity : entity?.entity).filter(Boolean);
+}
+
+function serializeChildCards(cards) {
+  if (!Array.isArray(cards)) return "";
+  return cards.map(card => [
+    card?.type || "entity",
+    card?.entity || "",
+    card?.title || card?.name || "",
+  ].filter(Boolean).join(" | ")).join("\n");
+}
+
+function parseChildCards(lines) {
+  const cards = lines.map(line => {
+    const [type = "entity", entity = "", title = ""] = String(line).split("|").map(value => value.trim());
+    return createChildCard(type, entity, title);
+  }).filter(Boolean);
+  return cards.length ? cards : [{ type: "entity", entity: "sensor.example" }];
+}
+
+function createChildCard(type, entity, title) {
+  const normalizedType = type || "entity";
+  if (normalizedType === "custom:bubble-card") {
+    return cleanObject({
+      type: "custom:bubble-card",
+      card_type: "button",
+      button_type: "state",
+      entity,
+      name: title,
+    });
+  }
+  if (normalizedType === "custom:mushroom-entity-card") {
+    return cleanObject({
+      type: "custom:mushroom-entity-card",
+      entity,
+      name: title,
+    });
+  }
+  if (normalizedType === "markdown") {
+    return cleanObject({
+      type: "markdown",
+      content: title || entity || "Markdown content",
+    });
+  }
+  return cleanObject({
+    type: normalizedType,
+    entity,
+    title,
+  });
 }
 
 function clampIndex(value, length) {
@@ -736,6 +806,7 @@ function parseGeneratedYaml(text) {
   let currentTab = null;
   let currentSection = "";
   let currentCardSubsection = "";
+  let currentChildCard = null;
 
   for (const rawLine of lines) {
     const line = rawLine.replace(/\s+$/g, "");
@@ -746,6 +817,7 @@ function parseGeneratedYaml(text) {
     if (indent === 0 && trimmed.endsWith(":")) {
       currentSection = trimmed.slice(0, -1);
       currentCardSubsection = "";
+      currentChildCard = null;
       continue;
     }
 
@@ -762,6 +834,7 @@ function parseGeneratedYaml(text) {
     if (currentSection === "tabs" && indent === 2 && trimmed.startsWith("- ")) {
       currentTab = { attributes: {}, card: {} };
       config.tabs.push(currentTab);
+      currentChildCard = null;
       const rest = trimmed.slice(2);
       if (rest.startsWith("attributes:")) currentCardSubsection = "attributes";
       if (rest.startsWith("card:")) currentCardSubsection = "card";
@@ -770,7 +843,25 @@ function parseGeneratedYaml(text) {
 
     if (currentSection === "tabs" && currentTab && indent === 4 && trimmed.endsWith(":")) {
       currentCardSubsection = trimmed.slice(0, -1);
+      currentChildCard = null;
       continue;
+    }
+
+    if (currentSection === "tabs" && currentTab && currentCardSubsection === "card" && indent >= 8 && trimmed.startsWith("- ")) {
+      const rest = trimmed.slice(2);
+      if (Array.isArray(currentTab.card.cards)) {
+        currentChildCard = {};
+        currentTab.card.cards.push(currentChildCard);
+        const childPair = parseYamlPair(rest);
+        if (childPair) {
+          currentChildCard[childPair.key] = childPair.value;
+        }
+        continue;
+      }
+      if (Array.isArray(currentTab.card.entities)) {
+        currentTab.card.entities.push(parseYamlScalar(rest));
+        continue;
+      }
     }
 
     const pair = parseYamlPair(trimmed);
@@ -786,15 +877,16 @@ function parseGeneratedYaml(text) {
       } else if (currentCardSubsection === "card") {
         if (pair.key === "entities") {
           currentTab.card.entities = [];
+          currentChildCard = null;
+        } else if (pair.key === "cards") {
+          currentTab.card.cards = [];
+          currentChildCard = null;
+        } else if (currentChildCard && indent >= 10) {
+          currentChildCard[pair.key] = pair.value;
         } else {
           currentTab.card[pair.key] = pair.value;
         }
       }
-    }
-
-    if (currentSection === "tabs" && currentTab && currentCardSubsection === "card" && indent >= 8 && trimmed.startsWith("- ")) {
-      currentTab.card.entities = currentTab.card.entities ?? [];
-      currentTab.card.entities.push(parseYamlScalar(trimmed.slice(2)));
     }
   }
 

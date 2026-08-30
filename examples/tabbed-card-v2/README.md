@@ -79,6 +79,29 @@ Install the dependencies in Home Assistant before using these presets:
 
 If the dependency is missing, Home Assistant will show a custom-element error for that nested card.
 
+## Stack cards
+
+Use `vertical-stack` or `horizontal-stack` when one tab should contain multiple cards.
+
+In the editor, write one child card per line:
+
+```text
+entity | sensor.living_room_temperature | Temperature
+custom:mushroom-entity-card | light.living_room | Living room
+custom:bubble-card | switch.coffee_machine | Coffee machine
+```
+
+The export uses Home Assistant's normal stack syntax:
+
+```yaml
+card:
+  type: vertical-stack
+  cards:
+    - type: entity
+      entity: sensor.living_room_temperature
+      title: Temperature
+```
+
 ## Individual card export
 
 The editor can export individual Home Assistant card files. Enter a suffix such as `wohnzimmer`; the generated card type becomes:

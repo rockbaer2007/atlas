@@ -390,6 +390,15 @@
         box-shadow: 0 8px 24px rgba(37, 49, 67, 0.08);
       }
 
+      .mock-card .mock-card {
+        width: 100%;
+        box-shadow: none;
+      }
+
+      .mock-horizontal-stack > .mock-card-body {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      }
+
       .mock-card-header {
         padding: 13px 14px;
         border-bottom: 1px solid #e1e8f1;
@@ -628,11 +637,13 @@
                     <select id="card-type">
                       <option value="button">Button</option>
                       <option value="entity">Entity</option>
-                      <option value="entities">Entities</option>
-                      <option value="sensor">Sensor</option>
-                      <option value="markdown">Markdown</option>
-                      <option value="custom:bubble-card">Bubble Card</option>
-                      <option value="custom:mushroom-entity-card">Mushroom Entity</option>
+                    <option value="entities">Entities</option>
+                    <option value="sensor">Sensor</option>
+                    <option value="markdown">Markdown</option>
+                    <option value="vertical-stack">Vertical Stack</option>
+                    <option value="horizontal-stack">Horizontal Stack</option>
+                    <option value="custom:bubble-card">Bubble Card</option>
+                    <option value="custom:mushroom-entity-card">Mushroom Entity</option>
                     </select>
                   </div>
                   <div class="field">
@@ -644,8 +655,8 @@
                     <input id="card-entity" type="text" autocomplete="off" placeholder="light.bed_light">
                   </div>
                   <div class="field full">
-                    <label for="card-entities">Entities Liste</label>
-                    <textarea id="card-entities" spellcheck="false" placeholder="sensor.temperature&#10;binary_sensor.motion"></textarea>
+                  <label for="card-entities">Entities / Unterkarten</label>
+                  <textarea id="card-entities" spellcheck="false" placeholder="sensor.temperature&#10;binary_sensor.motion&#10;entity | sensor.temperature | Temperatur"></textarea>
                   </div>
                   <div class="field">
                     <label for="tap-action">Tap Action</label>
@@ -666,6 +677,7 @@
                   </select>
                 </div>
               </div>
+              <p class="field-note">Bei Stacks wird die Liste als Unterkarten gelesen. Format: type | entity | title.</p>
               <p class="field-note">Bubble Card und Mushroom muessen in Home Assistant als eigene HACS-Resources installiert sein.</p>
               <div class="toggle-grid">
                 <label class="toggle"><input id="show-name" type="checkbox" checked> Name zeigen</label>
