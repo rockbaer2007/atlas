@@ -499,6 +499,8 @@ const translations = {
     "text.cardName": "Card name",
     "text.cardType": "Card type",
     "text.cardSettings": "Settings",
+    "text.cardColumns": "Columns",
+    "text.cardRows": "Rows",
     "text.containedCards": "Contained cards",
     "text.styleCode": "Style code",
     "text.noSelectedCard": "Select a card on the editor surface.",
@@ -885,9 +887,11 @@ const translations = {
     "text.none": "keine",
     "text.entityName": "Entitätsname",
     "text.entityId": "Entitäts-ID",
-    "text.cardName": "Card-Name",
-    "text.cardType": "Card-Typ",
+    "text.cardName": "Cardname",
+    "text.cardType": "Cardtyp",
     "text.cardSettings": "Einstellungen",
+    "text.cardColumns": "Spalten",
+    "text.cardRows": "Zeilen",
     "text.containedCards": "Enthaltene Cards",
     "text.styleCode": "Style-Code",
     "text.noSelectedCard": "Wähle eine Card auf der Editor-Fläche aus.",
@@ -4159,8 +4163,6 @@ function expertDetailSettingsText(field, card) {
       card.icon ? `icon ${card.icon}` : "",
     ].filter(Boolean).join(" · ");
   }
-  const rows = field.rows === "auto" || field.autoHeight === true ? "auto" : field.height;
-  const columns = field.columns === "full" || field.fullWidth === true ? "full" : field.width;
   const entries = field.entries ?? [];
   const cardCount = isTabbedCardField(field)
     ? entries.reduce((count, entry) => count + (entry.cards?.length ?? 0), 0)
@@ -4169,11 +4171,21 @@ function expertDetailSettingsText(field, card) {
     `${field.layout ?? "card"}`,
     `grid c${field.column + 1}/r${field.row + 1}`,
     `size ${field.width}x${field.height}`,
-    isEditableContainerField(field) ? `columns ${columns}` : "",
-    isEditableContainerField(field) ? `rows ${rows}` : "",
     isTabbedCardField(field) ? `${entries.length} tabs` : "",
     isEditableContainerField(field) ? `${cardCount} cards` : "",
   ].filter(Boolean).join(" · ");
+}
+
+function expertContainerColumnsText(field) {
+  if (!isEditableContainerField(field)) return "";
+  if (field.columns === "full" || field.fullWidth === true) return "full";
+  return String(typeof field.columns === "number" ? field.columns : field.width);
+}
+
+function expertContainerRowsText(field) {
+  if (!isEditableContainerField(field)) return "";
+  if (field.rows === "auto" || field.autoHeight === true) return "auto";
+  return String(typeof field.rows === "number" ? field.rows : field.height);
 }
 
 function renderExpertSelectedCardDetails() {
@@ -4199,6 +4211,10 @@ function renderExpertSelectedCardDetails() {
   appendDetailRow(details, t("text.entityName"), entityDisplayName(entityId));
   appendDetailRow(details, t("text.entityId"), entityId || t("text.noEntity"));
   appendDetailRow(details, t("text.cardSettings"), expertDetailSettingsText(field, card));
+  if (!card && isEditableContainerField(field)) {
+    appendDetailRow(details, t("text.cardColumns"), expertContainerColumnsText(field));
+    appendDetailRow(details, t("text.cardRows"), expertContainerRowsText(field));
+  }
   const styles = card ? getImportedEntityStyleBlocks(entityId) : getExpertFieldStyleBlocks(field);
   appendDetailRow(
     details,
