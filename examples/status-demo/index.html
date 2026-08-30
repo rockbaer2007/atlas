@@ -924,6 +924,7 @@
         position: relative;
         min-height: 54px;
         padding: 8px;
+        padding-right: 34px;
         border: 1px solid #0f766e;
         border-radius: 6px;
         background: #ffffff;
@@ -966,6 +967,7 @@
         border-color: #0f766e;
         background: #f8fffd;
         cursor: default;
+        min-height: 96px;
       }
 
       .expert-surface-field.tabbed-container.drag-over,
@@ -1053,6 +1055,7 @@
         display: grid;
         gap: 5px;
         min-height: 34px;
+        align-content: start;
         margin-top: 4px;
         padding: 6px;
         border: 1px dashed #93c5fd;
@@ -1180,6 +1183,20 @@
         padding: 16px;
       }
 
+      .tabbed-card-dialog-body.single-column {
+        grid-template-columns: 1fr;
+      }
+
+      .ha-card-paste-import-text {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 280px;
+        resize: vertical;
+        font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        font-size: 12.5px;
+        line-height: 1.45;
+      }
+
       .tabbed-card-tab-list,
       .tabbed-card-tab-editor {
         display: grid;
@@ -1274,6 +1291,25 @@
         color: #0f766e;
         font-size: 12px;
         font-weight: 700;
+      }
+
+      .expert-surface-field-remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        display: inline-grid;
+        place-items: center;
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: #dc2626;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1;
+        cursor: pointer;
       }
 
       .expert-editor-dropzone.drag-over {
@@ -1645,6 +1681,7 @@
           <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
           <label class="import-button" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
           <input id="import-ha-card-config" type="file" accept="application/json,application/zip,.json,.yaml,.yml,.zip" hidden>
+          <button id="open-ha-card-paste-import" type="button" data-i18n="button.pasteHaCard">Paste YAML</button>
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
         <div class="field-grid two-column">
@@ -1811,6 +1848,22 @@
                 </div>
                 <output id="tabbed-card-settings-status" aria-live="polite"></output>
               </div>
+            </div>
+          </section>
+        </div>
+        <div id="ha-card-paste-import-backdrop" class="modal-backdrop" hidden>
+          <section class="tabbed-card-dialog" role="dialog" aria-modal="true" aria-labelledby="ha-card-paste-import-title">
+            <header>
+              <h2 id="ha-card-paste-import-title" data-i18n="heading.pasteHaCard">Paste HA card YAML</h2>
+              <button id="close-ha-card-paste-import" type="button" class="icon-button" data-i18n-aria-label="aria.closeHaCardPasteImport" data-i18n-title="aria.closeHaCardPasteImport" aria-label="Close HA card YAML import" title="Close HA card YAML import">&times;</button>
+            </header>
+            <div class="tabbed-card-dialog-body single-column">
+              <textarea id="ha-card-paste-import-text" class="ha-card-paste-import-text" autocomplete="off" spellcheck="false" placeholder="Paste YAML or JSON card configuration here" data-i18n-placeholder="placeholder.haCardYamlPaste"></textarea>
+              <div class="connection-actions">
+                <button id="paste-ha-card-from-clipboard" type="button" data-i18n="button.pasteClipboard">Paste from clipboard</button>
+                <button id="apply-ha-card-paste-import" type="button" data-i18n="button.applyImport">Import into editor</button>
+              </div>
+              <output id="ha-card-paste-import-status" aria-live="polite"></output>
             </div>
           </section>
         </div>

@@ -93,6 +93,13 @@ const copyHaCardResources = document.querySelector("#copy-ha-card-resources");
 const checkHaCardResources = document.querySelector("#check-ha-card-resources");
 const importHomeAssistantConfig = document.querySelector("#import-home-assistant-config");
 const importHaCardConfig = document.querySelector("#import-ha-card-config");
+const openHaCardPasteImport = document.querySelector("#open-ha-card-paste-import");
+const haCardPasteImportBackdrop = document.querySelector("#ha-card-paste-import-backdrop");
+const closeHaCardPasteImport = document.querySelector("#close-ha-card-paste-import");
+const haCardPasteImportText = document.querySelector("#ha-card-paste-import-text");
+const pasteHaCardFromClipboard = document.querySelector("#paste-ha-card-from-clipboard");
+const applyHaCardPasteImport = document.querySelector("#apply-ha-card-paste-import");
+const haCardPasteImportStatus = document.querySelector("#ha-card-paste-import-status");
 const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
@@ -211,6 +218,9 @@ const translations = {
     "button.checkResources": "Check resources",
     "button.import": "Import",
     "button.importHaCard": "Import HA card",
+    "button.pasteHaCard": "Paste YAML",
+    "button.pasteClipboard": "Paste from clipboard",
+    "button.applyImport": "Import into editor",
     "button.addEntity": "Add entity",
     "button.refreshEntities": "Refresh entities",
     "button.saveFavorites": "Save favorites",
@@ -244,6 +254,7 @@ const translations = {
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
     "heading.tabbedCardSettings": "Tabbed Card V2 settings",
+    "heading.pasteHaCard": "Paste HA card YAML",
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnostics",
     "heading.statusPreview": "ATLAS Status Preview",
@@ -261,6 +272,7 @@ const translations = {
     "placeholder.expertTitle": "Use template title when empty",
     "placeholder.expertEntity": "Use current entity when empty",
     "placeholder.cardSearch": "Search cards",
+    "placeholder.haCardYamlPaste": "Paste YAML or JSON card configuration here",
     "aria.entityTypeShortcuts": "Entity type shortcuts",
     "aria.clearEntitySearch": "Clear entity search",
     "aria.language": "Language",
@@ -270,6 +282,7 @@ const translations = {
     "aria.expertSurface": "Expert editor surface",
     "aria.resizeExpertSurface": "Resize Expert editor surface",
     "aria.closeTabbedCardSettings": "Close Tabbed Card V2 settings",
+    "aria.closeHaCardPasteImport": "Close HA card YAML import",
     "aria.showStatusPreview": "Show {entityId} in the ATLAS Status Preview",
     "aria.moveEntityUp": "Move {entityId} up",
     "aria.moveEntityDown": "Move {entityId} down",
@@ -327,6 +340,7 @@ const translations = {
     "message.containerCardUpdated": "{card} updated inside {container}.",
     "message.containerCardRemoved": "{card} removed from {container}.",
     "message.containerCardMovedOut": "{card} moved out of {container}.",
+    "message.fieldRemoved": "{field} removed.",
     "message.tabbedCardNeedsTab": "Add a tab before placing cards inside Tabbed Card V2.",
     "message.groupStatus": "Group status: {ready} ready, {pending} pending, {blocked} blocked.",
     "message.needsAttention": "Needs attention: {entities}.",
@@ -379,6 +393,8 @@ const translations = {
     "message.importRejected": "Import rejected: unsupported Home Assistant card artifact.",
     "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
+    "message.pasteImportEmpty": "Paste YAML or JSON before importing.",
+    "message.clipboardReadFailed": "Clipboard could not be read.",
     "message.hacsBundleInspected": "HACS bundle checked: {count} files, script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS bundle rejected: {reason}",
     "message.invalidDragPayload": "Could not read dragged card.",
@@ -553,6 +569,9 @@ const translations = {
     "button.checkResources": "Ressourcen pruefen",
     "button.import": "Import",
     "button.importHaCard": "HA-Card importieren",
+    "button.pasteHaCard": "YAML einfuegen",
+    "button.pasteClipboard": "Aus Zwischenablage einfuegen",
+    "button.applyImport": "In Editor importieren",
     "button.addEntity": "Entitaet hinzufuegen",
     "button.refreshEntities": "Entitaeten aktualisieren",
     "button.saveFavorites": "Favoriten speichern",
@@ -586,6 +605,7 @@ const translations = {
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
     "heading.tabbedCardSettings": "Tabbed Card V2 Einstellungen",
+    "heading.pasteHaCard": "HA-Card-YAML einfuegen",
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnose",
     "heading.statusPreview": "ATLAS Status Vorschau",
@@ -603,6 +623,7 @@ const translations = {
     "placeholder.expertTitle": "Template-Titel nutzen, wenn leer",
     "placeholder.expertEntity": "Aktuelle Entitaet nutzen, wenn leer",
     "placeholder.cardSearch": "Cards suchen",
+    "placeholder.haCardYamlPaste": "YAML- oder JSON-Card-Konfiguration hier einfuegen",
     "aria.entityTypeShortcuts": "Entitaetstyp-Schnellauswahl",
     "aria.clearEntitySearch": "Entitaetssuche loeschen",
     "aria.language": "Sprache",
@@ -612,6 +633,7 @@ const translations = {
     "aria.expertSurface": "Expert-Editor-Flaeche",
     "aria.resizeExpertSurface": "Expert-Editor-Flaeche vergroessern",
     "aria.closeTabbedCardSettings": "Tabbed Card V2 Einstellungen schliessen",
+    "aria.closeHaCardPasteImport": "HA-Card-YAML-Import schliessen",
     "aria.showStatusPreview": "{entityId} in der ATLAS Status Vorschau anzeigen",
     "aria.moveEntityUp": "{entityId} nach oben verschieben",
     "aria.moveEntityDown": "{entityId} nach unten verschieben",
@@ -669,6 +691,7 @@ const translations = {
     "message.containerCardUpdated": "{card} in {container} aktualisiert.",
     "message.containerCardRemoved": "{card} aus {container} entfernt.",
     "message.containerCardMovedOut": "{card} aus {container} auf die Flaeche gelegt.",
+    "message.fieldRemoved": "{field} entfernt.",
     "message.tabbedCardNeedsTab": "Fuege erst einen Tab hinzu, bevor Cards in Tabbed Card V2 abgelegt werden.",
     "message.groupStatus": "Gruppenstatus: {ready} bereit, {pending} wartend, {blocked} blockiert.",
     "message.needsAttention": "Braucht Aufmerksamkeit: {entities}.",
@@ -721,6 +744,8 @@ const translations = {
     "message.importRejected": "Import abgelehnt: nicht unterstuetztes Home-Assistant-Card-Artefakt.",
     "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitaeten.",
     "message.importHaCardFailed": "Import fehlgeschlagen: ungueltige Home-Assistant-Entities-Card als JSON oder YAML.",
+    "message.pasteImportEmpty": "Fuege zuerst YAML oder JSON ein.",
+    "message.clipboardReadFailed": "Zwischenablage konnte nicht gelesen werden.",
     "message.hacsBundleInspected": "HACS-Bundle geprueft: {count} Dateien, Script {scriptFilename}.",
     "message.hacsBundleRejected": "HACS-Bundle abgelehnt: {reason}",
     "message.invalidDragPayload": "Gezogene Card konnte nicht gelesen werden.",
@@ -2056,6 +2081,20 @@ function formatHacsBundlePackageReadReview(packageRead) {
   return formatHomeAssistantCardEditorHacsBundlePackageReadinessReviewLines(packageRead).join("\n");
 }
 
+function importHaCardTextIntoEditor(text) {
+  const decision = renderHaCardImportDecision(text);
+  if (decision.action !== "import") {
+    statusMessage.textContent = decision.action === "review"
+      ? t("message.importPaused")
+      : t("message.importRejected");
+    return false;
+  }
+
+  const summary = summarizeHomeAssistantCardImport(text);
+  applyHomeAssistantCardImportSummary(summary);
+  return true;
+}
+
 function expertPaletteCardMatchesSearch(card, template, query) {
   if (!query) return true;
   const normalizedQuery = query.toLowerCase();
@@ -3322,6 +3361,23 @@ function toggleExpertFieldEditing() {
     : t("text.editHandlesHidden", { field: field.id });
 }
 
+function removeExpertEditorField(index) {
+  const field = expertEditorFields[index];
+  if (!field) return false;
+  expertEditorFields.splice(index, 1);
+  if (selectedExpertFieldIndex === index) {
+    selectedExpertFieldIndex = -1;
+    selectedContainerCardRef = undefined;
+    expertFieldEditing = false;
+  } else if (selectedExpertFieldIndex > index) {
+    selectedExpertFieldIndex -= 1;
+  }
+  persistConfiguration();
+  renderExpertEditorPreview();
+  statusMessage.textContent = t("message.fieldRemoved", { field: field.id });
+  return true;
+}
+
 function renderExpertEditorSurface() {
   expertEditorDropzone.replaceChildren();
   applyExpertEditorSurfaceSize();
@@ -3363,6 +3419,15 @@ function renderExpertEditorSurface() {
     target.textContent = translateCardTarget(field.target, field.target);
     const entity = document.createElement("small");
     entity.textContent = field.entityId || t("text.demoEntity");
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "expert-surface-field-remove";
+    remove.textContent = "x";
+    remove.addEventListener("click", event => {
+      event.stopPropagation();
+      removeExpertEditorField(index);
+    });
+    tile.append(remove);
     tile.append(title, target, entity);
     if (isTabbedCardField(field)) {
       tile.append(createTabbedCardInlineView(field, index));
@@ -5150,20 +5215,46 @@ importHaCardConfig.addEventListener("change", async () => {
       text = await file.text();
     }
 
-    const decision = renderHaCardImportDecision(text);
-    if (decision.action !== "import") {
-      statusMessage.textContent = decision.action === "review"
-        ? t("message.importPaused")
-        : t("message.importRejected");
-      return;
-    }
-
-    const summary = summarizeHomeAssistantCardImport(text);
-    applyHomeAssistantCardImportSummary(summary);
+    importHaCardTextIntoEditor(text);
   } catch {
     statusMessage.textContent = t("message.importHaCardFailed");
   } finally {
     importHaCardConfig.value = "";
+  }
+});
+openHaCardPasteImport.addEventListener("click", () => {
+  haCardPasteImportBackdrop.hidden = false;
+  haCardPasteImportStatus.textContent = "";
+  haCardPasteImportText.focus();
+});
+closeHaCardPasteImport.addEventListener("click", () => {
+  haCardPasteImportBackdrop.hidden = true;
+});
+haCardPasteImportBackdrop.addEventListener("click", event => {
+  if (event.target === haCardPasteImportBackdrop) {
+    haCardPasteImportBackdrop.hidden = true;
+  }
+});
+pasteHaCardFromClipboard.addEventListener("click", async () => {
+  try {
+    haCardPasteImportText.value = await navigator.clipboard.readText();
+    haCardPasteImportStatus.textContent = haCardPasteImportText.value.trim()
+      ? renderHaCardImportDecision(haCardPasteImportText.value).message
+      : t("message.pasteImportEmpty");
+  } catch {
+    haCardPasteImportStatus.textContent = t("message.clipboardReadFailed");
+  }
+});
+applyHaCardPasteImport.addEventListener("click", () => {
+  const text = haCardPasteImportText.value.trim();
+  if (!text) {
+    haCardPasteImportStatus.textContent = t("message.pasteImportEmpty");
+    return;
+  }
+  if (importHaCardTextIntoEditor(text)) {
+    haCardPasteImportBackdrop.hidden = true;
+  } else {
+    haCardPasteImportStatus.textContent = haCardImportReview.textContent;
   }
 });
 
