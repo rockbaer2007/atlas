@@ -2064,6 +2064,22 @@
         letter-spacing: 0;
       }
 
+      .selected-entities-panel {
+        margin-top: 18px;
+      }
+
+      .selected-entities-panel summary {
+        cursor: pointer;
+        color: #0f766e;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .selected-entities-panel summary:focus-visible {
+        outline: 2px solid #0f766e;
+        outline-offset: 2px;
+      }
+
       #stack-selection-summary {
         min-height: 20px;
         color: #536079;
@@ -2637,11 +2653,13 @@
           <div id="atlas-status-root" aria-live="polite"></div>
         </div>
       </details>
-      <h2 class="entity-section-title" data-i18n="heading.selectedEntities">Selected entities</h2>
-      <output id="stack-selection-summary" aria-live="polite"></output>
-      <output id="group-summary" aria-live="polite"></output>
-      <output id="group-issues" aria-live="polite"></output>
-      <div id="atlas-entity-list" aria-live="polite"></div>
+      <details id="selected-entities-panel" class="selected-entities-panel" open>
+        <summary data-i18n="heading.selectedEntities">Selected entities</summary>
+        <output id="stack-selection-summary" aria-live="polite"></output>
+        <output id="group-summary" aria-live="polite"></output>
+        <output id="group-issues" aria-live="polite"></output>
+        <div id="atlas-entity-list" aria-live="polite"></div>
+      </details>
       <div id="status-message" role="status"></div>
     </main>
     <script type="module" src="/examples/status-demo/app.js"></script>

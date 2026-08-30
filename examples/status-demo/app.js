@@ -54,6 +54,7 @@ import {
 
 const statusRoot = document.querySelector("#atlas-status-root");
 const statusMessage = document.querySelector("#status-message");
+const selectedEntitiesPanel = document.querySelector("#selected-entities-panel");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
@@ -1417,6 +1418,7 @@ function renderEditorMode(mode = "simple") {
   deleteHomeAssistantGroup.hidden = expert;
   duplicateHomeAssistantGroup.hidden = expert;
   simpleEntityControls.hidden = expert;
+  selectedEntitiesPanel.open = !expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
   for (const button of editorModeButtons) {
