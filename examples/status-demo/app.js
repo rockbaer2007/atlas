@@ -513,6 +513,8 @@ const translations = {
     "text.resourceMissing": "Resource missing",
     "text.temporaryResourceDebugUnchecked": "Temporary check: no Lovelace resources loaded yet. Click Check resources while Home Assistant is connected.",
     "text.temporaryResourceDebugLoading": "Temporary check: Lovelace resources requested, waiting for Home Assistant...",
+    "text.temporaryResourceDebugFailed": "Temporary check failed: {reason}",
+    "text.temporaryResourceDebugTimeout": "Temporary check: Home Assistant did not answer the Lovelace resource request. The WebSocket connection is active, but this command may be blocked or unsupported for the current user/session.",
     "text.temporaryResourceDebugSummary": "Temporary check: {total} Lovelace resources, {hacs} HACS resources, {known} known cards, {scanOnly} scan-only resources, {ignored} ignored/non-card resources.",
     "text.temporaryResourceKnown": "Known cards",
     "text.temporaryResourceScanOnly": "Scan-only resources",
@@ -932,6 +934,8 @@ const translations = {
     "text.resourceMissing": "Ressource fehlt",
     "text.temporaryResourceDebugUnchecked": "Temporärer Check: Noch keine Lovelace-Ressourcen geladen. Klicke Ressourcen prüfen, während Home Assistant verbunden ist.",
     "text.temporaryResourceDebugLoading": "Temporärer Check: Lovelace-Ressourcen angefordert, warte auf Home Assistant...",
+    "text.temporaryResourceDebugFailed": "Temporärer Check fehlgeschlagen: {reason}",
+    "text.temporaryResourceDebugTimeout": "Temporärer Check: Home Assistant hat auf die Lovelace-Ressourcenanfrage nicht geantwortet. Die WebSocket-Verbindung ist aktiv, aber dieser Befehl ist für den aktuellen Benutzer oder die aktuelle Sitzung eventuell blockiert oder nicht unterstützt.",
     "text.temporaryResourceDebugSummary": "Temporärer Check: {total} Lovelace-Ressourcen, {hacs} HACS-Ressourcen, {known} bekannte Cards, {scanOnly} Scan-only-Ressourcen, {ignored} ignorierte/Nicht-Card-Ressourcen.",
     "text.temporaryResourceKnown": "Bekannte Cards",
     "text.temporaryResourceScanOnly": "Scan-only-Ressourcen",
@@ -1257,6 +1261,7 @@ let connectionLifecycleState = "closed";
 let activeConnectionSignature = "";
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
+let lovelaceResourceRequestTimer;
 let activeEditorMode = "simple";
 let importedSimpleCard;
 let importedSimpleCodePreview;
@@ -2164,6 +2169,7 @@ function refreshLiveEntityStates() {
 }
 
 function checkLiveLovelaceResources(options = {}) {
+  window.clearTimeout(lovelaceResourceRequestTimer);
   const result = connection?.getClient()?.requestLovelaceResources();
   const message = result?.accepted
     ? t("message.resourcesRequested", { requestId: result.requestId })
@@ -2174,7 +2180,14 @@ function checkLiveLovelaceResources(options = {}) {
   if (result?.accepted) {
     lovelaceResourcesChecked = false;
     renderTemporaryHaCardResourceList("loading");
+    lovelaceResourceRequestTimer = window.setTimeout(() => {
+      lovelaceResourcesChecked = false;
+      renderTemporaryHaCardResourceList("timeout");
+      statusMessage.textContent = t("text.temporaryResourceDebugTimeout");
+    }, 8000);
     renderHaCardPreview();
+  } else {
+    renderTemporaryHaCardResourceList("failed", message);
   }
 }
 
@@ -2310,10 +2323,20 @@ function formatTemporaryResourceSection(label, entries) {
   ].join("\n");
 }
 
-function renderTemporaryHaCardResourceList(state = lovelaceResourcesChecked ? "ready" : "unchecked") {
+function renderTemporaryHaCardResourceList(state = lovelaceResourcesChecked ? "ready" : "unchecked", reason = "") {
   if (!temporaryHaCardResourceList) return;
   if (state === "loading") {
     temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugLoading");
+    return;
+  }
+  if (state === "timeout") {
+    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugTimeout");
+    return;
+  }
+  if (state === "failed") {
+    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugFailed", {
+      reason: reason || t("message.unknownError"),
+    });
     return;
   }
   if (!lovelaceResourcesChecked) {
@@ -6537,6 +6560,7 @@ function bindSelectedEntity(nextTransport) {
   removeLovelaceResourceListener = undefined;
   lovelaceResources = [];
   lovelaceResourcesChecked = false;
+  window.clearTimeout(lovelaceResourceRequestTimer);
   renderTemporaryHaCardResourceList();
   renderExpertTemplatePalette();
   activeTransport = nextTransport;
@@ -6597,12 +6621,13 @@ function bindSelectedEntity(nextTransport) {
       statusMessage.textContent = t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
     });
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
-      lovelaceResources = result.resources;
+      window.clearTimeout(lovelaceResourceRequestTimer);
+      lovelaceResources = result.resources ?? [];
       lovelaceResourcesChecked = result.success;
       const scannedCards = result.success ? refreshScannedExpertPaletteCards() : { total: 0, hacs: 0 };
       renderHaCardPreview();
       renderExpertTemplatePalette();
-      renderTemporaryHaCardResourceList();
+      renderTemporaryHaCardResourceList(result.success ? "ready" : "failed", result.reason);
       statusMessage.textContent = result.success
         ? t("message.loadedResources", {
           count: result.resources.length,
