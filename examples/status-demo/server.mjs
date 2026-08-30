@@ -1,9 +1,12 @@
+import { spawn } from "node:child_process";
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
 const port = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
+const adminPort = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
+const adminUrl = `http://127.0.0.1:${adminPort}/`;
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -11,6 +14,8 @@ const mimeTypes = {
   ".json": "application/json; charset=utf-8",
   ".map": "application/json; charset=utf-8",
 };
+
+await startAdministrationServerIfNeeded();
 
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", "http://localhost");
@@ -38,6 +43,51 @@ createServer((request, response) => {
 }).listen(port, "127.0.0.1", () => {
   console.log(`ATLAS status demo: http://127.0.0.1:${port}/`);
 });
+
+async function startAdministrationServerIfNeeded() {
+  if (await isServerReady(adminUrl)) {
+    console.log(`ATLAS administration already running: ${adminUrl}`);
+    return;
+  }
+
+  const adminServerPath = resolve(root, "examples/admin-demo/server.mjs");
+  const adminProcess = spawn(process.execPath, [adminServerPath], {
+    cwd: root,
+    env: {
+      ...process.env,
+      ATLAS_ADMIN_PORT: String(adminPort),
+    },
+    stdio: "inherit",
+  });
+
+  adminProcess.on("error", error => {
+    console.warn(`ATLAS administration could not start: ${error.message}`);
+  });
+
+  if (await waitForServer(adminUrl, 2500)) {
+    return;
+  }
+
+  console.warn(`ATLAS administration was requested but did not answer at ${adminUrl} yet.`);
+}
+
+async function waitForServer(url, timeoutMs) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < timeoutMs) {
+    if (await isServerReady(url)) return true;
+    await new Promise(resolveDelay => setTimeout(resolveDelay, 100));
+  }
+  return false;
+}
+
+async function isServerReady(url) {
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
 
 function resolveRequestFilePath(requestedFilePath) {
   if (existsSync(requestedFilePath) && statSync(requestedFilePath).isDirectory()) {
