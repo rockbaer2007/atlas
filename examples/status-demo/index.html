@@ -1143,11 +1143,11 @@
 
       .expert-surface-field {
         display: grid;
-        gap: 3px;
+        grid-template-rows: auto auto 1fr auto;
+        gap: 5px;
         position: relative;
         min-height: 54px;
         padding: 8px;
-        padding-right: 34px;
         border: 1px solid #0f766e;
         border-radius: 6px;
         background: #ffffff;
@@ -1179,7 +1179,6 @@
       }
 
       .expert-surface-field.tabbed-container {
-        grid-template-rows: auto auto 1fr;
         border-style: solid;
         border-color: #2563eb;
         background: #f8fbff;
@@ -1187,11 +1186,86 @@
       }
 
       .expert-surface-field.stack-container {
-        padding-right: 118px;
         border-color: #0f766e;
         background: #f8fffd;
         cursor: default;
         min-height: 96px;
+      }
+
+      .expert-surface-field-header,
+      .expert-surface-field-meta,
+      .expert-surface-field-footer {
+        min-width: 0;
+      }
+
+      .expert-surface-field-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .expert-surface-field-title {
+        min-width: 0;
+        color: #172033;
+        font-size: 14px;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
+      }
+
+      .expert-surface-field-meta {
+        display: grid;
+        gap: 2px;
+        align-content: start;
+      }
+
+      .expert-surface-field-meta span,
+      .expert-surface-field-meta small {
+        min-width: 0;
+        font-size: 11px;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+      }
+
+      .expert-surface-field-meta span {
+        color: #9a3412;
+        font-weight: 700;
+      }
+
+      .expert-surface-field-meta small {
+        color: #536079;
+      }
+
+      .expert-surface-field-footer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 6px;
+        align-self: end;
+        min-height: 24px;
+      }
+
+      .expert-surface-style-summary {
+        min-height: 20px;
+        min-width: 0;
+        color: #0f766e;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+
+      .expert-surface-style-summary:empty::before {
+        content: "";
+      }
+
+      .expert-surface-field-actions {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 5px;
+        margin-left: auto;
       }
 
       .expert-surface-field.tabbed-container.drag-over,
@@ -1237,14 +1311,6 @@
         min-width: 0;
       }
 
-      .expert-container-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        min-width: 0;
-      }
-
       .expert-container-settings {
         flex: 0 0 auto;
         min-height: 24px;
@@ -1255,13 +1321,6 @@
         color: #1e40af;
         font-size: 11px;
         font-weight: 700;
-      }
-
-      .expert-surface-field-container-settings {
-        position: absolute;
-        top: 5px;
-        right: 31px;
-        z-index: 3;
       }
 
       .expert-tab-chip {
@@ -1573,16 +1632,17 @@
       }
 
       .expert-entity-style-button {
-        justify-self: start;
-        min-height: 24px;
-        padding: 3px 8px;
+        max-width: 100%;
+        min-height: 20px;
+        padding: 2px 7px;
         border: 1px solid #99f6e4;
         border-radius: 999px;
         background: #f0fdfa;
         color: #0f766e;
         font-size: 11px;
         font-weight: 800;
-        line-height: 1;
+        line-height: 1.15;
+        overflow-wrap: anywhere;
         cursor: pointer;
       }
 
@@ -1673,9 +1733,7 @@
       }
 
       .expert-surface-field-remove {
-        position: absolute;
-        top: 5px;
-        right: 5px;
+        flex: 0 0 auto;
         display: inline-grid;
         place-items: center;
         width: 20px;

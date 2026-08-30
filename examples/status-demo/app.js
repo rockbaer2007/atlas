@@ -488,6 +488,7 @@ const translations = {
     "text.resourceInstalled": "Resource installed",
     "text.resourceMissing": "Resource missing",
     "text.demoEntity": "demo entity",
+    "text.noEntity": "no entity",
     "text.waiting": "Waiting",
     "text.col": "col",
     "text.row": "row",
@@ -865,6 +866,7 @@ const translations = {
     "text.resourceInstalled": "Ressource installiert",
     "text.resourceMissing": "Ressource fehlt",
     "text.demoEntity": "Demo-Entität",
+    "text.noEntity": "keine Entität",
     "text.waiting": "Wartet",
     "text.col": "Sp.",
     "text.row": "Zeile",
@@ -4007,12 +4009,6 @@ function renderExpertEditorSurface() {
       ? `1 / span ${expertGridColumns}`
       : `${field.column + 1} / span ${Math.min(expertGridColumns, field.width)}`;
     tile.style.gridRow = `${field.row + 1} / span ${Math.min(expertGridRows, field.height)}`;
-    const title = document.createElement("strong");
-    title.textContent = field.id;
-    const target = document.createElement("span");
-    target.textContent = translateCardTarget(field.target, field.target);
-    const entity = document.createElement("small");
-    entity.textContent = field.entityId || t("text.demoEntity");
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "expert-surface-field-remove";
@@ -4021,33 +4017,39 @@ function renderExpertEditorSurface() {
       event.stopPropagation();
       removeExpertEditorField(index);
     });
-    tile.append(remove);
-    if (isStackContainerField(field)) {
+    const actions = document.createElement("div");
+    actions.className = "expert-surface-field-actions";
+    if (isEditableContainerField(field)) {
       const settings = document.createElement("button");
       settings.type = "button";
-      settings.className = "expert-container-settings expert-surface-field-container-settings";
+      settings.className = "expert-container-settings";
       settings.textContent = t("button.settings");
       settings.addEventListener("click", event => {
         event.stopPropagation();
         selectedExpertFieldIndex = index;
         selectedContainerCardRef = undefined;
-        openStackCardSettings();
+        if (isTabbedCardField(field)) {
+          openTabbedCardSettings();
+        } else {
+          openStackCardSettings();
+        }
       });
-      tile.append(settings);
+      actions.append(settings);
     }
-    tile.append(title, target, entity);
-    if (variant.label) {
-      tile.append(createCardTypeBadge(variant));
-    }
-    const styles = getImportedEntityStyleBlocks(field.entityId);
-    if (styles.length) {
-      tile.append(createImportedEntityStyleButton(field, styles));
-    }
+    actions.append(remove);
+    tile.append(
+      createExpertSurfaceFieldHeader(field),
+      createExpertSurfaceFieldMeta(field, variant),
+    );
     if (isTabbedCardField(field)) {
       tile.append(createTabbedCardInlineView(field, index));
     } else if (isStackContainerField(field)) {
       tile.append(createStackContainerInlineView(field, index));
     }
+    const footer = document.createElement("div");
+    footer.className = "expert-surface-field-footer";
+    footer.append(createExpertSurfaceStyleSummary(field, getExpertFieldStyleBlocks(field)), actions);
+    tile.append(footer);
     tile.addEventListener("click", () => {
       selectExpertEditorField(index);
     });
@@ -4100,6 +4102,60 @@ function renderExpertEditorSurface() {
   });
   expertEditorDropzone.append(grid);
   appendExpertEditorSurfaceResizeHandle();
+}
+
+function createExpertSurfaceFieldHeader(field) {
+  const header = document.createElement("div");
+  header.className = "expert-surface-field-header";
+  const title = document.createElement("strong");
+  title.className = "expert-surface-field-title";
+  title.textContent = field.id;
+  header.append(title);
+  return header;
+}
+
+function createExpertSurfaceFieldMeta(field, variant) {
+  const meta = document.createElement("div");
+  meta.className = "expert-surface-field-meta";
+  const type = document.createElement("span");
+  type.textContent = variant.label ?? translateCardTarget(field.target, field.target);
+  const entity = document.createElement("small");
+  entity.textContent = field.entityId
+    ? field.entityId
+    : isEditableContainerField(field)
+      ? t("text.noEntity")
+      : t("text.demoEntity");
+  meta.append(type, entity);
+  if (isEditableContainerField(field)) {
+    const layout = document.createElement("small");
+    const rows = field.rows === "auto" || field.autoHeight === true ? "auto" : field.height;
+    const columns = field.columns === "full" || field.fullWidth === true ? "full" : field.width;
+    layout.textContent = `${field.layout ?? "card"} · columns ${columns} · rows ${rows}`;
+    meta.append(layout);
+  }
+  return meta;
+}
+
+function getExpertFieldStyleBlocks(field) {
+  const entityIds = new Set();
+  if (field.entityId) entityIds.add(field.entityId);
+  for (const entry of field.entries ?? []) {
+    if (entry.entityId) entityIds.add(entry.entityId);
+    for (const card of entry.cards ?? []) {
+      if (card.entityId) entityIds.add(card.entityId);
+    }
+  }
+  return [...entityIds].flatMap(entityId => getImportedEntityStyleBlocks(entityId));
+}
+
+function createExpertSurfaceStyleSummary(field, styles) {
+  const summary = document.createElement("div");
+  summary.className = "expert-surface-style-summary";
+  if (!styles.length) return summary;
+  const button = createImportedEntityStyleButton(field, styles);
+  button.textContent = listImportedStyleTypes(styles).map(styleType => styleType.label).join(" · ");
+  summary.append(button);
+  return summary;
 }
 
 function createImportedEntityStyleButton(field, styles) {
@@ -4236,23 +4292,10 @@ function createStackContainerInlineView(field, fieldIndex) {
 function createTabbedCardInlineView(field, fieldIndex) {
   const wrapper = document.createElement("div");
   wrapper.className = "expert-tab-inline";
-  const header = document.createElement("div");
-  header.className = "expert-container-header";
   const entries = field.entries ?? [];
   const activeIndex = normalizeTabbedCardTabIndex(field);
   const count = document.createElement("small");
   count.textContent = t("text.tabbedCardContainer", { count: entries.length });
-  const settings = document.createElement("button");
-  settings.type = "button";
-  settings.className = "expert-container-settings";
-  settings.textContent = t("button.settings");
-  settings.addEventListener("click", event => {
-    event.stopPropagation();
-    selectedExpertFieldIndex = fieldIndex;
-    selectedContainerCardRef = undefined;
-    openTabbedCardSettings();
-  });
-  header.append(count, settings);
   const tabs = document.createElement("div");
   tabs.className = "expert-tab-summary";
   entries.forEach((entry, tabIndex) => {
@@ -4319,7 +4362,7 @@ function createTabbedCardInlineView(field, fieldIndex) {
     }
   }
 
-  wrapper.append(header, tabs, preview);
+  wrapper.append(count, tabs, preview);
   return wrapper;
 }
 
