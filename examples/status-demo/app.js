@@ -2073,13 +2073,18 @@ function renderSimpleHaCardVisualPreview(card) {
 function createSimpleHaCardPreviewCard(card) {
   const wrapper = document.createElement("article");
   wrapper.className = "ha-card-visual-card";
+  const bubbleType = getBubblePreviewType(card);
+  if (bubbleType) {
+    wrapper.classList.add("bubble-card-preview");
+    wrapper.dataset.bubbleType = bubbleType;
+  }
 
   const header = document.createElement("header");
   const title = document.createElement("strong");
   title.textContent = getSimplePreviewCardTitle(card);
   const type = document.createElement("span");
   type.className = "ha-card-visual-type";
-  type.textContent = card.type;
+  type.textContent = bubbleType ? `Bubble ${bubbleType}` : card.type;
   header.append(title, type);
   wrapper.append(header);
 
@@ -2135,6 +2140,11 @@ function getSimplePreviewCardTitle(card) {
   if (typeof card.primary === "string" && card.primary.trim()) return card.primary.trim();
   if (card.type === "custom:tabbed-card-v2") return card.tabs?.[0]?.attributes?.label ?? "Tabbed Card V2";
   return String(card.type).replace(/^custom:/, "");
+}
+
+function getBubblePreviewType(card) {
+  if (!card || typeof card !== "object" || card.type !== "custom:bubble-card") return "";
+  return bubbleButtonTypes.includes(card.button_type) ? card.button_type : "state";
 }
 
 function getSimplePreviewCardEntities(card) {
@@ -3723,6 +3733,10 @@ function renderExpertEditorSurface() {
     tile.classList.toggle("editing", index === selectedExpertFieldIndex && expertFieldEditing);
     tile.classList.toggle("tabbed-container", isTabbedCardField(field));
     tile.classList.toggle("stack-container", isStackContainerField(field));
+    tile.classList.toggle("bubble-card-preview", field.target === "bubble");
+    if (field.target === "bubble") {
+      tile.dataset.bubbleType = field.bubbleButtonType ?? "state";
+    }
     tile.classList.toggle("conflict", overlappingFieldIds.has(field.id) && !isEditableContainerField(field));
     tile.dataset.expertFieldIndex = String(index);
     tile.setAttribute("role", "button");
@@ -3750,6 +3764,9 @@ function renderExpertEditorSurface() {
     });
     tile.append(remove);
     tile.append(title, target, entity);
+    if (field.target === "bubble") {
+      tile.append(createBubbleTypeBadge(field.bubbleButtonType));
+    }
     const styles = getImportedEntityStyleBlocks(field.entityId);
     if (styles.length) {
       tile.append(createImportedEntityStyleButton(field, styles));
@@ -4033,6 +4050,10 @@ function createTabbedCardInlineView(field, fieldIndex) {
 function createContainerPreviewCard(card, options = {}) {
   const item = document.createElement("article");
   item.className = "expert-tab-preview-card";
+  item.classList.toggle("bubble-card-preview", card.target === "bubble");
+  if (card.target === "bubble") {
+    item.dataset.bubbleType = card.bubbleButtonType ?? "state";
+  }
   item.classList.toggle("selected", options.selected === true);
   item.tabIndex = 0;
   item.draggable = true;
@@ -4062,6 +4083,9 @@ function createContainerPreviewCard(card, options = {}) {
   });
   actions.append(moveOut, remove);
   item.append(actions, title, detail);
+  if (card.target === "bubble") {
+    item.append(createBubbleTypeBadge(card.bubbleButtonType));
+  }
   item.addEventListener("click", event => {
     event.stopPropagation();
     options.onClick?.();
@@ -4079,6 +4103,15 @@ function createContainerPreviewCard(card, options = {}) {
     event.dataTransfer?.setDragImage(item, 12, 12);
   });
   return item;
+}
+
+function createBubbleTypeBadge(value) {
+  const type = bubbleButtonTypes.includes(value) ? value : "state";
+  const badge = document.createElement("span");
+  badge.className = "bubble-type-badge";
+  badge.dataset.bubbleType = type;
+  badge.textContent = `Bubble: ${type}`;
+  return badge;
 }
 
 function handleDropIntoTabbedCard(event, fieldIndex) {
