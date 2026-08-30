@@ -4111,17 +4111,6 @@ function getExpertFieldStyleBlocks(field) {
 function selectedExpertDetailContext() {
   const field = expertEditorFields[selectedExpertFieldIndex];
   if (!field) return undefined;
-  if (selectedContainerCardRef) {
-    const card = getContainerCard(selectedContainerCardRef);
-    if (card) {
-      return {
-        field,
-        fieldIndex: selectedExpertFieldIndex,
-        card,
-        cardRef: selectedContainerCardRef,
-      };
-    }
-  }
   return { field, fieldIndex: selectedExpertFieldIndex };
 }
 
@@ -4178,17 +4167,16 @@ function renderExpertSelectedCardDetails() {
     return;
   }
 
-  const { field, fieldIndex, card, cardRef } = context;
-  const selectedCard = card ?? field;
-  const variant = getExpertPreviewVariant(selectedCard);
-  const entityId = selectedCard.entityId ?? "";
+  const { field, fieldIndex } = context;
+  const variant = getExpertPreviewVariant(field);
+  const entityId = field.entityId ?? "";
   const details = document.createElement("dl");
-  appendDetailRow(details, t("text.cardName"), selectedCard.id);
-  appendDetailRow(details, t("text.cardType"), variant.label ?? translateCardTarget(selectedCard.target, selectedCard.target), "detail-card-type");
+  appendDetailRow(details, t("text.cardName"), field.id);
+  appendDetailRow(details, t("text.cardType"), variant.label ?? translateCardTarget(field.target, field.target), "detail-card-type");
   appendDetailRow(details, t("text.entityName"), entityDisplayName(entityId));
   appendDetailRow(details, t("text.entityId"), entityId || t("text.noEntity"));
-  appendDetailRow(details, t("text.cardSettings"), expertDetailSettingsText(field, card));
-  const styles = card ? getImportedEntityStyleBlocks(entityId) : getExpertFieldStyleBlocks(field);
+  appendDetailRow(details, t("text.cardSettings"), expertDetailSettingsText(field));
+  const styles = getExpertFieldStyleBlocks(field);
   appendDetailRow(
     details,
     t("text.styleCode"),
@@ -4210,7 +4198,7 @@ function renderExpertSelectedCardDetails() {
 
   const actions = document.createElement("div");
   actions.className = "expert-detail-actions";
-  if (!card && isEditableContainerField(field)) {
+  if (isEditableContainerField(field)) {
     const settings = document.createElement("button");
     settings.type = "button";
     settings.textContent = t("button.settings");
@@ -4223,24 +4211,11 @@ function renderExpertSelectedCardDetails() {
     });
     actions.append(settings);
   }
-  if (cardRef) {
-    const moveOut = document.createElement("button");
-    moveOut.type = "button";
-    moveOut.textContent = t("button.moveOut");
-    moveOut.addEventListener("click", () => moveContainerCardToSurface(cardRef));
-    actions.append(moveOut);
-  }
   const remove = document.createElement("button");
   remove.type = "button";
   remove.className = "expert-detail-delete";
   remove.textContent = t("button.removeTab");
-  remove.addEventListener("click", () => {
-    if (cardRef) {
-      removeContainerCard(cardRef);
-    } else {
-      removeExpertEditorField(fieldIndex);
-    }
-  });
+  remove.addEventListener("click", () => removeExpertEditorField(fieldIndex));
   actions.append(remove);
   expertSelectedCardDetails.append(actions);
 }
@@ -4255,15 +4230,11 @@ function createExpertDetailContainedCards(field, fieldIndex) {
     const activeIndex = normalizeTabbedCardTabIndex(field);
     const activeTab = field.entries?.[activeIndex];
     for (const [cardIndex, card] of (activeTab?.cards ?? []).entries()) {
-      section.append(createExpertDetailCardButton(card, {
-        fieldIndex,
-        tabIndex: activeIndex,
-        cardIndex,
-      }));
+      section.append(createExpertDetailCardItem(card, cardIndex));
     }
   } else {
     for (const [cardIndex, card] of (field.entries ?? []).entries()) {
-      section.append(createExpertDetailCardButton(card, { fieldIndex, cardIndex }));
+      section.append(createExpertDetailCardItem(card, cardIndex));
     }
   }
   if (section.children.length === 1) {
@@ -4274,18 +4245,12 @@ function createExpertDetailContainedCards(field, fieldIndex) {
   return section;
 }
 
-function createExpertDetailCardButton(card, reference) {
-  const button = document.createElement("button");
+function createExpertDetailCardItem(card, index) {
+  const item = document.createElement("div");
   const variant = getExpertPreviewVariant(card);
-  button.type = "button";
-  button.textContent = `${card.id} · ${variant.label ?? card.target} · ${card.entityId || t("text.noEntity")}`;
-  button.setAttribute("aria-pressed", String(
-    selectedContainerCardRef?.fieldIndex === reference.fieldIndex
-      && selectedContainerCardRef?.tabIndex === reference.tabIndex
-      && selectedContainerCardRef?.cardIndex === reference.cardIndex,
-  ));
-  button.addEventListener("click", () => selectContainerCard(reference));
-  return button;
+  item.className = "expert-detail-card-item";
+  item.textContent = `${index + 1}. ${card.id} · ${variant.label ?? card.target} · ${card.entityId || t("text.noEntity")}`;
+  return item;
 }
 
 function createImportedEntityStyleButton(field, styles) {
