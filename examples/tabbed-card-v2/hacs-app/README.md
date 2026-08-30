@@ -10,7 +10,7 @@ After installation:
 
 1. Restart Home Assistant.
 2. Open **Settings > Devices & services**.
-3. Add or enable **Tabbed Card V2 App** if Home Assistant asks for setup.
+3. Add **Tabbed Card V2 App**.
 4. Open **Tabbed Card V2** in the sidebar.
 
 The integration also serves the card module from:

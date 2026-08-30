@@ -2,7 +2,7 @@
   "domain": "tabbed_card_v2",
   "name": "Tabbed Card V2 App",
   "codeowners": ["@rockbaer2007"],
-  "config_flow": false,
+  "config_flow": true,
   "dependencies": ["frontend", "http", "panel_custom"],
   "documentation": "https://github.com/rockbaer2007/tabbed-card-v2",
   "integration_type": "helper",

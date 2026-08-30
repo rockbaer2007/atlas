@@ -1,3 +1,11 @@
 {
-  "title": "Tabbed Card V2"
+  "title": "Tabbed Card V2",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Tabbed Card V2",
+        "description": "Fuegt den Tabbed Card V2 Editor zur Home-Assistant-Seitenleiste hinzu."
+      }
+    }
+  }
 }
