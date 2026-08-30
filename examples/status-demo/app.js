@@ -122,6 +122,8 @@ const haCardPreview = document.querySelector("#ha-card-preview");
 const haCardVisualPreview = document.querySelector("#ha-card-visual-preview");
 const resetSimplePreview = document.querySelector("#reset-simple-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
+const toggleTemporaryResourceDebug = document.querySelector("#toggle-temporary-resource-debug");
+const temporaryResourceDebug = document.querySelector("#temporary-resource-debug");
 const temporaryHaCardResourceList = document.querySelector("#temporary-ha-card-resource-list");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
 const haCardStyleReview = document.querySelector("#ha-card-style-review");
@@ -222,6 +224,7 @@ const translations = {
     "label.entityType": "Entity type",
     "label.entitySearch": "Entity search",
     "label.entityPicker": "Entity picker",
+    "label.showTemporaryResourceDebug": "Show resource debug",
     "label.haCardPreview": "HA card preview",
     "label.haCardCode": "HA card code",
     "label.expertHaCardCode": "Expert HA card code",
@@ -647,6 +650,7 @@ const translations = {
     "label.entityType": "Entitätstyp",
     "label.entitySearch": "Entität suchen",
     "label.entityPicker": "Entitätsauswahl",
+    "label.showTemporaryResourceDebug": "Ressourcen-Debug anzeigen",
     "label.haCardPreview": "HA-Card-Vorschau",
     "label.haCardCode": "HA-Card-Code",
     "label.expertHaCardCode": "Expert-HA-Card-Code",
@@ -2420,6 +2424,12 @@ function formatTemporaryResourceDebugBody(lines) {
     ...lines,
     formatLovelaceResourceDebugText(),
   ].filter(Boolean).join("\n\n");
+}
+
+function syncTemporaryResourceDebugVisibility() {
+  if (!toggleTemporaryResourceDebug || !temporaryResourceDebug) return;
+  temporaryResourceDebug.hidden = !toggleTemporaryResourceDebug.checked;
+  temporaryResourceDebug.open = toggleTemporaryResourceDebug.checked;
 }
 
 function renderTemporaryHaCardResourceList(state = lovelaceResourcesChecked ? "ready" : "unchecked", reason = "") {
@@ -6911,6 +6921,10 @@ addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
 homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 checkHaCardResources.addEventListener("click", () => checkLiveLovelaceResources());
+toggleTemporaryResourceDebug.addEventListener("change", () => {
+  syncTemporaryResourceDebugVisibility();
+  renderTemporaryHaCardResourceList();
+});
 homeAssistantGroup.addEventListener("change", () => {
   clearImportedSimplePreviewState();
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
@@ -7525,6 +7539,7 @@ void applyStoredAdminConnectionSettings();
 renderAdminHandoffState();
 renderCardTranslationModuleStatus();
 renderEditorMode(initialEditorMode);
+syncTemporaryResourceDebugVisibility();
 renderTemporaryHaCardResourceList();
 
 let adminHandoffRequestAttempts = 0;

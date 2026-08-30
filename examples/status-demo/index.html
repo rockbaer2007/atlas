@@ -674,6 +674,29 @@
         background: #f8fafc;
       }
 
+      .temporary-resource-debug-toggle {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        width: fit-content;
+        margin: 8px 0 0;
+        color: #536079;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .temporary-resource-debug-toggle input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
+      .temporary-resource-debug[hidden] {
+        display: none;
+      }
+
       .temporary-resource-debug summary {
         cursor: pointer;
         color: #172033;
@@ -2442,7 +2465,11 @@
           <strong data-i18n="heading.resourceHint">Resource hint</strong>
           <output id="ha-card-dependency" aria-live="polite"></output>
         </div>
-        <details class="temporary-resource-debug" open>
+        <label class="temporary-resource-debug-toggle">
+          <input id="toggle-temporary-resource-debug" type="checkbox">
+          <span data-i18n="label.showTemporaryResourceDebug">Show resource debug</span>
+        </label>
+        <details id="temporary-resource-debug" class="temporary-resource-debug" hidden>
           <summary data-i18n="heading.temporaryResourceDebug">Temporary HA card resource check</summary>
           <output id="temporary-ha-card-resource-list" aria-live="polite"></output>
         </details>
