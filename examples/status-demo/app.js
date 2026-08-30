@@ -518,6 +518,7 @@ const translations = {
     "text.temporaryResourceDebugFailed": "Temporary check failed: {reason}",
     "text.temporaryResourceDebugTimeout": "Temporary check: Home Assistant did not answer the Lovelace resource request. The WebSocket connection is active, but this command may be blocked or unsupported for the current user/session.",
     "text.temporaryResourceDebugSummary": "Temporary check ({source}): {total} Lovelace resources, {hacs} HACS resources, {known} known cards, {scanOnly} scan-only resources, {ignored} ignored/non-card resources.",
+    "text.temporaryResourceDebugEvents": "Debug timeline",
     "text.temporaryResourceKnown": "Known cards",
     "text.temporaryResourceScanOnly": "Scan-only resources",
     "text.temporaryResourceIgnored": "Ignored / non-card resources",
@@ -941,6 +942,7 @@ const translations = {
     "text.temporaryResourceDebugFailed": "Temporärer Check fehlgeschlagen: {reason}",
     "text.temporaryResourceDebugTimeout": "Temporärer Check: Home Assistant hat auf die Lovelace-Ressourcenanfrage nicht geantwortet. Die WebSocket-Verbindung ist aktiv, aber dieser Befehl ist für den aktuellen Benutzer oder die aktuelle Sitzung eventuell blockiert oder nicht unterstützt.",
     "text.temporaryResourceDebugSummary": "Temporärer Check ({source}): {total} Lovelace-Ressourcen, {hacs} HACS-Ressourcen, {known} bekannte Cards, {scanOnly} Scan-only-Ressourcen, {ignored} ignorierte/Nicht-Card-Ressourcen.",
+    "text.temporaryResourceDebugEvents": "Debug-Verlauf",
     "text.temporaryResourceKnown": "Bekannte Cards",
     "text.temporaryResourceScanOnly": "Scan-only-Ressourcen",
     "text.temporaryResourceIgnored": "Ignoriert / keine Card",
@@ -1266,6 +1268,7 @@ let activeConnectionSignature = "";
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let lovelaceResourceRequestTimer;
+const lovelaceResourceDebugEvents = [];
 let activeEditorMode = "simple";
 let importedSimpleCard;
 let importedSimpleCodePreview;
@@ -2178,6 +2181,9 @@ function checkLiveLovelaceResources(options = {}) {
   const message = result?.accepted
     ? t("message.resourcesRequested", { requestId: result.requestId })
     : result?.reason ?? t("message.connectBeforeCheckingResources");
+  addLovelaceResourceDebugEvent(result?.accepted
+    ? `WS request #${result.requestId} sent: lovelace/resources`
+    : `WS request rejected: ${message}`);
   statusMessage.textContent = options.appendStatus
     ? `${statusMessage.textContent} ${message}`
     : message;
@@ -2186,6 +2192,7 @@ function checkLiveLovelaceResources(options = {}) {
     renderTemporaryHaCardResourceList("loading");
     lovelaceResourceRequestTimer = window.setTimeout(() => {
       lovelaceResourcesChecked = false;
+      addLovelaceResourceDebugEvent(`WS request #${result.requestId} timeout after 8s`);
       renderTemporaryHaCardResourceList("rest-loading");
       void fetchLovelaceResourcesViaRestFallback();
     }, 8000);
@@ -2197,9 +2204,11 @@ function checkLiveLovelaceResources(options = {}) {
 
 async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
   if (!adminConnectionToken) {
+    addLovelaceResourceDebugEvent("Admin REST skipped: no admin token handoff");
     renderTemporaryHaCardResourceList("failed", initialReason || t("message.tokenRequired"));
     return;
   }
+  addLovelaceResourceDebugEvent("Admin REST request sent: /api/homeassistant/lovelace-resources");
   renderTemporaryHaCardResourceList("rest-loading");
   try {
     const response = await fetch(`${adminOrigin}/api/homeassistant/lovelace-resources`, {
@@ -2213,6 +2222,7 @@ async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
     }
     lovelaceResources = Array.isArray(payload?.resources) ? payload.resources : [];
     lovelaceResourcesChecked = true;
+    addLovelaceResourceDebugEvent(`Admin REST response: ${response.status}, ${lovelaceResources.length} resources`);
     const scannedCards = refreshScannedExpertPaletteCards();
     renderHaCardPreview();
     renderExpertTemplatePalette();
@@ -2226,9 +2236,20 @@ async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
     lovelaceResourcesChecked = false;
     const reason = error instanceof Error ? error.message : String(error);
     const combinedReason = initialReason ? `${initialReason} REST: ${reason}` : reason;
+    addLovelaceResourceDebugEvent(`Admin REST failed: ${combinedReason}`);
     renderTemporaryHaCardResourceList("failed", combinedReason);
     statusMessage.textContent = t("text.temporaryResourceDebugFailed", { reason: combinedReason });
   }
+}
+
+function addLovelaceResourceDebugEvent(message) {
+  const time = new Date().toLocaleTimeString(currentLanguage === "de" ? "de-DE" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  lovelaceResourceDebugEvents.unshift(`${time} ${message}`);
+  lovelaceResourceDebugEvents.splice(8);
 }
 
 function isTransparentOrLightButtonBackground(color) {
@@ -2363,33 +2384,54 @@ function formatTemporaryResourceSection(label, entries) {
   ].join("\n");
 }
 
+function formatLovelaceResourceDebugText() {
+  return formatTemporaryResourceSection(t("text.temporaryResourceDebugEvents"), lovelaceResourceDebugEvents);
+}
+
+function formatTemporaryResourceDebugBody(lines) {
+  return [
+    ...lines,
+    formatLovelaceResourceDebugText(),
+  ].filter(Boolean).join("\n\n");
+}
+
 function renderTemporaryHaCardResourceList(state = lovelaceResourcesChecked ? "ready" : "unchecked", reason = "") {
   if (!temporaryHaCardResourceList) return;
   if (state === "loading") {
-    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugLoading");
+    temporaryHaCardResourceList.textContent = formatTemporaryResourceDebugBody([
+      t("text.temporaryResourceDebugLoading"),
+    ]);
     return;
   }
   if (state === "rest-loading") {
-    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugRestLoading");
+    temporaryHaCardResourceList.textContent = formatTemporaryResourceDebugBody([
+      t("text.temporaryResourceDebugRestLoading"),
+    ]);
     return;
   }
   if (state === "timeout") {
-    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugTimeout");
+    temporaryHaCardResourceList.textContent = formatTemporaryResourceDebugBody([
+      t("text.temporaryResourceDebugTimeout"),
+    ]);
     return;
   }
   if (state === "failed") {
-    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugFailed", {
-      reason: reason || t("message.unknownError"),
-    });
+    temporaryHaCardResourceList.textContent = formatTemporaryResourceDebugBody([
+      t("text.temporaryResourceDebugFailed", {
+        reason: reason || t("message.unknownError"),
+      }),
+    ]);
     return;
   }
   if (!lovelaceResourcesChecked) {
-    temporaryHaCardResourceList.textContent = t("text.temporaryResourceDebugUnchecked");
+    temporaryHaCardResourceList.textContent = formatTemporaryResourceDebugBody([
+      t("text.temporaryResourceDebugUnchecked"),
+    ]);
     return;
   }
   const analysis = analyzeTemporaryHaCardResources(lovelaceResources);
   const source = reason || "WebSocket";
-  temporaryHaCardResourceList.textContent = [
+  temporaryHaCardResourceList.textContent = formatTemporaryResourceDebugBody([
     t("text.temporaryResourceDebugSummary", {
       source,
       total: analysis.total,
@@ -2401,7 +2443,7 @@ function renderTemporaryHaCardResourceList(state = lovelaceResourcesChecked ? "r
     formatTemporaryResourceSection(t("text.temporaryResourceKnown"), analysis.known),
     formatTemporaryResourceSection(t("text.temporaryResourceScanOnly"), analysis.scanOnly),
     formatTemporaryResourceSection(t("text.temporaryResourceIgnored"), analysis.ignored),
-  ].join("\n\n");
+  ]);
 }
 
 function createScannedExpertPaletteCards(resources) {
@@ -6670,6 +6712,9 @@ function bindSelectedEntity(nextTransport) {
       window.clearTimeout(lovelaceResourceRequestTimer);
       lovelaceResources = result.resources ?? [];
       lovelaceResourcesChecked = result.success;
+      addLovelaceResourceDebugEvent(result.success
+        ? `WS response #${result.requestId}: success, ${lovelaceResources.length} resources`
+        : `WS response #${result.requestId}: failed, ${result.reason ?? "unknown error"}`);
       const scannedCards = result.success ? refreshScannedExpertPaletteCards() : { total: 0, hacs: 0 };
       renderHaCardPreview();
       renderExpertTemplatePalette();
