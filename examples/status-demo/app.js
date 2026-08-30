@@ -1006,6 +1006,7 @@ let activeConnectionSignature = "";
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let activeEditorMode = "simple";
+let importedSimpleCard;
 let expertPaletteShowAllCards = false;
 let expertPaletteSearchQuery = "";
 let selectedExpertFieldIndex = -1;
@@ -1884,6 +1885,9 @@ function scanExpertPaletteCardsFromHomeAssistant() {
 }
 
 function createHaCardConfig() {
+  if (importedSimpleCard && haCardTarget.value === "custom-card") {
+    return importedSimpleCard;
+  }
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   return createHomeAssistantCardConfiguration({
     target: haCardTarget.value,
@@ -4797,6 +4801,9 @@ homeAssistantUrl.addEventListener("input", () => {
 });
 window.addEventListener("message", receiveAdminConnectionHandoff);
 homeAssistantEntity.addEventListener("input", () => {
+  if (haCardTarget.value !== "custom-card") {
+    importedSimpleCard = undefined;
+  }
   persistConfiguration();
   renderEntityPickerOptions();
   bindSelectedEntity(activeTransport ?? transport);
@@ -4831,6 +4838,7 @@ homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 checkHaCardResources.addEventListener("click", () => checkLiveLovelaceResources());
 homeAssistantGroup.addEventListener("change", () => {
+  importedSimpleCard = undefined;
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   if (group) {
     homeAssistantEntity.value = group.entityIds.join(", ");
@@ -4845,6 +4853,7 @@ expertCardName.addEventListener("input", () => {
 });
 diagnosticsPanel.addEventListener("toggle", persistConfiguration);
 haCardTarget.addEventListener("change", () => {
+  importedSimpleCard = undefined;
   syncCardLayoutState();
   persistConfiguration();
   renderEntityList();
@@ -5349,6 +5358,7 @@ function applyHomeAssistantCardImportSummary(summary) {
   haCardTarget.value = summary.target;
   haCardLayout.value = summary.layout;
   haCardFormat.value = summary.format;
+  importedSimpleCard = summary.target === "custom-card" ? summary.card : undefined;
   if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
     haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
   }

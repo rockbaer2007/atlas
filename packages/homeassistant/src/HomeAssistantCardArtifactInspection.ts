@@ -304,7 +304,7 @@ function parseJsonRecord(text: string): Record<string, unknown> | undefined {
 }
 
 function looksLikeHomeAssistantCardYaml(text: string): boolean {
-  return /^type:\s*(entities|glance|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:mushroom-template-card|custom:bubble-card|custom:tabbed-card-v2)\b/m.test(text);
+  return /^type:\s*(entities|glance|entity|button|sensor|thermostat|iframe|grid|horizontal-stack|vertical-stack|custom:[A-Za-z0-9_-]+)\b/m.test(text);
 }
 
 function isHomeAssistantCardRecord(value: Record<string, unknown>): boolean {
@@ -314,7 +314,8 @@ function isHomeAssistantCardRecord(value: Record<string, unknown>): boolean {
     || value.type === "vertical-stack"
     || value.type === "custom:mushroom-template-card"
     || value.type === "custom:bubble-card"
-    || value.type === "custom:tabbed-card-v2";
+    || value.type === "custom:tabbed-card-v2"
+    || (typeof value.type === "string" && /^custom:[A-Za-z0-9_-]+$/.test(value.type));
 }
 
 function looksLikeExternalCardBuilderArtifact(value: Record<string, unknown>): boolean {

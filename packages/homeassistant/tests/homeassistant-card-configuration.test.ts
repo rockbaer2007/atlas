@@ -382,6 +382,12 @@ describe("Home Assistant entities card configuration", () => {
         dependency: builtInDependency,
       },
       {
+        target: "custom-card",
+        label: "Custom HACS card",
+        type: "custom:atlas-raw-card",
+        dependency: builtInDependency,
+      },
+      {
         target: "entity",
         label: "Entity",
         type: "entity",
@@ -1541,6 +1547,56 @@ describe("Home Assistant entities card configuration", () => {
         show_state: true,
       },
     });
+  });
+
+  it("imports raw custom HACS cards and extracts nested entity references", () => {
+    const text = [
+      "type: custom:gauge-card-pro",
+      "segments:",
+      "  - from: 0",
+      "    color: red",
+      "  - from: 4000",
+      "    color: '#086f56'",
+      "needle: true",
+      "gradient: true",
+      "titles:",
+      "  primary:",
+      "    value: '{{ state_attr(entity, ''friendly_name'') }}'",
+      "entity: sensor.gesamtleistung",
+      "entity2: input_number.gesamtleistung_max",
+      "inner:",
+      "  min: 0",
+      "  max: 5000",
+      "card_mod:",
+      "  style: |",
+      "    ha-card {",
+      "      border: 0.5px solid var(--primary-color);",
+      "      border-radius: 12px",
+      "    }",
+    ].join("\n");
+
+    expect(decideHomeAssistantCardArtifactImport(text)).toMatchObject({
+      action: "import",
+      inspection: {
+        kind: "home-assistant-card",
+        importable: true,
+      },
+    });
+    const summary = summarizeHomeAssistantCardImport(text);
+    expect(summary).toMatchObject({
+      target: "custom-card",
+      title: "gauge-card-pro",
+      entityIds: [
+        "sensor.gesamtleistung",
+        "input_number.gesamtleistung_max",
+      ],
+      card: {
+        type: "custom:gauge-card-pro",
+        needle: true,
+        gradient: true,
+      },
+    });
+    expect(serializeHomeAssistantEntitiesCardConfiguration(summary.card, "yaml")).toContain("type: \"custom:gauge-card-pro\"");
   });
 
   it("rejects cards without supported entities", () => {
