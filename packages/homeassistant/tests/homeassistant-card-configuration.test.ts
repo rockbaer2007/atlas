@@ -993,7 +993,7 @@ describe("Home Assistant entities card configuration", () => {
           column: 0,
           row: 0,
           width: 4,
-          height: 3,
+          height: 2,
         },
         {
           id: "fan",
@@ -1002,7 +1002,7 @@ describe("Home Assistant entities card configuration", () => {
           column: 6,
           row: 0,
           width: 4,
-          height: 3,
+          height: 2,
         },
       ],
       unmappedBlocks: ["unknown"],

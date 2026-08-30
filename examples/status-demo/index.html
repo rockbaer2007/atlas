@@ -1087,32 +1087,28 @@
       .expert-editor-dropzone {
         --expert-editor-extra-width: 0px;
         --expert-editor-extra-height: 0px;
-        --expert-grid-cell-size: 80px;
         position: relative;
-        width: calc(1032px + var(--expert-editor-extra-width));
-        max-width: 100%;
-        overflow: auto;
+        width: calc(100% + var(--expert-editor-extra-width));
         padding: 14px;
         border: 1px dashed #0f766e;
         border-radius: 6px;
         background: #f8fffd;
         color: #115e59;
         box-sizing: border-box;
-        min-height: calc(1032px + var(--expert-editor-extra-height));
+        min-height: calc(448px + var(--expert-editor-extra-height));
         text-align: center;
       }
 
       .expert-surface-grid {
         display: grid;
-        grid-template-columns: repeat(12, var(--expert-grid-cell-size));
-        grid-template-rows: repeat(12, var(--expert-grid-cell-size));
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        grid-template-rows: repeat(12, minmax(32px, 1fr));
         gap: 4px;
-        width: max-content;
-        min-height: calc(1004px + var(--expert-editor-extra-height));
+        min-height: calc(420px + var(--expert-editor-extra-height));
         background:
           linear-gradient(to right, rgba(15, 118, 110, 0.16) 1px, transparent 1px),
           linear-gradient(to bottom, rgba(15, 118, 110, 0.16) 1px, transparent 1px);
-        background-size: var(--expert-grid-cell-size) 100%, 100% var(--expert-grid-cell-size);
+        background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
       }
 
       .expert-editor-surface-resize-handle {
@@ -1191,6 +1187,7 @@
       }
 
       .expert-surface-field.stack-container {
+        padding-right: 118px;
         border-color: #0f766e;
         background: #f8fffd;
         cursor: default;
@@ -1245,9 +1242,11 @@
         align-items: center;
         justify-content: space-between;
         gap: 8px;
+        min-width: 0;
       }
 
       .expert-container-settings {
+        flex: 0 0 auto;
         min-height: 24px;
         padding: 2px 8px;
         border: 1px solid #bfdbfe;
@@ -1256,6 +1255,13 @@
         color: #1e40af;
         font-size: 11px;
         font-weight: 700;
+      }
+
+      .expert-surface-field-container-settings {
+        position: absolute;
+        top: 5px;
+        right: 31px;
+        z-index: 3;
       }
 
       .expert-tab-chip {
@@ -2132,9 +2138,7 @@
             <div id="expert-template-palette" class="expert-template-palette" aria-label="Expert editor templates" data-i18n-aria-label="aria.expertTemplates"></div>
           </aside>
           <section class="expert-editor-surface" aria-label="Expert editor surface" data-i18n-aria-label="aria.expertSurface">
-            <div id="expert-editor-dropzone" class="expert-editor-dropzone" data-i18n="message.dragCard">
-              Drag a card from the left into this editor surface.
-            </div>
+            <div id="expert-editor-dropzone" class="expert-editor-dropzone"></div>
             <div class="expert-editor-controls">
               <div class="field-pair span-2">
                 <label for="expert-card-name" data-i18n="label.expertCardName">Expert card name</label>

@@ -1052,8 +1052,7 @@ const expertGridColumns = 12;
 const expertGridRows = 12;
 const expertFieldMaxResizeDelta = 5;
 const expertEditorSurfaceMaxResizeDelta = 5;
-const expertGridCellSize = 80;
-const expertEditorSurfaceHeightStep = expertGridCellSize;
+const expertEditorSurfaceHeightStep = 40;
 let expertEditorSurfaceSize = { columns: 0, rows: 0 };
 let expertDragFieldOffset = { column: 0, row: 0 };
 let connection;
@@ -3218,7 +3217,12 @@ function moveContainerCardToSurface(reference, placementOverride) {
   const field = expertEditorFields[reference?.fieldIndex];
   const card = getContainerCard(reference);
   if (!field || !card) return false;
-  const placement = placementOverride ?? findAvailableExpertSurfacePlacement(3, 1);
+  const preferredPlacement = placementOverride ?? {};
+  const placement = findAvailableExpertSurfacePlacement(
+    preferredPlacement.width ?? 3,
+    preferredPlacement.height ?? 1,
+    preferredPlacement,
+  );
   if (!removeContainerCard(reference)) return false;
   const templateId = templateIdForCardTarget(card.target);
   const target = card.target ?? "entity";
@@ -3244,13 +3248,27 @@ function moveContainerCardToSurface(reference, placementOverride) {
   return true;
 }
 
-function findAvailableExpertSurfacePlacement(width, height) {
+function findAvailableExpertSurfacePlacement(width, height, preferredPlacement = {}, excludeIndex = -1) {
   const nextWidth = Math.max(1, Math.min(expertGridColumns, width));
   const nextHeight = Math.max(1, Math.min(expertGridRows, height));
+  const fieldConflicts = candidate => expertEditorFields.some((field, index) => (
+    index !== excludeIndex && expertFieldsOverlap(candidate, field)
+  ));
+  if (Number.isFinite(preferredPlacement.column) && Number.isFinite(preferredPlacement.row)) {
+    const preferred = {
+      column: Math.max(0, Math.min(expertGridColumns - nextWidth, preferredPlacement.column)),
+      row: Math.max(0, Math.min(expertGridRows - nextHeight, preferredPlacement.row)),
+      width: nextWidth,
+      height: nextHeight,
+    };
+    if (!fieldConflicts(preferred)) {
+      return preferred;
+    }
+  }
   for (let row = 0; row <= expertGridRows - nextHeight; row += 1) {
     for (let column = 0; column <= expertGridColumns - nextWidth; column += 1) {
       const candidate = { column, row, width: nextWidth, height: nextHeight };
-      if (!expertEditorFields.some(field => expertFieldsOverlap(candidate, field))) {
+      if (!fieldConflicts(candidate)) {
         return candidate;
       }
     }
@@ -3543,9 +3561,9 @@ function calculateStackContainerAutoHeight(field) {
   if (entries === 0) return 2;
   if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
     const cardsPerRow = Math.max(1, Math.floor(Math.max(1, field.width) / 4));
-    return Math.max(3, 2 + Math.ceil(entries / cardsPerRow) * 3);
+    return Math.max(2, 2 + Math.ceil(entries / cardsPerRow) * 2);
   }
-  return Math.max(3, 2 + entries * 3);
+  return Math.max(2, 2 + entries * 2);
 }
 
 function updateSelectedExpertFieldTarget() {
@@ -3635,7 +3653,8 @@ function clampExpertEditorSurfaceDelta(value) {
 }
 
 function expertEditorSurfaceWidthStep() {
-  return expertGridCellSize;
+  const containerWidth = expertEditorDropzone.parentElement?.clientWidth || expertEditorDropzone.clientWidth || 672;
+  return Math.max(48, Math.round(containerWidth / expertGridColumns));
 }
 
 function applyExpertEditorSurfaceSize() {
@@ -3935,6 +3954,19 @@ function renderExpertEditorSurface() {
       removeExpertEditorField(index);
     });
     tile.append(remove);
+    if (isStackContainerField(field)) {
+      const settings = document.createElement("button");
+      settings.type = "button";
+      settings.className = "expert-container-settings expert-surface-field-container-settings";
+      settings.textContent = t("button.settings");
+      settings.addEventListener("click", event => {
+        event.stopPropagation();
+        selectedExpertFieldIndex = index;
+        selectedContainerCardRef = undefined;
+        openStackCardSettings();
+      });
+      tile.append(settings);
+    }
     tile.append(title, target, entity);
     if (variant.label) {
       tile.append(createCardTypeBadge(variant));
@@ -4088,21 +4120,8 @@ function listImportedStyleTypes(styles) {
 function createStackContainerInlineView(field, fieldIndex) {
   const wrapper = document.createElement("div");
   wrapper.className = "expert-tab-inline";
-  const header = document.createElement("div");
-  header.className = "expert-container-header";
   const count = document.createElement("small");
   count.textContent = t("text.tabbedCardContainer", { count: field.entries?.length ?? 0 });
-  const settings = document.createElement("button");
-  settings.type = "button";
-  settings.className = "expert-container-settings";
-  settings.textContent = t("button.settings");
-  settings.addEventListener("click", event => {
-    event.stopPropagation();
-    selectedExpertFieldIndex = fieldIndex;
-    selectedContainerCardRef = undefined;
-    openStackCardSettings();
-  });
-  header.append(count, settings);
   const preview = document.createElement("div");
   preview.className = `expert-tab-preview ${(field.layout ?? "vertical-stack") === "horizontal-stack" ? "horizontal" : "vertical"}`;
   if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
@@ -4142,7 +4161,7 @@ function createStackContainerInlineView(field, fieldIndex) {
     });
   }
 
-  wrapper.append(header, preview);
+  wrapper.append(count, preview);
   return wrapper;
 }
 
@@ -4702,12 +4721,16 @@ function addExpertEditorField() {
   const entityId = expertEntity.value.trim() || currentEntityId();
   const sizing = resolveExpertTemplateSizing(expertTemplate.value);
   const fieldTitle = expertTitle.value.trim() || undefined;
+  const placement = findAvailableExpertSurfacePlacement(sizing.width, sizing.height, {
+    column: Number(expertColumn.value),
+    row: Number(expertRow.value),
+  });
   const field = createExpertEditorField({
     templateId: expertTemplate.value,
     entityId,
     title: fieldTitle,
-    column: Number(expertColumn.value),
-    row: Number(expertRow.value),
+    column: placement.column,
+    row: placement.row,
     width: sizing.width,
     height: sizing.height,
   });
@@ -4813,12 +4836,13 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
 
   const sizing = resolveExpertTemplateSizing(templateId);
   const fieldTitle = expertTitle.value.trim() || undefined;
+  const freePlacement = findAvailableExpertSurfacePlacement(sizing.width, sizing.height, placement);
   const field = createExpertEditorField({
     templateId,
     entityId: expertEntity.value.trim() || currentEntityId(),
     title: fieldTitle,
-    column: placement.column,
-    row: placement.row,
+    column: freePlacement.column,
+    row: freePlacement.row,
     width: sizing.width,
     height: sizing.height,
   });
@@ -4865,8 +4889,9 @@ function calculateExpertDropPlacement(event) {
 function moveExpertEditorField(index, placement) {
   const field = expertEditorFields[index];
   if (!field) return;
-  const column = Math.max(0, Math.min(expertGridColumns - field.width, placement.column));
-  const row = Math.max(0, Math.min(expertGridRows - field.height, placement.row));
+  const freePlacement = findAvailableExpertSurfacePlacement(field.width, field.height, placement, index);
+  const column = Math.max(0, Math.min(expertGridColumns - field.width, freePlacement.column));
+  const row = Math.max(0, Math.min(expertGridRows - field.height, freePlacement.row));
   expertEditorFields[index] = {
     ...field,
     column,
