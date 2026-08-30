@@ -1268,6 +1268,7 @@ let activeConnectionSignature = "";
 let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let lovelaceResourceRequestTimer;
+let activeLovelaceResourceRequestId;
 const lovelaceResourceDebugEvents = [];
 let activeEditorMode = "simple";
 let importedSimpleCard;
@@ -2177,29 +2178,50 @@ function refreshLiveEntityStates() {
 
 function checkLiveLovelaceResources(options = {}) {
   window.clearTimeout(lovelaceResourceRequestTimer);
-  const result = connection?.getClient()?.requestLovelaceResources();
+  const result = connection?.getClient()?.requestLovelaceResources("lovelace/resources");
   const message = result?.accepted
     ? t("message.resourcesRequested", { requestId: result.requestId })
     : result?.reason ?? t("message.connectBeforeCheckingResources");
   addLovelaceResourceDebugEvent(result?.accepted
-    ? `WS request #${result.requestId} sent: lovelace/resources`
+    ? `WS request #${result.requestId} sent: ${result.command ?? "lovelace/resources"}`
     : `WS request rejected: ${message}`);
   statusMessage.textContent = options.appendStatus
     ? `${statusMessage.textContent} ${message}`
     : message;
   if (result?.accepted) {
     lovelaceResourcesChecked = false;
+    activeLovelaceResourceRequestId = result.requestId;
     renderTemporaryHaCardResourceList("loading");
     lovelaceResourceRequestTimer = window.setTimeout(() => {
+      if (activeLovelaceResourceRequestId !== result.requestId) return;
       lovelaceResourcesChecked = false;
       addLovelaceResourceDebugEvent(`WS request #${result.requestId} timeout after 8s`);
-      renderTemporaryHaCardResourceList("rest-loading");
-      void fetchLovelaceResourcesViaRestFallback();
+      requestLovelaceResourcesListFallback();
     }, 8000);
     renderHaCardPreview();
   } else {
     void fetchLovelaceResourcesViaRestFallback(message);
   }
+}
+
+function requestLovelaceResourcesListFallback() {
+  window.clearTimeout(lovelaceResourceRequestTimer);
+  const result = connection?.getClient()?.requestLovelaceResources("lovelace/resources/list");
+  if (!result?.accepted) {
+    addLovelaceResourceDebugEvent(`WS list fallback rejected: ${result?.reason ?? t("message.connectBeforeCheckingResources")}`);
+    void fetchLovelaceResourcesViaRestFallback(result?.reason);
+    return;
+  }
+  addLovelaceResourceDebugEvent(`WS request #${result.requestId} sent: ${result.command ?? "lovelace/resources/list"}`);
+  activeLovelaceResourceRequestId = result.requestId;
+  renderTemporaryHaCardResourceList("loading");
+  lovelaceResourceRequestTimer = window.setTimeout(() => {
+    if (activeLovelaceResourceRequestId !== result.requestId) return;
+    lovelaceResourcesChecked = false;
+    addLovelaceResourceDebugEvent(`WS request #${result.requestId} timeout after 8s`);
+    renderTemporaryHaCardResourceList("rest-loading");
+    void fetchLovelaceResourcesViaRestFallback();
+  }, 8000);
 }
 
 async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
@@ -6709,12 +6731,24 @@ function bindSelectedEntity(nextTransport) {
       statusMessage.textContent = t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
     });
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
-      window.clearTimeout(lovelaceResourceRequestTimer);
+      const command = result.command ?? "lovelace/resources";
+      const isActiveResourceResponse = result.requestId === activeLovelaceResourceRequestId;
+      if (!result.success && !isActiveResourceResponse) {
+        addLovelaceResourceDebugEvent(
+          `WS response #${result.requestId} (${command}): ignored stale failure, ${result.reason ?? "unknown error"}`,
+        );
+        renderTemporaryHaCardResourceList();
+        return;
+      }
+      if (result.success || isActiveResourceResponse) {
+        window.clearTimeout(lovelaceResourceRequestTimer);
+        activeLovelaceResourceRequestId = undefined;
+      }
       lovelaceResources = result.resources ?? [];
       lovelaceResourcesChecked = result.success;
       addLovelaceResourceDebugEvent(result.success
-        ? `WS response #${result.requestId}: success, ${lovelaceResources.length} resources`
-        : `WS response #${result.requestId}: failed, ${result.reason ?? "unknown error"}`);
+        ? `WS response #${result.requestId} (${command}): success, ${lovelaceResources.length} resources`
+        : `WS response #${result.requestId} (${command}): failed, ${result.reason ?? "unknown error"}`);
       const scannedCards = result.success ? refreshScannedExpertPaletteCards() : { total: 0, hacs: 0 };
       renderHaCardPreview();
       renderExpertTemplatePalette();

@@ -357,7 +357,11 @@ describe("Home Assistant WebSocket transport", () => {
     const results: Array<{ success: boolean; resources: readonly { url: string }[] }> = [];
     client.subscribeLovelaceResources(result => results.push(result));
 
-    expect(client.requestLovelaceResources()).toEqual({ accepted: true, requestId: 2 });
+    expect(client.requestLovelaceResources()).toEqual({
+      accepted: true,
+      requestId: 2,
+      command: "lovelace/resources",
+    });
     expect(socket.sent[1]).toBe('{"id":2,"type":"lovelace/resources"}');
 
     await socket.emitMessage(JSON.stringify({
@@ -373,9 +377,44 @@ describe("Home Assistant WebSocket transport", () => {
 
     expect(results).toEqual([{
       requestId: 2,
+      command: "lovelace/resources",
       success: true,
       resources: [
         { url: "/hacsfiles/Bubble-Card/bubble-card.js?ver=2" },
+      ],
+    }]);
+  });
+
+  it("can request Lovelace resources with the list command alias", async () => {
+    const socket = createTestSocket();
+    const client = createHomeAssistantWebSocketClient(socket, "test-token");
+
+    await socket.emitMessage('{"type":"auth_ok"}');
+    const results: Array<{ requestId: number; command?: string; success: boolean; resources: readonly { url: string }[] }> = [];
+    client.subscribeLovelaceResources(result => results.push(result));
+
+    expect(client.requestLovelaceResources("lovelace/resources/list")).toEqual({
+      accepted: true,
+      requestId: 2,
+      command: "lovelace/resources/list",
+    });
+    expect(socket.sent[1]).toBe('{"id":2,"type":"lovelace/resources/list"}');
+
+    await socket.emitMessage(JSON.stringify({
+      id: 2,
+      type: "result",
+      success: true,
+      result: [
+        { url: "/hacsfiles/lovelace-mushroom/mushroom.js" },
+      ],
+    }));
+
+    expect(results).toEqual([{
+      requestId: 2,
+      command: "lovelace/resources/list",
+      success: true,
+      resources: [
+        { url: "/hacsfiles/lovelace-mushroom/mushroom.js" },
       ],
     }]);
   });

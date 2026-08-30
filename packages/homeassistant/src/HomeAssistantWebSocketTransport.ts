@@ -26,7 +26,7 @@ export type HomeAssistantWebSocketClient = Readonly<{
   subscribeLifecycle(listener: (lifecycle: HomeAssistantWebSocketLifecycle) => void): () => void;
   requestEntityStates(): HomeAssistantEntityStateRequestResult;
   subscribeEntityStateList(listener: (result: HomeAssistantEntityStateListResult) => void): () => void;
-  requestLovelaceResources(): HomeAssistantLovelaceResourceRequestResult;
+  requestLovelaceResources(command?: HomeAssistantLovelaceResourceCommand): HomeAssistantLovelaceResourceRequestResult;
   subscribeLovelaceResources(listener: (result: HomeAssistantLovelaceResourceListResult) => void): () => void;
   callService(command: HomeAssistantServiceCommand): HomeAssistantServiceCallResult;
   subscribeServiceResult(listener: (result: HomeAssistantServiceResult) => void): () => void;
@@ -55,11 +55,17 @@ export type HomeAssistantEntityStateListResult = Readonly<{
 export type HomeAssistantLovelaceResourceRequestResult = Readonly<{
   accepted: boolean;
   requestId?: number;
+  command?: HomeAssistantLovelaceResourceCommand;
   reason?: string;
 }>;
 
+export type HomeAssistantLovelaceResourceCommand =
+  | "lovelace/resources"
+  | "lovelace/resources/list";
+
 export type HomeAssistantLovelaceResourceListResult = Readonly<{
   requestId: number;
+  command?: HomeAssistantLovelaceResourceCommand;
   resources: readonly HomeAssistantLovelaceResource[];
   success: boolean;
   reason?: string;
@@ -85,7 +91,7 @@ export function createHomeAssistantWebSocketClient(
   const lovelaceResourceListeners = new Set<(result: HomeAssistantLovelaceResourceListResult) => void>();
   const pendingServiceCommands = new Map<number, HomeAssistantServiceCommand>();
   const pendingEntityStateRequests = new Set<number>();
-  const pendingLovelaceResourceRequests = new Set<number>();
+  const pendingLovelaceResourceRequests = new Map<number, HomeAssistantLovelaceResourceCommand>();
   const updateLifecycle = (nextLifecycle: HomeAssistantWebSocketLifecycle): void => {
     lifecycle = nextLifecycle;
     for (const listener of lifecycleListeners) {
@@ -145,10 +151,12 @@ export function createHomeAssistantWebSocketClient(
       }
 
       if (pendingLovelaceResourceRequests.has(message.id)) {
+        const command = pendingLovelaceResourceRequests.get(message.id);
         pendingLovelaceResourceRequests.delete(message.id);
         const resources = message.success ? mapHomeAssistantLovelaceResources(message.result) : [];
         const result: HomeAssistantLovelaceResourceListResult = {
           requestId: message.id,
+          ...(command ? { command } : {}),
           resources,
           success: message.success,
           ...(message.message ? { reason: message.message } : {}),
@@ -211,7 +219,7 @@ export function createHomeAssistantWebSocketClient(
       entityStateListListeners.add(listener);
       return () => entityStateListListeners.delete(listener);
     },
-    requestLovelaceResources(): HomeAssistantLovelaceResourceRequestResult {
+    requestLovelaceResources(command: HomeAssistantLovelaceResourceCommand = "lovelace/resources"): HomeAssistantLovelaceResourceRequestResult {
       if (lifecycle.state !== "connected") {
         return {
           accepted: false,
@@ -221,9 +229,9 @@ export function createHomeAssistantWebSocketClient(
 
       const requestId = nextRequestId;
       nextRequestId += 1;
-      pendingLovelaceResourceRequests.add(requestId);
-      socket.send(JSON.stringify({ id: requestId, type: "lovelace/resources" }));
-      return { accepted: true, requestId };
+      pendingLovelaceResourceRequests.set(requestId, command);
+      socket.send(JSON.stringify({ id: requestId, type: command }));
+      return { accepted: true, requestId, command };
     },
     subscribeLovelaceResources(listener): () => void {
       lovelaceResourceListeners.add(listener);
