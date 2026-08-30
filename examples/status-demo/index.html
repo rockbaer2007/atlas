@@ -2124,17 +2124,21 @@
         letter-spacing: 0;
       }
 
+      .entity-picker-panel,
       .selected-entities-panel {
         margin-top: 18px;
       }
 
+      .entity-picker-panel summary,
       .selected-entities-panel summary {
         cursor: pointer;
         color: #0f766e;
         font-size: 16px;
         font-weight: 700;
+        margin-bottom: 10px;
       }
 
+      .entity-picker-panel summary:focus-visible,
       .selected-entities-panel summary:focus-visible {
         outline: 2px solid #0f766e;
         outline-offset: 2px;
@@ -2451,7 +2455,8 @@
         </div>
         <output id="ha-card-import-review" aria-live="polite"></output>
         <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
-        <div id="simple-entity-controls">
+        <details id="simple-entity-controls" class="entity-picker-panel" open>
+          <summary data-i18n="heading.entitySelection">Entity selection</summary>
           <div class="field-grid two-column">
             <div class="field-pair">
               <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
@@ -2482,7 +2487,7 @@
             <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
           </div>
           <output id="selected-entity" aria-live="polite"></output>
-        </div>
+        </details>
         <div class="editor-mode-toggle" role="group" aria-label="Card editor mode" data-i18n-aria-label="aria.cardEditorMode">
           <button type="button" data-editor-mode="simple" aria-pressed="true" data-i18n="button.simpleMode">Simple</button>
           <button type="button" data-editor-mode="expert" aria-pressed="false" data-i18n="button.expertMode">Expert</button>

@@ -313,6 +313,7 @@ const translations = {
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnostics",
     "heading.statusPreview": "ATLAS Status Preview",
+    "heading.entitySelection": "Entity selection",
     "heading.selectedEntities": "Selected entities",
     "group.overview": "Overview",
     "group.energy": "Energy",
@@ -737,6 +738,7 @@ const translations = {
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnose",
     "heading.statusPreview": "ATLAS Status Vorschau",
+    "heading.entitySelection": "Entitätsauswahl",
     "heading.selectedEntities": "Ausgewählte Entitäten",
     "group.overview": "Übersicht",
     "group.energy": "Energie",
@@ -1469,6 +1471,7 @@ function renderEditorMode(mode = "simple") {
   deleteHomeAssistantGroup.hidden = expert;
   duplicateHomeAssistantGroup.hidden = expert;
   simpleEntityControls.hidden = false;
+  simpleEntityControls.open = !expert;
   selectedEntitiesPanel.open = !expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
