@@ -4354,7 +4354,9 @@ function renderExpertEditorPreview() {
 }
 
 function formatExpertHaCardCodePreview(card) {
-  return formatExpertYamlForStyleExport(serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value));
+  return activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview
+    ? formatImportedYamlForStyleExport(importedSimpleCodePreview)
+    : formatExpertYamlForStyleExport(serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value));
 }
 
 function formatExpertYamlForStyleExport(text) {
@@ -4363,6 +4365,12 @@ function formatExpertYamlForStyleExport(text) {
   return haCardStyleExport.value === "uix-style"
     ? convertHomeAssistantCardModStylesToUixStyle(withImportedStyles)
     : withImportedStyles;
+}
+
+function formatImportedYamlForStyleExport(text) {
+  return haCardStyleExport.value === "uix-style"
+    ? convertHomeAssistantCardModStylesToUixStyle(text)
+    : text;
 }
 
 function appendImportedStylesToExpertYaml(text) {
@@ -4627,6 +4635,9 @@ function createHaCardExportPayload() {
   if (activeEditorMode === "simple" && haCardFormat.value === "yaml" && importedSimpleCodePreview) {
     return { ...payload, content: importedSimpleCodePreview };
   }
+  if (activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview) {
+    return { ...payload, content: formatImportedYamlForStyleExport(importedSimpleCodePreview) };
+  }
   if (activeEditorMode === "expert") {
     return { ...payload, content: formatExpertYamlForStyleExport(payload.content) };
   }
@@ -4875,6 +4886,9 @@ function createHaCardExportPackage() {
   });
   if (activeEditorMode === "simple" && haCardFormat.value === "yaml" && importedSimpleCodePreview) {
     return { ...cardPackage, content: importedSimpleCodePreview };
+  }
+  if (activeEditorMode === "expert" && haCardFormat.value === "yaml" && importedSimpleCodePreview) {
+    return { ...cardPackage, content: formatImportedYamlForStyleExport(importedSimpleCodePreview) };
   }
   if (activeEditorMode === "expert") {
     return { ...cardPackage, content: formatExpertYamlForStyleExport(cardPackage.content) };
