@@ -205,6 +205,7 @@ const translations = {
   en: {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Build Simple or Expert Home Assistant cards from live or local entities.",
+    "heading.resourceHint": "Resource hint",
     "label.haUrl": "Home Assistant URL",
     "label.panelGroup": "Panel group",
     "label.groupName": "Group name",
@@ -616,6 +617,7 @@ const translations = {
   de: {
     "page.title": "ATLAS Home Assistant Card Editor",
     "page.subtitle": "Erstelle Simple- oder Expert-Home-Assistant-Cards aus Live- oder lokalen Entitäten.",
+    "heading.resourceHint": "Ressourcen-Hinweis",
     "label.haUrl": "Home Assistant URL",
     "label.panelGroup": "Panel-Gruppe",
     "label.groupName": "Gruppenname",

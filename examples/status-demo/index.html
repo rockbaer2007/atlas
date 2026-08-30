@@ -610,10 +610,42 @@
         font-size: 14px;
       }
 
+      .resource-hint-field {
+        display: grid;
+        gap: 6px;
+        margin: 8px 0 0;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #f8fafc;
+      }
+
+      .resource-hint-field strong {
+        color: #172033;
+        font-size: 13px;
+      }
+
       #ha-card-dependency {
         min-height: 20px;
         color: #536079;
-        font-size: 14px;
+        font-size: 13px;
+        line-height: 1.45;
+        overflow-wrap: anywhere;
+      }
+
+      .resource-hint-field:has(#ha-card-dependency[data-required="true"]) {
+        border-color: #F0C302;
+        background: #fffbeb;
+      }
+
+      .resource-hint-field:has(#ha-card-dependency[data-status="installed"]) {
+        border-color: #0f766e;
+        background: #ecfdf5;
+      }
+
+      .resource-hint-field:has(#ha-card-dependency[data-status="missing"]) {
+        border-color: #b91c1c;
+        background: #fff7f7;
       }
 
       #ha-card-dependency[data-required="true"] {
@@ -2357,7 +2389,6 @@
           </div>
           <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
         </fieldset>
-        <output id="ha-card-dependency" aria-live="polite"></output>
         <div class="connection-actions uniform-actions action-row">
           <button id="save-home-assistant-group" class="action-group" type="button" data-i18n="button.saveGroup">Save group</button>
           <button id="delete-home-assistant-group" class="action-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
@@ -2374,6 +2405,10 @@
         <div class="connection-actions uniform-actions action-row">
           <button id="copy-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
           <button id="check-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.checkResources">Check resources</button>
+        </div>
+        <div class="resource-hint-field">
+          <strong data-i18n="heading.resourceHint">Resource hint</strong>
+          <output id="ha-card-dependency" aria-live="polite"></output>
         </div>
         <div class="connection-actions uniform-actions action-row">
           <label class="import-button action-import" for="import-home-assistant-config" data-i18n="button.import">Import</label>
