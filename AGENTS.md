@@ -147,6 +147,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 ## Roadmap Notes To Preserve
 
+- Next Atlas Card Editor priority: build an opt-in debug reporting channel before starting unrelated new Atlas editor work. Remind the user if they switch to another Atlas topic first. The planned preview path is a `Problem melden` flow with debug-data preview, GitHub issue link, and no Home Assistant tokens, provider API keys, or other secrets attached.
 - Future direction includes HACS-installable custom card packages.
 - Future direction includes user-defined card names and script names.
 - Future direction includes a visual drag-and-drop editor with templates in a sidebar.
