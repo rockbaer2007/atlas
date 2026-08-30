@@ -92,6 +92,13 @@ const exportHaCardConfig = document.querySelector("#export-ha-card-config");
 const exportHaCardPackage = document.querySelector("#export-ha-card-package");
 const exportHaCardScript = document.querySelector("#export-ha-card-script");
 const exportHaCardBundle = document.querySelector("#export-ha-card-bundle");
+const haCardExportBackdrop = document.querySelector("#ha-card-export-backdrop");
+const closeHaCardExport = document.querySelector("#close-ha-card-export");
+const haCardExportStyleControl = document.querySelector("#ha-card-export-style-control");
+const haCardExportStyle = document.querySelector("#ha-card-export-style");
+const saveHaCardExportAs = document.querySelector("#save-ha-card-export-as");
+const downloadHaCardExport = document.querySelector("#download-ha-card-export");
+const haCardExportStatus = document.querySelector("#ha-card-export-status");
 const copyHaCardConfig = document.querySelector("#copy-ha-card-config");
 const copyHaCardResources = document.querySelector("#copy-ha-card-resources");
 const checkHaCardResources = document.querySelector("#check-ha-card-resources");
@@ -235,6 +242,8 @@ const translations = {
     "button.clearPasteImport": "Clear",
     "button.openYamlFile": "Open YAML file",
     "button.applyImport": "Import into editor",
+    "button.saveAs": "Choose save location",
+    "button.download": "Download",
     "button.addEntity": "Add entity",
     "button.refreshEntities": "Refresh entities",
     "button.saveFavorites": "Save favorites",
@@ -268,6 +277,7 @@ const translations = {
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
     "heading.tabbedCardSettings": "Tabbed Card V2 settings",
+    "heading.exportHaCard": "Export HA card",
     "heading.pasteHaCard": "Paste HA card YAML",
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnostics",
@@ -296,6 +306,7 @@ const translations = {
     "aria.expertSurface": "Expert editor surface",
     "aria.resizeExpertSurface": "Resize Expert editor surface",
     "aria.closeTabbedCardSettings": "Close Tabbed Card V2 settings",
+    "aria.closeHaCardExport": "Close HA card export",
     "aria.closeHaCardPasteImport": "Close HA card YAML import",
     "aria.showStatusPreview": "Show {entityId} in the ATLAS Status Preview",
     "aria.moveEntityUp": "Move {entityId} up",
@@ -395,6 +406,11 @@ const translations = {
     "message.selectGroupToDuplicate": "Select a group to duplicate.",
     "message.groupCreated": "Group {title} created.",
     "message.haCardCopied": "HA card {format} copied to clipboard.",
+    "message.haCardExported": "HA card exported as {filename}.",
+    "message.exportCancelled": "Export cancelled.",
+    "message.exportFailed": "Export failed.",
+    "message.exportPathHint": "Choose a save location if your browser supports it, or use the normal download fallback.",
+    "message.savePickerUnavailable": "Your browser cannot choose a save location here. Use Download instead.",
     "message.copyPreviewFailed": "Copy failed: use the preview text instead.",
     "message.resourcesCopiedWithDependency": "ATLAS and {dependency} Lovelace resources {format} copied to clipboard.",
     "message.atlasResourceCopied": "ATLAS Lovelace resource {format} copied to clipboard.",
@@ -594,6 +610,8 @@ const translations = {
     "button.clearPasteImport": "Leeren",
     "button.openYamlFile": "YAML-Datei oeffnen",
     "button.applyImport": "In Editor importieren",
+    "button.saveAs": "Speicherort waehlen",
+    "button.download": "Download",
     "button.addEntity": "Entitaet hinzufuegen",
     "button.refreshEntities": "Entitaeten aktualisieren",
     "button.saveFavorites": "Favoriten speichern",
@@ -627,6 +645,7 @@ const translations = {
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
     "heading.tabbedCardSettings": "Tabbed Card V2 Einstellungen",
+    "heading.exportHaCard": "HA-Card exportieren",
     "heading.pasteHaCard": "HA-Card-YAML einfuegen",
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnose",
@@ -655,6 +674,7 @@ const translations = {
     "aria.expertSurface": "Expert-Editor-Flaeche",
     "aria.resizeExpertSurface": "Expert-Editor-Flaeche vergroessern",
     "aria.closeTabbedCardSettings": "Tabbed Card V2 Einstellungen schliessen",
+    "aria.closeHaCardExport": "HA-Card-Export schliessen",
     "aria.closeHaCardPasteImport": "HA-Card-YAML-Import schliessen",
     "aria.showStatusPreview": "{entityId} in der ATLAS Status Vorschau anzeigen",
     "aria.moveEntityUp": "{entityId} nach oben verschieben",
@@ -754,6 +774,11 @@ const translations = {
     "message.selectGroupToDuplicate": "Waehle eine Gruppe zum Duplizieren aus.",
     "message.groupCreated": "Gruppe {title} erstellt.",
     "message.haCardCopied": "HA-Card {format} in die Zwischenablage kopiert.",
+    "message.haCardExported": "HA-Card als {filename} exportiert.",
+    "message.exportCancelled": "Export abgebrochen.",
+    "message.exportFailed": "Export fehlgeschlagen.",
+    "message.exportPathHint": "Waehle einen Speicherort, wenn dein Browser das unterstuetzt, oder nutze den normalen Download-Fallback.",
+    "message.savePickerUnavailable": "Dein Browser kann hier keinen Speicherort waehlen. Nutze stattdessen Download.",
     "message.copyPreviewFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Vorschautext.",
     "message.resourcesCopiedWithDependency": "ATLAS- und {dependency}-Lovelace-Ressourcen {format} in die Zwischenablage kopiert.",
     "message.atlasResourceCopied": "ATLAS-Lovelace-Ressource {format} in die Zwischenablage kopiert.",
@@ -4516,6 +4541,76 @@ function createHaCardExportPayload() {
   return payload;
 }
 
+function openHaCardExportDialog() {
+  haCardExportStyle.value = haCardStyleExport.value;
+  haCardExportStyleControl.hidden = !(activeEditorMode === "expert" && haCardFormat.value === "yaml");
+  saveHaCardExportAs.disabled = typeof window.showSaveFilePicker !== "function";
+  haCardExportStatus.textContent = saveHaCardExportAs.disabled ? t("message.savePickerUnavailable") : "";
+  haCardExportBackdrop.hidden = false;
+  (haCardExportStyleControl.hidden
+    ? (saveHaCardExportAs.disabled ? downloadHaCardExport : saveHaCardExportAs)
+    : haCardExportStyle).focus();
+}
+
+function closeHaCardExportDialog() {
+  haCardExportBackdrop.hidden = true;
+}
+
+function syncHaCardExportStyleSelection() {
+  if (activeEditorMode === "expert" && haCardFormat.value === "yaml") {
+    haCardStyleExport.value = haCardExportStyle.value;
+    persistConfiguration();
+    renderExpertEditorPreview();
+  }
+}
+
+function downloadHaCardPayload(payload) {
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(new Blob([payload.content], { type: payload.manifest.mimeType }));
+  link.download = payload.manifest.filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+async function saveHaCardPayloadWithPicker(payload) {
+  if (typeof window.showSaveFilePicker !== "function") {
+    haCardExportStatus.textContent = t("message.savePickerUnavailable");
+    return false;
+  }
+
+  const extension = payload.manifest.format === "yaml" ? ".yaml" : ".json";
+  const handle = await window.showSaveFilePicker({
+    suggestedName: payload.manifest.filename,
+    types: [{
+      description: payload.manifest.format === "yaml" ? "YAML" : "JSON",
+      accept: { [payload.manifest.mimeType]: [extension] },
+    }],
+  });
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([payload.content], { type: payload.manifest.mimeType }));
+  await writable.close();
+  return true;
+}
+
+async function exportHaCardPayload(useSavePicker) {
+  syncHaCardExportStyleSelection();
+  const payload = createHaCardExportPayload();
+  try {
+    if (useSavePicker) {
+      const saved = await saveHaCardPayloadWithPicker(payload);
+      if (!saved) return;
+    } else {
+      downloadHaCardPayload(payload);
+    }
+    closeHaCardExportDialog();
+    statusMessage.textContent = t("message.haCardExported", { filename: payload.manifest.filename });
+  } catch (error) {
+    haCardExportStatus.textContent = error?.name === "AbortError"
+      ? t("message.exportCancelled")
+      : t("message.exportFailed");
+  }
+}
+
 function selectedCardExportLanguages() {
   return [
     "en",
@@ -5355,12 +5450,20 @@ exportHaCardConfig.addEventListener("click", () => {
     return;
   }
 
-  const link = document.createElement("a");
-  const payload = createHaCardExportPayload();
-  link.href = URL.createObjectURL(new Blob([payload.content], { type: payload.manifest.mimeType }));
-  link.download = payload.manifest.filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
+  openHaCardExportDialog();
+});
+closeHaCardExport.addEventListener("click", closeHaCardExportDialog);
+haCardExportBackdrop.addEventListener("click", event => {
+  if (event.target === haCardExportBackdrop) {
+    closeHaCardExportDialog();
+  }
+});
+haCardExportStyle.addEventListener("change", syncHaCardExportStyleSelection);
+saveHaCardExportAs.addEventListener("click", () => {
+  void exportHaCardPayload(true);
+});
+downloadHaCardExport.addEventListener("click", () => {
+  void exportHaCardPayload(false);
 });
 exportHaCardPackage.addEventListener("click", async () => {
   if (!canExportHaCard()) {

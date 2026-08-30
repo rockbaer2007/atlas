@@ -1273,6 +1273,13 @@
         grid-template-columns: 1fr;
       }
 
+      .dialog-hint {
+        margin: 0;
+        color: #536079;
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
       .ha-card-paste-import-text {
         box-sizing: border-box;
         width: 100%;
@@ -2030,6 +2037,29 @@
                 </div>
                 <output id="tabbed-card-settings-status" aria-live="polite"></output>
               </div>
+            </div>
+          </section>
+        </div>
+        <div id="ha-card-export-backdrop" class="modal-backdrop" hidden>
+          <section class="tabbed-card-dialog" role="dialog" aria-modal="true" aria-labelledby="ha-card-export-title">
+            <header>
+              <h2 id="ha-card-export-title" data-i18n="heading.exportHaCard">Export HA card</h2>
+              <button id="close-ha-card-export" type="button" class="icon-button" data-i18n-aria-label="aria.closeHaCardExport" data-i18n-title="aria.closeHaCardExport" aria-label="Close HA card export" title="Close HA card export">&times;</button>
+            </header>
+            <div class="tabbed-card-dialog-body single-column">
+              <div id="ha-card-export-style-control" class="field-pair">
+                <label for="ha-card-export-style" data-i18n="label.cardStyleExport">Style export</label>
+                <select id="ha-card-export-style">
+                  <option value="card-mod">card-mod</option>
+                  <option value="uix-style">uix-style</option>
+                </select>
+              </div>
+              <p id="ha-card-export-path-hint" class="dialog-hint" data-i18n="message.exportPathHint">Choose a save location if your browser supports it, or use the normal download fallback.</p>
+              <div class="connection-actions">
+                <button id="save-ha-card-export-as" type="button" data-i18n="button.saveAs">Choose save location</button>
+                <button id="download-ha-card-export" type="button" data-i18n="button.download">Download</button>
+              </div>
+              <output id="ha-card-export-status" aria-live="polite"></output>
             </div>
           </section>
         </div>
