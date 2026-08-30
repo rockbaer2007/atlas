@@ -14,7 +14,7 @@ Open:
 http://127.0.0.1:4176/
 ```
 
-The editor is intentionally independent from ATLAS internals. It generates a plain Home Assistant Lovelace YAML card using the `custom:tabbed-card-v2` schema.
+The standalone editor is intentionally independent from ATLAS internals. It generates a plain Home Assistant Lovelace YAML card using the `custom:tabbed-card-v2` schema.
 
 ## Test in Home Assistant
 
@@ -37,7 +37,7 @@ url: /local/tabbed-card-v2.js
 type: module
 ```
 
-Then create a manual card and paste YAML from the visual editor, for example:
+Then create a manual card. Home Assistant will open the built-in editor, or you can paste YAML like this:
 
 ```yaml
 type: custom:tabbed-card-v2
@@ -65,3 +65,5 @@ tabs:
         - sensor.living_room_temperature
         - sensor.living_room_humidity
 ```
+
+Home Assistant also shows a built-in visual editor for this card. It supports creating, selecting, reordering and deleting tabs, editing tab labels/icons/options, choosing simple card types, selecting entities from the current Home Assistant state list, and changing common card options.
