@@ -59,6 +59,7 @@ const languageButtons = Array.from(document.querySelectorAll("[data-language]"))
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
+const entitySyncState = document.querySelector("#entity-sync-state");
 const adminHandoffState = document.querySelector("#admin-handoff-state");
 const adminTranslationModuleState = document.querySelector("#admin-translation-module-state");
 const connectButton = document.querySelector("#connect-home-assistant");
@@ -417,6 +418,11 @@ const translations = {
     "message.unknownError": "Unknown error.",
     "message.loadedEntities": "Loaded {count} entities from Home Assistant.",
     "message.loadedEntitiesWithChanges": "Loaded {count} entities from Home Assistant. Cache: +{added}, -{removed}.",
+    "message.entitySyncIdle": "Entities: no Home Assistant catalog loaded yet.",
+    "message.entitySyncCached": "Entities: cache ready · {count} entries.",
+    "message.entitySyncing": "Entities: synchronizing with Home Assistant...",
+    "message.entitySyncDone": "Entities: done · {count} loaded · +{added} / -{removed}.",
+    "message.entitySyncFailed": "Entities: failed · {reason}",
     "message.entityListFailed": "Entity list failed: {reason}",
     "message.loadedResources": "Loaded {count} Lovelace resources from Home Assistant. {total} palette entries detected, including {hacs} /hacsfiles resources.",
     "message.lovelaceFailed": "Lovelace resources failed: {reason}",
@@ -822,6 +828,11 @@ const translations = {
     "message.unknownError": "Unbekannter Fehler.",
     "message.loadedEntities": "{count} Entitäten aus Home Assistant geladen.",
     "message.loadedEntitiesWithChanges": "{count} Entitäten aus Home Assistant geladen. Cache: +{added}, -{removed}.",
+    "message.entitySyncIdle": "Entitäten: noch kein Home-Assistant-Katalog geladen.",
+    "message.entitySyncCached": "Entitäten: Cache bereit · {count} Einträge.",
+    "message.entitySyncing": "Entitäten: synchronisiere mit Home Assistant...",
+    "message.entitySyncDone": "Entitäten: fertig · {count} geladen · +{added} / -{removed}.",
+    "message.entitySyncFailed": "Entitäten: Fehler · {reason}",
     "message.entityListFailed": "Entitätsliste fehlgeschlagen: {reason}",
     "message.loadedResources": "{count} Lovelace-Ressourcen aus Home Assistant geladen. {total} Palette-Einträge erkannt, davon {hacs} /hacsfiles-Ressourcen.",
     "message.lovelaceFailed": "Lovelace-Ressourcen fehlgeschlagen: {reason}",
@@ -1039,6 +1050,7 @@ function applyTranslations() {
   for (const button of languageButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
   }
+  renderEntityCatalogSyncStatus();
 }
 
 function setLanguage(language) {
@@ -1220,6 +1232,7 @@ let cachedEntityPickerCatalog = [];
 let cachedEntityPickerDomains = [];
 let cachedEntityPickerSignature = "";
 let entityPickerRenderTimer;
+let entityCatalogSyncStatus = { state: "idle", count: 0, added: 0, removed: 0, reason: "" };
 const stackSelectedEntityIds = new Set();
 let statusPreviewEntityId;
 let pendingImport;
@@ -1701,6 +1714,9 @@ function renderConnectionLifecycle(lifecycle) {
     clearTimeout(reconnectTimer);
     bindSelectedEntity(connection?.getClient()?.transport);
   } else if (lifecycle.state === "closed" || lifecycle.state === "failed") {
+    setEntityCatalogSyncStatus(cachedHomeAssistantEntityIds.size
+      ? { state: "cached", count: cachedHomeAssistantEntityIds.size }
+      : { state: "idle", count: 0 });
     bindSelectedEntity(transport);
     if (lifecycle.state === "closed") {
       scheduleReconnect();
@@ -1829,6 +1845,7 @@ function loadCachedEntityCatalog() {
       cachedHomeAssistantEntityIds.add(normalized.entityId);
     }
     entityCatalogRevision += 1;
+    setEntityCatalogSyncStatus({ state: "cached", count: cachedHomeAssistantEntityIds.size });
   } catch {
     // The editor falls back to live/demo entities when the cache is unavailable.
   }
@@ -1885,6 +1902,35 @@ function createEntityPickerCatalogDomains() {
 
 function invalidateEntityPickerCatalog() {
   entityCatalogRevision += 1;
+}
+
+function setEntityCatalogSyncStatus(status) {
+  entityCatalogSyncStatus = {
+    ...entityCatalogSyncStatus,
+    ...status,
+  };
+  renderEntityCatalogSyncStatus();
+}
+
+function renderEntityCatalogSyncStatus() {
+  if (!entitySyncState) return;
+  const status = entityCatalogSyncStatus;
+  entitySyncState.dataset.syncState = status.state;
+  if (status.state === "cached") {
+    entitySyncState.textContent = t("message.entitySyncCached", { count: status.count ?? 0 });
+  } else if (status.state === "syncing") {
+    entitySyncState.textContent = t("message.entitySyncing");
+  } else if (status.state === "done") {
+    entitySyncState.textContent = t("message.entitySyncDone", {
+      count: status.count ?? 0,
+      added: status.added ?? 0,
+      removed: status.removed ?? 0,
+    });
+  } else if (status.state === "failed") {
+    entitySyncState.textContent = t("message.entitySyncFailed", { reason: status.reason || t("message.unknownError") });
+  } else {
+    entitySyncState.textContent = t("message.entitySyncIdle");
+  }
 }
 
 function replaceLiveEntitySnapshots(entities) {
@@ -2057,6 +2103,14 @@ function addSelectedEntityFromPicker() {
 function refreshLiveEntityStates() {
   const client = connection?.getClient();
   const entityResult = client?.requestEntityStates();
+  if (entityResult?.accepted) {
+    setEntityCatalogSyncStatus({ state: "syncing", requestId: entityResult.requestId });
+  } else {
+    setEntityCatalogSyncStatus({
+      state: "failed",
+      reason: entityResult?.reason ?? t("message.connectBeforeRefreshingEntities"),
+    });
+  }
   statusMessage.textContent = entityResult?.accepted
     ? t("message.entityListRequested", { requestId: entityResult.requestId })
     : entityResult?.reason ?? t("message.connectBeforeRefreshingEntities");
@@ -2075,6 +2129,40 @@ function checkLiveLovelaceResources(options = {}) {
     lovelaceResourcesChecked = false;
     renderHaCardPreview();
   }
+}
+
+function isTransparentOrLightButtonBackground(color) {
+  const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([.\d]+))?\)/i);
+  if (!match) return false;
+  const [, red, green, blue, alpha = "1"] = match;
+  if (Number(alpha) === 0) return true;
+  return Number(red) > 245 && Number(green) > 245 && Number(blue) > 245;
+}
+
+function isDangerControl(control) {
+  const label = `${control.textContent ?? ""} ${control.getAttribute("aria-label") ?? ""} ${control.title ?? ""}`.toLowerCase();
+  return /\b(delete|remove)\b|löschen|loeschen|entfernen/.test(label);
+}
+
+function triggerControlClickFeedback(control) {
+  if (!control || control.disabled || control.getAttribute("aria-disabled") === "true") return;
+  const feedbackClasses = [
+    "atlas-click-feedback-neutral",
+    "atlas-click-feedback-colored",
+    "atlas-click-feedback-danger",
+  ];
+  control.classList.remove(...feedbackClasses);
+  void control.offsetWidth;
+  const neutral = isTransparentOrLightButtonBackground(window.getComputedStyle(control).backgroundColor);
+  const className = isDangerControl(control)
+    ? "atlas-click-feedback-danger"
+    : neutral
+      ? "atlas-click-feedback-neutral"
+      : "atlas-click-feedback-colored";
+  control.classList.add(className);
+  window.setTimeout(() => {
+    control.classList.remove(className);
+  }, 280);
 }
 
 function normalizeLovelaceResourceUrl(resource) {
@@ -6310,11 +6398,16 @@ function bindSelectedEntity(nextTransport) {
     removeEntityStateListListener = connection?.getClient()?.subscribeEntityStateList(result => {
       if (result.success) {
         const changes = replaceLiveEntitySnapshots(result.entities);
+        setEntityCatalogSyncStatus({ state: "done", ...changes });
         renderEntityPickerOptions();
         renderEntityList();
         statusMessage.textContent = t("message.loadedEntitiesWithChanges", changes);
         return;
       }
+      setEntityCatalogSyncStatus({
+        state: "failed",
+        reason: result.reason ?? t("message.unknownError"),
+      });
       statusMessage.textContent = t("message.entityListFailed", { reason: result.reason ?? t("message.unknownError") });
     });
     removeLovelaceResourceListener = connection?.getClient()?.subscribeLovelaceResources(result => {
@@ -6413,6 +6506,14 @@ if (!registeredPanel) {
     statusMessage.textContent = t("message.entityStateUpdated", { state: entity.state });
   });
 }
+
+document.addEventListener("click", event => {
+  if (!(event.target instanceof Element)) return;
+  const control = event.target.closest("button, .import-button");
+  if (control) {
+    triggerControlClickFeedback(control);
+  }
+});
 
 for (const button of buttons) {
   button.addEventListener("click", () => {

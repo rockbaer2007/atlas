@@ -287,6 +287,19 @@
         line-height: 1.35;
       }
 
+      .entity-sync-state {
+        color: #0f766e;
+        font-weight: 700;
+      }
+
+      .entity-sync-state[data-sync-state="syncing"] {
+        color: #1e3a8a;
+      }
+
+      .entity-sync-state[data-sync-state="failed"] {
+        color: #b91c1c;
+      }
+
       .connection-config input:focus,
       .connection-config select:focus {
         outline: 2px solid #0f766e;
@@ -498,6 +511,66 @@
         background: #F0C302;
         color: #172033;
         opacity: 1;
+      }
+
+      @keyframes atlas-button-confirm-neutral {
+        0%, 100% {
+          box-shadow: none;
+        }
+        45% {
+          border-color: #0f766e;
+          box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.24);
+        }
+      }
+
+      @keyframes atlas-button-confirm-colored {
+        0%, 100% {
+          filter: none;
+          transform: none;
+        }
+        45% {
+          filter: brightness(1.18);
+          transform: translateY(-1px);
+        }
+      }
+
+      @keyframes atlas-button-confirm-danger {
+        0%, 100% {
+          filter: none;
+        }
+        45% {
+          filter: brightness(1.12) saturate(1.08);
+        }
+      }
+
+      button.atlas-click-feedback-neutral,
+      .import-button.atlas-click-feedback-neutral {
+        animation: atlas-button-confirm-neutral 260ms ease-out;
+      }
+
+      button.atlas-click-feedback-colored,
+      .import-button.atlas-click-feedback-colored {
+        animation: atlas-button-confirm-colored 260ms ease-out;
+      }
+
+      button.atlas-click-feedback-danger,
+      .import-button.atlas-click-feedback-danger {
+        animation: atlas-button-confirm-danger 260ms ease-out;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        button.atlas-click-feedback-neutral,
+        .import-button.atlas-click-feedback-neutral {
+          border-color: #0f766e;
+          box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.24);
+        }
+
+        button.atlas-click-feedback-colored,
+        .import-button.atlas-click-feedback-colored,
+        button.atlas-click-feedback-danger,
+        .import-button.atlas-click-feedback-danger {
+          filter: brightness(1.12);
+        }
       }
 
       @media (max-width: 480px) {
@@ -2149,6 +2222,7 @@
           <output id="admin-handoff-state" aria-live="polite"></output>
           <output id="connection-readiness" aria-live="polite"></output>
           <output id="connection-state" data-state="closed" aria-live="polite">Connection: closed</output>
+          <output id="entity-sync-state" class="entity-sync-state" data-sync-state="idle" aria-live="polite"></output>
           <output id="admin-translation-module-state" class="connection-translation-module-state" aria-live="polite"></output>
         </div>
         <div class="connection-options admin-handoff-options">
