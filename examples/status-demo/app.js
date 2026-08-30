@@ -3755,10 +3755,8 @@ function expertEditorSurfaceWidthStep() {
 }
 
 function applyExpertEditorSurfaceSize() {
-  const detailWidth = expertSelectedCardDetails?.offsetWidth || 320;
-  const rowGap = 12;
-  const availableWidth = expertEditorCanvasRow?.parentElement?.clientWidth || 972;
-  const baseWidth = Math.max(640, availableWidth - detailWidth - rowGap);
+  const availableWidth = expertEditorCanvasRow?.clientWidth || expertEditorCanvasRow?.parentElement?.clientWidth || 972;
+  const baseWidth = Math.max(640, availableWidth);
   expertEditorDropzone.style.setProperty("--expert-editor-base-width", `${baseWidth}px`);
   expertEditorDropzone.style.setProperty(
     "--expert-editor-extra-width",
