@@ -1570,7 +1570,7 @@
 
       .tabbed-card-dialog {
         width: min(860px, 100%);
-        max-height: min(760px, calc(100vh - 36px));
+        max-height: min(1120px, calc(100vh - 36px));
         overflow: auto;
         border: 1px solid #cbd5e1;
         border-radius: 8px;
@@ -1699,9 +1699,6 @@
       .overview-entity-editor-list {
         display: grid;
         gap: 8px;
-        max-height: min(420px, 52vh);
-        overflow: auto;
-        padding-right: 4px;
       }
 
       .overview-entity-editor-row {
@@ -1799,7 +1796,8 @@
       .overview-entity-picker-results {
         display: grid;
         gap: 5px;
-        max-height: min(360px, 44vh);
+        min-height: 260px;
+        max-height: min(560px, 55vh);
         overflow: auto;
       }
 
