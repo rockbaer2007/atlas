@@ -3,6 +3,7 @@ import type {
   HomeAssistantCardConfiguration,
   HomeAssistantCardDependency,
   HomeAssistantCardLayout,
+  HomeAssistantCardStyleBlock,
   HomeAssistantCardTarget,
 } from "./HomeAssistantCardConfiguration";
 import { createHomeAssistantCardConfiguration, inspectHomeAssistantCardDependency } from "./HomeAssistantCardConfiguration";
@@ -60,6 +61,7 @@ export interface HomeAssistantCardEditorSurfaceFieldEntry {
   readonly entityId?: string;
   readonly icon?: string;
   readonly show_last_changed?: boolean;
+  readonly styleBlocks?: readonly HomeAssistantCardStyleBlock[];
   readonly cards?: readonly HomeAssistantCardEditorSurfaceFieldEntry[];
 }
 
@@ -581,6 +583,7 @@ function normalizeSurfaceFieldEntry(
     ...(entityId ? { entityId } : {}),
     ...(entry.icon?.trim() ? { icon: entry.icon.trim() } : {}),
     ...(typeof entry.show_last_changed === "boolean" ? { show_last_changed: entry.show_last_changed } : {}),
+    ...(entry.styleBlocks?.length ? { styleBlocks: entry.styleBlocks.map(block => ({ ...block })) } : {}),
     ...(entry.cards?.length ? { cards: entry.cards.map(normalizeSurfaceFieldEntry) } : {}),
   };
 }

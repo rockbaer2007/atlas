@@ -2523,6 +2523,7 @@ function getSimplePreviewCardEntities(card) {
               name: typeof entity.name === "string" ? entity.name : "",
               icon: typeof entity.icon === "string" ? entity.icon : "",
               show_last_changed: typeof entity.show_last_changed === "boolean" ? entity.show_last_changed : undefined,
+              styleBlocks: Array.isArray(entity.styleBlocks) ? entity.styleBlocks : undefined,
             }
           : undefined)
       .filter(Boolean);
@@ -2571,6 +2572,7 @@ function createImportedOverviewExpertField(card, entities) {
       entityId: entity.entity,
       ...(entity.icon ? { icon: entity.icon } : {}),
       ...(typeof entity.show_last_changed === "boolean" ? { show_last_changed: entity.show_last_changed } : {}),
+      styleBlocks: getImportedEntityStyleBlocks(entity.entity).map(block => ({ ...block })),
     })),
     importedOptions: {
       ...(typeof card.show_name === "boolean" ? { show_name: card.show_name } : {}),
@@ -2611,6 +2613,13 @@ function collectSimplePreviewCardEntities(value, key = "") {
 function getImportedEntityStyleBlocks(entityId) {
   if (!importedSimpleStyleInspection?.cardStyles?.length) return [];
   return importedSimpleStyleInspection.cardStyles.filter(block => block.label === entityId);
+}
+
+function getEntryStyleBlocks(entry) {
+  if (Array.isArray(entry?.styleBlocks) && entry.styleBlocks.length) {
+    return entry.styleBlocks;
+  }
+  return getImportedEntityStyleBlocks(entry?.entityId);
 }
 
 function renderHaCardDependency(card) {
@@ -3909,6 +3918,7 @@ function openOverviewCardEntitiesDialog(fieldIndex = selectedExpertFieldIndex) {
         entityId: String(entry.entityId ?? "").trim(),
         ...(String(entry.icon ?? "").trim() ? { icon: String(entry.icon).trim() } : {}),
         ...(typeof entry.show_last_changed === "boolean" ? { show_last_changed: entry.show_last_changed } : {}),
+        ...(Array.isArray(entry.styleBlocks) && entry.styleBlocks.length ? { styleBlocks: entry.styleBlocks.map(block => ({ ...block })) } : {}),
       }))
       .filter(entry => entry.entityId);
     expertEditorFields[fieldIndex] = {
@@ -3937,7 +3947,7 @@ function createOverviewEntityEditorRow(entry, index, total, callbacks) {
 
   const name = createLabeledInput(t("label.name"), entry.id ?? "");
   const entity = createLabeledInput(t("label.entity"), entry.entityId ?? "");
-  const icon = createLabeledInput(t("label.icon"), entry.icon ?? entityIcon(entry.entityId));
+  const icon = createLabeledInput(t("label.icon"), entry.icon ?? "");
   const showLastChanged = document.createElement("label");
   showLastChanged.className = "checkbox-row";
   const checkbox = document.createElement("input");
@@ -3967,6 +3977,17 @@ function createOverviewEntityEditorRow(entry, index, total, callbacks) {
   }
 
   row.append(name.wrapper, entity.wrapper, icon.wrapper, showLastChanged, actions);
+  const styleBlocks = getEntryStyleBlocks(entry);
+  if (styleBlocks.length) {
+    const style = document.createElement("div");
+    style.className = "overview-entity-editor-style";
+    const label = document.createElement("strong");
+    label.textContent = t("text.styleCode");
+    const code = document.createElement("pre");
+    code.textContent = styleBlocks.map(block => block.code).join("\n\n");
+    style.append(label, code);
+    row.append(style);
+  }
   return row;
 }
 
@@ -4638,15 +4659,17 @@ function createExpertSurfaceFieldHeader(field) {
 }
 
 function getExpertFieldStyleBlocks(field) {
-  const entityIds = new Set();
-  if (field.entityId) entityIds.add(field.entityId);
+  const blocks = [];
+  if (field.entityId) {
+    blocks.push(...getImportedEntityStyleBlocks(field.entityId));
+  }
   for (const entry of field.entries ?? []) {
-    if (entry.entityId) entityIds.add(entry.entityId);
+    blocks.push(...getEntryStyleBlocks(entry));
     for (const card of entry.cards ?? []) {
-      if (card.entityId) entityIds.add(card.entityId);
+      blocks.push(...getEntryStyleBlocks(card));
     }
   }
-  return [...entityIds].flatMap(entityId => getImportedEntityStyleBlocks(entityId));
+  return blocks;
 }
 
 function selectedExpertDetailContext() {
@@ -5485,7 +5508,7 @@ function formatImportedYamlForStyleExport(text) {
 }
 
 function appendImportedStylesToExpertYaml(text) {
-  if (!importedSimpleStyleInspection?.hasStyles) return text;
+  if (!importedSimpleStyleInspection?.hasStyles && !expertEditorHasEntryStyleBlocks()) return text;
   const lines = text.split(/\r?\n/);
   const output = [];
   for (let index = 0; index < lines.length; index += 1) {
@@ -5495,19 +5518,59 @@ function appendImportedStylesToExpertYaml(text) {
     if (!entityMatch) continue;
     const indent = entityMatch[1] ?? "";
     const entityId = stripYamlPreviewQuotes(entityMatch[2] ?? "");
-    const hasFollowingStyle = /^\s*(card_mod|uix|uix_style):/.test(lines[index + 1]?.trimStart() ?? "");
+    const hasFollowingStyle = yamlEntityBlockHasStyle(lines, index, indent.length);
     if (hasFollowingStyle) continue;
-    for (const block of getImportedEntityStyleBlocks(entityId)) {
+    for (const block of getExpertEditorEntityStyleBlocks(entityId)) {
       output.push(indentImportedStyleBlock(block.code, indent));
     }
   }
 
-  const globalBlocks = importedSimpleStyleInspection.globalStyles ?? [];
+  const globalBlocks = importedSimpleStyleInspection?.globalStyles ?? [];
   const hasGlobalStyle = lines.some(line => /^(card_mod|uix|uix_style):/.test(line.trim()));
   if (globalBlocks.length && !hasGlobalStyle) {
     output.push(...globalBlocks.map(block => normalizeImportedStyleBlock(block.code)));
   }
   return output.join("\n");
+}
+
+function expertEditorHasEntryStyleBlocks() {
+  return expertEditorFields.some(field =>
+    (field.entries ?? []).some(entry =>
+      getEntryStyleBlocks(entry).length || (entry.cards ?? []).some(card => getEntryStyleBlocks(card).length),
+    ),
+  );
+}
+
+function getExpertEditorEntityStyleBlocks(entityId) {
+  const blocks = [];
+  for (const field of expertEditorFields) {
+    for (const entry of field.entries ?? []) {
+      if (entry.entityId === entityId) blocks.push(...getEntryStyleBlocks(entry));
+      for (const card of entry.cards ?? []) {
+        if (card.entityId === entityId) blocks.push(...getEntryStyleBlocks(card));
+      }
+    }
+  }
+  blocks.push(...getImportedEntityStyleBlocks(entityId));
+  const seen = new Set();
+  return blocks.filter(block => {
+    const key = `${block.key}:${block.code}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function yamlEntityBlockHasStyle(lines, entityLineIndex, entityIndentSize) {
+  for (let index = entityLineIndex + 1; index < lines.length; index += 1) {
+    const line = lines[index] ?? "";
+    if (!line.trim()) continue;
+    const indentSize = line.match(/^ */)?.[0].length ?? 0;
+    if (indentSize <= entityIndentSize && line.trimStart().startsWith("- ")) return false;
+    if (indentSize < entityIndentSize) return false;
+    if (/^(card_mod|uix|uix_style):/.test(line.trim())) return true;
+  }
+  return false;
 }
 
 function stripYamlPreviewQuotes(value) {
