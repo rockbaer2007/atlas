@@ -52,6 +52,26 @@
         opacity: 0.48;
       }
 
+      .download-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        border: 1px solid #bac7d7;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #18212f;
+        padding: 0 12px;
+        text-decoration: none;
+      }
+
+      .download-link:hover,
+      .download-link:focus-visible {
+        border-color: #087f8c;
+        outline: 2px solid rgba(8, 127, 140, 0.22);
+        outline-offset: 1px;
+      }
+
       main {
         width: min(100%, 1440px);
         margin: 0 auto;
@@ -475,6 +495,7 @@
         <div class="toolbar">
           <button id="copy-yaml" class="primary-button" type="button">YAML kopieren</button>
           <button id="download-yaml" type="button">YAML exportieren</button>
+          <a class="download-link" href="/examples/tabbed-card-v2/home-assistant/tabbed-card-v2.js" download="tabbed-card-v2.js">HA-Datei</a>
           <label>
             <input id="import-file" class="hidden-file" type="file" accept="application/json,.json,.yaml,.yml">
             <button id="import-button" type="button">Importieren</button>

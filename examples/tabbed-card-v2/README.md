@@ -15,3 +15,53 @@ http://127.0.0.1:4176/
 ```
 
 The editor is intentionally independent from ATLAS internals. It generates a plain Home Assistant Lovelace YAML card using the `custom:tabbed-card-v2` schema.
+
+## Test in Home Assistant
+
+Copy this file into your Home Assistant config:
+
+```text
+examples/tabbed-card-v2/home-assistant/tabbed-card-v2.js
+```
+
+Recommended target path:
+
+```text
+/config/www/tabbed-card-v2.js
+```
+
+Add this Lovelace resource:
+
+```yaml
+url: /local/tabbed-card-v2.js
+type: module
+```
+
+Then create a manual card and paste YAML from the visual editor, for example:
+
+```yaml
+type: custom:tabbed-card-v2
+options:
+  defaultTabIndex: 0
+tabs:
+  - attributes:
+      label: Light
+      icon: mdi:lightbulb
+    card:
+      type: button
+      entity: light.bed_light
+      tap_action:
+        action: toggle
+      show_name: true
+      show_icon: true
+      show_state: true
+  - attributes:
+      label: Sensors
+      icon: mdi:thermometer
+    card:
+      type: entities
+      title: Room climate
+      entities:
+        - sensor.living_room_temperature
+        - sensor.living_room_humidity
+```
