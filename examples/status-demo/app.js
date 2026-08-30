@@ -1012,9 +1012,7 @@ let lovelaceResources = [];
 let lovelaceResourcesChecked = false;
 let activeEditorMode = "simple";
 let importedSimpleCard;
-let importedSimpleSourceContent;
 let importedSimpleStyleInspection;
-let applyingImportedSimpleSummary = false;
 let expertPaletteShowAllCards = false;
 let expertPaletteSearchQuery = "";
 let selectedExpertFieldIndex = -1;
@@ -1905,25 +1903,6 @@ function createHaCardConfig() {
   });
 }
 
-function canUseImportedSimpleSourceContent() {
-  return activeEditorMode === "simple"
-    && Boolean(importedSimpleSourceContent)
-    && Boolean(importedSimpleCard)
-    && haCardFormat.value === "yaml";
-}
-
-function clearImportedSimpleCardState() {
-  importedSimpleCard = undefined;
-  importedSimpleSourceContent = undefined;
-  importedSimpleStyleInspection = undefined;
-}
-
-function serializeActiveHaCardConfig(card) {
-  return canUseImportedSimpleSourceContent()
-    ? importedSimpleSourceContent
-    : serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
-}
-
 function createExpertHaCardConfig() {
   return createHomeAssistantCardEditorConfiguration({
     cardName: currentExpertCardName(),
@@ -1976,7 +1955,7 @@ function renderHaCardPreview() {
 
   const card = createHaCardConfig();
   renderSimpleHaCardVisualPreview(card);
-  haCardPreview.textContent = serializeActiveHaCardConfig(card);
+  haCardPreview.textContent = serializeHomeAssistantEntitiesCardConfiguration(card, haCardFormat.value);
   renderHaCardDependency(card);
 }
 
@@ -4369,14 +4348,11 @@ function moveExpertEditorField(index, placement) {
 
 function createHaCardExportPayload() {
   const card = createActiveHaCardConfig();
-  const payload = createHomeAssistantCardExportPayload({
+  return createHomeAssistantCardExportPayload({
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
   });
-  return canUseImportedSimpleSourceContent()
-    ? { ...payload, content: importedSimpleSourceContent }
-    : payload;
 }
 
 function selectedCardExportLanguages() {
@@ -4497,7 +4473,7 @@ function mergeTranslatedCardLocales(cardPackage, translatedLocales) {
 function createHaCardExportPackage() {
   const card = createActiveHaCardConfig();
   const editorPlan = createActiveCardEditorPlan();
-  const cardPackage = createHomeAssistantCardExportPackage({
+  return createHomeAssistantCardExportPackage({
     card,
     format: haCardFormat.value,
     name: currentHaCardExportName(),
@@ -4505,9 +4481,6 @@ function createHaCardExportPackage() {
     editorPlan,
     script: createHomeAssistantCardEditorScriptExport(editorPlan),
   });
-  return canUseImportedSimpleSourceContent()
-    ? { ...cardPackage, content: importedSimpleSourceContent }
-    : cardPackage;
 }
 
 function canExportHaCard() {
@@ -4959,8 +4932,8 @@ homeAssistantUrl.addEventListener("input", () => {
 });
 window.addEventListener("message", receiveAdminConnectionHandoff);
 homeAssistantEntity.addEventListener("input", () => {
-  if (!applyingImportedSimpleSummary && importedSimpleCard) {
-    clearImportedSimpleCardState();
+  if (haCardTarget.value !== "custom-card") {
+    importedSimpleCard = undefined;
   }
   persistConfiguration();
   renderEntityPickerOptions();
@@ -4996,7 +4969,8 @@ homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 checkHaCardResources.addEventListener("click", () => checkLiveLovelaceResources());
 homeAssistantGroup.addEventListener("change", () => {
-  clearImportedSimpleCardState();
+  importedSimpleCard = undefined;
+  importedSimpleStyleInspection = undefined;
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
   if (group) {
     homeAssistantEntity.value = group.entityIds.join(", ");
@@ -5011,7 +4985,8 @@ expertCardName.addEventListener("input", () => {
 });
 diagnosticsPanel.addEventListener("toggle", persistConfiguration);
 haCardTarget.addEventListener("change", () => {
-  clearImportedSimpleCardState();
+  importedSimpleCard = undefined;
+  importedSimpleStyleInspection = undefined;
   syncCardLayoutState();
   persistConfiguration();
   renderEntityList();
@@ -5516,8 +5491,7 @@ function applyHomeAssistantCardImportSummary(summary) {
   haCardTarget.value = summary.target;
   haCardLayout.value = summary.layout;
   haCardFormat.value = summary.format;
-  importedSimpleCard = summary.card;
-  importedSimpleSourceContent = summary.format === "yaml" ? summary.sourceContent : undefined;
+  importedSimpleCard = summary.target === "custom-card" ? summary.card : undefined;
   if (summary.editorPlan?.scriptFilename || summary.script?.filename) {
     haCardScriptFilename.value = summary.editorPlan?.scriptFilename ?? summary.script.filename;
   }
@@ -5538,12 +5512,7 @@ function applyHomeAssistantCardImportSummary(summary) {
     renderEditorMode("simple");
   }
   persistConfiguration();
-  applyingImportedSimpleSummary = true;
-  try {
-    homeAssistantEntity.dispatchEvent(new Event("input"));
-  } finally {
-    applyingImportedSimpleSummary = false;
-  }
+  homeAssistantEntity.dispatchEvent(new Event("input"));
   statusMessage.textContent = t("message.haCardImported", {
     type: summary.packaged ? t("message.atlasPackage") : t("message.haCard"),
     format: summary.format.toUpperCase(),
