@@ -12,6 +12,7 @@ export type HomeAssistantCardEditorMode = "simple" | "expert";
 export type HomeAssistantCardEditorSurfaceFieldLayout = "card" | "grid" | "horizontal-stack" | "vertical-stack";
 export type HomeAssistantCardEditorTemplateId =
   | "entity-list"
+  | "glance-card"
   | "entity-card"
   | "state-button"
   | "switch-button"
@@ -187,6 +188,15 @@ const cardEditorTemplates: readonly HomeAssistantCardEditorTemplate[] = [
     defaultWidth: 4,
     defaultHeight: 2,
     preview: ["Entity", "Value"],
+  },
+  {
+    id: "glance-card",
+    label: "Overview / Glance",
+    layout: "card",
+    target: "glance",
+    defaultWidth: 8,
+    defaultHeight: 3,
+    preview: ["Name", "Icon", "State"],
   },
   {
     id: "entity-card",

@@ -597,6 +597,7 @@ const translations = {
     "target.bubble": "Bubble",
     "target.tabbed-card-v2": "Tabbed Card V2",
     "template.entity-list": "Entity list",
+    "template.glance-card": "Overview / Glance",
     "template.entity-card": "Entity",
     "template.button-card": "Button",
     "template.grid": "Grid",
@@ -1007,6 +1008,7 @@ const translations = {
     "target.bubble": "Bubble",
     "target.tabbed-card-v2": "Tabbed Card V2",
     "template.entity-list": "Entitätenliste",
+    "template.glance-card": "Übersicht / Glance",
     "template.entity-card": "Entität",
     "template.button-card": "Button",
     "template.grid": "Raster",
@@ -1104,6 +1106,7 @@ function expertFieldTitleBase(templateId, target = expertTarget.value) {
   if (target === "mushroom-template") return "Mushroom";
   const baseByTemplate = {
     "entity-list": "Entities",
+    "glance-card": "Glance",
     "entity-card": "Entity",
     "button-card": "Button",
     grid: "Grid",
@@ -1161,6 +1164,7 @@ function expertTitleForNewCardEntry(target, proposedTitle) {
 let expertPaletteCards = [
   { id: "core-entity", category: "Core", label: "Entity", templateId: "entity-card", target: "entity", preview: ["type: entity"] },
   { id: "core-entities", category: "Core", label: "Entities", templateId: "entity-list", target: "entities", preview: ["Entity list"] },
+  { id: "core-glance", category: "Core", label: "Overview / Glance", templateId: "glance-card", target: "glance", preview: ["type: glance", "entities"] },
   { id: "core-button", category: "Core", label: "Button", templateId: "button-card", target: "button", preview: ["type: button"] },
   { id: "core-grid", category: "Core", label: "Grid", templateId: "grid", target: "entities", preview: ["type: grid"] },
   { id: "core-sensor", category: "Core", label: "Sensor", templateId: "sensor-card", target: "sensor", preview: ["type: sensor"] },
@@ -3979,9 +3983,9 @@ function createOverviewEntityEditorRow(entry, index, total, callbacks) {
   row.append(name.wrapper, entity.wrapper, icon.wrapper, showLastChanged, actions);
   const styleBlocks = getEntryStyleBlocks(entry);
   if (styleBlocks.length) {
-    const style = document.createElement("div");
+    const style = document.createElement("details");
     style.className = "overview-entity-editor-style";
-    const label = document.createElement("strong");
+    const label = document.createElement("summary");
     label.textContent = t("text.styleCode");
     const code = document.createElement("pre");
     code.textContent = styleBlocks.map(block => block.code).join("\n\n");
@@ -5652,9 +5656,11 @@ function addExpertEditorField() {
 
 function createExpertEditorField(input) {
   const template = cardEditorTemplates.find(candidate => candidate.id === input.templateId);
+  const isOverviewTemplate = input.templateId === "glance-card" || expertTarget.value === "glance";
   const supportsMultipleEntries = template?.layout === "horizontal-stack"
     || template?.layout === "vertical-stack"
-    || template?.layout === "grid";
+    || template?.layout === "grid"
+    || isOverviewTemplate;
   const isTabbedTemplate = input.templateId === "tabbed-card-v2" || expertTarget.value === "tabbed-card-v2";
   const isContainerTemplate = isTabbedTemplate || supportsMultipleEntries;
   const entryTarget = isTabbedTemplate ? "entity" : expertTarget.value;

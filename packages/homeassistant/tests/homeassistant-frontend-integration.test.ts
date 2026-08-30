@@ -269,6 +269,7 @@ describe("Home Assistant frontend integration planning", () => {
   it("lists visual sidebar templates for expert card placement", () => {
     expect(listHomeAssistantCardEditorTemplates().map(template => template.id)).toEqual([
       "entity-list",
+      "glance-card",
       "entity-card",
       "button-card",
       "grid",
@@ -284,6 +285,7 @@ describe("Home Assistant frontend integration planning", () => {
     ]);
     expect(listHomeAssistantCardEditorTemplates().map(template => [template.id, template.defaultWidth, template.defaultHeight])).toEqual([
       ["entity-list", 4, 2],
+      ["glance-card", 8, 3],
       ["entity-card", 4, 2],
       ["button-card", 4, 2],
       ["grid", 6, 3],
