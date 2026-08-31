@@ -138,6 +138,7 @@ const haCardImportReview = document.querySelector("#ha-card-import-review");
 const haCardStyleReview = document.querySelector("#ha-card-style-review");
 const diagnosticsPanel = document.querySelector("#diagnostics-panel");
 const selectedEntity = document.querySelector("#selected-entity");
+const cardEntityOverview = document.querySelector("#card-entity-overview");
 const editorModeButtons = document.querySelectorAll("[data-editor-mode]");
 const panelGroupControl = document.querySelector("#panel-group-control");
 const groupNameControl = document.querySelector("#group-name-control");
@@ -6874,9 +6875,66 @@ function createEntityTableSortButton(key, label) {
   return button;
 }
 
+function renderCardEntityOverview() {
+  cardEntityOverview.replaceChildren();
+  const entityIds = cardPreviewEntityIds();
+  if (entityIds.length === 0) {
+    const emptyState = document.createElement("div");
+    emptyState.className = "empty-selection-state";
+    emptyState.textContent = emptyEntitySelectionMessage;
+    cardEntityOverview.append(emptyState);
+    return;
+  }
+
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const tbody = document.createElement("tbody");
+  const headerRow = document.createElement("tr");
+  table.className = "atlas-entity-table atlas-card-entity-overview-table";
+  table.setAttribute("aria-label", t("heading.entitySelection"));
+  for (const key of ["table.entity", "table.state", "table.type"]) {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = t(key);
+    headerRow.append(th);
+  }
+  thead.append(headerRow);
+  table.append(thead, tbody);
+
+  for (const entityId of entityIds) {
+    const { label, valueText, detailText } = createEntityTableEntry(entityId);
+    const row = document.createElement("tr");
+    const nameCell = document.createElement("td");
+    const valueCell = document.createElement("td");
+    const detailCell = document.createElement("td");
+    const name = document.createElement("strong");
+    const entityIdText = document.createElement("small");
+    const value = document.createElement("span");
+    const detail = document.createElement("small");
+    row.dataset.primary = String(entityId === currentEntityId());
+    nameCell.className = "atlas-entity-name-cell";
+    valueCell.className = "atlas-entity-status-cell";
+    detailCell.className = "atlas-entity-detail-cell";
+    name.textContent = label;
+    entityIdText.className = "atlas-entity-id";
+    entityIdText.textContent = entityId;
+    value.className = "atlas-entity-status";
+    value.textContent = valueText;
+    detail.className = "atlas-entity-type";
+    detail.textContent = detailText;
+    nameCell.append(name, entityIdText);
+    valueCell.append(value);
+    detailCell.append(detail);
+    row.append(nameCell, valueCell, detailCell);
+    tbody.append(row);
+  }
+  cardEntityOverview.append(table);
+}
+
 function renderEntityList() {
   entityList.replaceChildren();
   reconcileStackEntitySelection();
+  renderCardEntityOverview();
   const selectedEntityIds = trackedEntityIds();
   const selectedEntitySet = new Set(selectedEntityIds);
   const useLiveCatalogList = activeTransport !== transport && entitySnapshots.size > 0;

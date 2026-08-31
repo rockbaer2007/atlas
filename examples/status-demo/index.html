@@ -2208,6 +2208,10 @@
         overflow: hidden;
       }
 
+      .atlas-card-entity-overview-table {
+        min-width: 520px;
+      }
+
       .atlas-entity-table th,
       .atlas-entity-table td {
         border-bottom: 1px solid #d8e0ec;
@@ -2332,6 +2336,11 @@
         color: #536079;
         font-size: 13px;
         overflow-wrap: anywhere;
+      }
+
+      .card-entity-overview {
+        margin-top: 12px;
+        overflow-x: auto;
       }
 
       .atlas-entity-card {
@@ -2636,7 +2645,8 @@
       :root[data-theme="dark"] .expert-editor-dropzone,
       :root[data-theme="dark"] .expert-selected-card-details,
       :root[data-theme="dark"] .atlas-entity-card,
-      :root[data-theme="dark"] .atlas-entity-table {
+      :root[data-theme="dark"] .atlas-entity-table,
+      :root[data-theme="dark"] .atlas-card-entity-overview-table {
         border-color: #b9c9cf;
         background: #e8eef1;
         color: #102027;
@@ -3032,6 +3042,7 @@
             <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
           </div>
           <output id="selected-entity" aria-live="polite"></output>
+          <div id="card-entity-overview" class="card-entity-overview" aria-live="polite"></div>
         </details>
         <div class="editor-mode-toggle" role="group" aria-label="Card editor mode" data-i18n-aria-label="aria.cardEditorMode">
           <button type="button" data-editor-mode="simple" aria-pressed="true" data-i18n="button.simpleMode">Simple</button>

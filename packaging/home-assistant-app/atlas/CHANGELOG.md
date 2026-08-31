@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.23
+
+- Add a compact entity overview table inside the "Entities for the card"
+  collapsible section.
+- Keep the lower detected Home Assistant entities table separate with sorting.
+
 ## 0.1.22
 
 - Keep the detected Home Assistant entities table collapsed by default in both
