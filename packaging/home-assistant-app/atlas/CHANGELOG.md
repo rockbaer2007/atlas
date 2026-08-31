@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.17
+
+- Tune the Card Editor Expert dark theme so the card list, selected entities
+  and editor grid use a light grey working surface.
+- Style Expert mode dropdowns and action buttons with ATLAS green and neutral
+  dark controls.
+
 ## 0.1.16
 
 - Add the Home Assistant App/Add-on `editor_start_mode` option for Simple or

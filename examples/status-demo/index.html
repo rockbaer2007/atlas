@@ -2498,6 +2498,100 @@
         background: var(--atlas-panel-soft);
       }
 
+      :root[data-theme="dark"] .expert-template-card,
+      :root[data-theme="dark"] .expert-editor-dropzone,
+      :root[data-theme="dark"] .expert-selected-card-details,
+      :root[data-theme="dark"] .atlas-entity-card {
+        border-color: #b9c9cf;
+        background: #e8eef1;
+        color: #102027;
+      }
+
+      :root[data-theme="dark"] .expert-editor-dropzone {
+        border-color: #5aa79d;
+        background: #eaf1ef;
+        color: #41626a;
+      }
+
+      :root[data-theme="dark"] .expert-surface-grid {
+        background:
+          linear-gradient(to right, rgba(15, 118, 110, 0.18) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(15, 118, 110, 0.18) 1px, transparent 1px);
+        background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+      }
+
+      :root[data-theme="dark"] .expert-template-card:hover,
+      :root[data-theme="dark"] .expert-template-card:focus-visible,
+      :root[data-theme="dark"] .expert-template-card.selected {
+        border-color: #0f766e;
+        background: #d9ebe8;
+        box-shadow: inset 4px 0 0 #0f766e;
+      }
+
+      :root[data-theme="dark"] .expert-template-card strong,
+      :root[data-theme="dark"] .expert-template-card small,
+      :root[data-theme="dark"] .expert-template-card span,
+      :root[data-theme="dark"] .expert-template-card .favorite-toggle,
+      :root[data-theme="dark"] .atlas-entity-card small,
+      :root[data-theme="dark"] .expert-selected-card-details h3,
+      :root[data-theme="dark"] .expert-selected-card-details dt,
+      :root[data-theme="dark"] .expert-selected-card-details dd {
+        color: #102027;
+      }
+
+      :root[data-theme="dark"] .expert-template-card .palette-category {
+        color: #0f766e;
+      }
+
+      :root[data-theme="dark"] .expert-template-sizing select,
+      :root[data-theme="dark"] .expert-editor-controls select,
+      :root[data-theme="dark"] .expert-editor-controls input {
+        border-color: #4f8f87;
+        background: #123c37;
+        color: #edf7f8;
+      }
+
+      :root[data-theme="dark"] .expert-template-sizing select:focus,
+      :root[data-theme="dark"] .expert-editor-controls select:focus,
+      :root[data-theme="dark"] .expert-editor-controls input:focus {
+        outline: 2px solid var(--atlas-accent);
+        outline-offset: 1px;
+      }
+
+      :root[data-theme="dark"] .expert-palette-toolbar button,
+      :root[data-theme="dark"] .expert-editor-actions button,
+      :root[data-theme="dark"] .expert-title-row button {
+        border-color: #4f8f87;
+        background: #17272a;
+        color: #7ee6c9;
+      }
+
+      :root[data-theme="dark"] .expert-palette-toolbar button:hover,
+      :root[data-theme="dark"] .expert-palette-toolbar button:focus-visible,
+      :root[data-theme="dark"] .expert-editor-actions button:hover,
+      :root[data-theme="dark"] .expert-editor-actions button:focus-visible,
+      :root[data-theme="dark"] .expert-title-row button:hover,
+      :root[data-theme="dark"] .expert-title-row button:focus-visible {
+        border-color: var(--atlas-accent);
+        background: var(--atlas-accent-soft);
+        color: var(--atlas-accent);
+      }
+
+      :root[data-theme="dark"] #scan-expert-palette-cards {
+        border-color: var(--atlas-accent);
+        background: #0f766e;
+        color: #ffffff;
+      }
+
+      :root[data-theme="dark"] #reset-expert-template-sizing,
+      :root[data-theme="dark"] #reset-expert-palette-favorites,
+      :root[data-theme="dark"] #clear-expert-fields,
+      :root[data-theme="dark"] #reset-expert-surface-size {
+        border-color: #52656c;
+        background: #243238;
+        color: #d8e5e8;
+      }
+
       :root[data-theme="dark"] .card-type-badge,
       :root[data-theme="dark"] .ha-card-visual-type,
       :root[data-theme="dark"] .ha-card-entity-style-badge {
