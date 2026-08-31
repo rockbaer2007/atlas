@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.1.13
+
+- Add a real light/dark/auto theme switch to ATLAS Administration.
+- Persist the shared ATLAS theme preference so the Plugin Hub follows the same
+  selected mode.
+- Add dark ATLAS colors for Administration and Plugin Hub testing in Home
+  Assistant.
+
+## 0.1.12
+
+- Add an Atlas-branded repository dialog with URL entry, source type selection,
+  repository preview and final confirmation.
+- Use the orange ATLAS accent for repository add and planned install actions.
+
+## 0.1.11
+
+- Replace the single repository URL preview with a managed custom repository
+  list similar to the Home Assistant/HACS custom repository workflow.
+- Add repository type selection, refresh and remove controls.
+- Preserve older single repository URL settings by migrating them into the new
+  repository list.
+
 ## 0.1.10
 
 - Add ATLAS start behavior for plugin counts: zero active plugins show the hub,
