@@ -9,6 +9,7 @@ services:
       ATLAS_APP_PORT: 4176
       ATLAS_ADMIN_PORT: 4175
       ATLAS_DEMO_PORT: 4174
+      ATLAS_DISTRIBUTION_TARGET: standalone-docker-preview
       ATLAS_INSTANCE_ID: ${ATLAS_INSTANCE_ID:-atlas-local}
     ports:
       - "4176:4176"

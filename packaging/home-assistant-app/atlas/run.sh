@@ -13,5 +13,6 @@ export ATLAS_APP_HOST="${ATLAS_APP_HOST:-0.0.0.0}"
 export ATLAS_APP_PORT="${ATLAS_APP_PORT:-4176}"
 export ATLAS_ADMIN_PORT="${ATLAS_ADMIN_PORT:-4175}"
 export ATLAS_DEMO_PORT="${ATLAS_DEMO_PORT:-4174}"
+export ATLAS_DISTRIBUTION_TARGET="${ATLAS_DISTRIBUTION_TARGET:-home-assistant-app-preview}"
 
 exec node scripts/atlas-app-server.mjs

@@ -23,7 +23,8 @@ ENV NODE_ENV=production \
     ATLAS_APP_HOST=0.0.0.0 \
     ATLAS_APP_PORT=4176 \
     ATLAS_ADMIN_PORT=4175 \
-    ATLAS_DEMO_PORT=4174
+    ATLAS_DEMO_PORT=4174 \
+    ATLAS_DISTRIBUTION_TARGET=standalone-docker-preview
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/scripts ./scripts

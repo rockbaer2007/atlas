@@ -89,8 +89,8 @@ const targets: readonly HomeAssistantCardEditorAppReleaseTarget[] = [
   {
     id: "home-assistant-app",
     label: "Home Assistant App / Add-on",
-    status: "planned",
-    reason: "Derive the Home Assistant App/Add-on package from the same container and runtime after Docker is stable.",
+    status: "in-progress",
+    reason: "The App/Add-on scaffold builds a local preview image from the verified container runtime and reports its app target through /app.",
   },
   {
     id: "linux-installer",
@@ -145,6 +145,6 @@ export function createHomeAssistantCardEditorAppReleaseReadiness(): HomeAssistan
     ],
     checks,
     targets,
-    recommendedNextStep: "Derive the Home Assistant App/Add-on package from the verified container path, then add the Linux installer after the container contract stays stable.",
+    recommendedNextStep: "Install the prepared Home Assistant App/Add-on package in a local Home Assistant /addons directory, then add the Linux installer after the container contract stays stable.",
   };
 }

@@ -11,6 +11,7 @@ const healthHost = surfaceHost === "0.0.0.0" ? "127.0.0.1" : surfaceHost;
 const appPort = Number(process.env.ATLAS_APP_PORT ?? "4176");
 const adminPort = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const editorPort = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
+const distributionTarget = process.env.ATLAS_DISTRIBUTION_TARGET ?? "standalone-docker-preview";
 const adminUrl = `http://${healthHost}:${adminPort}/`;
 const editorUrl = `http://${healthHost}:${editorPort}/`;
 const startedAt = new Date().toISOString();
@@ -182,7 +183,7 @@ async function writeAppResponse(response, requestUrl) {
       editor: editorPort,
     },
     distribution: {
-      current: "standalone-docker-preview",
+      current: distributionTarget,
       order: [
         "standalone-docker",
         "home-assistant-app",

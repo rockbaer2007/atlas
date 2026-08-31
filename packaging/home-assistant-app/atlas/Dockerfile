@@ -37,7 +37,8 @@ ENV NODE_ENV=production \
     ATLAS_APP_HOST=0.0.0.0 \
     ATLAS_APP_PORT=4176 \
     ATLAS_ADMIN_PORT=4175 \
-    ATLAS_DEMO_PORT=4174
+    ATLAS_DEMO_PORT=4174 \
+    ATLAS_DISTRIBUTION_TARGET=home-assistant-app-preview
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/scripts ./scripts
@@ -50,6 +51,6 @@ RUN chmod a+x /run.sh
 EXPOSE 4176 4175 4174
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD node -e "const port = process.env.ATLAS_APP_PORT || '4176'; fetch(`http://127.0.0.1:${port}/health`).then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+  CMD ["node", "-e", "const port = process.env.ATLAS_APP_PORT || '4176'; fetch('http://127.0.0.1:' + port + '/health').then(response => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"]
 
 CMD ["/run.sh"]

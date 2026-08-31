@@ -86,9 +86,11 @@ safeguards such as opt-in problem reports, the reference plugin package state
 and the remaining HACS distribution targets. The standalone Docker path now
 builds the local image, starts both app surfaces and passes the container
 health check.
-The next packaging step is a Home Assistant App/Add-on package derived from the
-same container/runtime, followed by an optional Linux VM/LXC/bare-Linux
-installer with a systemd service.
+The Home Assistant App/Add-on scaffold now builds a local preview image from
+the same container/runtime and reports `home-assistant-app-preview` through
+`/app`. The next packaging check is installing the prepared app folder in a
+local Home Assistant `/addons` directory, followed by an optional Linux
+VM/LXC/bare-Linux installer with a systemd service.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server

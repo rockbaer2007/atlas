@@ -44,6 +44,9 @@ The first Home Assistant App/Add-on scaffold lives in
 `packaging/home-assistant-app/atlas`. It follows the Home Assistant app layout
 with `config.yaml`, `Dockerfile`, `run.sh`, user docs, changelog and
 translations.
+The scaffold builds a local preview image from the same ATLAS runtime and sets
+`ATLAS_DISTRIBUTION_TARGET=home-assistant-app-preview`, so `/app` can
+distinguish it from the standalone Docker preview.
 
 Prepare a local Home Assistant test copy with:
 
@@ -65,6 +68,7 @@ source files needed by the package Dockerfile.
 | `ATLAS_APP_PORT` | `4176` | App runtime and health endpoints. |
 | `ATLAS_ADMIN_PORT` | `4175` | Administration surface. |
 | `ATLAS_DEMO_PORT` | `4174` | Home Assistant Card Editor surface. |
+| `ATLAS_DISTRIBUTION_TARGET` | `standalone-docker-preview`, `home-assistant-app-preview` in the App/Add-on scaffold | Runtime target reported by `/app`. |
 | `ATLAS_INSTANCE_ID` | generated outside the repo | Optional stable identity pin for Docker/server deployments. |
 
 `ATLAS_INSTANCE_ID` should be set deliberately when encrypted Administration
