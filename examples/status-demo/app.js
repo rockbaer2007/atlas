@@ -70,6 +70,7 @@ const connectionState = document.querySelector("#connection-state");
 const entitySyncState = document.querySelector("#entity-sync-state");
 const adminHandoffState = document.querySelector("#admin-handoff-state");
 const adminTranslationModuleState = document.querySelector("#admin-translation-module-state");
+const openAdminLinks = Array.from(document.querySelectorAll("[data-open-admin]"));
 const connectButton = document.querySelector("#connect-home-assistant");
 const disconnectButton = document.querySelector("#disconnect-home-assistant");
 const homeAssistantEntity = document.querySelector("#home-assistant-entity");
@@ -1788,6 +1789,27 @@ function requestAdminConnectionHandoff() {
     type: "atlas.editor.ready.v1",
     sentAt: new Date().toISOString(),
   }, adminOrigin);
+}
+
+function createAdminNavigationUrl() {
+  try {
+    const targetUrl = new URL(adminOrigin);
+    const navigationUrl = new URL(window.location.href);
+    navigationUrl.port = targetUrl.port;
+    navigationUrl.pathname = "/";
+    navigationUrl.search = "";
+    navigationUrl.hash = "";
+    return navigationUrl.toString();
+  } catch {
+    return adminOrigin;
+  }
+}
+
+function bindAdminNavigationLinks() {
+  const adminNavigationUrl = createAdminNavigationUrl();
+  for (const link of openAdminLinks) {
+    link.href = adminNavigationUrl;
+  }
 }
 
 function renderConnectionLifecycle(lifecycle) {
@@ -7806,6 +7828,7 @@ syncCardLayoutState();
 renderGroupOptions(initialGroupSelection);
 renderEntityPickerOptions();
 renderConnectionReadiness();
+bindAdminNavigationLinks();
 void applyStoredAdminConnectionSettings();
 renderAdminHandoffState();
 renderCardTranslationModuleStatus();

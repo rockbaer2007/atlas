@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Derive the Card Editor "Open Atlas Administration" link from the current
+  Home Assistant host so it opens the Administration surface on port `4175`.
+
 ## 0.1.4
 
 - Keep the Administration "Open Card Editor" button on the current Home
