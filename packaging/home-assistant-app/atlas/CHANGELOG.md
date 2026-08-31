@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.29
+
+- Fix the ATLAS repository button icon path for Home Assistant/Ingress usage.
+
 ## 0.1.28
 
 - Replace long detected entity summary text with compact status chips in the
