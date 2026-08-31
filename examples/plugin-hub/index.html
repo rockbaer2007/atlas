@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ATLAS Plugin Hub</title>
+    <link rel="stylesheet" href="/examples/plugin-hub/styles.css">
+  </head>
+  <body>
+    <main class="hub-shell">
+      <header class="hub-header">
+        <div>
+          <p class="eyebrow">ATLAS</p>
+          <h1>Plugin Hub</h1>
+        </div>
+        <nav class="hub-actions" aria-label="ATLAS surfaces">
+          <a href="/admin">Administration</a>
+          <a href="/editor">Card Editor</a>
+        </nav>
+      </header>
+      <section class="hub-toolbar" aria-label="Plugin filters">
+        <span id="plugin-summary">Loading plugins...</span>
+      </section>
+      <section id="plugin-grid" class="plugin-grid" aria-live="polite"></section>
+    </main>
+    <script type="module" src="/examples/plugin-hub/app.js"></script>
+  </body>
+</html>

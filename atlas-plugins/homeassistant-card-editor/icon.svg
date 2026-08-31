@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="ATLAS Home Assistant Card Editor">
+  <rect width="128" height="128" rx="24" fill="#102938"/>
+  <path d="M28 92 64 24l36 68H82l-7-14H53l-7 14H28Z" fill="#2dd4bf"/>
+  <path d="M59 63h10l-5-11-5 11Z" fill="#facc15"/>
+  <rect x="26" y="26" width="20" height="14" rx="4" fill="#e8f7ff"/>
+  <rect x="82" y="26" width="20" height="14" rx="4" fill="#e8f7ff"/>
+  <rect x="52" y="88" width="24" height="12" rx="4" fill="#e8f7ff"/>
+</svg>

@@ -11,7 +11,9 @@ const sourceEntries = [
   { from: "pnpm-workspace.yaml", to: "pnpm-workspace.yaml" },
   { from: "tsconfig.base.json", to: "tsconfig.base.json" },
   { from: "packages", to: "packages" },
+  { from: "atlas-plugins", to: "atlas-plugins" },
   { from: "examples/admin-demo", to: "examples/admin-demo" },
+  { from: "examples/plugin-hub", to: "examples/plugin-hub" },
   { from: "examples/status-demo", to: "examples/status-demo" },
   { from: "scripts", to: "scripts" },
 ];

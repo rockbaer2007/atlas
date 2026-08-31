@@ -8,6 +8,7 @@ RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages ./packages
+COPY atlas-plugins ./atlas-plugins
 COPY examples ./examples
 COPY scripts ./scripts
 
@@ -30,6 +31,7 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/examples ./examples
 COPY --from=builder /app/packages ./packages
+COPY --from=builder /app/atlas-plugins ./atlas-plugins
 
 EXPOSE 4176 4175 4174
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.9
+
+- Add the first ATLAS Plugin Hub surface with automatic plugin manifest and
+  preview asset discovery.
+- Package plugin manifest folders for Home Assistant App/Add-on testing.
+
 ## 0.1.8
 
 - Resolve Card Editor Admin API requests against the current editor surface URL

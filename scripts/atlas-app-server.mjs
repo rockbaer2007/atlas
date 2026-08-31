@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { createServer } from "node:http";
-import { resolve } from "node:path";
+import { extname, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const packageJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
@@ -14,8 +14,17 @@ const editorPort = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const distributionTarget = process.env.ATLAS_DISTRIBUTION_TARGET ?? "standalone-docker-preview";
 const adminUrl = `http://${healthHost}:${adminPort}/`;
 const editorUrl = `http://${healthHost}:${editorPort}/`;
+const pluginRoot = resolve(root, "atlas-plugins");
 const startedAt = new Date().toISOString();
 const childProcesses = [];
+const mimeTypes = {
+  ".css": "text/css; charset=utf-8",
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".svg": "image/svg+xml; charset=utf-8",
+};
 
 await startSurface({
   name: "ATLAS Administration",
@@ -57,7 +66,27 @@ createServer((request, response) => {
     return;
   }
 
-  if (requestUrl.pathname === "/" || requestUrl.pathname === "/admin" || requestUrl.pathname === "/admin/") {
+  if (requestUrl.pathname === "/api/plugins") {
+    void writePluginCatalogResponse(response, requestUrl);
+    return;
+  }
+
+  if (requestUrl.pathname === "/" || requestUrl.pathname === "/hub" || requestUrl.pathname === "/hub/") {
+    serveStaticFile(response, resolve(root, "examples/plugin-hub/index.html"));
+    return;
+  }
+
+  if (requestUrl.pathname.startsWith("/examples/plugin-hub/")) {
+    serveStaticPath(response, requestUrl.pathname, resolve(root, "examples/plugin-hub"));
+    return;
+  }
+
+  if (requestUrl.pathname.startsWith("/plugin-assets/")) {
+    servePluginAsset(response, requestUrl.pathname);
+    return;
+  }
+
+  if (requestUrl.pathname === "/admin" || requestUrl.pathname === "/admin/") {
     response.writeHead(302, { location: createPublicSurfaceUrl(requestUrl, adminPort) });
     response.end();
     return;
@@ -74,6 +103,7 @@ createServer((request, response) => {
     links: {
       admin: createPublicSurfaceUrl(requestUrl, adminPort),
       editor: createPublicSurfaceUrl(requestUrl, editorPort),
+      hub: new URL("/hub", requestUrl).toString(),
       app: new URL("/app", requestUrl).toString(),
       health: new URL("/health", requestUrl).toString(),
     },
@@ -173,6 +203,7 @@ async function writeAppResponse(response, requestUrl) {
     startedAt,
     urls: {
       app: new URL("/", requestUrl).toString(),
+      hub: new URL("/hub", requestUrl).toString(),
       health: new URL("/health", requestUrl).toString(),
       admin: publicAdminUrl,
       editor: publicEditorUrl,
@@ -192,6 +223,14 @@ async function writeAppResponse(response, requestUrl) {
       ],
     },
     surfaces,
+    plugins: readPluginCatalog(requestUrl),
+  });
+}
+
+async function writePluginCatalogResponse(response, requestUrl) {
+  writeJson(response, 200, {
+    kind: "atlas.plugin.catalog",
+    plugins: readPluginCatalog(requestUrl),
   });
 }
 
@@ -238,4 +277,97 @@ function createPublicSurfaceUrl(requestUrl, port) {
   const url = new URL("/", requestUrl);
   url.port = String(port);
   return url.toString();
+}
+
+function readPluginCatalog(requestUrl) {
+  if (!existsSync(pluginRoot)) {
+    return [];
+  }
+
+  return readdirSync(pluginRoot, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => readPluginManifest(entry.name, requestUrl))
+    .filter(Boolean)
+    .sort((left, right) => (left.order ?? 999) - (right.order ?? 999) || left.name.localeCompare(right.name));
+}
+
+function readPluginManifest(directoryName, requestUrl) {
+  const manifestPath = resolve(pluginRoot, directoryName, "atlas-plugin.json");
+  if (!manifestPath.startsWith(pluginRoot) || !existsSync(manifestPath)) {
+    return undefined;
+  }
+
+  try {
+    const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    const id = typeof manifest.id === "string" && manifest.id.trim()
+      ? manifest.id.trim()
+      : directoryName;
+    const entryUrl = createPluginEntryUrl(manifest.entry, requestUrl);
+
+    return {
+      id,
+      name: typeof manifest.name === "string" ? manifest.name : id,
+      version: typeof manifest.version === "string" ? manifest.version : "0.0.0",
+      description: typeof manifest.description === "string" ? manifest.description : "",
+      status: typeof manifest.status === "string" ? manifest.status : "available",
+      order: Number.isFinite(manifest.order) ? manifest.order : 999,
+      capabilities: Array.isArray(manifest.capabilities)
+        ? manifest.capabilities.filter(capability => typeof capability === "string")
+        : [],
+      iconUrl: createPluginAssetUrl(directoryName, manifest.icon, requestUrl),
+      previewUrl: createPluginAssetUrl(directoryName, manifest.preview, requestUrl),
+      entryUrl,
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+function createPluginEntryUrl(entry, requestUrl) {
+  if (entry === "admin") {
+    return createPublicSurfaceUrl(requestUrl, adminPort);
+  }
+  if (entry === "editor") {
+    return createPublicSurfaceUrl(requestUrl, editorPort);
+  }
+  if (typeof entry === "string" && entry.trim()) {
+    return new URL(entry, requestUrl).toString();
+  }
+  return "";
+}
+
+function createPluginAssetUrl(directoryName, assetPath, requestUrl) {
+  if (typeof assetPath !== "string" || !assetPath.trim()) {
+    return "";
+  }
+  return new URL(`/plugin-assets/${encodeURIComponent(directoryName)}/${assetPath}`, requestUrl).toString();
+}
+
+function servePluginAsset(response, pathname) {
+  const parts = pathname.split("/").filter(Boolean);
+  const directoryName = parts[1] ? decodeURIComponent(parts[1]) : "";
+  const assetPath = parts.slice(2).join("/");
+  if (!directoryName || !assetPath) {
+    writeEmptyResponse(response, 404);
+    return;
+  }
+  const pluginDirectory = resolve(pluginRoot, directoryName);
+  serveStaticFile(response, resolve(pluginDirectory, normalize(assetPath)), pluginDirectory);
+}
+
+function serveStaticPath(response, pathname, baseDirectory = root) {
+  serveStaticFile(response, resolve(root, `.${normalize(pathname)}`), baseDirectory);
+}
+
+function serveStaticFile(response, filePath, baseDirectory = root) {
+  if (!filePath.startsWith(baseDirectory) || !existsSync(filePath) || statSync(filePath).isDirectory()) {
+    writeEmptyResponse(response, 404);
+    return;
+  }
+
+  response.writeHead(200, {
+    "content-type": mimeTypes[extname(filePath)] ?? "application/octet-stream",
+    "cache-control": "no-store",
+  });
+  createReadStream(filePath).pipe(response);
 }
