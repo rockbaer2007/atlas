@@ -1,0 +1,8 @@
+configuration:
+  atlas_instance_id:
+    name: "Atlas instance ID"
+    description: "Stable local identity for encrypted Administration secrets."
+network:
+  4176/tcp: "ATLAS app runtime"
+  4175/tcp: "ATLAS Administration"
+  4174/tcp: "ATLAS Card Editor"

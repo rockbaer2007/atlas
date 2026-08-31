@@ -1,0 +1,8 @@
+configuration:
+  atlas_instance_id:
+    name: "Atlas-Instanz-ID"
+    description: "Stabile lokale Identitaet fuer verschluesselte Administration-Secrets."
+network:
+  4176/tcp: "ATLAS App-Laufzeit"
+  4175/tcp: "ATLAS Administration"
+  4174/tcp: "ATLAS Card Editor"

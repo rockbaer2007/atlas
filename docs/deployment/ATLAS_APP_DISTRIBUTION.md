@@ -37,6 +37,24 @@ instance identity rules in an isolated environment. The Home Assistant
 App/Add-on should reuse that container contract. The Linux installer should run
 the same `scripts/atlas-app-server.mjs` entrypoint behind a service manager.
 
+## Home Assistant App/Add-on Preview
+
+The first Home Assistant App/Add-on scaffold lives in
+`packaging/home-assistant-app/atlas`. It follows the Home Assistant app layout
+with `config.yaml`, `Dockerfile`, `run.sh`, user docs, changelog and
+translations.
+
+Prepare a local Home Assistant test copy with:
+
+```sh
+pnpm ha:app:prepare
+```
+
+The command writes `output/home-assistant-app/atlas`. Copy that `atlas` folder
+to a Home Assistant `/addons` directory for local app testing, then refresh the
+App/Add-on store. The generated output contains the scaffold plus the ATLAS
+source files needed by the package Dockerfile.
+
 ## Runtime Configuration
 
 | Variable | Default | Notes |

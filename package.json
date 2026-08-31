@@ -10,6 +10,7 @@
     "check": "pnpm -r check",
     "test": "pnpm -r test",
     "start:app": "node scripts/atlas-app-server.mjs",
+    "ha:app:prepare": "node scripts/prepare-home-assistant-app.mjs",
     "docker:build": "docker build -t atlas:local .",
     "docker:up": "docker compose up --build",
     "clean": "pnpm -r exec rimraf dist"
