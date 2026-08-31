@@ -8,8 +8,36 @@
       :root {
         color-scheme: light;
         font-family: system-ui, sans-serif;
+        --atlas-bg: #f5f7fb;
+        --atlas-panel: #ffffff;
+        --atlas-panel-soft: #f8fafc;
+        --atlas-text: #172033;
+        --atlas-muted: #536079;
+        --atlas-border: #cbd5e1;
+        --atlas-border-soft: #d8e0ec;
+        --atlas-accent: #0f766e;
+        --atlas-accent-strong: #115e59;
+        --atlas-accent-soft: #e6fffb;
+        --atlas-on-accent: #ffffff;
         background: #f5f7fb;
         color: #172033;
+      }
+
+      :root[data-theme="dark"] {
+        color-scheme: dark;
+        --atlas-bg: #0f1417;
+        --atlas-panel: #171f23;
+        --atlas-panel-soft: #11191d;
+        --atlas-text: #edf7f8;
+        --atlas-muted: #a5b8bf;
+        --atlas-border: #40535b;
+        --atlas-border-soft: #2f4046;
+        --atlas-accent: #2dd4bf;
+        --atlas-accent-strong: #14b8a6;
+        --atlas-accent-soft: #113c30;
+        --atlas-on-accent: #06211e;
+        background: var(--atlas-bg);
+        color: var(--atlas-text);
       }
 
       body {
@@ -19,6 +47,8 @@
         place-items: center;
         padding: 24px;
         box-sizing: border-box;
+        background: var(--atlas-bg);
+        color: var(--atlas-text);
       }
 
       main {
@@ -46,25 +76,27 @@
 
       p {
         margin: 0 0 20px;
-        color: #536079;
+        color: var(--atlas-muted);
       }
 
-      .language-toggle {
+      .language-toggle,
+      .theme-toggle {
         display: inline-flex;
         flex: 0 0 auto;
         gap: 4px;
         padding: 3px;
-        border: 1px solid #cbd5e1;
+        border: 1px solid var(--atlas-border);
         border-radius: 6px;
-        background: #ffffff;
+        background: var(--atlas-panel);
       }
 
-      .language-toggle button {
+      .language-toggle button,
+      .theme-toggle button {
         min-width: 44px;
         border: 0;
         border-radius: 4px;
         background: transparent;
-        color: #536079;
+        color: var(--atlas-muted);
         padding: 6px 8px;
         font: inherit;
         font-size: 13px;
@@ -72,13 +104,19 @@
         cursor: pointer;
       }
 
-      .language-toggle button[aria-pressed="true"] {
-        background: #0f766e;
-        color: #ffffff;
+      .theme-toggle button {
+        min-width: 58px;
       }
 
-      .language-toggle button:focus-visible {
-        outline: 2px solid #0f766e;
+      .language-toggle button[aria-pressed="true"],
+      .theme-toggle button[aria-pressed="true"] {
+        background: var(--atlas-accent);
+        color: var(--atlas-on-accent);
+      }
+
+      .language-toggle button:focus-visible,
+      .theme-toggle button:focus-visible {
+        outline: 2px solid var(--atlas-accent);
         outline-offset: 2px;
       }
 
@@ -2352,7 +2390,63 @@
       #status-message {
         min-height: 24px;
         margin-top: 12px;
-        color: #536079;
+        color: var(--atlas-muted);
+      }
+
+      :root[data-theme="dark"] .connection-config.compact-panel,
+      :root[data-theme="dark"] .card-export-language-panel,
+      :root[data-theme="dark"] .diagnostics-panel,
+      :root[data-theme="dark"] .selected-entities-panel,
+      :root[data-theme="dark"] .entity-picker-panel,
+      :root[data-theme="dark"] .tabbed-card-dialog,
+      :root[data-theme="dark"] .atlas-entity-card {
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel);
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .connection-config input,
+      :root[data-theme="dark"] .connection-config select,
+      :root[data-theme="dark"] textarea,
+      :root[data-theme="dark"] pre,
+      :root[data-theme="dark"] .diagnostics-panel summary {
+        border-color: var(--atlas-border);
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .connection-config .remember-secret,
+      :root[data-theme="dark"] .atlas-entity-card small,
+      :root[data-theme="dark"] #stack-selection-summary,
+      :root[data-theme="dark"] .dialog-hint {
+        color: var(--atlas-muted);
+      }
+
+      :root[data-theme="dark"] .problem-report-button,
+      :root[data-theme="dark"] .status-controls button,
+      :root[data-theme="dark"] .connection-actions button,
+      :root[data-theme="dark"] .atlas-entity-card button {
+        border-color: var(--atlas-border);
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-accent);
+      }
+
+      :root[data-theme="dark"] .problem-report-button:hover,
+      :root[data-theme="dark"] .problem-report-button:focus-visible,
+      :root[data-theme="dark"] .status-controls button[aria-pressed="true"] {
+        border-color: var(--atlas-accent);
+        background: var(--atlas-accent-soft);
+        color: var(--atlas-accent);
+      }
+
+      :root[data-theme="dark"] .atlas-status {
+        border-color: color-mix(in srgb, var(--atlas-accent) 45%, var(--atlas-border));
+        background: var(--atlas-panel);
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .atlas-status span {
+        color: var(--atlas-accent);
       }
 
       @media (max-width: 720px) {
@@ -2362,6 +2456,14 @@
 
         .header-actions {
           justify-content: flex-start;
+        }
+
+        .theme-toggle {
+          width: 100%;
+        }
+
+        .theme-toggle button {
+          flex: 1 1 0;
         }
 
         .expert-editor-workbench {
@@ -2396,6 +2498,11 @@
         </div>
         <div class="header-actions">
           <button id="open-problem-report" class="problem-report-button" type="button" data-i18n="button.reportProblem">Report problem</button>
+          <div class="theme-toggle" role="group" aria-label="Theme" data-i18n-aria-label="aria.theme">
+            <button type="button" data-theme-mode="auto" aria-pressed="true" data-i18n="theme.auto">Auto</button>
+            <button type="button" data-theme-mode="light" aria-pressed="false" data-i18n="theme.light">Light</button>
+            <button type="button" data-theme-mode="dark" aria-pressed="false" data-i18n="theme.dark">Dark</button>
+          </div>
           <div class="language-toggle" role="group" aria-label="Language" data-i18n-aria-label="aria.language">
             <button type="button" data-language="de" aria-pressed="false">DE</button>
             <button type="button" data-language="en" aria-pressed="true">EN</button>

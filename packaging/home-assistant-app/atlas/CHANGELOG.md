@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.14
+
+- Add the shared ATLAS light/dark/auto theme switch to the Card Editor.
+- Persist the Card Editor theme choice through the same `atlas.themePreference`
+  key used by Administration and the Plugin Hub.
+- Add dark-mode surface styling for the Card Editor when embedded in Home
+  Assistant.
+
 ## 0.1.13
 
 - Add a real light/dark/auto theme switch to ATLAS Administration.

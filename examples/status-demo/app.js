@@ -57,6 +57,7 @@ const statusMessage = document.querySelector("#status-message");
 const selectedEntitiesPanel = document.querySelector("#selected-entities-panel");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
+const themeButtons = Array.from(document.querySelectorAll("[data-theme-mode]"));
 const openProblemReport = document.querySelector("#open-problem-report");
 const problemReportBackdrop = document.querySelector("#problem-report-backdrop");
 const closeProblemReport = document.querySelector("#close-problem-report");
@@ -204,6 +205,7 @@ const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCache";
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
+const atlasThemeStorageKey = "atlas.themePreference";
 const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
 const adminOrigin = createPortOrigin(4175);
 const adminConnectionApiUrl = createCurrentSurfaceUrl("api/admin-connection");
@@ -215,6 +217,7 @@ const cardTargets = listHomeAssistantCardTargets();
 const cardEditorTemplates = listHomeAssistantCardEditorTemplates();
 const bubbleButtonTypes = listHomeAssistantBubbleButtonTypes();
 let currentLanguage = "en";
+let currentThemePreference = "auto";
 const translations = {
   en: {
     "page.title": "ATLAS Home Assistant Card Editor",
@@ -319,6 +322,9 @@ const translations = {
     "button.turnOn": "Turn on",
     "button.turnOff": "Turn off",
     "link.openAdmin": "Open Atlas Administration",
+    "theme.auto": "Auto",
+    "theme.light": "Light",
+    "theme.dark": "Dark",
     "heading.expertEditor": "Expert editor preview",
     "heading.cardList": "Card list",
     "heading.tabbedCardSettings": "Tabbed Card V2 settings",
@@ -350,6 +356,7 @@ const translations = {
     "aria.entityTypeShortcuts": "Entity type shortcuts",
     "aria.clearEntitySearch": "Clear entity search",
     "aria.language": "Language",
+    "aria.theme": "Theme",
     "aria.cardEditorMode": "Card editor mode",
     "aria.availableCards": "Available Home Assistant cards",
     "aria.expertTemplates": "Expert editor templates",
@@ -755,6 +762,9 @@ const translations = {
     "button.turnOn": "Einschalten",
     "button.turnOff": "Ausschalten",
     "link.openAdmin": "Atlas Administration öffnen",
+    "theme.auto": "Auto",
+    "theme.light": "Hell",
+    "theme.dark": "Dunkel",
     "heading.expertEditor": "Expert-Editor-Vorschau",
     "heading.cardList": "Card-Liste",
     "heading.tabbedCardSettings": "Tabbed Card V2 Einstellungen",
@@ -786,6 +796,7 @@ const translations = {
     "aria.entityTypeShortcuts": "Entitätstyp-Schnellauswahl",
     "aria.clearEntitySearch": "Entitätssuche löschen",
     "aria.language": "Sprache",
+    "aria.theme": "Darstellung",
     "aria.cardEditorMode": "Card-Editor-Modus",
     "aria.availableCards": "Verfügbare Home Assistant Cards",
     "aria.expertTemplates": "Expert-Editor-Templates",
@@ -1118,6 +1129,9 @@ function applyTranslations() {
   for (const button of languageButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
   }
+  for (const button of themeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.themeMode === currentThemePreference));
+  }
   renderEntityCatalogSyncStatus();
 }
 
@@ -1135,6 +1149,43 @@ function setLanguage(language) {
   renderCardTranslationModuleStatus();
   renderTemporaryHaCardResourceList();
   persistConfiguration();
+}
+
+function normalizeThemePreference(value) {
+  return ["auto", "light", "dark"].includes(value) ? value : "auto";
+}
+
+function currentSystemTheme() {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyThemePreference() {
+  const resolvedTheme = currentThemePreference === "auto" ? currentSystemTheme() : currentThemePreference;
+  document.documentElement.dataset.theme = resolvedTheme;
+  document.documentElement.dataset.themePreference = currentThemePreference;
+  for (const button of themeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.themeMode === currentThemePreference));
+  }
+}
+
+function setThemePreference(preference) {
+  currentThemePreference = normalizeThemePreference(preference);
+  applyThemePreference();
+  try {
+    localStorage.setItem(atlasThemeStorageKey, currentThemePreference);
+  } catch {
+    // Theme preference can fall back to automatic mode if storage is blocked.
+  }
+  persistConfiguration();
+}
+
+function restoreThemePreference(savedPreference) {
+  try {
+    currentThemePreference = normalizeThemePreference(savedPreference ?? localStorage.getItem(atlasThemeStorageKey));
+  } catch {
+    currentThemePreference = normalizeThemePreference(savedPreference);
+  }
+  applyThemePreference();
 }
 
 function maybeTranslate(key, fallback) {
@@ -1344,12 +1395,14 @@ for (const group of panelGroups) {
   }
 }
 loadCachedEntityCatalog();
+restoreThemePreference();
 
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
   if (savedConfiguration?.language === "de" || savedConfiguration?.language === "en") {
     currentLanguage = savedConfiguration.language;
   }
+  restoreThemePreference(savedConfiguration?.themePreference);
   if (typeof savedConfiguration?.url === "string") {
     homeAssistantUrl.value = savedConfiguration.url;
   }
@@ -1906,6 +1959,7 @@ function persistConfiguration() {
   try {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
       language: currentLanguage,
+      themePreference: currentThemePreference,
       url: homeAssistantUrl.value,
       entities: homeAssistantEntity.value,
       entityDomain: homeAssistantEntityDomain.value,
@@ -7189,6 +7243,18 @@ for (const button of languageButtons) {
     setLanguage(button.dataset.language);
   });
 }
+
+for (const button of themeButtons) {
+  button.addEventListener("click", () => {
+    setThemePreference(button.dataset.themeMode);
+  });
+}
+
+window.matchMedia?.("(prefers-color-scheme: dark)")?.addEventListener("change", () => {
+  if (currentThemePreference === "auto") {
+    applyThemePreference();
+  }
+});
 
 openProblemReport.addEventListener("click", openProblemReportDialog);
 closeProblemReport.addEventListener("click", closeProblemReportDialog);
