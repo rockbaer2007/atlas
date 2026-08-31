@@ -26,6 +26,10 @@ The administration view also includes an App release readiness panel for the
 Card Editor. It tracks the local-preview entrypoints, completed safeguards such
 as the opt-in problem report flow, the reference plugin package path and the
 remaining standalone/HACS release targets.
+The preferred distribution order is: first a standalone Docker container for
+Administration plus Card Editor, then a Home Assistant App/Add-on package
+derived from the same container/runtime, then an optional Linux installer for
+VM, LXC or bare Linux with a systemd service.
 Plugin activation state is also stored locally so the demo administration view
 survives reloads without turning imported plugins back into a fresh list.
 The administration page also stores the selected Card translation module for

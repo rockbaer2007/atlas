@@ -75,9 +75,11 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
   - `/hacsfiles/Bubble-Card/bubble-card.js`
 - Mushroom resource path:
   - `/hacsfiles/lovelace-mushroom/mushroom.js`
-- Atlas should support a dual deployment direction:
-  - standalone/self-hosted Atlas editor or server
-  - later Home Assistant/HACS frontend integration
+- Atlas should support a multi-target deployment direction:
+  - first: standalone/self-hosted Docker container for Atlas Administration plus Card Editor
+  - second: Home Assistant App/Add-on packaging derived from the same container/runtime
+  - third: optional Linux installer for VM, LXC or bare Linux with systemd service
+  - later: Home Assistant/HACS frontend integration where it makes sense
 - Treat the Home Assistant Card Editor as the first official ATLAS reference plugin, not merely as a demo.
 - The user wants entity selection from Home Assistant when Atlas is installed or connected.
 - Access tokens are managed by Atlas Administration, not by the Card Editor.
@@ -153,7 +155,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Future direction includes a visual drag-and-drop editor with templates in a sidebar.
 - Future direction includes Bubble, Mushroom, built-in Entity/Entities, Button, Sensor, Grid, Thermostat, Link, Webpage, vertical-stack, and horizontal-stack options.
 - Future direction includes detecting installed Home Assistant resources and offering relevant card/entity choices.
-- Future direction includes using Atlas directly on a server or as a Home Assistant/HACS integration.
+- Future direction includes using Atlas directly on a server, in Docker, as a Home Assistant App/Add-on, through an optional Linux VM/LXC/bare-metal installer, or as a later Home Assistant/HACS frontend integration.
+- Preferred ATLAS distribution order: build the standalone Docker container first, derive the Home Assistant App/Add-on packaging from that container second, and add the Linux/systemd installer third only after the container path is stable.
 - Future direction includes a separate plugin documentation area for authoring, lifecycle, extension APIs, examples, and publishing guidance.
 - Future direction includes an Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation.
 - Future direction includes using the Home Assistant Card Editor as the first reference plugin for ATLAS plugin architecture, administration and package export.

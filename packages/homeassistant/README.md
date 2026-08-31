@@ -84,6 +84,9 @@ README and example Home Assistant card YAML.
 release path with Administration and Card Editor entrypoints, completed
 safeguards such as opt-in problem reports, the reference plugin package state
 and the remaining standalone/HACS distribution targets.
+The preferred packaging order is standalone Docker first, then a Home Assistant
+App/Add-on package derived from the same container/runtime, and finally an
+optional Linux VM/LXC/bare-Linux installer with a systemd service.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server

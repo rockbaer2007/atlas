@@ -18,7 +18,12 @@ export type HomeAssistantCardEditorAppReleaseCheck = Readonly<{
 }>;
 
 export type HomeAssistantCardEditorAppReleaseTarget = Readonly<{
-  id: "self-hosted" | "home-assistant-hacs" | "atlas-plugin";
+  id:
+    | "standalone-docker"
+    | "home-assistant-app"
+    | "linux-installer"
+    | "home-assistant-hacs"
+    | "atlas-plugin";
   label: string;
   status: HomeAssistantCardEditorAppReleaseStatus;
   reason: string;
@@ -76,10 +81,22 @@ const checks: readonly HomeAssistantCardEditorAppReleaseCheck[] = [
 
 const targets: readonly HomeAssistantCardEditorAppReleaseTarget[] = [
   {
-    id: "self-hosted",
-    label: "Standalone / self-hosted app",
+    id: "standalone-docker",
+    label: "Standalone Docker container",
     status: "in-progress",
-    reason: "Administration and Card Editor already run as separate local web surfaces with a defined handoff boundary.",
+    reason: "Build the first repeatable package as one container for Administration and the Card Editor.",
+  },
+  {
+    id: "home-assistant-app",
+    label: "Home Assistant App / Add-on",
+    status: "planned",
+    reason: "Derive the Home Assistant App/Add-on package from the same container and runtime after Docker is stable.",
+  },
+  {
+    id: "linux-installer",
+    label: "Linux VM / LXC installer",
+    status: "planned",
+    reason: "Add a systemd-based installer for VM, LXC or bare Linux after the container path is stable.",
   },
   {
     id: "atlas-plugin",
@@ -91,7 +108,7 @@ const targets: readonly HomeAssistantCardEditorAppReleaseTarget[] = [
     id: "home-assistant-hacs",
     label: "Home Assistant / HACS integration",
     status: "planned",
-    reason: "HACS-oriented card bundles exist first; native Home Assistant installation remains the later distribution target.",
+    reason: "HACS-oriented card bundles exist first; native Home Assistant frontend installation remains a later integration target.",
   },
 ];
 
@@ -128,6 +145,6 @@ export function createHomeAssistantCardEditorAppReleaseReadiness(): HomeAssistan
     ],
     checks,
     targets,
-    recommendedNextStep: "Turn the local preview into a repeatable standalone app package with Administration as the launch surface.",
+    recommendedNextStep: "Build the standalone Docker container first, then derive the Home Assistant App/Add-on package and add the Linux installer after the container path is stable.",
   };
 }
