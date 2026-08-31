@@ -95,7 +95,7 @@ const mimeTypes = {
   ".json": "application/json; charset=utf-8",
   ".map": "application/json; charset=utf-8",
 };
-let adminConnectionSettings;
+let adminConnectionSettings = createInitialAdminConnectionSettingsFromEnv();
 let adminDeviceBinding;
 
 createServer((request, response) => {
@@ -643,6 +643,24 @@ function normalizeParcelProviderSettings(value) {
       };
     }),
   };
+}
+
+function createInitialAdminConnectionSettingsFromEnv() {
+  const url = process.env.ATLAS_ADMIN_HOME_ASSISTANT_URL?.trim() ?? "";
+  const token = process.env.ATLAS_ADMIN_HOME_ASSISTANT_TOKEN?.trim() ?? "";
+  const rememberToken = process.env.ATLAS_ADMIN_REMEMBER_HOME_ASSISTANT_TOKEN === "1";
+  const autoConnectEditor = process.env.ATLAS_ADMIN_AUTO_CONNECT_EDITOR === "1";
+
+  if (!url && (!rememberToken || !token) && !autoConnectEditor) {
+    return undefined;
+  }
+
+  return normalizeAdminConnectionSettings({
+    url,
+    token: rememberToken ? token : "",
+    autoConnectEditor,
+    translationProvider: "none",
+  });
 }
 
 function canReadAdminConnectionSecrets(request, requestUrl) {

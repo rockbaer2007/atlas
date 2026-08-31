@@ -11,6 +11,9 @@ The Add-on enables Home Assistant Ingress on the Card Editor port, so
 The Home Assistant token and translation provider keys stay in ATLAS
 Administration. The Card Editor receives only the current browser session
 handoff and provider key-configured flags.
+The Add-on options can provide the Home Assistant URL, a long-lived access
+token, whether ATLAS Administration should import that token on startup and
+whether the Card Editor should auto-connect after the handoff.
 
 ATLAS keeps a stable app identity through the `atlas_instance_id` option. Use a
 deliberate value when encrypted Administration secrets should survive app
@@ -38,6 +41,17 @@ Administration bleibt ueber den Link im Editor erreichbar. Home-Assistant-Token
 und Provider-API-Keys bleiben in ATLAS Administration beziehungsweise in den
 Add-on-Optionen und werden nicht dauerhaft im Editor gespeichert.
 
+## Home-Assistant-Token in den Add-on-Optionen
+
+Trage in der Add-on-Konfiguration die Home-Assistant-URL und optional einen
+Long-Lived Access Token ein. Aktiviere **Token in ATLAS Administration
+uebernehmen**, wenn ATLAS den Token beim Start an die Administration uebergeben
+soll. Aktiviere **Card Editor automatisch verbinden**, wenn der Editor nach dem
+Handoff direkt verbinden soll.
+
+Der Token wird nicht dauerhaft im Card Editor gespeichert. Administration
+bleibt der Besitzer der Verbindungseinstellungen.
+
 ## Add Editor as Dashboard/Webpage
 
 The preferred Add-on path is **Settings -> Add-ons -> ATLAS -> Show in
@@ -48,3 +62,14 @@ Alternatively, go to **Settings -> Dashboards**, add a **Webpage** dashboard, us
 `Atlas Card Editor` as the name and set the URL to the editor endpoint, for
 example `http://<home-assistant-host>:4174/`. Enable **Show in sidebar** before
 saving.
+
+## Home Assistant Token in Add-on Options
+
+Enter the Home Assistant URL and optionally a long-lived access token in the
+Add-on configuration. Enable **Import token into ATLAS Administration** when
+ATLAS should pass the token to Administration on startup. Enable
+**Auto-connect Card Editor** when the editor should connect immediately after
+the handoff.
+
+The token is not stored permanently by the Card Editor. Administration remains
+the owner of the connection settings.

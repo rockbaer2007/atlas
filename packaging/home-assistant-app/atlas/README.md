@@ -49,3 +49,10 @@ To embed the editor like other local web tools instead, create a Home Assistant
 The editor opens inside Home Assistant. Administration stays available from the
 editor link, while Home Assistant tokens and provider API keys stay in ATLAS
 Administration or the Add-on options.
+
+## Add-on connection options
+
+The Add-on configuration can provide the Home Assistant URL, a long-lived
+access token, whether ATLAS Administration should import that token on startup
+and whether the Card Editor should auto-connect after the handoff. The token is
+not stored permanently by the Card Editor.

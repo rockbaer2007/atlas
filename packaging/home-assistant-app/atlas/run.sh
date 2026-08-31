@@ -5,7 +5,15 @@ OPTIONS_PATH="/data/options.json"
 
 if [ -f "$OPTIONS_PATH" ]; then
   ATLAS_INSTANCE_ID="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(String(options.atlas_instance_id || 'atlas-home-assistant'));" "$OPTIONS_PATH")"
+  ATLAS_ADMIN_HOME_ASSISTANT_URL="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(String(options.home_assistant_url || ''));" "$OPTIONS_PATH")"
+  ATLAS_ADMIN_HOME_ASSISTANT_TOKEN="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(String(options.home_assistant_token || ''));" "$OPTIONS_PATH")"
+  ATLAS_ADMIN_REMEMBER_HOME_ASSISTANT_TOKEN="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(options.remember_home_assistant_token === true ? '1' : '0');" "$OPTIONS_PATH")"
+  ATLAS_ADMIN_AUTO_CONNECT_EDITOR="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(options.auto_connect_editor === true ? '1' : '0');" "$OPTIONS_PATH")"
   export ATLAS_INSTANCE_ID
+  export ATLAS_ADMIN_HOME_ASSISTANT_URL
+  export ATLAS_ADMIN_HOME_ASSISTANT_TOKEN
+  export ATLAS_ADMIN_REMEMBER_HOME_ASSISTANT_TOKEN
+  export ATLAS_ADMIN_AUTO_CONNECT_EDITOR
 fi
 
 export ATLAS_HOST="${ATLAS_HOST:-0.0.0.0}"
