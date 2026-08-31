@@ -133,6 +133,18 @@ Home Assistant Provider
 ### Phase G7
 Developer Tools
 
+### Plugin Repository Template Path
+
+- Create a public `atlas-plugin-repository-demo` repository for testing
+  ATLAS repository installation, updates and removal.
+- Use that demo repository as the reference layout for future plugin authors:
+  `repository.json`, plugin package, manifest, icon, preview image, README and
+  compatibility metadata.
+- Derive an official plugin template from the demo repository after the
+  installation and update flow is stable.
+- Add a later generator path that can create a new ATLAS plugin from the
+  template with the correct folder structure and metadata.
+
 ## Long-term Goal
 
 Atlas becomes a provider-based platform where integrations are plugins rather than core features.
