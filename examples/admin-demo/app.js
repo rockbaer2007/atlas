@@ -226,6 +226,8 @@ const translations = {
     "button.refreshRepositories": "Refresh repositories",
     "button.removeRepository": "Remove repository",
     "button.installRepositoryPackage": "Install",
+    "button.updateRepositoryPackage": "Update",
+    "button.removeRepositoryPackage": "Remove",
     "button.removeImportedPackage": "Remove import",
     "provider.none": "Default / fallback files",
     "provider.chatgpt": "ChatGPT / OpenAI",
@@ -288,7 +290,14 @@ const translations = {
     "message.pluginRepositoryNoEntries": "No custom repositories added yet.",
     "message.pluginRepositoryPreviewEmpty": "Enter a repository URL and preview it before adding.",
     "message.pluginRepositoryPreviewLoaded": "{count} plugins found in {name}.",
-    "message.pluginRepositoryInstallPlanned": "Repository package installation is planned; local package import remains available.",
+    "message.pluginRepositoryPluginInstalled": "{name} installed from repository.",
+    "message.pluginRepositoryPluginUpdated": "{name} updated from repository.",
+    "message.pluginRepositoryPluginRemoved": "{name} removed.",
+    "message.pluginRepositoryInstallFailed": "{name} could not be installed from repository.",
+    "message.pluginRepositoryUpdateAvailable": "Update available: {installed} -> {available}",
+    "message.pluginRepositoryInstalledVersion": "Installed: {version}",
+    "message.pluginRepositoryNotInstalled": "Not installed",
+    "message.pluginRepositoryNoPackage": "No installable package or manifest URL.",
     "type.plugin": "Plugin",
     "type.card": "Card",
     "type.integration": "Integration",
@@ -386,6 +395,8 @@ const translations = {
     "button.refreshRepositories": "Repositories aktualisieren",
     "button.removeRepository": "Repository entfernen",
     "button.installRepositoryPackage": "Installieren",
+    "button.updateRepositoryPackage": "Aktualisieren",
+    "button.removeRepositoryPackage": "Entfernen",
     "button.removeImportedPackage": "Import entfernen",
     "provider.none": "Standard / Fallback-Dateien",
     "provider.chatgpt": "ChatGPT / OpenAI",
@@ -448,7 +459,14 @@ const translations = {
     "message.pluginRepositoryNoEntries": "Noch keine benutzerdefinierten Repositories hinzugefuegt.",
     "message.pluginRepositoryPreviewEmpty": "Gib eine Repository-URL ein und pruefe sie vor dem Hinzufuegen.",
     "message.pluginRepositoryPreviewLoaded": "{count} Plugins in {name} gefunden.",
-    "message.pluginRepositoryInstallPlanned": "Repository-Paketinstallation ist geplant; lokaler Paketimport bleibt verfuegbar.",
+    "message.pluginRepositoryPluginInstalled": "{name} aus Repository installiert.",
+    "message.pluginRepositoryPluginUpdated": "{name} aus Repository aktualisiert.",
+    "message.pluginRepositoryPluginRemoved": "{name} entfernt.",
+    "message.pluginRepositoryInstallFailed": "{name} konnte nicht aus dem Repository installiert werden.",
+    "message.pluginRepositoryUpdateAvailable": "Update verfuegbar: {installed} -> {available}",
+    "message.pluginRepositoryInstalledVersion": "Installiert: {version}",
+    "message.pluginRepositoryNotInstalled": "Nicht installiert",
+    "message.pluginRepositoryNoPackage": "Keine installierbare Paket- oder Manifest-URL.",
     "type.plugin": "Plugin",
     "type.card": "Card",
     "type.integration": "Integration",
@@ -1474,8 +1492,10 @@ function normalizeRepositoryPlugin(plugin, repositoryEntry, index) {
     name: typeof plugin.name === "string" && plugin.name.trim() ? plugin.name.trim() : id,
     version: typeof plugin.version === "string" ? plugin.version : "",
     description: typeof plugin.description === "string" ? plugin.description : "",
+    repositoryId: `${repositoryEntry.type}:${repositoryEntry.url}`,
     repositoryName: repositoryEntry.name || repositoryEntry.url,
     repositoryType: repositoryEntry.type,
+    repositoryUrl: repositoryEntry.url,
     manifestUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.manifest),
     packageUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.package),
     capabilities: Array.isArray(plugin.capabilities)
@@ -1495,9 +1515,172 @@ function resolveRepositoryUrl(repositoryUrl, value) {
   }
 }
 
+function findInstalledPlugin(pluginId) {
+  return currentPluginDescriptors().find(plugin => plugin.id === pluginId);
+}
+
+function findImportedPlugin(pluginId) {
+  return importedPluginDescriptors.find(plugin => plugin.id === pluginId);
+}
+
+function isRepositoryInstalledPlugin(pluginId) {
+  return importedPluginDescriptors.some(plugin => plugin.id === pluginId && plugin.source === "repository");
+}
+
+function comparePluginVersions(left, right) {
+  const leftValue = typeof left === "string" ? left : "";
+  const rightValue = typeof right === "string" ? right : "";
+
+  if (!leftValue && !rightValue) return 0;
+  if (leftValue && !rightValue) return 1;
+  if (!leftValue && rightValue) return -1;
+
+  return leftValue.localeCompare(rightValue, undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
+}
+
+function repositoryPluginInstallState(plugin) {
+  const installed = findInstalledPlugin(plugin.id);
+  const installedVersion = installed?.version ?? "";
+  const updateAvailable = Boolean(installed && comparePluginVersions(plugin.version, installedVersion) > 0);
+
+  return {
+    installed,
+    installedVersion,
+    updateAvailable,
+    removable: isRepositoryInstalledPlugin(plugin.id),
+  };
+}
+
+async function fetchRepositoryPluginInstallPackage(plugin) {
+  if (plugin.packageUrl) {
+    const response = await fetch(plugin.packageUrl, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Repository plugin package could not be loaded.");
+    }
+    return parseRuntimePluginInstallPackage(await response.text());
+  }
+
+  if (plugin.manifestUrl) {
+    const response = await fetch(plugin.manifestUrl, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Repository plugin manifest could not be loaded.");
+    }
+    return {
+      plugin: normalizeRepositoryPluginManifest(await response.json(), plugin),
+      files: [],
+    };
+  }
+
+  throw new Error("Repository plugin has no installable package or manifest.");
+}
+
+function normalizeRepositoryPluginManifest(manifest, fallbackPlugin) {
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) {
+    throw new Error("Repository plugin manifest is invalid.");
+  }
+
+  const id = typeof manifest.id === "string" && manifest.id.trim() ? manifest.id.trim() : fallbackPlugin.id;
+  const name = typeof manifest.name === "string" && manifest.name.trim() ? manifest.name.trim() : fallbackPlugin.name;
+  const version = typeof manifest.version === "string" && manifest.version.trim()
+    ? manifest.version.trim()
+    : fallbackPlugin.version;
+  const description = typeof manifest.description === "string" && manifest.description.trim()
+    ? manifest.description.trim()
+    : fallbackPlugin.description;
+  const dependencies = Array.isArray(manifest.dependencies) ? manifest.dependencies : [];
+  const extensionPoints = Array.isArray(manifest.extensionPoints)
+    ? manifest.extensionPoints.filter(value => typeof value === "string")
+    : [];
+  const providesSource = Array.isArray(manifest.provides)
+    ? manifest.provides
+    : Array.isArray(manifest.capabilities)
+      ? manifest.capabilities
+      : fallbackPlugin.capabilities;
+
+  return {
+    id,
+    name,
+    version,
+    description,
+    dependencies,
+    extensionPoints,
+    provides: Array.isArray(providesSource)
+      ? providesSource.filter(value => typeof value === "string")
+      : [],
+  };
+}
+
+async function installRepositoryPluginPackage(plugin) {
+  const existing = findInstalledPlugin(plugin.id);
+  const imported = findImportedPlugin(plugin.id);
+
+  if (existing && imported?.source !== "repository") {
+    adminSaveState.textContent = t("message.pluginPackageDuplicate", { name: existing.name });
+    return;
+  }
+
+  try {
+    const installPackage = await fetchRepositoryPluginInstallPackage(plugin);
+    const descriptor = installPackage.plugin;
+    if (descriptor.id !== plugin.id) {
+      throw new Error("Repository plugin id does not match descriptor.");
+    }
+
+    const installedPlugin = {
+      ...descriptor,
+      source: "repository",
+      repositoryId: plugin.repositoryId,
+      repositoryName: plugin.repositoryName,
+      repositoryType: plugin.repositoryType,
+      repositoryUrl: plugin.repositoryUrl,
+      manifestUrl: plugin.manifestUrl,
+      packageUrl: plugin.packageUrl,
+      files: installPackage.files,
+      installedAt: new Date().toISOString(),
+    };
+    const wasInstalled = Boolean(imported);
+
+    importedPluginDescriptors = [
+      ...importedPluginDescriptors.filter(entry => entry.id !== descriptor.id),
+      installedPlugin,
+    ];
+    activePluginIds.add(descriptor.id);
+    persistImportedPlugins();
+    persistPluginState();
+    renderPluginRepositoryPreview();
+    renderAdministration();
+    adminSaveState.textContent = t(
+      wasInstalled ? "message.pluginRepositoryPluginUpdated" : "message.pluginRepositoryPluginInstalled",
+      { name: descriptor.name },
+    );
+  } catch {
+    adminSaveState.textContent = t("message.pluginRepositoryInstallFailed", { name: plugin.name });
+  }
+}
+
+function removeRepositoryPluginPackage(plugin) {
+  if (!isRepositoryInstalledPlugin(plugin.id)) {
+    return;
+  }
+
+  importedPluginDescriptors = importedPluginDescriptors.filter(entry =>
+    !(entry.id === plugin.id && entry.source === "repository"),
+  );
+  activePluginIds.delete(plugin.id);
+  persistImportedPlugins();
+  persistPluginState();
+  renderPluginRepositoryPreview();
+  renderAdministration();
+  adminSaveState.textContent = t("message.pluginRepositoryPluginRemoved", { name: plugin.name });
+}
+
 function renderPluginRepositoryPreview() {
   pluginRepositoryPluginList.replaceChildren();
   for (const plugin of repositoryPluginDescriptors) {
+    const installState = repositoryPluginInstallState(plugin);
     const item = document.createElement("article");
     const header = document.createElement("div");
     const titleGroup = document.createElement("div");
@@ -1507,6 +1690,7 @@ function renderPluginRepositoryPreview() {
     const details = document.createElement("div");
     const actions = document.createElement("div");
     const installButton = document.createElement("button");
+    const removeButton = document.createElement("button");
 
     item.className = "plugin-card";
     header.className = "plugin-header";
@@ -1516,7 +1700,18 @@ function renderPluginRepositoryPreview() {
 
     title.textContent = plugin.name;
     description.textContent = plugin.description || plugin.id;
-    status.textContent = plugin.packageUrl ? "Package" : "Manifest";
+    if (installState.updateAvailable) {
+      status.textContent = t("message.pluginRepositoryUpdateAvailable", {
+        installed: installState.installedVersion,
+        available: plugin.version || "-",
+      });
+    } else if (installState.installed) {
+      status.textContent = t("message.pluginRepositoryInstalledVersion", {
+        version: installState.installedVersion || "-",
+      });
+    } else {
+      status.textContent = t("message.pluginRepositoryNotInstalled");
+    }
     titleGroup.append(title, description);
     header.append(titleGroup, status);
     details.append(
@@ -1529,10 +1724,26 @@ function renderPluginRepositoryPreview() {
     );
     installButton.type = "button";
     installButton.className = "accent";
-    installButton.textContent = t("button.installRepositoryPackage");
-    installButton.disabled = true;
-    installButton.title = t("message.pluginRepositoryInstallPlanned");
+    installButton.textContent = installState.updateAvailable
+      ? t("button.updateRepositoryPackage")
+      : t("button.installRepositoryPackage");
+    installButton.disabled = Boolean(installState.installed && !installState.removable)
+      || Boolean(installState.installed && !installState.updateAvailable)
+      || (!plugin.packageUrl && !plugin.manifestUrl);
+    if (!plugin.packageUrl && !plugin.manifestUrl) {
+      installButton.title = t("message.pluginRepositoryNoPackage");
+    }
+    installButton.addEventListener("click", () => {
+      void installRepositoryPluginPackage(plugin);
+    });
     actions.append(installButton);
+    if (installState.removable) {
+      removeButton.type = "button";
+      removeButton.className = "secondary";
+      removeButton.textContent = t("button.removeRepositoryPackage");
+      removeButton.addEventListener("click", () => removeRepositoryPluginPackage(plugin));
+      actions.append(removeButton);
+    }
     item.append(header, details, actions);
     pluginRepositoryPluginList.append(item);
   }

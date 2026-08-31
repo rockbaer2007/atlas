@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.25
+
+- Install ATLAS repository plugins from package or manifest URLs into the
+  persisted Administration plugin state.
+- Add repository update detection per plugin and enable Install, Update and
+  Remove actions in the Administration repository preview.
+
 ## 0.1.24
 
 - Limit the detected Home Assistant entities table height to roughly ten rows
