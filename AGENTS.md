@@ -9,6 +9,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Current Atlas focus: Home Assistant card editor, Simple/Expert workflows, HACS-oriented export/import, and bilingual documentation.
 - The Atlas Home Assistant Card Editor demo standard port is fixed to `4174`; serve it at `http://127.0.0.1:4174/`.
 - The Atlas Administration demo standard port is fixed to `4175`; serve it at `http://127.0.0.1:4175/`.
+- The combined Atlas app server standard port is fixed to `4176`; `pnpm start:app` should expose `http://127.0.0.1:4176/health` while starting Administration and Card Editor together.
 - The external documentation site uses VitePress in `ugso-opensource-docs` and is maintained in German and English.
 
 ## Collaboration Rules

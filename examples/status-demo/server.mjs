@@ -4,9 +4,11 @@ import { createServer } from "node:http";
 import { extname, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
+const host = process.env.ATLAS_DEMO_HOST ?? process.env.ATLAS_HOST ?? "127.0.0.1";
 const port = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const adminPort = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
-const adminUrl = `http://127.0.0.1:${adminPort}/`;
+const adminHost = process.env.ATLAS_ADMIN_HOST ?? process.env.ATLAS_HOST ?? "127.0.0.1";
+const adminUrl = `http://${adminHost}:${adminPort}/`;
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -40,8 +42,8 @@ createServer((request, response) => {
     "content-type": mimeTypes[extname(filePath)] ?? "application/octet-stream",
   });
   createReadStream(filePath).pipe(response);
-}).listen(port, "127.0.0.1", () => {
-  console.log(`ATLAS status demo: http://127.0.0.1:${port}/`);
+}).listen(port, host, () => {
+  console.log(`ATLAS status demo: http://${host}:${port}/`);
 });
 
 async function startAdministrationServerIfNeeded() {
@@ -56,6 +58,7 @@ async function startAdministrationServerIfNeeded() {
     env: {
       ...process.env,
       ATLAS_ADMIN_PORT: String(adminPort),
+      ATLAS_ADMIN_HOST: adminHost,
     },
     stdio: "inherit",
   });

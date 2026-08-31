@@ -5,6 +5,7 @@ import { homedir } from "node:os";
 import { dirname, extname, join, normalize, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..");
+const host = process.env.ATLAS_ADMIN_HOST ?? process.env.ATLAS_HOST ?? "127.0.0.1";
 const port = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
@@ -137,8 +138,8 @@ createServer((request, response) => {
     "content-type": mimeTypes[extname(filePath)] ?? "application/octet-stream",
   });
   createReadStream(filePath).pipe(response);
-}).listen(port, "127.0.0.1", () => {
-  console.log(`ATLAS administration: http://127.0.0.1:${port}/`);
+}).listen(port, host, () => {
+  console.log(`ATLAS administration: http://${host}:${port}/`);
 });
 
 async function handleAdminConnectionRequest(request, response) {
