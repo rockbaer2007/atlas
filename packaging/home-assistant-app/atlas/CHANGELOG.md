@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.26
+
+- Add an ATLAS-branded repository button with teal, cyan and orange accents in
+  the Administration plugin area.
+- Keep the button wired to the existing custom repository dialog.
+
 ## 0.1.25
 
 - Install ATLAS repository plugins from package or manifest URLs into the

@@ -423,6 +423,55 @@
         color: #ffffff;
       }
 
+      .atlas-repository-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 44px;
+        border: 0;
+        border-radius: 999px;
+        background:
+          linear-gradient(90deg, var(--atlas-accent), #22c7e9),
+          var(--atlas-accent);
+        color: #ffffff;
+        padding: 8px 10px 8px 20px;
+        box-shadow: inset 0 -3px 0 rgb(245 158 11 / 34%);
+        font-weight: 900;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .atlas-repository-button:hover {
+        background:
+          linear-gradient(90deg, var(--atlas-accent-strong), #0ea5c8),
+          var(--atlas-accent-strong);
+        color: #ffffff;
+      }
+
+      .atlas-repository-target {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 28px;
+        border-radius: 999px;
+        background: #eefcff;
+        color: var(--atlas-accent-strong);
+        padding: 4px 10px;
+        white-space: nowrap;
+      }
+
+      .atlas-repository-logo {
+        width: 18px;
+        height: 18px;
+        color: var(--atlas-orange);
+      }
+
+      :root[data-theme="dark"] .atlas-repository-target {
+        background: #dff9f5;
+        color: #0b5f59;
+      }
+
       button:disabled,
       button.accent:disabled {
         border-color: var(--atlas-border-strong);
@@ -735,6 +784,12 @@
           grid-template-columns: 1fr;
         }
 
+        .atlas-repository-button {
+          justify-content: center;
+          flex-wrap: wrap;
+          padding-left: 14px;
+        }
+
         .repository-dialog-grid {
           grid-template-columns: 1fr;
         }
@@ -963,7 +1018,16 @@
           <div class="plugin-tools">
             <button id="import-plugin-package" type="button" data-i18n="button.importPackage">Import package</button>
             <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
-            <button id="open-plugin-repository-dialog" class="accent" type="button" data-i18n="button.openRepositoryDialog">Add ATLAS repository</button>
+            <button id="open-plugin-repository-dialog" class="atlas-repository-button" type="button">
+              <span data-i18n="button.openRepositoryDialog">Add ATLAS repository</span>
+              <span class="atlas-repository-target" aria-hidden="true">
+                ATLAS
+                <svg class="atlas-repository-logo" viewBox="0 0 24 24" role="img" focusable="false">
+                  <path fill="currentColor" d="M12 3 4.6 19.5h14.8L12 3Zm0 5.3 4.1 9.2H7.9L12 8.3Z"/>
+                  <path fill="currentColor" d="M12 11.2 9.2 17.5h5.6L12 11.2Z"/>
+                </svg>
+              </span>
+            </button>
           </div>
           <div class="plugin-repository-tools">
             <div class="panel-header">
