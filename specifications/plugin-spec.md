@@ -64,3 +64,25 @@ Administration, the Plugin Hub and plugin surfaces. The UI theme switch should
 support light, dark and automatic modes, persist the chosen mode and be able to
 follow the surrounding Home Assistant frame when embedded through ingress or a
 webpage panel.
+
+## Reference Plugin: ATLAS File Studio
+
+ATLAS File Studio is planned as the second official reference plugin. It should
+provide Home Assistant configuration editing capabilities similar in scope to
+the Home Assistant File editor, but with an ATLAS/Card-Editor-aligned interface.
+
+The initial capability set should include:
+
+- a file tree rooted at `/config` by default
+- a focused editor surface with syntax highlighting
+- YAML validation for Home Assistant configuration files
+- upload and download actions
+- optional later Git support for diffs, commits, branches and pushes
+- optional later Home Assistant helper lists for entities, services, triggers,
+  events and conditions
+
+File Studio must not become an unrestricted root file manager by default. A
+controlled "one level up" or extended-area action can expose approved parent or
+neighbor paths behind `/config`, but only when Administration grants the
+corresponding capability. Planned path capabilities include `config`, `www`,
+`custom_components`, `addons` and optional `parent-of-config`.

@@ -190,6 +190,16 @@ additional envelope-only contract expansion.
   * 2+ active plugins: show the visual plugin selection hub
   * planned or disabled plugins: visible in Hub/Admin but excluded from auto-start
 * Home Assistant Card Editor reference plugin using Runtime plugin contracts and Plugin Catalog discovery
+* ATLAS File Studio as second reference plugin:
+  * functionally inspired by the Home Assistant File editor
+  * ATLAS/Card-Editor-aligned design instead of copied upstream visuals
+  * file tree and editor surface for Home Assistant configuration files
+  * syntax highlighting and YAML validation for Home Assistant config editing
+  * upload/download and later Git diff, commit, branch and push support
+  * safe default start in `/config`
+  * controlled "one level up" / extended-area button for inspecting approved paths behind `/config`
+  * no unrestricted root file manager by default
+  * Administration-owned capabilities for approved path groups such as `config`, `www`, `custom_components`, `addons` and optional `parent-of-config`
 * Extension API
 * Provider ecosystem
 * Third-party integrations

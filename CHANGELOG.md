@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Roadmap and plugin specification now track ATLAS File Studio as the second
+  reference plugin: an ATLAS-styled Home Assistant file editor with controlled
+  `/config` and approved extended-path access.
 - Atlas Administration now opens a HACS-inspired, Atlas-branded add-repository
   dialog with URL/type entry, repository preview and orange Atlas accent actions.
 - Atlas Administration now manages custom plugin repositories in a
