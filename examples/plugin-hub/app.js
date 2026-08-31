@@ -85,7 +85,7 @@ function createPluginCard(plugin) {
 
   const preview = document.createElement("img");
   preview.className = "plugin-preview";
-  preview.src = plugin.previewUrl || plugin.iconUrl;
+  preview.src = plugin.previewUrl || plugin.logoUrl || plugin.iconUrl;
   preview.alt = `${plugin.name} preview`;
   card.append(preview);
 
@@ -95,10 +95,14 @@ function createPluginCard(plugin) {
   const titleRow = document.createElement("div");
   titleRow.className = "plugin-title-row";
 
-  const icon = document.createElement("img");
-  icon.className = "plugin-icon";
-  icon.src = plugin.iconUrl;
-  icon.alt = "";
+  const iconUrl = plugin.iconUrl || plugin.logoUrl;
+  let icon;
+  if (iconUrl) {
+    icon = document.createElement("img");
+    icon.className = "plugin-icon";
+    icon.alt = "";
+    icon.src = iconUrl;
+  }
 
   const title = document.createElement("div");
   const name = document.createElement("h2");
@@ -114,8 +118,16 @@ function createPluginCard(plugin) {
   status.dataset.status = plugin.status;
   status.textContent = plugin.status;
 
-  titleRow.append(icon, title, status);
+  titleRow.append(...[icon, title, status].filter(Boolean));
   body.append(titleRow);
+
+  if (plugin.logoUrl) {
+    const logo = document.createElement("img");
+    logo.className = "plugin-logo";
+    logo.src = plugin.logoUrl;
+    logo.alt = `${plugin.name} logo`;
+    body.append(logo);
+  }
 
   const description = document.createElement("p");
   description.className = "plugin-description";

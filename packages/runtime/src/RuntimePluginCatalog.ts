@@ -11,6 +11,9 @@ export type RuntimePluginDescriptor = Readonly<{
   name: string;
   version: string;
   description?: string;
+  icon?: string;
+  logo?: string;
+  preview?: string;
   dependencies: readonly ModuleDependency[];
   extensionPoints: readonly string[];
   provides: readonly string[];
@@ -72,6 +75,9 @@ export function describeRuntimePlugin(plugin: RuntimePlugin): RuntimePluginDescr
     name: manifest.name,
     version: manifest.version,
     description: manifest.description,
+    icon: manifest.icon,
+    logo: manifest.logo,
+    preview: manifest.preview,
     dependencies: [...(manifest.dependencies ?? [])],
     extensionPoints: [...(manifest.extensionPoints ?? [])],
     provides: [...(manifest.provides ?? [])],

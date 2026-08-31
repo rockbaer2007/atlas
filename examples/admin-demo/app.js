@@ -157,6 +157,10 @@ const appRuntimeApiUrl = createPortNavigationUrl(4176, "/app");
 const longTermCookieMaxAge = 31536000;
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
+const localPluginAssetDirectories = {
+  [HomeAssistantCardEditorPluginId]: "homeassistant-card-editor",
+  "atlas.plugin.simple-editor": "simple-editor",
+};
 
 let currentLanguage = "en";
 let currentThemePreference = "auto";
@@ -204,6 +208,7 @@ const translations = {
     "label.capabilities": "Capabilities",
     "label.compatibility": "Compatibility",
     "label.icon": "Icon",
+    "label.logo": "Logo",
     "label.preview": "Preview",
     "label.pluginRepositories": "Custom repositories",
     "label.pluginRepositoryUrl": "Repository",
@@ -376,6 +381,7 @@ const translations = {
     "label.capabilities": "Faehigkeiten",
     "label.compatibility": "Kompatibilitaet",
     "label.icon": "Icon",
+    "label.logo": "Logo",
     "label.preview": "Vorschau",
     "label.pluginRepositories": "Benutzerdefinierte Repositories",
     "label.pluginRepositoryUrl": "Repository",
@@ -1373,9 +1379,9 @@ function renderPluginRepositoryDialogPreview(plugins) {
     title.textContent = plugin.name;
     description.textContent = plugin.description || plugin.id;
     meta.textContent = [plugin.version, plugin.packageUrl ? "Package" : "Manifest"].filter(Boolean).join(" · ");
-    if (plugin.iconUrl) {
+    if (plugin.logoUrl || plugin.iconUrl) {
       const icon = document.createElement("img");
-      icon.src = plugin.iconUrl;
+      icon.src = plugin.logoUrl || plugin.iconUrl;
       icon.alt = "";
       media.append(icon);
     }
@@ -1516,6 +1522,7 @@ function normalizeRepositoryPlugin(plugin, repositoryEntry, index) {
     repositoryType: repositoryEntry.type,
     repositoryUrl: repositoryEntry.url,
     iconUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.icon),
+    logoUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.logo),
     previewUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.preview),
     manifestUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.manifest),
     packageUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.package),
@@ -1649,6 +1656,9 @@ function normalizeRepositoryPluginManifest(manifest, fallbackPlugin) {
     name,
     version,
     description,
+    icon: typeof manifest.icon === "string" ? manifest.icon : "",
+    logo: typeof manifest.logo === "string" ? manifest.logo : "",
+    preview: typeof manifest.preview === "string" ? manifest.preview : "",
     dependencies,
     extensionPoints,
     provides: Array.isArray(providesSource)
@@ -1683,6 +1693,7 @@ async function installRepositoryPluginPackage(plugin) {
       manifestUrl: plugin.manifestUrl,
       packageUrl: plugin.packageUrl,
       iconUrl: plugin.iconUrl,
+      logoUrl: plugin.logoUrl,
       previewUrl: plugin.previewUrl,
       compatibility: plugin.compatibility,
       files: installPackage.files,
@@ -1761,9 +1772,9 @@ function renderPluginRepositoryPreview() {
     } else {
       status.textContent = t("message.pluginRepositoryNotInstalled");
     }
-    if (plugin.iconUrl) {
+    if (plugin.logoUrl || plugin.iconUrl) {
       const icon = document.createElement("img");
-      icon.src = plugin.iconUrl;
+      icon.src = plugin.logoUrl || plugin.iconUrl;
       icon.alt = "";
       media.append(icon);
     }
@@ -1782,6 +1793,7 @@ function renderPluginRepositoryPreview() {
       createDetail(t("label.pluginRepositoryType"), [t(`type.${plugin.repositoryType}`)]),
       createDetail(t("label.compatibility"), formatRepositoryPluginCompatibility(plugin.compatibility)),
       createDetail(t("label.icon"), [plugin.iconUrl || "-"]),
+      createDetail(t("label.logo"), [plugin.logoUrl || "-"]),
       createDetail(t("label.preview"), [plugin.previewUrl || "-"]),
       createDetail("Manifest", [plugin.manifestUrl || "-"]),
       createDetail("Package", [plugin.packageUrl || "-"]),
@@ -1911,6 +1923,25 @@ function currentPluginDescriptors() {
     ...pluginCatalog.list(),
     ...importedPluginDescriptors,
   ];
+}
+
+function resolvePluginDisplayAssetUrl(plugin, kind) {
+  const directUrl = kind === "logo"
+    ? plugin.logoUrl
+    : kind === "preview"
+      ? plugin.previewUrl
+      : plugin.iconUrl;
+  if (directUrl) {
+    return directUrl;
+  }
+
+  const assetPath = plugin?.[kind];
+  const directory = localPluginAssetDirectories[plugin.id];
+  if (typeof assetPath !== "string" || !assetPath.trim() || !directory) {
+    return "";
+  }
+
+  return `/atlas-plugins/${encodeURIComponent(directory)}/${assetPath}`;
 }
 
 function isImportedPlugin(pluginId) {
@@ -2340,6 +2371,7 @@ function renderAdministration() {
   for (const plugin of view.plugins) {
     const item = document.createElement("article");
     const header = document.createElement("div");
+    const media = document.createElement("div");
     const titleGroup = document.createElement("div");
     const title = document.createElement("h3");
     const description = document.createElement("p");
@@ -2349,6 +2381,7 @@ function renderAdministration() {
 
     item.className = "plugin-card";
     header.className = "plugin-header";
+    media.className = "plugin-media";
     status.className = "plugin-status";
     details.className = "plugin-details";
     actions.className = "action-grid";
@@ -2356,11 +2389,20 @@ function renderAdministration() {
     title.textContent = plugin.name;
     description.textContent = plugin.description ?? plugin.id;
     status.textContent = translatePluginStatus(plugin.status);
+    const displayAssetUrl = resolvePluginDisplayAssetUrl(plugin, "logo")
+      || resolvePluginDisplayAssetUrl(plugin, "icon");
+    if (displayAssetUrl) {
+      const image = document.createElement("img");
+      image.src = displayAssetUrl;
+      image.alt = "";
+      media.append(image);
+    }
     titleGroup.append(title, description);
-    header.append(titleGroup, status);
+    header.append(media, titleGroup, status);
 
     details.append(
       createDetail(t("label.version"), [plugin.version]),
+      createDetail(t("label.logo"), [resolvePluginDisplayAssetUrl(plugin, "logo") || "-"]),
       createDetail(t("label.extensionPoints"), plugin.extensionPoints),
       createDetail(t("label.capabilities"), plugin.provides),
     );

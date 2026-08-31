@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.32
+
+- Add `logo` as a first-class plugin asset alongside icon and preview.
+- Show ATLAS-branded plugin logos in Administration and Plugin Hub surfaces.
+- Refresh the built-in Card Editor and Simple Editor plugin icons with
+  function-specific ATLAS overlays.
+- Document the plugin icon, logo and preview asset convention in the roadmap
+  and repository format specification.
+
 ## 0.1.31
 
 - Add the first ATLAS plugin repository format specification.

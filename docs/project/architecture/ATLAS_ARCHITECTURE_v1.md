@@ -138,8 +138,11 @@ Developer Tools
 - Create a public `atlas-plugin-repository-demo` repository for testing
   ATLAS repository installation, updates and removal.
 - Use that demo repository as the reference layout for future plugin authors:
-  `repository.json`, plugin package, manifest, icon, preview image, README and
-  compatibility metadata.
+  `repository.json`, plugin package, manifest, icon, logo, preview image,
+  README and compatibility metadata.
+- Give every plugin its own function-specific icon and logo with a consistent
+  ATLAS overlay, and show those assets in Administration, Plugin Hub and
+  repository previews.
 - Derive an official plugin template from the demo repository after the
   installation and update flow is stable.
 - Add a later generator path that can create a new ATLAS plugin from the

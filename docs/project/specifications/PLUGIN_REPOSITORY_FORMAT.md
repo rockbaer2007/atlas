@@ -38,6 +38,7 @@ The repository entry point is `repository.json`.
   "version": "0.1.0",
   "description": "Demo plugin for repository install, update and removal tests.",
   "icon": "./plugins/simple-file-editor/icon.svg",
+  "logo": "./plugins/simple-file-editor/logo.svg",
   "preview": "./plugins/simple-file-editor/preview.svg",
   "package": "./plugins/simple-file-editor/simple-file-editor.atlas-plugin.json",
   "manifest": "./plugins/simple-file-editor/atlas-plugin.json",
@@ -59,8 +60,9 @@ The repository entry point is `repository.json`.
 | `name` | yes | Display name in Administration and Plugin Hub. |
 | `version` | yes | Published plugin version. |
 | `description` | no | Short explanation for users. |
-| `icon` | no | Relative or absolute URL to an icon. |
-| `preview` | no | Relative or absolute URL to a preview image. |
+| `icon` | recommended | Relative or absolute URL to a compact square plugin icon. |
+| `logo` | recommended | Relative or absolute URL to a wider ATLAS-branded plugin logo. |
+| `preview` | recommended | Relative or absolute URL to a preview image or screenshot. |
 | `package` | recommended | Relative or absolute URL to an install package. |
 | `manifest` | fallback | Relative or absolute URL to a plugin manifest. |
 | `capabilities` | no | Declared capability strings shown before install. |
@@ -83,6 +85,9 @@ The package URL points to an ATLAS runtime plugin install package:
     "name": "ATLAS Simple File Editor",
     "version": "0.1.0",
     "description": "Demo plugin for repository install, update and removal tests.",
+    "icon": "icon.svg",
+    "logo": "logo.svg",
+    "preview": "preview.svg",
     "dependencies": [],
     "extensionPoints": ["atlas.plugin.demo"],
     "provides": ["atlas.plugin.demo", "homeassistant.file-editor"]
@@ -106,6 +111,7 @@ plugins/
     atlas-plugin.json
     simple-file-editor.atlas-plugin.json
     icon.svg
+    logo.svg
     preview.svg
     README.md
 README.md
@@ -114,3 +120,19 @@ README.md
 This demo repository is the future seed for an official ATLAS plugin template
 and a later generator that creates new plugin folders with the expected
 metadata and assets.
+
+## Plugin Asset Convention
+
+Every user-facing plugin should carry its own visual identity while staying
+recognizable as part of ATLAS:
+
+| Asset | Shape | Purpose |
+|---|---|---|
+| `icon` | square, usually SVG or PNG | Compact lists, small status rows and fallback thumbnails. |
+| `logo` | wide, usually SVG or PNG | Administration cards, Hub branding and repository previews. |
+| `preview` | 16:9 image | Visual Hub card preview or plugin screenshot. |
+
+The plugin-specific symbol should describe the function, for example a card
+layout for the Card Editor or a text document for a File Editor. The ATLAS
+overlay or mark should stay consistent across plugins so users can distinguish
+ATLAS plugins from generic Home Assistant or HACS entries.

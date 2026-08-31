@@ -12,6 +12,9 @@ export type RuntimePluginManifest = Readonly<{
   name: string;
   version: string;
   description?: string;
+  icon?: string;
+  logo?: string;
+  preview?: string;
   dependencies?: readonly ModuleDependency[];
   extensionPoints?: readonly string[];
   provides?: readonly string[];

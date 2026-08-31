@@ -333,6 +333,7 @@ function readPluginManifest(directoryName, requestUrl) {
         ? manifest.capabilities.filter(capability => typeof capability === "string")
         : [],
       iconUrl: createPluginAssetUrl(directoryName, manifest.icon, requestUrl),
+      logoUrl: createPluginAssetUrl(directoryName, manifest.logo, requestUrl),
       previewUrl: createPluginAssetUrl(directoryName, manifest.preview, requestUrl),
       entryUrl,
     };

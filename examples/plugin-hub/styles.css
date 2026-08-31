@@ -115,6 +115,19 @@ h1 {
   width: 48px;
   height: 48px;
   border-radius: 8px;
+  object-fit: contain;
+  background: #dbe8ec;
+}
+
+.plugin-logo {
+  display: block;
+  width: min(100%, 220px);
+  height: 64px;
+  margin-top: 12px;
+  border: 1px solid var(--atlas-border);
+  border-radius: 8px;
+  object-fit: contain;
+  background: #0f2733;
 }
 
 .plugin-name {
@@ -233,6 +246,10 @@ h1 {
 :root[data-theme="dark"] .plugin-status[data-status="planned"] {
   background: #3e300a;
   color: #facc15;
+}
+
+:root[data-theme="dark"] .plugin-icon {
+  background: #10191d;
 }
 
 @media (max-width: 680px) {
