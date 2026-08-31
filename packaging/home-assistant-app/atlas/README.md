@@ -7,6 +7,9 @@ wraps the same runtime used by the standalone Docker preview:
 - ATLAS Administration on port `4175`
 - Home Assistant Card Editor reference plugin on port `4174`
 
+Home Assistant Ingress is enabled for the Card Editor port, so **Open web UI**
+and **Show in sidebar** open the editor directly.
+
 Prepare a local test copy from the repository root:
 
 ```sh
@@ -30,7 +33,10 @@ the Card Editor are ready.
 
 ## Home Assistant sidebar dashboard
 
-To embed the editor like other local web tools, create a Home Assistant
+The preferred Add-on path is **Settings -> Add-ons -> ATLAS -> Show in
+sidebar**. This opens the Card Editor through Home Assistant Ingress.
+
+To embed the editor like other local web tools instead, create a Home Assistant
 **Webpage** dashboard:
 
 1. Open **Settings -> Dashboards**.
