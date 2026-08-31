@@ -206,6 +206,7 @@ const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCache";
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const atlasThemeStorageKey = "atlas.themePreference";
+const defaultAtlasExportEntityIds = ["binary_sensor.atlas_status", "sensor.atlas_temperature"];
 const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
 const adminOrigin = createPortOrigin(4175);
 const adminConnectionApiUrl = createCurrentSurfaceUrl("api/admin-connection");
@@ -483,6 +484,7 @@ const translations = {
     "message.groupCreated": "Group {title} created.",
     "message.haCardCopied": "HA card {format} copied to clipboard.",
     "message.haCardExported": "HA card exported as {filename}.",
+    "message.defaultAtlasEntitiesUsed": "No entities selected. ATLAS example entities were inserted for this export: {entities}.",
     "message.exportCancelled": "Export cancelled.",
     "message.exportFailed": "Export failed.",
     "message.exportPathHint": "Choose a save location if your browser supports it, or use the normal download fallback.",
@@ -927,6 +929,7 @@ const translations = {
     "message.groupCreated": "Gruppe {title} erstellt.",
     "message.haCardCopied": "HA-Card {format} in die Zwischenablage kopiert.",
     "message.haCardExported": "HA-Card als {filename} exportiert.",
+    "message.defaultAtlasEntitiesUsed": "Keine Entitäten ausgewählt. ATLAS-Beispielentitäten wurden für diesen Export eingesetzt: {entities}.",
     "message.exportCancelled": "Export abgebrochen.",
     "message.exportFailed": "Export fehlgeschlagen.",
     "message.exportPathHint": "Wähle einen Speicherort, wenn dein Browser das unterstützt, oder nutze den normalen Download-Fallback.",
@@ -2255,6 +2258,19 @@ function cardPreviewEntityIds() {
   return usesStackEntitySelection() ? selectedStackEntityIds() : trackedEntityIds();
 }
 
+function cardExportEntityIds() {
+  const entityIds = cardPreviewEntityIds();
+  return entityIds.length ? entityIds : [...defaultAtlasExportEntityIds];
+}
+
+function usesDefaultAtlasExportEntities() {
+  return activeEditorMode === "simple" && cardPreviewEntityIds().length === 0;
+}
+
+function defaultAtlasExportMessage() {
+  return t("message.defaultAtlasEntitiesUsed", { entities: defaultAtlasExportEntityIds.join(", ") });
+}
+
 function renderStackSelectionSummary() {
   const entityIds = trackedEntityIds();
   if (entityIds.length === 0) {
@@ -2705,7 +2721,7 @@ function scanExpertPaletteCardsFromHomeAssistant() {
     : t("message.connectAndScanAgain", { message: scanMessage });
 }
 
-function createHaCardConfig() {
+function createHaCardConfig({ useExportFallback = false } = {}) {
   if (importedSimpleCard && haCardTarget.value === "custom-card") {
     return importedSimpleCard;
   }
@@ -2714,7 +2730,7 @@ function createHaCardConfig() {
     target: haCardTarget.value,
     layout: haCardLayout.value,
     title: group?.title ?? (homeAssistantGroupName.value.trim() || "ATLAS panel"),
-    entityIds: cardPreviewEntityIds(),
+    entityIds: useExportFallback ? cardExportEntityIds() : cardPreviewEntityIds(),
   });
 }
 
@@ -2774,17 +2790,17 @@ function createExpertHaCardConfig() {
   });
 }
 
-function createActiveHaCardConfig() {
-  return activeEditorMode === "expert" ? createExpertHaCardConfig() : createHaCardConfig();
+function createActiveHaCardConfig({ useExportFallback = false } = {}) {
+  return activeEditorMode === "expert" ? createExpertHaCardConfig() : createHaCardConfig({ useExportFallback });
 }
 
-function createActiveCardEditorPlan() {
+function createActiveCardEditorPlan({ useExportFallback = false } = {}) {
   return createHomeAssistantCardEditorPackagePlan({
     cardName: currentHaCardExportName(),
     scriptFilename: currentHaCardScriptFilename(),
     editorMode: activeEditorMode,
     simpleTarget: haCardTarget.value,
-    defaultEntityIds: cardPreviewEntityIds(),
+    defaultEntityIds: useExportFallback ? cardExportEntityIds() : cardPreviewEntityIds(),
     fields: activeEditorMode === "expert" ? normalizedExpertEditorFields() : [],
   });
 }
@@ -6248,7 +6264,7 @@ function moveExpertEditorField(index, placement) {
 }
 
 function createHaCardExportPayload() {
-  const card = createActiveHaCardConfig();
+  const card = createActiveHaCardConfig({ useExportFallback: true });
   const payload = createHomeAssistantCardExportPayload({
     card,
     format: haCardFormat.value,
@@ -6270,7 +6286,10 @@ function openHaCardExportDialog() {
   setHaCardExportDialogStyle(haCardStyleExport.value);
   haCardExportStyleControl.hidden = !(activeEditorMode === "expert" && haCardFormat.value === "yaml");
   saveHaCardExportAs.disabled = typeof window.showSaveFilePicker !== "function";
-  haCardExportStatus.textContent = saveHaCardExportAs.disabled ? t("message.savePickerUnavailable") : "";
+  haCardExportStatus.textContent = [
+    saveHaCardExportAs.disabled ? t("message.savePickerUnavailable") : "",
+    usesDefaultAtlasExportEntities() ? defaultAtlasExportMessage() : "",
+  ].filter(Boolean).join(" ");
   haCardExportBackdrop.hidden = false;
   (haCardExportStyleControl.hidden
     ? (saveHaCardExportAs.disabled ? downloadHaCardExport : saveHaCardExportAs)
@@ -6383,7 +6402,10 @@ async function exportHaCardPayload(useSavePicker) {
       filename = downloadHaCardPayload(payload);
     }
     closeHaCardExportDialog();
-    statusMessage.textContent = t("message.haCardExported", { filename });
+    statusMessage.textContent = [
+      t("message.haCardExported", { filename }),
+      usesDefaultAtlasExportEntities() ? defaultAtlasExportMessage() : "",
+    ].filter(Boolean).join(" ");
   } catch (error) {
     haCardExportStatus.textContent = error?.name === "AbortError"
       ? t("message.exportCancelled")
@@ -6507,8 +6529,8 @@ function mergeTranslatedCardLocales(cardPackage, translatedLocales) {
 }
 
 function createHaCardExportPackage() {
-  const card = createActiveHaCardConfig();
-  const editorPlan = createActiveCardEditorPlan();
+  const card = createActiveHaCardConfig({ useExportFallback: true });
+  const editorPlan = createActiveCardEditorPlan({ useExportFallback: true });
   const cardPackage = createHomeAssistantCardExportPackage({
     card,
     format: haCardFormat.value,
@@ -6530,7 +6552,7 @@ function createHaCardExportPackage() {
 }
 
 function canExportHaCard() {
-  return activeEditorMode === "expert" ? expertEditorFields.length > 0 : cardPreviewEntityIds().length > 0;
+  return activeEditorMode === "expert" ? expertEditorFields.length > 0 : true;
 }
 
 async function writeClipboardText(text) {
@@ -7689,7 +7711,7 @@ exportHaCardPackage.addEventListener("click", async () => {
   statusMessage.textContent = t("message.packageExportedWithLanguages", {
     scriptFilename: cardPackage.editorPlan?.scriptFilename ?? currentHaCardScriptFilename(),
     languages: cardPackage.manifest.languages.join(", "),
-  });
+  }) + (usesDefaultAtlasExportEntities() ? ` ${defaultAtlasExportMessage()}` : "");
 });
 exportHaCardScript.addEventListener("click", () => {
   if (!canExportHaCard()) {
@@ -7697,13 +7719,16 @@ exportHaCardScript.addEventListener("click", () => {
     return;
   }
 
-  const scriptExport = createHomeAssistantCardEditorScriptExport(createActiveCardEditorPlan());
+  const scriptExport = createHomeAssistantCardEditorScriptExport(createActiveCardEditorPlan({ useExportFallback: true }));
   const link = document.createElement("a");
   link.href = URL.createObjectURL(new Blob([scriptExport.source], { type: "text/javascript" }));
   link.download = scriptExport.filename;
   link.click();
   URL.revokeObjectURL(link.href);
-  statusMessage.textContent = t("message.scriptExported", { scriptFilename: scriptExport.filename });
+  statusMessage.textContent = [
+    t("message.scriptExported", { scriptFilename: scriptExport.filename }),
+    usesDefaultAtlasExportEntities() ? defaultAtlasExportMessage() : "",
+  ].filter(Boolean).join(" ");
 });
 exportHaCardBundle.addEventListener("click", async () => {
   if (!canExportHaCard()) {
@@ -7726,7 +7751,7 @@ exportHaCardBundle.addEventListener("click", async () => {
       .filter(file => file.path.startsWith("locales/") && file.path.endsWith(".json"))
       .map(file => file.path.replace(/^locales\/|\.json$/g, ""))
       .join(", "),
-  });
+  }) + (usesDefaultAtlasExportEntities() ? ` ${defaultAtlasExportMessage()}` : "");
 });
 copyHaCardConfig.addEventListener("click", async () => {
   if (!canExportHaCard()) {
@@ -7737,7 +7762,10 @@ copyHaCardConfig.addEventListener("click", async () => {
   try {
     const payload = createHaCardExportPayload();
     await writeClipboardText(payload.content);
-    statusMessage.textContent = t("message.haCardCopied", { format: haCardFormat.value.toUpperCase() });
+    statusMessage.textContent = [
+      t("message.haCardCopied", { format: haCardFormat.value.toUpperCase() }),
+      usesDefaultAtlasExportEntities() ? defaultAtlasExportMessage() : "",
+    ].filter(Boolean).join(" ");
   } catch {
     statusMessage.textContent = t("message.copyPreviewFailed");
   }
@@ -7752,13 +7780,13 @@ copyHaCardResources.addEventListener("click", async () => {
     if (activeEditorMode === "expert") {
       const editorIntegrationPlan = createHomeAssistantCardEditorFrontendIntegrationPlan({
         mode: "server",
-        editorPlan: createActiveCardEditorPlan(),
+        editorPlan: createActiveCardEditorPlan({ useExportFallback: true }),
         resources: lovelaceResources,
       });
       const requiredDependencies = editorIntegrationPlan.editorDependencyPlan.dependencies.filter(dependency => dependency.required);
       await writeClipboardText(serializeHomeAssistantCardEditorFrontendResourceReferences({
         mode: "server",
-        editorPlan: createActiveCardEditorPlan(),
+        editorPlan: createActiveCardEditorPlan({ useExportFallback: true }),
         resources: lovelaceResources,
       }, haCardFormat.value));
       statusMessage.textContent = requiredDependencies.length
@@ -7770,19 +7798,23 @@ copyHaCardResources.addEventListener("click", async () => {
       return;
     }
 
-    const card = createActiveHaCardConfig();
+    const card = createActiveHaCardConfig({ useExportFallback: true });
     const dependency = inspectHomeAssistantCardDependency(card);
     await writeClipboardText(serializeHomeAssistantAtlasFrontendResourceReferences({
       mode: "server",
       card,
       resources: lovelaceResources,
     }, haCardFormat.value));
-    statusMessage.textContent = dependency.required
+    const resourceMessage = dependency.required
       ? t("message.resourcesCopiedWithDependency", {
         dependency: dependency.label,
         format: haCardFormat.value.toUpperCase(),
       })
       : t("message.atlasResourceCopied", { format: haCardFormat.value.toUpperCase() });
+    statusMessage.textContent = [
+      resourceMessage,
+      usesDefaultAtlasExportEntities() ? defaultAtlasExportMessage() : "",
+    ].filter(Boolean).join(" ");
   } catch {
     statusMessage.textContent = t("message.copyDependencyFailed");
   }

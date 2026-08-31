@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.21
+
+- Use ATLAS example entities as a Simple card export fallback when no entities
+  are selected.
+- Keep the editor input unchanged and show an export status hint when fallback
+  entities are inserted.
+
 ## 0.1.20
 
 - Add sortable table headers to the detected Home Assistant entities table.
