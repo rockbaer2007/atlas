@@ -22,7 +22,8 @@ Open `http://127.0.0.1:4175/` to manage reference plugins, plugin packages and
 central Home Assistant connection settings.
 For the standalone app packaging path, `pnpm start:app` starts both surfaces
 together and exposes `http://127.0.0.1:4176/health` for Docker, Home Assistant
-App/Add-on and Linux service checks.
+App/Add-on and Linux service checks. `http://127.0.0.1:4176/app` returns the
+runtime links, ports and distribution order for packaging tools.
 
 The Home Assistant controls validate a connection target, show the derived
 WebSocket endpoint and can connect to an instance after Atlas Administration

@@ -56,6 +56,7 @@ pnpm start:app
 
 Open:
 
+* App status: `http://127.0.0.1:4176/app`
 * App health: `http://127.0.0.1:4176/health`
 * Administration: `http://127.0.0.1:4175/`
 * Home Assistant Card Editor: `http://127.0.0.1:4174/`

@@ -15,7 +15,9 @@ The Home Assistant Card Editor demo remains separate on
 `http://127.0.0.1:4174/`.
 For the standalone app packaging path, `pnpm start:app` starts Administration
 and the Card Editor together and exposes a health endpoint on
-`http://127.0.0.1:4176/health`.
+`http://127.0.0.1:4176/health`. The same app server also exposes
+`http://127.0.0.1:4176/app` with runtime links, ports and distribution order
+for Docker, Home Assistant App/Add-on and Linux installer packaging.
 
 The admin surface currently shows the Home Assistant Card Editor as the first
 reference plugin, renders Runtime plugin status and capabilities, opens the Card

@@ -1,8 +1,10 @@
 import { spawn } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
+const packageJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
 const host = process.env.ATLAS_APP_HOST ?? process.env.ATLAS_HOST ?? "127.0.0.1";
 const surfaceHost = process.env.ATLAS_HOST ?? host;
 const healthHost = surfaceHost === "0.0.0.0" ? "127.0.0.1" : surfaceHost;
@@ -11,6 +13,7 @@ const adminPort = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const editorPort = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const adminUrl = `http://${healthHost}:${adminPort}/`;
 const editorUrl = `http://${healthHost}:${editorPort}/`;
+const startedAt = new Date().toISOString();
 const childProcesses = [];
 
 await startSurface({
@@ -43,6 +46,11 @@ createServer((request, response) => {
     return;
   }
 
+  if (requestUrl.pathname === "/app") {
+    void writeAppResponse(response, requestUrl);
+    return;
+  }
+
   if (requestUrl.pathname === "/" || requestUrl.pathname === "/admin" || requestUrl.pathname === "/admin/") {
     response.writeHead(302, { location: createPublicSurfaceUrl(requestUrl, adminPort) });
     response.end();
@@ -60,6 +68,7 @@ createServer((request, response) => {
     links: {
       admin: createPublicSurfaceUrl(requestUrl, adminPort),
       editor: createPublicSurfaceUrl(requestUrl, editorPort),
+      app: new URL("/app", requestUrl).toString(),
       health: new URL("/health", requestUrl).toString(),
     },
   });
@@ -127,6 +136,55 @@ async function writeHealthResponse(response) {
   writeJson(response, ready ? 200 : 503, {
     status: ready ? "ok" : "degraded",
     app: "atlas",
+    surfaces,
+  });
+}
+
+async function writeAppResponse(response, requestUrl) {
+  const publicAdminUrl = createPublicSurfaceUrl(requestUrl, adminPort);
+  const publicEditorUrl = createPublicSurfaceUrl(requestUrl, editorPort);
+  const surfaces = {
+    administration: {
+      url: publicAdminUrl,
+      healthUrl: adminUrl,
+      port: adminPort,
+      ready: await isServerReady(adminUrl),
+    },
+    cardEditor: {
+      url: publicEditorUrl,
+      healthUrl: editorUrl,
+      port: editorPort,
+      ready: await isServerReady(editorUrl),
+    },
+  };
+  const ready = Object.values(surfaces).every(surface => surface.ready);
+
+  writeJson(response, ready ? 200 : 503, {
+    kind: "atlas.app.runtime",
+    name: "ATLAS",
+    version: packageJson.version ?? "0.0.0-local",
+    status: ready ? "ok" : "degraded",
+    startedAt,
+    urls: {
+      app: new URL("/", requestUrl).toString(),
+      health: new URL("/health", requestUrl).toString(),
+      admin: publicAdminUrl,
+      editor: publicEditorUrl,
+    },
+    ports: {
+      app: appPort,
+      admin: adminPort,
+      editor: editorPort,
+    },
+    distribution: {
+      current: "standalone-docker-preview",
+      order: [
+        "standalone-docker",
+        "home-assistant-app",
+        "linux-installer",
+        "home-assistant-hacs",
+      ],
+    },
     surfaces,
   });
 }
