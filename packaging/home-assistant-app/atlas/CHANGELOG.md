@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.28
+
+- Replace long detected entity summary text with compact status chips in the
+  Card Editor.
+- Hide long selected entity and attention lists from the upper entity summary
+  while keeping the detailed entity table available below.
+
 ## 0.1.27
 
 - Use the real ATLAS app icon in the Administration repository button.

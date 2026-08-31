@@ -674,6 +674,54 @@
         font-size: 14px;
       }
 
+      .entity-summary-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin: 8px 0;
+      }
+
+      .entity-summary-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        max-width: 100%;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #536079;
+        padding: 5px 10px;
+        font-size: 13px;
+        line-height: 1.2;
+      }
+
+      .entity-summary-chip strong {
+        max-width: min(44vw, 520px);
+        color: #172033;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .entity-summary-chip[data-kind="ready"] {
+        border-color: #99f6e4;
+        background: #ecfdf5;
+        color: #115e59;
+      }
+
+      .entity-summary-chip[data-kind="pending"] {
+        border-color: #fde68a;
+        background: #fffbeb;
+        color: #92400e;
+      }
+
+      .entity-summary-chip[data-kind="blocked"] {
+        border-color: #fecaca;
+        background: #fef2f2;
+        color: #991b1b;
+      }
+
       .resource-hint-field {
         display: grid;
         gap: 6px;
@@ -2584,6 +2632,34 @@
       :root[data-theme="dark"] .card-export-language-hint,
       :root[data-theme="dark"] .dialog-hint {
         color: var(--atlas-muted);
+      }
+
+      :root[data-theme="dark"] .entity-summary-chip {
+        border-color: #40535b;
+        background: #172126;
+        color: var(--atlas-muted);
+      }
+
+      :root[data-theme="dark"] .entity-summary-chip strong {
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .entity-summary-chip[data-kind="ready"] {
+        border-color: #0f766e;
+        background: #12342f;
+        color: #7ee6c9;
+      }
+
+      :root[data-theme="dark"] .entity-summary-chip[data-kind="pending"] {
+        border-color: #92400e;
+        background: #332614;
+        color: #fbbf24;
+      }
+
+      :root[data-theme="dark"] .entity-summary-chip[data-kind="blocked"] {
+        border-color: #991b1b;
+        background: #351b1d;
+        color: #fca5a5;
       }
 
       :root[data-theme="dark"] .problem-report-button,

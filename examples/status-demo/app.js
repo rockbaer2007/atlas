@@ -439,6 +439,7 @@ const translations = {
     "message.tabbedCardNeedsTab": "Add a tab before placing cards inside Tabbed Card V2.",
     "message.groupStatus": "Group status: {ready} ready, {pending} pending, {blocked} blocked.",
     "message.needsAttention": "Needs attention: {entities}.",
+    "message.needsAttentionCount": "{count} need attention.",
     "message.selectedForHaPreview": "{entityId} selected for the HA card preview.",
     "message.selectedForDiagnosticsPreview": "{entityId} selected for the Diagnostics status preview.",
     "message.selectedForDiagnosticsWithStack": "{entityId} selected for Diagnostics. Use the checkbox to include it in the stack export.",
@@ -576,6 +577,11 @@ const translations = {
     "text.cardOptions": "Options",
     "text.containedCards": "Contained cards",
     "text.entityEntries": "Entities",
+    "text.simplePrimaryEntity": "Simple primary entity",
+    "text.ready": "Ready",
+    "text.pending": "Pending",
+    "text.blocked": "Blocked",
+    "text.stackSelection": "Stack selection",
     "text.entityPicker": "Entity picker",
     "text.styleCode": "Style code",
     "text.noSelectedCard": "Select a card on the editor surface.",
@@ -884,6 +890,7 @@ const translations = {
     "message.tabbedCardNeedsTab": "Füge erst einen Tab hinzu, bevor Cards in Tabbed Card V2 abgelegt werden.",
     "message.groupStatus": "Gruppenstatus: {ready} bereit, {pending} wartend, {blocked} blockiert.",
     "message.needsAttention": "Braucht Aufmerksamkeit: {entities}.",
+    "message.needsAttentionCount": "{count} brauchen Aufmerksamkeit.",
     "message.selectedForHaPreview": "{entityId} für die HA-Card-Vorschau ausgewählt.",
     "message.selectedForDiagnosticsPreview": "{entityId} für die Diagnose-Statusvorschau ausgewählt.",
     "message.selectedForDiagnosticsWithStack": "{entityId} für Diagnose ausgewählt. Nutze die Checkbox, um sie in den Stapel-Export aufzunehmen.",
@@ -1021,6 +1028,11 @@ const translations = {
     "text.cardOptions": "Optionen",
     "text.containedCards": "Enthaltene Cards",
     "text.entityEntries": "Entitäten",
+    "text.simplePrimaryEntity": "Simple erste Entität",
+    "text.ready": "Bereit",
+    "text.pending": "Wartend",
+    "text.blocked": "Blockiert",
+    "text.stackSelection": "Stapel-Auswahl",
     "text.entityPicker": "Entitätsauswahl",
     "text.styleCode": "Style-Code",
     "text.noSelectedCard": "Wähle eine Card auf der Editor-Fläche aus.",
@@ -2272,26 +2284,49 @@ function defaultAtlasExportMessage() {
   return t("message.defaultAtlasEntitiesUsed", { entities: defaultAtlasExportEntityIds.join(", ") });
 }
 
+function renderEntitySummaryChips(target, entries) {
+  target.replaceChildren();
+  target.classList.add("entity-summary-chips");
+  for (const entry of entries) {
+    const chip = document.createElement("span");
+    const label = document.createElement("span");
+    const value = document.createElement("strong");
+    chip.className = "entity-summary-chip";
+    chip.dataset.kind = entry.kind ?? "info";
+    label.textContent = entry.label;
+    value.textContent = entry.value;
+    chip.append(label, value);
+    target.append(chip);
+  }
+}
+
+function renderEntitySummaryText(target, text) {
+  target.classList.remove("entity-summary-chips");
+  target.textContent = text;
+}
+
 function renderStackSelectionSummary() {
   const entityIds = trackedEntityIds();
   if (entityIds.length === 0) {
-    stackSelectionSummary.textContent = emptyEntitySelectionMessage;
+    renderEntitySummaryText(stackSelectionSummary, emptyEntitySelectionMessage);
     return;
   }
 
   if (usesStackEntitySelection()) {
     const selectedIds = selectedStackEntityIds();
-    stackSelectionSummary.textContent = t("message.stackSelectedEntities", {
-      selected: selectedIds.length,
-      total: entityIds.length,
-      entities: selectedIds.length ? t("message.stackEntitySuffix", { entities: selectedIds.join(", ") }) : "",
-    });
+    renderEntitySummaryChips(stackSelectionSummary, [{
+      label: t("text.stackSelection"),
+      value: `${selectedIds.length}/${entityIds.length}`,
+      kind: selectedIds.length ? "ready" : "pending",
+    }]);
     return;
   }
 
-  stackSelectionSummary.textContent = entityIds[0]
-    ? t("message.simpleUsesFirstEntity", { entityId: entityIds[0] })
-    : t("message.simpleUsesFirstEntityEmpty");
+  renderEntitySummaryChips(stackSelectionSummary, [{
+    label: t("text.simplePrimaryEntity"),
+    value: entityIds[0] || t("text.noEntity"),
+    kind: entityIds[0] ? "ready" : "pending",
+  }]);
 }
 
 function renderEntityPickerOptions() {
@@ -6953,9 +6988,9 @@ function renderEntityList() {
     emptyState.className = "empty-selection-state";
     emptyState.textContent = emptyEntitySelectionMessage;
     entityList.append(emptyState);
-    groupSummary.textContent = emptyEntitySelectionMessage;
-    groupIssues.textContent = "";
-    selectedEntity.textContent = emptyEntitySelectionMessage;
+    renderEntitySummaryText(groupSummary, emptyEntitySelectionMessage);
+    renderEntitySummaryText(groupIssues, "");
+    renderEntitySummaryText(selectedEntity, emptyEntitySelectionMessage);
     renderStackSelectionSummary();
     renderHaCardPreview();
     renderEmptyStatusPreview();
@@ -7122,8 +7157,14 @@ function renderEntityList() {
     tbody.append(row);
   }
   entityList.append(table);
-  groupSummary.textContent = t("message.groupStatus", { ready, pending, blocked });
-  groupIssues.textContent = blockedEntities.length ? t("message.needsAttention", { entities: blockedEntities.join(", ") }) : "";
+  renderEntitySummaryChips(groupSummary, [
+    { label: t("text.ready"), value: String(ready), kind: "ready" },
+    { label: t("text.pending"), value: String(pending), kind: "pending" },
+    { label: t("text.blocked"), value: String(blocked), kind: blocked ? "blocked" : "ready" },
+  ]);
+  renderEntitySummaryText(groupIssues, blockedEntities.length
+    ? t("message.needsAttentionCount", { count: blockedEntities.length })
+    : "");
   renderStackSelectionSummary();
   renderHaCardPreview();
 }
