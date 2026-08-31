@@ -1389,6 +1389,7 @@ let cachedEntityPickerCatalog = [];
 let cachedEntityPickerDomains = [];
 let cachedEntityPickerSignature = "";
 let entityPickerRenderTimer;
+let entityTableSort = { key: "type", direction: "asc" };
 let entityCatalogSyncStatus = { state: "idle", count: 0, added: 0, removed: 0, reason: "" };
 const stackSelectedEntityIds = new Set();
 let statusPreviewEntityId;
@@ -6785,6 +6786,72 @@ function createGroupId(title) {
   return candidate;
 }
 
+function createEntityTableEntry(entityId) {
+  const entity = entitySnapshots.get(entityId);
+  const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
+  const importedName = importedSimpleEntityNames.get(entityId);
+  const domain = entityId.split(".", 1)[0] || "";
+  const label = presentation?.label ?? importedName ?? entityId;
+  const valueText = entity?.value && presentation?.category === "battery" && !entity.unit
+    ? `${entity.value}%`
+    : entity?.value ?? entity?.state ?? t("text.waiting");
+  const typeText = entity?.updatedAt
+    ? `${presentation?.detail ?? domain} · ${formatRelativeTime(entity.updatedAt)}`
+    : importedName
+      ? entityId
+      : presentation?.detail ?? domain;
+  return {
+    entityId,
+    entity,
+    presentation,
+    label,
+    valueText,
+    detailText: typeText,
+    sortEntity: `${label} ${entityId}`,
+    sortState: valueText,
+    sortType: `${presentation?.detail ?? domain} ${entityId}`,
+  };
+}
+
+function compareTextValues(left, right) {
+  return String(left).localeCompare(String(right), currentLanguage === "de" ? "de" : "en", {
+    numeric: true,
+    sensitivity: "base",
+  });
+}
+
+function compareEntityTableEntries(left, right) {
+  const direction = entityTableSort.direction === "desc" ? -1 : 1;
+  const sortKey = entityTableSort.key === "state"
+    ? "sortState"
+    : entityTableSort.key === "entity"
+      ? "sortEntity"
+      : "sortType";
+  const primary = compareTextValues(left[sortKey], right[sortKey]);
+  if (primary !== 0) return primary * direction;
+  const secondaryType = compareTextValues(left.sortType, right.sortType);
+  if (secondaryType !== 0) return secondaryType;
+  return compareTextValues(left.sortEntity, right.sortEntity);
+}
+
+function createEntityTableSortButton(key, label) {
+  const button = document.createElement("button");
+  const active = entityTableSort.key === key;
+  button.type = "button";
+  button.className = "atlas-entity-sort-button";
+  button.dataset.activeSort = String(active);
+  button.dataset.sortIndicator = entityTableSort.direction === "desc" ? "↓" : "↑";
+  button.textContent = label;
+  button.addEventListener("click", () => {
+    entityTableSort = {
+      key,
+      direction: active && entityTableSort.direction === "asc" ? "desc" : "asc",
+    };
+    renderEntityList();
+  });
+  return button;
+}
+
 function renderEntityList() {
   entityList.replaceChildren();
   reconcileStackEntitySelection();
@@ -6797,7 +6864,10 @@ function renderEntityList() {
         search: homeAssistantEntitySearch.value,
       })
     : selectedEntityIds.map(entityId => ({ entityId }));
-  const entityIds = catalogEntries.map(entry => entry.entityId);
+  const tableEntries = catalogEntries
+    .map(entry => createEntityTableEntry(entry.entityId))
+    .sort(compareEntityTableEntries);
+  const entityIds = tableEntries.map(entry => entry.entityId);
   if (entityIds.length === 0) {
     const emptyState = document.createElement("div");
     emptyState.className = "empty-selection-state";
@@ -6818,10 +6888,24 @@ function renderEntityList() {
   const headerRow = document.createElement("tr");
   table.className = "atlas-entity-table";
   table.setAttribute("aria-label", t("heading.selectedEntities"));
-  for (const key of ["table.entity", "table.state", "table.type", "table.actions"]) {
+  for (const column of [
+    { key: "entity", label: "table.entity", sortable: true },
+    { key: "state", label: "table.state", sortable: true },
+    { key: "type", label: "table.type", sortable: true },
+    { key: "actions", label: "table.actions", sortable: false },
+  ]) {
     const th = document.createElement("th");
     th.scope = "col";
-    th.textContent = t(key);
+    if (column.sortable) {
+      th.setAttribute("aria-sort", entityTableSort.key === column.key
+        ? entityTableSort.direction === "desc" ? "descending" : "ascending"
+        : "none");
+    }
+    if (column.sortable) {
+      th.append(createEntityTableSortButton(column.key, t(column.label)));
+    } else {
+      th.textContent = t(column.label);
+    }
     headerRow.append(th);
   }
   thead.append(headerRow);
@@ -6831,8 +6915,8 @@ function renderEntityList() {
   let pending = 0;
   let blocked = 0;
   const blockedEntities = [];
-  for (const entityId of entityIds) {
-    const entity = entitySnapshots.get(entityId);
+  for (const tableEntry of tableEntries) {
+    const { entityId, entity, presentation, label, valueText, detailText } = tableEntry;
     const row = document.createElement("tr");
     const nameCell = document.createElement("td");
     const valueCell = document.createElement("td");
@@ -6850,26 +6934,18 @@ function renderEntityList() {
     valueCell.className = "atlas-entity-status-cell";
     detailCell.className = "atlas-entity-detail-cell";
     actionCell.className = "atlas-entity-actions-cell";
-    const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
     row.dataset.category = presentation?.category ?? "status";
     if (presentation?.category === "battery" && entity?.value) {
       const batteryPercent = Number(entity.value);
       row.dataset.batteryLevel = batteryPercent <= 20 ? "low" : batteryPercent <= 50 ? "medium" : "normal";
     }
-    const importedName = importedSimpleEntityNames.get(entityId);
-    name.textContent = presentation?.label ?? importedName ?? entityId;
+    name.textContent = label;
     entityIdText.className = "atlas-entity-id";
     entityIdText.textContent = entityId;
     value.className = "atlas-entity-status";
-    value.textContent = entity?.value && presentation?.category === "battery" && !entity.unit
-      ? `${entity.value}%`
-      : entity?.value ?? entity?.state ?? t("text.waiting");
+    value.textContent = valueText;
     detail.className = "atlas-entity-type";
-    detail.textContent = entity?.updatedAt
-      ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${formatRelativeTime(entity.updatedAt)}`
-      : importedName
-        ? entityId
-        : presentation?.detail ?? entityId.split(".", 1)[0];
+    detail.textContent = detailText;
     if (entity?.state === "on" || entity?.state === "available") ready += 1;
     else if (entity?.state === "off") pending += 1;
     else if (entity) {

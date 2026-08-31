@@ -2224,6 +2224,33 @@
         text-transform: uppercase;
       }
 
+      .atlas-entity-sort-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 28px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        padding: 0;
+        font: inherit;
+        font-weight: 800;
+        text-align: left;
+        text-transform: uppercase;
+        cursor: pointer;
+      }
+
+      .atlas-entity-sort-button::after {
+        content: "↕";
+        color: #94a3b8;
+        font-size: 11px;
+      }
+
+      .atlas-entity-sort-button[data-active-sort="true"]::after {
+        content: attr(data-sort-indicator);
+        color: #0f766e;
+      }
+
       .atlas-entity-table tbody tr {
         cursor: pointer;
       }
@@ -2619,6 +2646,10 @@
         border-color: #c7d4d9;
         background: #dbe5e8;
         color: #36515a;
+      }
+
+      :root[data-theme="dark"] .atlas-entity-sort-button[data-active-sort="true"]::after {
+        color: #0f766e;
       }
 
       :root[data-theme="dark"] .atlas-entity-table td {

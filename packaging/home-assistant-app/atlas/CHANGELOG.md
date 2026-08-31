@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.20
+
+- Add sortable table headers to the detected Home Assistant entities table.
+- Sort detected entities by type/source and then entity by default.
+- Allow toggling ascending and descending order for entity, state and
+  type/source columns.
+
 ## 0.1.19
 
 - Rename the entity picker section to "Entities for the card" / "Entitaeten
