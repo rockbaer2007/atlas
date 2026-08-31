@@ -7,8 +7,8 @@ wraps the same runtime used by the standalone Docker preview:
 - ATLAS Administration on port `4175`
 - Home Assistant Card Editor reference plugin on port `4174`
 
-Home Assistant Ingress is enabled for the Card Editor port, so **Open web UI**
-and **Show in sidebar** open the editor directly.
+Home Assistant Ingress is enabled for the ATLAS app port. ATLAS opens the only
+active plugin directly or shows the Plugin Hub when multiple plugins are active.
 
 Prepare a local test copy from the repository root:
 
@@ -34,7 +34,8 @@ the Card Editor are ready.
 ## Home Assistant sidebar dashboard
 
 The preferred Add-on path is **Settings -> Add-ons -> ATLAS -> Show in
-sidebar**. This opens the Card Editor through Home Assistant Ingress.
+sidebar**. This opens ATLAS through Home Assistant Ingress and lets ATLAS decide
+whether to open the only active plugin directly or show the Plugin Hub.
 
 To embed the editor like other local web tools instead, create a Home Assistant
 **Webpage** dashboard:
@@ -42,13 +43,14 @@ To embed the editor like other local web tools instead, create a Home Assistant
 1. Open **Settings -> Dashboards**.
 2. Select **Add dashboard**.
 3. Choose **Webpage**.
-4. Name it `Atlas Card Editor`.
-5. Use the editor URL, for example `http://<home-assistant-host>:4174/`.
+4. Name it `ATLAS`.
+5. Use the app URL, for example `http://<home-assistant-host>:4176/`.
 6. Enable **Show in sidebar** and save.
 
-The editor opens inside Home Assistant. Administration stays available from the
-editor link, while Home Assistant tokens and provider API keys stay in ATLAS
-Administration or the Add-on options.
+ATLAS opens inside Home Assistant. With one active plugin the editor opens
+directly; with multiple active plugins the Plugin Hub appears. Administration
+stays available from the editor link, while Home Assistant tokens and provider
+API keys stay in ATLAS Administration or the Add-on options.
 
 ## Add-on connection options
 

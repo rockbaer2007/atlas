@@ -455,6 +455,12 @@
         gap: 8px;
       }
 
+      .plugin-repository-tools {
+        display: grid;
+        gap: 10px;
+        margin: 12px 0;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -742,6 +748,15 @@
           <div class="plugin-tools">
             <button id="import-plugin-package" type="button" data-i18n="button.importPackage">Import package</button>
             <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
+          </div>
+          <div class="plugin-repository-tools">
+            <label for="plugin-repository-url" data-i18n="label.pluginRepositoryUrl">ATLAS repository URL</label>
+            <div class="field-grid">
+              <input id="plugin-repository-url" type="url" inputmode="url" placeholder="https://example.test/atlas/repository.json" data-i18n-placeholder="placeholder.pluginRepositoryUrl">
+              <button id="load-plugin-repository" type="button" data-i18n="button.loadRepository">Load repository</button>
+            </div>
+            <output id="plugin-repository-status" aria-live="polite"></output>
+            <div id="plugin-repository-list" class="plugin-list"></div>
           </div>
           <div id="plugin-list" class="plugin-list"></div>
         </section>

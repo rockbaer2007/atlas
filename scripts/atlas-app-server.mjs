@@ -71,7 +71,19 @@ createServer((request, response) => {
     return;
   }
 
-  if (requestUrl.pathname === "/" || requestUrl.pathname === "/hub" || requestUrl.pathname === "/hub/") {
+  if (requestUrl.pathname === "/") {
+    const activePlugins = readLaunchablePluginCatalog(requestUrl);
+    if (activePlugins.length === 1) {
+      response.writeHead(302, { location: activePlugins[0].entryUrl });
+      response.end();
+      return;
+    }
+
+    serveStaticFile(response, resolve(root, "examples/plugin-hub/index.html"));
+    return;
+  }
+
+  if (requestUrl.pathname === "/hub" || requestUrl.pathname === "/hub/") {
     serveStaticFile(response, resolve(root, "examples/plugin-hub/index.html"));
     return;
   }
@@ -289,6 +301,12 @@ function readPluginCatalog(requestUrl) {
     .map(entry => readPluginManifest(entry.name, requestUrl))
     .filter(Boolean)
     .sort((left, right) => (left.order ?? 999) - (right.order ?? 999) || left.name.localeCompare(right.name));
+}
+
+function readLaunchablePluginCatalog(requestUrl) {
+  return readPluginCatalog(requestUrl).filter(plugin =>
+    plugin.status === "active" && Boolean(plugin.entryUrl),
+  );
 }
 
 function readPluginManifest(directoryName, requestUrl) {

@@ -22,11 +22,38 @@ async function loadPlugins() {
 }
 
 function renderPlugins(plugins) {
-  pluginSummary.textContent = `${plugins.length} plugins detected`;
+  const activePlugins = plugins.filter(plugin => plugin.status === "active" && plugin.entryUrl);
+  pluginSummary.textContent = createPluginSummaryText(plugins, activePlugins);
   pluginGrid.innerHTML = "";
+  if (!plugins.length) {
+    const empty = document.createElement("article");
+    empty.className = "plugin-card";
+    const body = document.createElement("div");
+    body.className = "plugin-body";
+    const title = document.createElement("h2");
+    title.className = "plugin-name";
+    title.textContent = "No plugins installed";
+    const description = document.createElement("p");
+    description.className = "plugin-description";
+    description.textContent = "Open Administration to add an ATLAS plugin repository or import a plugin package.";
+    const action = document.createElement("a");
+    action.className = "plugin-action";
+    action.href = "/admin";
+    action.textContent = "Administration";
+    body.append(title, description, action);
+    empty.append(body);
+    pluginGrid.append(empty);
+    return;
+  }
   for (const plugin of plugins) {
     pluginGrid.append(createPluginCard(plugin));
   }
+}
+
+function createPluginSummaryText(plugins, activePlugins) {
+  if (!plugins.length) return "No plugins installed";
+  if (activePlugins.length === 1) return "1 active plugin opens directly from ATLAS start";
+  return `${plugins.length} plugins detected, ${activePlugins.length} active`;
 }
 
 function createPluginCard(plugin) {

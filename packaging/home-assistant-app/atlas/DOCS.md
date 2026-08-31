@@ -5,8 +5,9 @@ ATLAS starts Administration and the Home Assistant Card Editor together.
 Open the web UI after starting the app. The runtime page shows app links,
 health status, surface ports and the planned distribution order.
 The `/app` endpoint reports this package as `home-assistant-app-preview`.
-The Add-on enables Home Assistant Ingress on the Card Editor port, so
-**Open web UI** and **Show in sidebar** open the editor directly.
+The Add-on enables Home Assistant Ingress on the ATLAS app port. ATLAS then
+opens the only active plugin directly or shows the Plugin Hub when multiple
+plugins are active.
 
 The Home Assistant token and translation provider keys stay in ATLAS
 Administration. The Card Editor receives only the current browser session
@@ -22,8 +23,9 @@ rebuilds or container recreation on the same Home Assistant installation.
 ## Editor als Dashboard/Webseite einbinden
 
 Der bevorzugte Add-on-Weg ist **Einstellungen -> Add-ons -> ATLAS -> In
-Seitenleiste anzeigen**. Home Assistant oeffnet dann den Editor ueber Ingress,
-aehnlich wie bei Zigbee2MQTT.
+Seitenleiste anzeigen**. Home Assistant oeffnet dann ATLAS ueber Ingress.
+Wenn nur ein Plugin aktiv ist, startet ATLAS dieses Plugin direkt; ab zwei
+aktiven Plugins erscheint die optische Plugin-Auswahl.
 
 Alternativ kannst du den ATLAS Card Editor wie ioBroker, FHEM oder andere
 lokale Web-UIs als Webseiten-Dashboard anzeigen:
@@ -32,14 +34,16 @@ lokale Web-UIs als Webseiten-Dashboard anzeigen:
 2. Waehle **Dashboard hinzufuegen**.
 3. Waehle den Typ **Webseite**.
 4. Name: `Atlas Card Editor`.
-5. URL: nutze die Editor-URL aus ATLAS, zum Beispiel
-   `http://<home-assistant-host>:4174/`.
+5. URL: nutze die ATLAS-App-URL, zum Beispiel
+   `http://<home-assistant-host>:4176/`.
 6. Aktiviere **In Seitenleiste anzeigen** und speichere das Dashboard.
 
-Der Editor oeffnet sich dann direkt im Home-Assistant-Inhalt. ATLAS
-Administration bleibt ueber den Link im Editor erreichbar. Home-Assistant-Token
-und Provider-API-Keys bleiben in ATLAS Administration beziehungsweise in den
-Add-on-Optionen und werden nicht dauerhaft im Editor gespeichert.
+ATLAS oeffnet sich dann direkt im Home-Assistant-Inhalt. Bei einem aktiven
+Plugin wird der Editor direkt geladen; bei mehreren aktiven Plugins zeigt ATLAS
+den Plugin Hub. ATLAS Administration bleibt ueber den Link im Editor erreichbar.
+Home-Assistant-Token und Provider-API-Keys bleiben in ATLAS Administration
+beziehungsweise in den Add-on-Optionen und werden nicht dauerhaft im Editor
+gespeichert.
 
 ## Home-Assistant-Token in den Add-on-Optionen
 
@@ -58,13 +62,12 @@ gespeichert. Administration bleibt der Besitzer der Verbindungseinstellungen.
 ## Add Editor as Dashboard/Webpage
 
 The preferred Add-on path is **Settings -> Add-ons -> ATLAS -> Show in
-sidebar**. Home Assistant then opens the editor through Ingress, similar to
-Zigbee2MQTT.
+sidebar**. Home Assistant then opens ATLAS through Ingress. ATLAS opens the only
+active plugin directly or shows the Plugin Hub when multiple plugins are active.
 
 Alternatively, go to **Settings -> Dashboards**, add a **Webpage** dashboard, use
-`Atlas Card Editor` as the name and set the URL to the editor endpoint, for
-example `http://<home-assistant-host>:4174/`. Enable **Show in sidebar** before
-saving.
+`ATLAS` as the name and set the URL to the app endpoint, for example
+`http://<home-assistant-host>:4176/`. Enable **Show in sidebar** before saving.
 
 ## Home Assistant Token in Add-on Options
 

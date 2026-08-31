@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.10
+
+- Add ATLAS start behavior for plugin counts: zero active plugins show the hub,
+  one active plugin opens directly and multiple active plugins show the hub.
+- Point Home Assistant ingress at the ATLAS app server so the plugin start
+  decision can run before opening a plugin.
+
 ## 0.1.9
 
 - Add the first ATLAS Plugin Hub surface with automatic plugin manifest and

@@ -181,12 +181,25 @@ additional envelope-only contract expansion.
 
 * Plugin runtime
 * Plugin discovery
+* Manifest-backed plugin folders with required `atlas-plugin.json`, icon and preview assets
+* ATLAS Plugin Hub start behavior:
+  * 0 active plugins: show empty hub with Administration hint
+  * 1 active plugin: open the plugin directly from ATLAS start
+  * 2+ active plugins: show the visual plugin selection hub
+  * planned or disabled plugins: visible in Hub/Admin but excluded from auto-start
 * Home Assistant Card Editor reference plugin using Runtime plugin contracts and Plugin Catalog discovery
 * Extension API
 * Provider ecosystem
 * Third-party integrations
 * Dedicated plugin documentation for authoring, lifecycle, extension APIs, examples, and publishing guidance
 * Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation
+* HACS-like ATLAS plugin repository flow:
+  * Repository URL entry in Administration
+  * `repository.json` catalog discovery
+  * Plugin preview with icon, preview image, version, capabilities and compatibility status
+  * package download and install from repository metadata
+  * update checks through the same repository source
+  * local ZIP import as the developer/offline fallback
 
 ### Success Criteria
 
@@ -194,6 +207,7 @@ additional envelope-only contract expansion.
 * First reference plugin proves plugin lifecycle, discovery, administration and package export
 * Separate plugin documentation is available and maintained
 * Plugins can be managed and packaged through an administration UI
+* Plugins can be discovered from repository links and installed package folders
 
 ---
 

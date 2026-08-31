@@ -3,7 +3,7 @@
   "name": "Home Assistant Card Editor",
   "version": "0.2.0-alpha.1",
   "description": "Visual Simple and Expert card editor with Home Assistant entity selection and HACS-oriented export.",
-  "status": "available",
+  "status": "active",
   "order": 10,
   "entry": "editor",
   "icon": "icon.svg",

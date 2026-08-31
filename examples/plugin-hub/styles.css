@@ -143,6 +143,11 @@ h1 {
   font-weight: 800;
 }
 
+.plugin-status[data-status="active"] {
+  background: #d8f7e9;
+  color: #10633f;
+}
+
 .plugin-status[data-status="planned"] {
   background: #fff1cc;
   color: var(--atlas-warn);

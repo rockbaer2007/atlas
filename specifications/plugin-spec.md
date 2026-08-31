@@ -11,3 +11,42 @@ A Plugin:
 - can be registered in a runtime plugin catalog for discovery by extension point or capability
 - can be projected into an administration view with status and management actions
 - can be exported into an install-package description with manifest, README and additional files
+
+## Plugin Folder Contract
+
+An installed plugin folder should contain:
+
+- `atlas-plugin.json`
+- an icon asset
+- a preview asset
+- optional runtime files such as `dist/`
+- optional `README.md`
+
+The manifest is the required contract for discovery. It should declare:
+
+- `id`
+- `name`
+- `version`
+- `description`
+- `entry`
+- `icon`
+- `preview`
+- `capabilities`
+- `status`
+- optional minimum ATLAS version
+- optional repository or update source
+
+## Hub Start Rules
+
+- 0 active plugins: ATLAS shows the Plugin Hub with an Administration hint.
+- 1 active plugin: ATLAS opens that plugin directly.
+- 2 or more active plugins: ATLAS shows the visual Plugin Hub.
+- Planned or disabled plugins can appear in Hub/Admin, but do not count as auto-start targets.
+
+## Plugin Repository Flow
+
+ATLAS plugin repositories should behave similarly to a lightweight HACS-style
+catalog. Administration can accept a repository URL, load `repository.json`,
+show available plugins with icons and previews, validate compatibility and
+install the referenced package. Local ZIP import remains the manual developer
+and offline fallback.
