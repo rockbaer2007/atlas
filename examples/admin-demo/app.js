@@ -1342,23 +1342,10 @@ function postEditorConnectionHandoff(editorWindow) {
 
 function openEditorWithConnectionHandoff() {
   persistConfiguration();
-  lastEditorWindow = window.open(`${editorOrigin}/?atlasAdminHandoff=1`, "_blank", "noopener=false,noreferrer=false");
-  if (!lastEditorWindow) {
-    return;
-  }
-
-  let attempts = 0;
-  const timer = window.setInterval(() => {
-    attempts += 1;
-    postEditorConnectionHandoff(lastEditorWindow);
-    if (attempts >= 12) {
-      window.clearInterval(timer);
-    }
-  }, 350);
-
   adminSaveState.textContent = homeAssistantToken.value
     ? t("message.editorOpened")
     : t("message.editorOpenedWithoutToken");
+  window.location.assign(`${editorOrigin}/?atlasAdminHandoff=1`);
 }
 
 function receiveEditorReady(event) {
