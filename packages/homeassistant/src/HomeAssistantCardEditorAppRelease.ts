@@ -83,8 +83,8 @@ const targets: readonly HomeAssistantCardEditorAppReleaseTarget[] = [
   {
     id: "standalone-docker",
     label: "Standalone Docker container",
-    status: "in-progress",
-    reason: "Dockerfile and Compose wiring exist; the image still needs a verified Docker build on a host with Docker installed.",
+    status: "ready",
+    reason: "Dockerfile and Compose wiring build the local image, start the app surfaces and pass the container health check.",
   },
   {
     id: "home-assistant-app",
@@ -145,6 +145,6 @@ export function createHomeAssistantCardEditorAppReleaseReadiness(): HomeAssistan
     ],
     checks,
     targets,
-    recommendedNextStep: "Build the standalone Docker container first, then derive the Home Assistant App/Add-on package and add the Linux installer after the container path is stable.",
+    recommendedNextStep: "Derive the Home Assistant App/Add-on package from the verified container path, then add the Linux installer after the container contract stays stable.",
   };
 }

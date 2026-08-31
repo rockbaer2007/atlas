@@ -32,8 +32,9 @@ manual preview checks.
 3. Linux VM/LXC/bare-Linux installer with a systemd service
 4. Native Home Assistant/HACS frontend integration
 
-Docker comes first because it proves the runtime, ports, health check and
-instance identity rules in an isolated environment. The Home Assistant
+The standalone Docker path proves the runtime, ports, health check and instance
+identity rules in an isolated environment. The local image now builds and the
+Compose service reports healthy when `/health` is ready. The Home Assistant
 App/Add-on should reuse that container contract. The Linux installer should run
 the same `scripts/atlas-app-server.mjs` entrypoint behind a service manager.
 
@@ -100,4 +101,5 @@ Then verify:
 - No Home Assistant token or provider API key appears in `/app`, `/health`,
   plugin descriptors or Card Editor handoff storage.
 
-Docker build verification still requires a host with Docker installed.
+Docker verification uses `pnpm docker:build`, `docker compose up -d --build`
+and the container health state.

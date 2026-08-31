@@ -122,7 +122,7 @@ describe("Home Assistant card editor plugin", () => {
         inProgress: 1,
         planned: 1,
       },
-      recommendedNextStep: "Build the standalone Docker container first, then derive the Home Assistant App/Add-on package and add the Linux installer after the container path is stable.",
+      recommendedNextStep: "Derive the Home Assistant App/Add-on package from the verified container path, then add the Linux installer after the container contract stays stable.",
     });
     expect(readiness.entrypoints.map(entrypoint => entrypoint.port)).toEqual([4175, 4174]);
     expect(readiness.checks.map(check => [check.id, check.status])).toContainEqual([
@@ -130,7 +130,7 @@ describe("Home Assistant card editor plugin", () => {
       "ready",
     ]);
     expect(readiness.targets.map(target => [target.id, target.status])).toEqual([
-      ["standalone-docker", "in-progress"],
+      ["standalone-docker", "ready"],
       ["home-assistant-app", "planned"],
       ["linux-installer", "planned"],
       ["atlas-plugin", "ready"],

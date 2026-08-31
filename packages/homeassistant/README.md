@@ -83,10 +83,12 @@ README and example Home Assistant card YAML.
 `createHomeAssistantCardEditorAppReleaseReadiness()` describes the local app
 release path with Administration and Card Editor entrypoints, completed
 safeguards such as opt-in problem reports, the reference plugin package state
-and the remaining standalone/HACS distribution targets.
-The preferred packaging order is standalone Docker first, then a Home Assistant
-App/Add-on package derived from the same container/runtime, and finally an
-optional Linux VM/LXC/bare-Linux installer with a systemd service.
+and the remaining HACS distribution targets. The standalone Docker path now
+builds the local image, starts both app surfaces and passes the container
+health check.
+The next packaging step is a Home Assistant App/Add-on package derived from the
+same container/runtime, followed by an optional Linux VM/LXC/bare-Linux
+installer with a systemd service.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server
