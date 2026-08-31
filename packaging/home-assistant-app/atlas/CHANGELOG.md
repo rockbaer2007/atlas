@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.18
+
+- Tune the Expert card-list favorite checkbox in dark mode with a green field
+  and light ATLAS green check color.
+
 ## 0.1.17
 
 - Tune the Card Editor Expert dark theme so the card list, selected entities
