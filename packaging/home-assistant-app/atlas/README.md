@@ -27,3 +27,19 @@ docker run --rm -p 4176:4176 -p 4175:4175 -p 4174:4174 atlas-home-assistant-app:
 
 Then open `http://127.0.0.1:4176/health` and confirm that Administration and
 the Card Editor are ready.
+
+## Home Assistant sidebar dashboard
+
+To embed the editor like other local web tools, create a Home Assistant
+**Webpage** dashboard:
+
+1. Open **Settings -> Dashboards**.
+2. Select **Add dashboard**.
+3. Choose **Webpage**.
+4. Name it `Atlas Card Editor`.
+5. Use the editor URL, for example `http://<home-assistant-host>:4174/`.
+6. Enable **Show in sidebar** and save.
+
+The editor opens inside Home Assistant. Administration stays available from the
+editor link, while Home Assistant tokens and provider API keys stay in ATLAS
+Administration or the Add-on options.
