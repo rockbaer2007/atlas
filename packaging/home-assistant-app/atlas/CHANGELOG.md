@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.30
+
+- Darken the ATLAS repository button styling so it is visually distinct from
+  Home Assistant/HACS buttons while keeping the app icon visible.
+
 ## 0.1.29
 
 - Fix the ATLAS repository button icon path for Home Assistant/Ingress usage.
