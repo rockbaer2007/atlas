@@ -36,6 +36,12 @@ const adminSaveState = document.querySelector("#admin-save-state");
 const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
+const refreshAppRuntime = document.querySelector("#refresh-app-runtime");
+const appRuntimeSummary = document.querySelector("#app-runtime-summary");
+const appRuntimeStatus = document.querySelector("#app-runtime-status");
+const appRuntimeSurfaces = document.querySelector("#app-runtime-surfaces");
+const appRuntimeLinks = document.querySelector("#app-runtime-links");
+const appRuntimeDistribution = document.querySelector("#app-runtime-distribution");
 const appReleaseSummary = document.querySelector("#app-release-summary");
 const appReleaseChecks = document.querySelector("#app-release-checks");
 const appReleaseTargets = document.querySelector("#app-release-targets");
@@ -128,6 +134,7 @@ const parcelProviderDefaults = [
   },
 ];
 const editorOrigin = "http://127.0.0.1:4174";
+const appRuntimeApiUrl = "http://127.0.0.1:4176/app";
 const longTermCookieMaxAge = 31536000;
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
@@ -136,6 +143,7 @@ let currentLanguage = "en";
 let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let importedPluginDescriptors = [];
 let lastEditorWindow;
+let lastAppRuntime;
 let currentAdminDeviceBinding;
 let currentParcelProviderSettings = normalizeParcelProviderSettings();
 
@@ -147,6 +155,9 @@ const translations = {
     "heading.haConnection": "Home Assistant connection",
     "heading.translationSettings": "Card translation",
     "heading.parcelSettings": "Parcel service providers",
+    "heading.appRuntime": "App runtime status",
+    "heading.runtimeSurfaces": "Surfaces",
+    "heading.runtimeLinks": "Links",
     "heading.appRelease": "App release readiness",
     "heading.releaseChecks": "Release checks",
     "heading.releaseTargets": "Distribution targets",
@@ -157,6 +168,11 @@ const translations = {
     "label.translationProvider": "Translation module",
     "label.rememberToken": "Remember token locally for Administration",
     "label.autoConnectEditor": "Auto-connect Card Editor after handoff",
+    "label.appUrl": "App",
+    "label.adminUrl": "Administration",
+    "label.editorUrl": "Card Editor",
+    "label.healthUrl": "Health",
+    "label.distributionOrder": "Distribution order",
     "label.version": "Version",
     "label.extensionPoints": "Extension points",
     "label.capabilities": "Capabilities",
@@ -165,6 +181,7 @@ const translations = {
     "button.forgetToken": "Forget token",
     "button.exportSettings": "Export settings",
     "button.openEditor": "Open Card Editor",
+    "button.refreshRuntime": "Refresh status",
     "button.inspect": "Inspect",
     "button.activate": "Activate",
     "button.deactivate": "Deactivate",
@@ -188,6 +205,12 @@ const translations = {
     "message.geminiApiKeyLink": "Get Gemini API key:",
     "message.deeplApiKeyLink": "Get DeepL API key:",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
+    "message.appRuntimeHint": "Read the combined app server status exposed on port 4176.",
+    "message.appRuntimeLoading": "Loading app runtime status...",
+    "message.appRuntimeSummary": "{name} {version}: {status}, started {startedAt}.",
+    "message.appRuntimeUnavailable": "App runtime status is unavailable.",
+    "message.runtimeSurfaceReady": "Port {port} is ready.",
+    "message.runtimeSurfaceUnavailable": "Port {port} is not answering yet.",
     "message.appReleaseHint": "Track the local app path before the later Home Assistant/HACS integration.",
     "message.appReleaseSummary": "{ready} ready, {inProgress} in progress, {planned} planned",
     "message.parcelProviderSummary": "{enabled} of {total} service providers enabled. Public tracking links are prefilled automatically; account-only providers stay marked for later connection.",
@@ -220,6 +243,8 @@ const translations = {
     "text.releaseStatusReady": "Ready",
     "text.releaseStatusInProgress": "In progress",
     "text.releaseStatusPlanned": "Planned",
+    "text.runtimeReady": "Ready",
+    "text.runtimeUnavailable": "Unavailable",
     "release.admin-session-handoff.label": "Administration session handoff",
     "release.admin-session-handoff.reason": "The editor receives Home Assistant connection settings from Administration without shared token storage.",
     "release.problem-report-preview.label": "Opt-in problem reports",
@@ -252,6 +277,9 @@ const translations = {
     "heading.haConnection": "Home-Assistant-Verbindung",
     "heading.translationSettings": "Card-Uebersetzung",
     "heading.parcelSettings": "Paket-Dienstleister",
+    "heading.appRuntime": "App-Laufzeitstatus",
+    "heading.runtimeSurfaces": "Oberflaechen",
+    "heading.runtimeLinks": "Links",
     "heading.appRelease": "App-Freigabe",
     "heading.releaseChecks": "Freigabe-Checks",
     "heading.releaseTargets": "Ausgabeziele",
@@ -262,6 +290,11 @@ const translations = {
     "label.translationProvider": "Uebersetzungsmodul",
     "label.rememberToken": "Token lokal fuer die Administration merken",
     "label.autoConnectEditor": "Card Editor nach Übergabe automatisch verbinden",
+    "label.appUrl": "App",
+    "label.adminUrl": "Administration",
+    "label.editorUrl": "Card Editor",
+    "label.healthUrl": "Health",
+    "label.distributionOrder": "Distributionsreihenfolge",
     "label.version": "Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
@@ -270,6 +303,7 @@ const translations = {
     "button.forgetToken": "Token vergessen",
     "button.exportSettings": "Einstellungen exportieren",
     "button.openEditor": "Card Editor oeffnen",
+    "button.refreshRuntime": "Status aktualisieren",
     "button.inspect": "Pruefen",
     "button.activate": "Aktivieren",
     "button.deactivate": "Deaktivieren",
@@ -293,6 +327,12 @@ const translations = {
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
     "message.deeplApiKeyLink": "DeepL API-Key erhalten:",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
+    "message.appRuntimeHint": "Liest den gemeinsamen App-Server-Status auf Port 4176.",
+    "message.appRuntimeLoading": "App-Laufzeitstatus wird geladen...",
+    "message.appRuntimeSummary": "{name} {version}: {status}, gestartet {startedAt}.",
+    "message.appRuntimeUnavailable": "App-Laufzeitstatus ist nicht erreichbar.",
+    "message.runtimeSurfaceReady": "Port {port} ist bereit.",
+    "message.runtimeSurfaceUnavailable": "Port {port} antwortet noch nicht.",
     "message.appReleaseHint": "Verfolge den lokalen App-Pfad vor der späteren Home-Assistant/HACS-Integration.",
     "message.appReleaseSummary": "{ready} bereit, {inProgress} in Arbeit, {planned} geplant",
     "message.parcelProviderSummary": "{enabled} von {total} Dienstleistern aktiv. Oeffentliche Tracking-Links sind automatisch vorbelegt; Konto-Dienstleister bleiben fuer die spaetere Anbindung markiert.",
@@ -325,6 +365,8 @@ const translations = {
     "text.releaseStatusReady": "Bereit",
     "text.releaseStatusInProgress": "In Arbeit",
     "text.releaseStatusPlanned": "Geplant",
+    "text.runtimeReady": "Bereit",
+    "text.runtimeUnavailable": "Nicht erreichbar",
     "release.admin-session-handoff.label": "Administration-Sitzungsübergabe",
     "release.admin-session-handoff.reason": "Der Editor erhält Home-Assistant-Verbindungseinstellungen aus der Administration ohne gemeinsam gespeicherten Token.",
     "release.problem-report-preview.label": "Opt-in-Problemberichte",
@@ -1076,6 +1118,117 @@ function renderAppReleaseReadiness() {
   );
 }
 
+function formatRuntimeDate(value) {
+  if (!value) {
+    return "-";
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(currentLanguage === "de" ? "de-DE" : "en-US", {
+    dateStyle: "short",
+    timeStyle: "medium",
+  }).format(date);
+}
+
+function translateRuntimeStatus(ready) {
+  return ready ? t("text.runtimeReady") : t("text.runtimeUnavailable");
+}
+
+function createRuntimeSurfaceItem(id, surface) {
+  const item = document.createElement("div");
+  const title = document.createElement("div");
+  const reason = document.createElement("div");
+  const status = document.createElement("span");
+  const labelKey = id === "administration" ? "label.adminUrl" : "label.editorUrl";
+
+  item.className = "readiness-item";
+  title.className = "readiness-title";
+  reason.className = "readiness-reason";
+  status.className = "readiness-status";
+  status.dataset.status = surface.ready ? "ready" : "planned";
+
+  title.textContent = t(labelKey);
+  reason.textContent = surface.ready
+    ? t("message.runtimeSurfaceReady", { port: surface.port })
+    : t("message.runtimeSurfaceUnavailable", { port: surface.port });
+  status.textContent = translateRuntimeStatus(surface.ready);
+
+  item.append(title, reason, status);
+  return item;
+}
+
+function createRuntimeLink(label, url) {
+  const item = document.createElement("div");
+  const title = document.createElement("span");
+  const link = document.createElement("a");
+
+  item.className = "runtime-link";
+  title.textContent = label;
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noreferrer";
+  link.textContent = url;
+
+  item.append(title, link);
+  return item;
+}
+
+function renderAppRuntimeStatus(runtime) {
+  lastAppRuntime = runtime;
+
+  if (!runtime) {
+    appRuntimeSummary.textContent = t("message.appRuntimeUnavailable");
+    appRuntimeStatus.textContent = "";
+    appRuntimeSurfaces.replaceChildren();
+    appRuntimeLinks.replaceChildren();
+    appRuntimeDistribution.replaceChildren();
+    return;
+  }
+
+  const surfaces = runtime.surfaces ?? {};
+  appRuntimeSummary.textContent = t("message.appRuntimeSummary", {
+    name: runtime.name ?? "ATLAS",
+    version: runtime.version ?? "-",
+    status: runtime.status ?? "-",
+    startedAt: formatRuntimeDate(runtime.startedAt),
+  });
+  appRuntimeStatus.textContent = "";
+  appRuntimeSurfaces.replaceChildren(
+    ...Object.entries(surfaces).map(([id, surface]) => createRuntimeSurfaceItem(id, surface)),
+  );
+  appRuntimeLinks.replaceChildren(
+    createRuntimeLink(t("label.appUrl"), runtime.urls?.app ?? appRuntimeApiUrl),
+    createRuntimeLink(t("label.adminUrl"), runtime.urls?.admin ?? editorOrigin.replace(":4174", ":4175")),
+    createRuntimeLink(t("label.editorUrl"), runtime.urls?.editor ?? editorOrigin),
+    createRuntimeLink(t("label.healthUrl"), runtime.urls?.health ?? appRuntimeApiUrl.replace("/app", "/health")),
+  );
+  appRuntimeDistribution.replaceChildren(
+    ...(runtime.distribution?.order ?? []).map(target => {
+      const chip = document.createElement("span");
+      const translationKey = `release.${target}.label`;
+      const translated = t(translationKey);
+      chip.textContent = translated === translationKey ? target : translated;
+      return chip;
+    }),
+  );
+}
+
+async function loadAppRuntimeStatus() {
+  appRuntimeSummary.textContent = t("message.appRuntimeLoading");
+  appRuntimeStatus.textContent = "";
+
+  try {
+    const response = await fetch(appRuntimeApiUrl, { cache: "no-store" });
+    renderAppRuntimeStatus(await response.json());
+  } catch {
+    renderAppRuntimeStatus(undefined);
+  }
+}
+
 function createDetail(label, values) {
   const detail = document.createElement("div");
   const caption = document.createElement("div");
@@ -1359,6 +1512,7 @@ function setLanguage(language) {
   applyTranslations();
   renderParcelProviders();
   renderAdministration();
+  renderAppRuntimeStatus(lastAppRuntime);
   persistConfiguration();
 }
 
@@ -1379,6 +1533,7 @@ async function initializeAdministration() {
   applyTranslations();
   renderParcelProviders();
   renderAdministration();
+  void loadAppRuntimeStatus();
   void restoreServerConnectionSettings();
 }
 
@@ -1425,6 +1580,9 @@ autoConnectEditor.addEventListener("change", () => {
 window.addEventListener("message", receiveEditorReady);
 
 saveAdminSettings.addEventListener("click", saveConnectionSettings);
+refreshAppRuntime.addEventListener("click", () => {
+  void loadAppRuntimeStatus();
+});
 
 exportAdminSettings.addEventListener("click", () => {
   void exportAdministrationSettings();

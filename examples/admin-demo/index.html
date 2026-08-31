@@ -367,6 +367,39 @@
         gap: 10px;
       }
 
+      .runtime-actions {
+        display: grid;
+        gap: 6px;
+        justify-items: end;
+        min-width: 190px;
+      }
+
+      .runtime-links {
+        display: grid;
+        gap: 8px;
+      }
+
+      .runtime-link {
+        display: grid;
+        grid-template-columns: minmax(110px, 0.35fr) minmax(0, 1fr);
+        gap: 8px;
+        align-items: center;
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 9px;
+        font-size: 13px;
+      }
+
+      .runtime-link span {
+        color: #172033;
+        font-weight: 800;
+      }
+
+      .runtime-link a {
+        overflow-wrap: anywhere;
+      }
+
       .readiness-list {
         display: grid;
         gap: 8px;
@@ -491,12 +524,17 @@
         .admin-grid,
         .field-grid,
         .app-release-grid,
+        .runtime-link,
         .readiness-item,
         .provider-row,
         .provider-link-row,
         .parcel-provider-row {
           display: grid;
           grid-template-columns: 1fr;
+        }
+
+        .runtime-actions {
+          justify-items: stretch;
         }
 
         .provider-link-row span {
@@ -644,6 +682,32 @@
           <button id="export-admin-settings" type="button" data-i18n="button.exportSettings">Export settings</button>
           <button id="open-card-editor" type="button" data-i18n="button.openEditor">Open Card Editor</button>
         </div>
+      </section>
+
+      <section class="panel" aria-labelledby="app-runtime-heading">
+        <div class="panel-header">
+          <div>
+            <h2 id="app-runtime-heading" data-i18n="heading.appRuntime">App runtime status</h2>
+            <p data-i18n="message.appRuntimeHint">Read the combined app server status exposed on port 4176.</p>
+          </div>
+          <div class="runtime-actions">
+            <button id="refresh-app-runtime" type="button" data-i18n="button.refreshRuntime">Refresh status</button>
+            <output id="app-runtime-summary" aria-live="polite"></output>
+          </div>
+        </div>
+        <div class="app-release-grid">
+          <div>
+            <h3 data-i18n="heading.runtimeSurfaces">Surfaces</h3>
+            <div id="app-runtime-surfaces" class="readiness-list"></div>
+          </div>
+          <div>
+            <h3 data-i18n="heading.runtimeLinks">Links</h3>
+            <div id="app-runtime-links" class="runtime-links"></div>
+            <h3 data-i18n="label.distributionOrder">Distribution order</h3>
+            <div id="app-runtime-distribution" class="chip-list"></div>
+          </div>
+        </div>
+        <output id="app-runtime-status" aria-live="polite"></output>
       </section>
 
       <section class="panel" aria-labelledby="app-release-heading">

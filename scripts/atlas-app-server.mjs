@@ -41,6 +41,11 @@ await startSurface({
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", `http://${request.headers.host ?? `${host}:${appPort}`}`);
 
+  if (request.method === "OPTIONS") {
+    writeEmptyResponse(response, 204);
+    return;
+  }
+
   if (requestUrl.pathname === "/health") {
     void writeHealthResponse(response);
     return;
@@ -211,8 +216,21 @@ function writeJson(response, statusCode, body) {
   response.writeHead(statusCode, {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET, OPTIONS",
+    "access-control-allow-headers": "content-type",
   });
   response.end(JSON.stringify(body, null, 2));
+}
+
+function writeEmptyResponse(response, statusCode) {
+  response.writeHead(statusCode, {
+    "cache-control": "no-store",
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET, OPTIONS",
+    "access-control-allow-headers": "content-type",
+  });
+  response.end();
 }
 
 function createPublicSurfaceUrl(requestUrl, port) {
