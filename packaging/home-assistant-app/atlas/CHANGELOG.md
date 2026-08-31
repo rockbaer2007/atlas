@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.31
+
+- Add the first ATLAS plugin repository format specification.
+- Show repository plugin icon, preview and compatibility metadata in the
+  Administration repository preview.
+- Serve SVG assets with an explicit content type in the Administration demo
+  server.
+
 ## 0.1.30
 
 - Darken the ATLAS repository button styling so it is visually distinct from

@@ -202,6 +202,9 @@ const translations = {
     "label.version": "Version",
     "label.extensionPoints": "Extension points",
     "label.capabilities": "Capabilities",
+    "label.compatibility": "Compatibility",
+    "label.icon": "Icon",
+    "label.preview": "Preview",
     "label.pluginRepositories": "Custom repositories",
     "label.pluginRepositoryUrl": "Repository",
     "label.pluginRepositoryType": "Type",
@@ -371,6 +374,9 @@ const translations = {
     "label.version": "Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
+    "label.compatibility": "Kompatibilitaet",
+    "label.icon": "Icon",
+    "label.preview": "Vorschau",
     "label.pluginRepositories": "Benutzerdefinierte Repositories",
     "label.pluginRepositoryUrl": "Repository",
     "label.pluginRepositoryType": "Typ",
@@ -1360,12 +1366,20 @@ function renderPluginRepositoryDialogPreview(plugins) {
     const title = document.createElement("h3");
     const description = document.createElement("p");
     const meta = document.createElement("p");
+    const media = document.createElement("div");
 
     item.className = "repository-preview-card";
+    media.className = "repository-preview-media";
     title.textContent = plugin.name;
     description.textContent = plugin.description || plugin.id;
     meta.textContent = [plugin.version, plugin.packageUrl ? "Package" : "Manifest"].filter(Boolean).join(" · ");
-    item.append(title, description, meta);
+    if (plugin.iconUrl) {
+      const icon = document.createElement("img");
+      icon.src = plugin.iconUrl;
+      icon.alt = "";
+      media.append(icon);
+    }
+    item.append(media, title, description, meta);
     pluginRepositoryPreviewList.append(item);
   }
 }
@@ -1471,7 +1485,12 @@ async function loadPluginRepositoriesPreview() {
 }
 
 function normalizePluginRepository(repository, repositoryEntry) {
-  if (!repository || typeof repository !== "object" || !Array.isArray(repository.plugins)) {
+  if (
+    !repository
+    || typeof repository !== "object"
+    || repository.kind !== "atlas.plugin.repository"
+    || !Array.isArray(repository.plugins)
+  ) {
     throw new Error(t("message.pluginRepositoryInvalid"));
   }
 
@@ -1496,12 +1515,37 @@ function normalizeRepositoryPlugin(plugin, repositoryEntry, index) {
     repositoryName: repositoryEntry.name || repositoryEntry.url,
     repositoryType: repositoryEntry.type,
     repositoryUrl: repositoryEntry.url,
+    iconUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.icon),
+    previewUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.preview),
     manifestUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.manifest),
     packageUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.package),
     capabilities: Array.isArray(plugin.capabilities)
       ? plugin.capabilities.filter(capability => typeof capability === "string")
       : [],
+    compatibility: normalizeRepositoryPluginCompatibility(plugin.compatibility),
   };
+}
+
+function normalizeRepositoryPluginCompatibility(compatibility) {
+  if (!compatibility || typeof compatibility !== "object" || Array.isArray(compatibility)) {
+    return {};
+  }
+
+  return {
+    atlas: typeof compatibility.atlas === "string" ? compatibility.atlas : "",
+    host: typeof compatibility.host === "string" ? compatibility.host : "",
+    homeAssistant: typeof compatibility.homeAssistant === "string" ? compatibility.homeAssistant : "",
+  };
+}
+
+function formatRepositoryPluginCompatibility(compatibility) {
+  const values = [
+    compatibility?.atlas ? `ATLAS ${compatibility.atlas}` : "",
+    compatibility?.host ? `Host ${compatibility.host}` : "",
+    compatibility?.homeAssistant ? `Home Assistant ${compatibility.homeAssistant}` : "",
+  ].filter(Boolean);
+
+  return values.length ? values : ["-"];
 }
 
 function resolveRepositoryUrl(repositoryUrl, value) {
@@ -1638,6 +1682,9 @@ async function installRepositoryPluginPackage(plugin) {
       repositoryUrl: plugin.repositoryUrl,
       manifestUrl: plugin.manifestUrl,
       packageUrl: plugin.packageUrl,
+      iconUrl: plugin.iconUrl,
+      previewUrl: plugin.previewUrl,
+      compatibility: plugin.compatibility,
       files: installPackage.files,
       installedAt: new Date().toISOString(),
     };
@@ -1683,6 +1730,7 @@ function renderPluginRepositoryPreview() {
     const installState = repositoryPluginInstallState(plugin);
     const item = document.createElement("article");
     const header = document.createElement("div");
+    const media = document.createElement("div");
     const titleGroup = document.createElement("div");
     const title = document.createElement("h3");
     const description = document.createElement("p");
@@ -1694,6 +1742,7 @@ function renderPluginRepositoryPreview() {
 
     item.className = "plugin-card";
     header.className = "plugin-header";
+    media.className = "plugin-media";
     status.className = "plugin-status";
     details.className = "plugin-details";
     actions.className = "action-grid";
@@ -1712,12 +1761,28 @@ function renderPluginRepositoryPreview() {
     } else {
       status.textContent = t("message.pluginRepositoryNotInstalled");
     }
+    if (plugin.iconUrl) {
+      const icon = document.createElement("img");
+      icon.src = plugin.iconUrl;
+      icon.alt = "";
+      media.append(icon);
+    }
     titleGroup.append(title, description);
-    header.append(titleGroup, status);
+    header.append(media, titleGroup, status);
+    if (plugin.previewUrl) {
+      const preview = document.createElement("img");
+      preview.className = "plugin-preview";
+      preview.src = plugin.previewUrl;
+      preview.alt = "";
+      item.append(preview);
+    }
     details.append(
       createDetail(t("label.version"), [plugin.version || "-"]),
       createDetail(t("label.pluginRepositories"), [plugin.repositoryName]),
       createDetail(t("label.pluginRepositoryType"), [t(`type.${plugin.repositoryType}`)]),
+      createDetail(t("label.compatibility"), formatRepositoryPluginCompatibility(plugin.compatibility)),
+      createDetail(t("label.icon"), [plugin.iconUrl || "-"]),
+      createDetail(t("label.preview"), [plugin.previewUrl || "-"]),
       createDetail("Manifest", [plugin.manifestUrl || "-"]),
       createDetail("Package", [plugin.packageUrl || "-"]),
       createDetail(t("label.capabilities"), plugin.capabilities),
