@@ -203,6 +203,38 @@ h1 {
   }
 }
 
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --atlas-bg: #0e1214;
+  --atlas-panel: #171d20;
+  --atlas-text: #f4f8fa;
+  --atlas-muted: #a9bac4;
+  --atlas-border: #303c42;
+  --atlas-accent: #2dd4bf;
+  --atlas-warn: #facc15;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --atlas-bg: #eef4f6;
+  --atlas-panel: #ffffff;
+  --atlas-text: #132432;
+  --atlas-muted: #607485;
+  --atlas-border: #ccd9df;
+  --atlas-accent: #0f8f83;
+  --atlas-warn: #c58a00;
+}
+
+:root[data-theme="dark"] .plugin-status {
+  background: #113c30;
+  color: #7ee6c9;
+}
+
+:root[data-theme="dark"] .plugin-status[data-status="planned"] {
+  background: #3e300a;
+  color: #facc15;
+}
+
 @media (max-width: 680px) {
   .hub-shell {
     width: min(100vw - 20px, 1180px);

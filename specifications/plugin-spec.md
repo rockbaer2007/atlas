@@ -65,6 +65,10 @@ support light, dark and automatic modes, persist the chosen mode and be able to
 follow the surrounding Home Assistant frame when embedded through ingress or a
 webpage panel.
 
+Administration owns the first shared browser preference through
+`atlas.themePreference`. ATLAS surfaces can resolve that preference locally so
+the Plugin Hub and later plugins follow the same light, dark or automatic mode.
+
 ## Reference Plugin: ATLAS File Studio
 
 ATLAS File Studio is planned as the second official reference plugin. It should

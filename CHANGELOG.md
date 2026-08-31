@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas Administration now has a real light/dark/auto theme switch backed by
+  persisted ATLAS theme state, and the Plugin Hub follows that preference.
 - Roadmap and plugin specification now track ATLAS File Studio as the second
   reference plugin: an ATLAS-styled Home Assistant file editor with controlled
   `/config` and approved extended-path access.

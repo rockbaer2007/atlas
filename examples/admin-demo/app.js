@@ -14,6 +14,7 @@ import {
 } from "@atlas/homeassistant";
 
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
+const themeButtons = Array.from(document.querySelectorAll("[data-theme-mode]"));
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const homeAssistantToken = document.querySelector("#home-assistant-token");
 const translationProviderInputs = Array.from(document.querySelectorAll('input[name="translation-provider"]'));
@@ -64,6 +65,7 @@ const adminStorageKey = "atlas.administration.configuration";
 const adminPluginStorageKey = "atlas.administration.importedPlugins";
 const adminPluginStateStorageKey = "atlas.administration.pluginState";
 const adminPluginRepositoryStorageKey = "atlas.administration.pluginRepository";
+const atlasThemeStorageKey = "atlas.themePreference";
 const adminConnectionCookieName = "atlas_admin_connection";
 const adminSecretsCookieName = "atlas_admin_secrets";
 const adminSecretsKeyStorageKey = "atlas.administration.secretsCookieKey";
@@ -155,6 +157,7 @@ const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
 
 let currentLanguage = "en";
+let currentThemePreference = "auto";
 let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let importedPluginDescriptors = [];
 let pluginRepositories = [];
@@ -199,6 +202,9 @@ const translations = {
     "label.pluginRepositoryUrl": "Repository",
     "label.pluginRepositoryType": "Type",
     "label.parcelEnabled": "Enabled",
+    "theme.auto": "Auto",
+    "theme.light": "Light",
+    "theme.dark": "Dark",
     "button.saveSettings": "Save settings",
     "button.forgetToken": "Forget token",
     "button.exportSettings": "Export settings",
@@ -230,6 +236,7 @@ const translations = {
     "placeholder.customAiApiKey": "Custom provider API key later",
     "placeholder.pluginRepositoryUrl": "https://example.test/atlas/repository.json",
     "aria.language": "Language",
+    "aria.theme": "Theme",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
     "message.openAiApiKeyLink": "Get OpenAI API key:",
     "message.geminiApiKeyLink": "Get Gemini API key:",
@@ -350,6 +357,9 @@ const translations = {
     "label.pluginRepositoryUrl": "Repository",
     "label.pluginRepositoryType": "Typ",
     "label.parcelEnabled": "Aktiv",
+    "theme.auto": "Auto",
+    "theme.light": "Hell",
+    "theme.dark": "Dunkel",
     "button.saveSettings": "Einstellungen speichern",
     "button.forgetToken": "Token vergessen",
     "button.exportSettings": "Einstellungen exportieren",
@@ -381,6 +391,7 @@ const translations = {
     "placeholder.customAiApiKey": "Eigener Provider-API-Key spaeter",
     "placeholder.pluginRepositoryUrl": "https://example.test/atlas/repository.json",
     "aria.language": "Sprache",
+    "aria.theme": "Darstellung",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
     "message.openAiApiKeyLink": "OpenAI API-Key erhalten:",
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
@@ -493,6 +504,46 @@ function applyTranslations() {
   for (const button of languageButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
   }
+  for (const button of themeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.themeMode === currentThemePreference));
+  }
+}
+
+function normalizeThemePreference(value) {
+  return ["auto", "light", "dark"].includes(value) ? value : "auto";
+}
+
+function currentSystemTheme() {
+  return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyThemePreference() {
+  const resolvedTheme = currentThemePreference === "auto" ? currentSystemTheme() : currentThemePreference;
+  document.documentElement.dataset.theme = resolvedTheme;
+  document.documentElement.dataset.themePreference = currentThemePreference;
+  for (const button of themeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.themeMode === currentThemePreference));
+  }
+}
+
+function setThemePreference(preference) {
+  currentThemePreference = normalizeThemePreference(preference);
+  applyThemePreference();
+  try {
+    localStorage.setItem(atlasThemeStorageKey, currentThemePreference);
+  } catch {
+    // Theme preference can fall back to automatic mode if storage is blocked.
+  }
+  persistConfiguration();
+}
+
+function restoreThemePreference(savedPreference) {
+  try {
+    currentThemePreference = normalizeThemePreference(savedPreference ?? localStorage.getItem(atlasThemeStorageKey));
+  } catch {
+    currentThemePreference = normalizeThemePreference(savedPreference);
+  }
+  applyThemePreference();
 }
 
 function currentWebSocketPath() {
@@ -771,6 +822,7 @@ function persistConfiguration() {
   const translationApiKeys = secrets.translationApiKeys;
   const configuration = {
     language: currentLanguage,
+    themePreference: currentThemePreference,
     url: homeAssistantUrl.value,
     translationProvider: currentTranslationProvider(),
     translationApiEndpoint: defaultTranslationApiEndpoint,
@@ -1020,6 +1072,7 @@ function restoreConfiguration() {
     if (saved?.language === "de" || saved?.language === "en") {
       currentLanguage = saved.language;
     }
+    restoreThemePreference(saved?.themePreference);
     if (typeof saved?.url === "string") {
       homeAssistantUrl.value = saved.url;
     }
@@ -2007,6 +2060,7 @@ void initializeAdministration();
 
 async function initializeAdministration() {
   restoreConfiguration();
+  restoreThemePreference(currentThemePreference);
   if (!pluginRepositories.length) {
     restorePluginRepositories();
   }
@@ -2033,6 +2087,16 @@ async function initializeAdministration() {
 for (const button of languageButtons) {
   button.addEventListener("click", () => setLanguage(button.dataset.language));
 }
+
+for (const button of themeButtons) {
+  button.addEventListener("click", () => setThemePreference(button.dataset.themeMode));
+}
+
+window.matchMedia?.("(prefers-color-scheme: dark)")?.addEventListener("change", () => {
+  if (currentThemePreference === "auto") {
+    applyThemePreference();
+  }
+});
 
 homeAssistantUrl.addEventListener("input", () => {
   renderAdministration();

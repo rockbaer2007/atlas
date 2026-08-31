@@ -1,7 +1,30 @@
 const pluginGrid = document.querySelector("#plugin-grid");
 const pluginSummary = document.querySelector("#plugin-summary");
+const atlasThemeStorageKey = "atlas.themePreference";
+
+applyThemePreference();
+window.matchMedia?.("(prefers-color-scheme: dark)")?.addEventListener("change", applyThemePreference);
 
 loadPlugins();
+
+function applyThemePreference() {
+  let preference = "auto";
+  try {
+    preference = localStorage.getItem(atlasThemeStorageKey) ?? "auto";
+  } catch {
+    preference = "auto";
+  }
+  if (!["auto", "light", "dark"].includes(preference)) {
+    preference = "auto";
+  }
+  const resolvedTheme = preference === "auto" && window.matchMedia?.("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : preference === "dark"
+      ? "dark"
+      : "light";
+  document.documentElement.dataset.theme = resolvedTheme;
+  document.documentElement.dataset.themePreference = preference;
+}
 
 async function loadPlugins() {
   try {
