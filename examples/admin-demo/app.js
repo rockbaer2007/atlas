@@ -32,9 +32,15 @@ const exportAdminSettings = document.querySelector("#export-admin-settings");
 const openCardEditor = document.querySelector("#open-card-editor");
 const importPluginPackage = document.querySelector("#import-plugin-package");
 const pluginPackageFile = document.querySelector("#plugin-package-file");
+const openPluginRepositoryDialog = document.querySelector("#open-plugin-repository-dialog");
+const pluginRepositoryDialog = document.querySelector("#plugin-repository-dialog");
 const pluginRepositoryUrl = document.querySelector("#plugin-repository-url");
 const pluginRepositoryType = document.querySelector("#plugin-repository-type");
 const addPluginRepository = document.querySelector("#add-plugin-repository");
+const closePluginRepositoryDialog = document.querySelector("#close-plugin-repository-dialog");
+const previewPluginRepository = document.querySelector("#preview-plugin-repository");
+const pluginRepositoryPreviewStatus = document.querySelector("#plugin-repository-preview-status");
+const pluginRepositoryPreviewList = document.querySelector("#plugin-repository-preview-list");
 const refreshPluginRepositories = document.querySelector("#refresh-plugin-repositories");
 const pluginRepositoryStatus = document.querySelector("#plugin-repository-status");
 const pluginRepositoryList = document.querySelector("#plugin-repository-list");
@@ -153,6 +159,7 @@ let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let importedPluginDescriptors = [];
 let pluginRepositories = [];
 let repositoryPluginDescriptors = [];
+let pendingRepositoryPreview;
 let lastEditorWindow;
 let lastAppRuntime;
 let currentAdminDeviceBinding;
@@ -174,6 +181,7 @@ const translations = {
     "heading.releaseTargets": "Distribution targets",
     "heading.plugins": "Installed plugins",
     "heading.policy": "Plugin access policy",
+    "heading.addPluginRepository": "Add ATLAS repository",
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
     "label.translationProvider": "Translation module",
@@ -201,7 +209,10 @@ const translations = {
     "button.deactivate": "Deactivate",
     "button.exportPackage": "Export package",
     "button.importPackage": "Import package",
+    "button.openRepositoryDialog": "Add ATLAS repository",
+    "button.previewRepository": "Preview repository",
     "button.addRepository": "Add",
+    "button.cancel": "Cancel",
     "button.refreshRepositories": "Refresh repositories",
     "button.removeRepository": "Remove repository",
     "button.installRepositoryPackage": "Install",
@@ -262,6 +273,8 @@ const translations = {
     "message.pluginRepositoryFailed": "Plugin repository could not be loaded.",
     "message.pluginRepositoryInvalid": "Plugin repository response is invalid.",
     "message.pluginRepositoryNoEntries": "No custom repositories added yet.",
+    "message.pluginRepositoryPreviewEmpty": "Enter a repository URL and preview it before adding.",
+    "message.pluginRepositoryPreviewLoaded": "{count} plugins found in {name}.",
     "message.pluginRepositoryInstallPlanned": "Repository package installation is planned; local package import remains available.",
     "type.plugin": "Plugin",
     "type.card": "Card",
@@ -319,6 +332,7 @@ const translations = {
     "heading.releaseTargets": "Ausgabeziele",
     "heading.plugins": "Installierte Plugins",
     "heading.policy": "Plugin-Zugriffsregel",
+    "heading.addPluginRepository": "ATLAS Repository hinzufuegen",
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
     "label.translationProvider": "Uebersetzungsmodul",
@@ -346,7 +360,10 @@ const translations = {
     "button.deactivate": "Deaktivieren",
     "button.exportPackage": "Paket exportieren",
     "button.importPackage": "Paket importieren",
+    "button.openRepositoryDialog": "ATLAS Repository hinzufuegen",
+    "button.previewRepository": "Repository pruefen",
     "button.addRepository": "Hinzufuegen",
+    "button.cancel": "Abbrechen",
     "button.refreshRepositories": "Repositories aktualisieren",
     "button.removeRepository": "Repository entfernen",
     "button.installRepositoryPackage": "Installieren",
@@ -407,6 +424,8 @@ const translations = {
     "message.pluginRepositoryFailed": "Plugin-Repository konnte nicht geladen werden.",
     "message.pluginRepositoryInvalid": "Plugin-Repository-Antwort ist ungueltig.",
     "message.pluginRepositoryNoEntries": "Noch keine benutzerdefinierten Repositories hinzugefuegt.",
+    "message.pluginRepositoryPreviewEmpty": "Gib eine Repository-URL ein und pruefe sie vor dem Hinzufuegen.",
+    "message.pluginRepositoryPreviewLoaded": "{count} Plugins in {name} gefunden.",
     "message.pluginRepositoryInstallPlanned": "Repository-Paketinstallation ist geplant; lokaler Paketimport bleibt verfuegbar.",
     "type.plugin": "Plugin",
     "type.card": "Card",
@@ -1111,32 +1130,127 @@ function normalizeRepositoryType(value) {
   return pluginRepositoryTypeValues.includes(value) ? value : "plugin";
 }
 
+function openPluginRepositoryAddDialog() {
+  pendingRepositoryPreview = undefined;
+  pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryPreviewEmpty");
+  pluginRepositoryPreviewList.replaceChildren();
+  pluginRepositoryType.value = "plugin";
+  if (typeof pluginRepositoryDialog.showModal === "function") {
+    pluginRepositoryDialog.showModal();
+  } else {
+    pluginRepositoryDialog.setAttribute("open", "");
+  }
+  pluginRepositoryUrl.focus();
+}
+
+function closePluginRepositoryAddDialog() {
+  if (typeof pluginRepositoryDialog.close === "function") {
+    pluginRepositoryDialog.close();
+  } else {
+    pluginRepositoryDialog.removeAttribute("open");
+  }
+}
+
 function addPluginRepositoryEntry() {
   const url = pluginRepositoryUrl.value.trim();
   if (!url) {
-    pluginRepositoryStatus.textContent = t("message.pluginRepositoryEmpty");
+    pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryEmpty");
     return;
   }
 
   if (pluginRepositories.some(repository => repository.url.toLowerCase() === url.toLowerCase())) {
-    pluginRepositoryStatus.textContent = t("message.pluginRepositoryDuplicate");
+    pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryDuplicate");
     return;
   }
 
+  const previewMatchesInput = pendingRepositoryPreview
+    && pendingRepositoryPreview.url.toLowerCase() === url.toLowerCase()
+    && pendingRepositoryPreview.type === normalizeRepositoryType(pluginRepositoryType.value);
   pluginRepositories = [
     ...pluginRepositories,
     normalizeStoredPluginRepository({
       url,
       type: normalizeRepositoryType(pluginRepositoryType.value),
-      status: "new",
+      name: previewMatchesInput ? pendingRepositoryPreview.name : "",
+      pluginCount: previewMatchesInput ? pendingRepositoryPreview.plugins.length : 0,
+      status: previewMatchesInput ? "ready" : "new",
+      lastChecked: previewMatchesInput ? pendingRepositoryPreview.lastChecked : "",
     }, pluginRepositories.length),
   ].filter(Boolean);
   pluginRepositoryUrl.value = "";
+  pendingRepositoryPreview = undefined;
   persistPluginRepositories();
   persistConfiguration();
   renderPluginRepositories();
   pluginRepositoryStatus.textContent = t("message.pluginRepositoryAdded");
+  closePluginRepositoryAddDialog();
   void loadPluginRepositoriesPreview();
+}
+
+async function previewPluginRepositoryEntry() {
+  const url = pluginRepositoryUrl.value.trim();
+  const type = normalizeRepositoryType(pluginRepositoryType.value);
+  pendingRepositoryPreview = undefined;
+  pluginRepositoryPreviewList.replaceChildren();
+
+  if (!url) {
+    pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryEmpty");
+    return;
+  }
+
+  if (pluginRepositories.some(repository => repository.url.toLowerCase() === url.toLowerCase())) {
+    pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryDuplicate");
+    return;
+  }
+
+  pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryLoading");
+  try {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const repository = await response.json();
+    const repositoryEntry = normalizeStoredPluginRepository({ url, type }, pluginRepositories.length);
+    const plugins = normalizePluginRepository(repository, repositoryEntry);
+    pendingRepositoryPreview = {
+      url,
+      type,
+      name: typeof repository.name === "string" && repository.name.trim() ? repository.name.trim() : url,
+      lastChecked: new Date().toLocaleString(currentLanguage === "de" ? "de-DE" : "en-US"),
+      plugins,
+    };
+    renderPluginRepositoryDialogPreview(plugins);
+    pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryPreviewLoaded", {
+      count: plugins.length,
+      name: pendingRepositoryPreview.name,
+    });
+  } catch {
+    pluginRepositoryPreviewStatus.textContent = t("message.pluginRepositoryFailed");
+  }
+}
+
+function renderPluginRepositoryDialogPreview(plugins) {
+  pluginRepositoryPreviewList.replaceChildren();
+  if (!plugins.length) {
+    const empty = document.createElement("p");
+    empty.textContent = t("message.pluginRepositoryEmpty");
+    pluginRepositoryPreviewList.append(empty);
+    return;
+  }
+
+  for (const plugin of plugins) {
+    const item = document.createElement("article");
+    const title = document.createElement("h3");
+    const description = document.createElement("p");
+    const meta = document.createElement("p");
+
+    item.className = "repository-preview-card";
+    title.textContent = plugin.name;
+    description.textContent = plugin.description || plugin.id;
+    meta.textContent = [plugin.version, plugin.packageUrl ? "Package" : "Manifest"].filter(Boolean).join(" · ");
+    item.append(title, description, meta);
+    pluginRepositoryPreviewList.append(item);
+  }
 }
 
 function removePluginRepositoryEntry(repositoryId) {
@@ -1315,6 +1429,7 @@ function renderPluginRepositoryPreview() {
       createDetail(t("label.capabilities"), plugin.capabilities),
     );
     installButton.type = "button";
+    installButton.className = "accent";
     installButton.textContent = t("button.installRepositoryPackage");
     installButton.disabled = true;
     installButton.title = t("message.pluginRepositoryInstallPlanned");
@@ -1969,16 +2084,22 @@ exportAdminSettings.addEventListener("click", () => {
 openCardEditor.addEventListener("click", openEditorWithConnectionHandoff);
 importPluginPackage.addEventListener("click", () => pluginPackageFile.click());
 pluginPackageFile.addEventListener("change", importSelectedPluginPackage);
+openPluginRepositoryDialog.addEventListener("click", openPluginRepositoryAddDialog);
 pluginRepositoryUrl.addEventListener("input", () => {
   persistConfiguration();
 });
 pluginRepositoryUrl.addEventListener("keydown", event => {
   if (event.key === "Enter") {
-    addPluginRepositoryEntry();
+    event.preventDefault();
+    void previewPluginRepositoryEntry();
   }
 });
 pluginRepositoryType.addEventListener("change", persistConfiguration);
 addPluginRepository.addEventListener("click", addPluginRepositoryEntry);
+previewPluginRepository.addEventListener("click", () => {
+  void previewPluginRepositoryEntry();
+});
+closePluginRepositoryDialog.addEventListener("click", closePluginRepositoryAddDialog);
 refreshPluginRepositories.addEventListener("click", () => {
   void loadPluginRepositoriesPreview();
 });

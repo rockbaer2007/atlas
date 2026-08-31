@@ -350,6 +350,27 @@
         color: #172033;
       }
 
+      button.accent {
+        border-color: #f59e0b;
+        background: #f59e0b;
+        color: #172033;
+        font-weight: 800;
+      }
+
+      button.accent:hover {
+        border-color: #d97706;
+        background: #d97706;
+        color: #ffffff;
+      }
+
+      button:disabled,
+      button.accent:disabled {
+        border-color: #cbd5e1;
+        background: #e2e8f0;
+        color: #64748b;
+        cursor: not-allowed;
+      }
+
       output {
         color: #0f766e;
         font-size: 13px;
@@ -459,6 +480,55 @@
         display: grid;
         gap: 10px;
         margin: 12px 0;
+      }
+
+      dialog {
+        width: min(720px, calc(100vw - 32px));
+        max-height: min(820px, calc(100vh - 32px));
+        border: 1px solid #0f766e;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #172033;
+        padding: 0;
+        box-shadow: 0 24px 70px rgb(15 23 42 / 24%);
+      }
+
+      dialog::backdrop {
+        background: rgb(15 23 42 / 54%);
+      }
+
+      .dialog-panel {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+      }
+
+      .dialog-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 8px;
+        align-items: center;
+      }
+
+      .repository-dialog-grid {
+        display: grid;
+        grid-template-columns: minmax(260px, 1fr) minmax(130px, 0.35fr);
+        gap: 10px;
+      }
+
+      .repository-preview-list {
+        display: grid;
+        gap: 8px;
+        max-height: 280px;
+        overflow: auto;
+      }
+
+      .repository-preview-card {
+        border: 1px solid #d8e0ec;
+        border-left: 4px solid #f59e0b;
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 10px;
       }
 
       .repository-actions {
@@ -584,6 +654,10 @@
         }
 
         .repository-actions {
+          grid-template-columns: 1fr;
+        }
+
+        .repository-dialog-grid {
           grid-template-columns: 1fr;
         }
 
@@ -796,6 +870,7 @@
           <div class="plugin-tools">
             <button id="import-plugin-package" type="button" data-i18n="button.importPackage">Import package</button>
             <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
+            <button id="open-plugin-repository-dialog" class="accent" type="button" data-i18n="button.openRepositoryDialog">Add ATLAS repository</button>
           </div>
           <div class="plugin-repository-tools">
             <div class="panel-header">
@@ -805,23 +880,6 @@
               <button id="refresh-plugin-repositories" type="button" data-i18n="button.refreshRepositories">Refresh repositories</button>
             </div>
             <div id="plugin-repository-list" class="repository-list"></div>
-            <div class="repository-actions">
-              <div class="field-pair">
-                <label for="plugin-repository-url" data-i18n="label.pluginRepositoryUrl">Repository</label>
-                <input id="plugin-repository-url" type="url" inputmode="url" placeholder="https://example.test/atlas/repository.json" data-i18n-placeholder="placeholder.pluginRepositoryUrl">
-              </div>
-              <div class="field-pair">
-                <label for="plugin-repository-type" data-i18n="label.pluginRepositoryType">Type</label>
-                <select id="plugin-repository-type">
-                  <option value="plugin" data-i18n="type.plugin">Plugin</option>
-                  <option value="card" data-i18n="type.card">Card</option>
-                  <option value="integration" data-i18n="type.integration">Integration</option>
-                  <option value="tool" data-i18n="type.tool">Tool</option>
-                  <option value="theme" data-i18n="type.theme">Theme</option>
-                </select>
-              </div>
-              <button id="add-plugin-repository" type="button" data-i18n="button.addRepository">Add</button>
-            </div>
             <output id="plugin-repository-status" aria-live="polite"></output>
             <div id="plugin-repository-plugin-list" class="plugin-list"></div>
           </div>
@@ -839,6 +897,39 @@
         </aside>
       </div>
     </main>
+    <dialog id="plugin-repository-dialog" aria-labelledby="plugin-repository-dialog-heading">
+      <form class="dialog-panel" method="dialog">
+        <div class="panel-header">
+          <div>
+            <h2 id="plugin-repository-dialog-heading" data-i18n="heading.addPluginRepository">Add ATLAS repository</h2>
+            <p data-i18n="message.pluginRepositoryPreviewEmpty">Enter a repository URL and preview it before adding.</p>
+          </div>
+        </div>
+        <div class="repository-dialog-grid">
+          <div class="field-pair">
+            <label for="plugin-repository-url" data-i18n="label.pluginRepositoryUrl">Repository</label>
+            <input id="plugin-repository-url" type="url" inputmode="url" placeholder="https://example.test/atlas/repository.json" data-i18n-placeholder="placeholder.pluginRepositoryUrl">
+          </div>
+          <div class="field-pair">
+            <label for="plugin-repository-type" data-i18n="label.pluginRepositoryType">Type</label>
+            <select id="plugin-repository-type">
+              <option value="plugin" data-i18n="type.plugin">Plugin</option>
+              <option value="card" data-i18n="type.card">Card</option>
+              <option value="integration" data-i18n="type.integration">Integration</option>
+              <option value="tool" data-i18n="type.tool">Tool</option>
+              <option value="theme" data-i18n="type.theme">Theme</option>
+            </select>
+          </div>
+        </div>
+        <output id="plugin-repository-preview-status" aria-live="polite"></output>
+        <div id="plugin-repository-preview-list" class="repository-preview-list"></div>
+        <div class="dialog-actions">
+          <button id="preview-plugin-repository" type="button" data-i18n="button.previewRepository">Preview repository</button>
+          <button id="add-plugin-repository" class="accent" type="button" data-i18n="button.addRepository">Add</button>
+          <button id="close-plugin-repository-dialog" class="secondary" type="button" data-i18n="button.cancel">Cancel</button>
+        </div>
+      </form>
+    </dialog>
     <script type="module" src="/examples/admin-demo/app.js"></script>
   </body>
 </html>

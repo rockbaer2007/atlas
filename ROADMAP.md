@@ -197,6 +197,7 @@ additional envelope-only contract expansion.
 * Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation
 * HACS-like ATLAS plugin repository flow:
   * Custom repository list in Administration, similar to the Home Assistant/HACS repository dialog
+  * Atlas-branded add-repository dialog with URL/type entry, repository preview and final confirmation
   * Repository URL entry with type selection for plugin, card, integration, tool and theme sources
   * `repository.json` catalog discovery
   * Plugin preview with icon, preview image, version, capabilities and compatibility status

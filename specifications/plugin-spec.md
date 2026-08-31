@@ -49,7 +49,12 @@ ATLAS plugin repositories should behave similarly to a lightweight HACS-style
 catalog. Administration keeps a custom repository list with a repository URL
 and source type such as plugin, card, integration, tool or theme. Each entry can
 load `repository.json`, show available plugins with icons and previews, validate
-compatibility and install the referenced package. Local ZIP import remains the
+compatibility and install the referenced package.
+
+Adding a repository should happen through an Atlas-branded intermediate
+Administration view or dialog. The user enters the repository URL, selects the
+source type, previews the repository metadata and confirms the addition before
+the repository becomes part of the managed list. Local ZIP import remains the
 manual developer and offline fallback.
 
 ## Theme Surface Requirements

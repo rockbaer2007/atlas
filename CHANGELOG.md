@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas Administration now opens a HACS-inspired, Atlas-branded add-repository
+  dialog with URL/type entry, repository preview and orange Atlas accent actions.
 - Atlas Administration now manages custom plugin repositories in a
   HACS-inspired list with repository type selection, refresh/remove controls
   and a combined installable-plugin preview.
