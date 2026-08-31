@@ -33,9 +33,12 @@ const openCardEditor = document.querySelector("#open-card-editor");
 const importPluginPackage = document.querySelector("#import-plugin-package");
 const pluginPackageFile = document.querySelector("#plugin-package-file");
 const pluginRepositoryUrl = document.querySelector("#plugin-repository-url");
-const loadPluginRepository = document.querySelector("#load-plugin-repository");
+const pluginRepositoryType = document.querySelector("#plugin-repository-type");
+const addPluginRepository = document.querySelector("#add-plugin-repository");
+const refreshPluginRepositories = document.querySelector("#refresh-plugin-repositories");
 const pluginRepositoryStatus = document.querySelector("#plugin-repository-status");
 const pluginRepositoryList = document.querySelector("#plugin-repository-list");
+const pluginRepositoryPluginList = document.querySelector("#plugin-repository-plugin-list");
 const adminSaveState = document.querySelector("#admin-save-state");
 const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
@@ -64,6 +67,7 @@ const adminConnectionApiPath = "/api/admin-connection";
 const adminDeviceApiPath = "/api/admin-device";
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
+const pluginRepositoryTypeValues = ["plugin", "card", "integration", "tool", "theme"];
 const parcelProviderDefaults = [
   {
     id: "dhl",
@@ -147,6 +151,7 @@ pluginCatalog.register(createHomeAssistantCardEditorPlugin());
 let currentLanguage = "en";
 let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
 let importedPluginDescriptors = [];
+let pluginRepositories = [];
 let repositoryPluginDescriptors = [];
 let lastEditorWindow;
 let lastAppRuntime;
@@ -182,7 +187,9 @@ const translations = {
     "label.version": "Version",
     "label.extensionPoints": "Extension points",
     "label.capabilities": "Capabilities",
-    "label.pluginRepositoryUrl": "ATLAS repository URL",
+    "label.pluginRepositories": "Custom repositories",
+    "label.pluginRepositoryUrl": "Repository",
+    "label.pluginRepositoryType": "Type",
     "label.parcelEnabled": "Enabled",
     "button.saveSettings": "Save settings",
     "button.forgetToken": "Forget token",
@@ -194,7 +201,9 @@ const translations = {
     "button.deactivate": "Deactivate",
     "button.exportPackage": "Export package",
     "button.importPackage": "Import package",
-    "button.loadRepository": "Load repository",
+    "button.addRepository": "Add",
+    "button.refreshRepositories": "Refresh repositories",
+    "button.removeRepository": "Remove repository",
     "button.installRepositoryPackage": "Install",
     "button.removeImportedPackage": "Remove import",
     "provider.none": "Default / fallback files",
@@ -244,12 +253,21 @@ const translations = {
     "message.pluginPackageDuplicate": "{name} is already installed.",
     "message.pluginPackageImportFailed": "Plugin package could not be imported.",
     "message.pluginPackageRemoved": "{name} imported package removed.",
-    "message.pluginRepositoryEmpty": "Add an ATLAS repository URL to preview installable plugins.",
-    "message.pluginRepositoryLoading": "Loading plugin repository...",
-    "message.pluginRepositoryLoaded": "{count} repository plugins loaded from {name}.",
+    "message.pluginRepositoryEmpty": "Add an ATLAS repository to preview installable plugins.",
+    "message.pluginRepositoryDuplicate": "This repository is already listed.",
+    "message.pluginRepositoryAdded": "Repository added.",
+    "message.pluginRepositoryRemoved": "Repository removed.",
+    "message.pluginRepositoryLoading": "Loading plugin repositories...",
+    "message.pluginRepositoryLoaded": "{count} repository plugins loaded from {countRepositories} repositories.",
     "message.pluginRepositoryFailed": "Plugin repository could not be loaded.",
     "message.pluginRepositoryInvalid": "Plugin repository response is invalid.",
+    "message.pluginRepositoryNoEntries": "No custom repositories added yet.",
     "message.pluginRepositoryInstallPlanned": "Repository package installation is planned; local package import remains available.",
+    "type.plugin": "Plugin",
+    "type.card": "Card",
+    "type.integration": "Integration",
+    "type.tool": "Tool",
+    "type.theme": "Theme",
     "policy.token": "The Card Editor receives the token only as a browser session handoff.",
     "policy.paths": "Plugins receive approved URLs, WebSocket paths and resource paths.",
     "policy.capabilities": "Capabilities are declared through the Runtime plugin manifest.",
@@ -314,7 +332,9 @@ const translations = {
     "label.version": "Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
-    "label.pluginRepositoryUrl": "ATLAS-Repository-URL",
+    "label.pluginRepositories": "Benutzerdefinierte Repositories",
+    "label.pluginRepositoryUrl": "Repository",
+    "label.pluginRepositoryType": "Typ",
     "label.parcelEnabled": "Aktiv",
     "button.saveSettings": "Einstellungen speichern",
     "button.forgetToken": "Token vergessen",
@@ -326,7 +346,9 @@ const translations = {
     "button.deactivate": "Deaktivieren",
     "button.exportPackage": "Paket exportieren",
     "button.importPackage": "Paket importieren",
-    "button.loadRepository": "Repository laden",
+    "button.addRepository": "Hinzufuegen",
+    "button.refreshRepositories": "Repositories aktualisieren",
+    "button.removeRepository": "Repository entfernen",
     "button.installRepositoryPackage": "Installieren",
     "button.removeImportedPackage": "Import entfernen",
     "provider.none": "Standard / Fallback-Dateien",
@@ -376,12 +398,21 @@ const translations = {
     "message.pluginPackageDuplicate": "{name} ist bereits installiert.",
     "message.pluginPackageImportFailed": "Plugin-Paket konnte nicht importiert werden.",
     "message.pluginPackageRemoved": "{name} importiertes Paket entfernt.",
-    "message.pluginRepositoryEmpty": "Fuege eine ATLAS-Repository-URL hinzu, um installierbare Plugins anzusehen.",
-    "message.pluginRepositoryLoading": "Plugin-Repository wird geladen...",
-    "message.pluginRepositoryLoaded": "{count} Repository-Plugins aus {name} geladen.",
+    "message.pluginRepositoryEmpty": "Fuege ein ATLAS-Repository hinzu, um installierbare Plugins anzusehen.",
+    "message.pluginRepositoryDuplicate": "Dieses Repository ist bereits in der Liste.",
+    "message.pluginRepositoryAdded": "Repository hinzugefuegt.",
+    "message.pluginRepositoryRemoved": "Repository entfernt.",
+    "message.pluginRepositoryLoading": "Plugin-Repositories werden geladen...",
+    "message.pluginRepositoryLoaded": "{count} Repository-Plugins aus {countRepositories} Repositories geladen.",
     "message.pluginRepositoryFailed": "Plugin-Repository konnte nicht geladen werden.",
     "message.pluginRepositoryInvalid": "Plugin-Repository-Antwort ist ungueltig.",
+    "message.pluginRepositoryNoEntries": "Noch keine benutzerdefinierten Repositories hinzugefuegt.",
     "message.pluginRepositoryInstallPlanned": "Repository-Paketinstallation ist geplant; lokaler Paketimport bleibt verfuegbar.",
+    "type.plugin": "Plugin",
+    "type.card": "Card",
+    "type.integration": "Integration",
+    "type.tool": "Tool",
+    "type.theme": "Theme",
     "policy.token": "Der Card Editor erhaelt den Token nur als Browser-Sitzungsuebergabe.",
     "policy.paths": "Plugins erhalten freigegebene URLs, WebSocket-Pfade und Ressourcenpfade.",
     "policy.capabilities": "Faehigkeiten werden ueber das Runtime-Plugin-Manifest deklariert.",
@@ -727,7 +758,7 @@ function persistConfiguration() {
     translationApiKeyConfigured: hasTranslationApiKey(currentTranslationProvider(), translationApiKeys),
     translationApiKeyConfiguredByProvider: createTranslationApiKeyConfiguredByProvider(translationApiKeys),
     parcelProviders: readParcelProviderSettings(),
-    pluginRepositoryUrl: pluginRepositoryUrl.value.trim(),
+    pluginRepositories,
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked,
     tokenConfigured: rememberAdminToken.checked && Boolean(token),
@@ -977,8 +1008,11 @@ function restoreConfiguration() {
       setTranslationProvider(saved.translationProvider);
     }
     applyParcelProviderSettings(saved?.parcelProviders);
-    if (typeof saved?.pluginRepositoryUrl === "string") {
-      pluginRepositoryUrl.value = saved.pluginRepositoryUrl;
+    if (Array.isArray(saved?.pluginRepositories)) {
+      pluginRepositories = normalizeStoredPluginRepositories(saved.pluginRepositories);
+    } else if (typeof saved?.pluginRepositoryUrl === "string" && saved.pluginRepositoryUrl.trim()) {
+      pluginRepositories = normalizeStoredPluginRepositories([{ url: saved.pluginRepositoryUrl, type: "plugin" }]);
+      migratedConfiguration = true;
     }
     if (saved?.translationApiKeys && typeof saved.translationApiKeys === "object") {
       applyTranslationApiKeys(saved.translationApiKeys);
@@ -1007,65 +1041,215 @@ function restoreConfiguration() {
   }
 }
 
-function persistPluginRepositoryUrl() {
+function persistPluginRepositories() {
   try {
-    localStorage.setItem(adminPluginRepositoryStorageKey, pluginRepositoryUrl.value.trim());
+    localStorage.setItem(adminPluginRepositoryStorageKey, JSON.stringify(pluginRepositories));
   } catch {
     // Repository previews are optional local Admin state.
   }
 }
 
-function restorePluginRepositoryUrl() {
+function restorePluginRepositories() {
   try {
     const saved = localStorage.getItem(adminPluginRepositoryStorageKey);
-    if (saved) {
-      pluginRepositoryUrl.value = saved;
+    if (!saved) {
+      return;
     }
+    const parsed = saved.trim().startsWith("[") ? JSON.parse(saved) : saved;
+    pluginRepositories = normalizeStoredPluginRepositories(Array.isArray(parsed)
+      ? parsed
+      : [{ url: parsed, type: "plugin" }]);
   } catch {
     localStorage.removeItem(adminPluginRepositoryStorageKey);
   }
 }
 
-async function loadPluginRepositoryPreview() {
-  const url = pluginRepositoryUrl.value.trim();
-  persistPluginRepositoryUrl();
-  repositoryPluginDescriptors = [];
-  pluginRepositoryList.replaceChildren();
+function normalizeStoredPluginRepositories(repositories) {
+  const seen = new Set();
+  return repositories
+    .map((repository, index) => normalizeStoredPluginRepository(repository, index))
+    .filter(Boolean)
+    .filter(repository => {
+      const key = repository.url.toLowerCase();
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
+}
 
+function normalizeStoredPluginRepository(repository, index) {
+  const url = typeof repository?.url === "string" ? repository.url.trim() : "";
+  if (!url) {
+    return undefined;
+  }
+  return {
+    id: typeof repository.id === "string" && repository.id.trim()
+      ? repository.id.trim()
+      : createPluginRepositoryId(url, index),
+    name: typeof repository.name === "string" && repository.name.trim() ? repository.name.trim() : "",
+    url,
+    type: pluginRepositoryTypeValues.includes(repository.type) ? repository.type : "plugin",
+    status: typeof repository.status === "string" ? repository.status : "unknown",
+    lastChecked: typeof repository.lastChecked === "string" ? repository.lastChecked : "",
+    pluginCount: Number.isInteger(repository.pluginCount) ? repository.pluginCount : 0,
+    error: typeof repository.error === "string" ? repository.error : "",
+  };
+}
+
+function createPluginRepositoryId(url, index) {
+  const normalizedUrl = url
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 64);
+  return normalizedUrl ? `repository-${normalizedUrl}` : `repository-${index + 1}`;
+}
+
+function normalizeRepositoryType(value) {
+  return pluginRepositoryTypeValues.includes(value) ? value : "plugin";
+}
+
+function addPluginRepositoryEntry() {
+  const url = pluginRepositoryUrl.value.trim();
   if (!url) {
     pluginRepositoryStatus.textContent = t("message.pluginRepositoryEmpty");
     return;
   }
 
-  pluginRepositoryStatus.textContent = t("message.pluginRepositoryLoading");
-  try {
-    const response = await fetch(url, { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    const repository = await response.json();
-    repositoryPluginDescriptors = normalizePluginRepository(repository, url);
-    renderPluginRepositoryPreview(repository);
-    pluginRepositoryStatus.textContent = t("message.pluginRepositoryLoaded", {
-      count: repositoryPluginDescriptors.length,
-      name: repository.name ?? url,
-    });
-  } catch {
-    pluginRepositoryStatus.textContent = t("message.pluginRepositoryFailed");
+  if (pluginRepositories.some(repository => repository.url.toLowerCase() === url.toLowerCase())) {
+    pluginRepositoryStatus.textContent = t("message.pluginRepositoryDuplicate");
+    return;
+  }
+
+  pluginRepositories = [
+    ...pluginRepositories,
+    normalizeStoredPluginRepository({
+      url,
+      type: normalizeRepositoryType(pluginRepositoryType.value),
+      status: "new",
+    }, pluginRepositories.length),
+  ].filter(Boolean);
+  pluginRepositoryUrl.value = "";
+  persistPluginRepositories();
+  persistConfiguration();
+  renderPluginRepositories();
+  pluginRepositoryStatus.textContent = t("message.pluginRepositoryAdded");
+  void loadPluginRepositoriesPreview();
+}
+
+function removePluginRepositoryEntry(repositoryId) {
+  pluginRepositories = pluginRepositories.filter(repository => repository.id !== repositoryId);
+  persistPluginRepositories();
+  persistConfiguration();
+  renderPluginRepositories();
+  void loadPluginRepositoriesPreview();
+  pluginRepositoryStatus.textContent = t("message.pluginRepositoryRemoved");
+}
+
+function renderPluginRepositories() {
+  pluginRepositoryList.replaceChildren();
+  if (!pluginRepositories.length) {
+    const empty = document.createElement("p");
+    empty.textContent = t("message.pluginRepositoryNoEntries");
+    pluginRepositoryList.append(empty);
+    return;
+  }
+
+  for (const repository of pluginRepositories) {
+    const item = document.createElement("article");
+    const details = document.createElement("div");
+    const title = document.createElement("h3");
+    const url = document.createElement("p");
+    const meta = document.createElement("p");
+    const removeButton = document.createElement("button");
+
+    item.className = "repository-card";
+    details.className = "repository-details";
+    title.textContent = repository.name || t(`type.${repository.type}`);
+    url.textContent = repository.url;
+    meta.textContent = [
+      t(`type.${repository.type}`),
+      repository.pluginCount ? `${repository.pluginCount} plugins` : "",
+      repository.lastChecked ? repository.lastChecked : "",
+      repository.error,
+    ].filter(Boolean).join(" · ");
+    removeButton.type = "button";
+    removeButton.className = "danger-icon-button";
+    removeButton.textContent = "x";
+    removeButton.title = t("button.removeRepository");
+    removeButton.setAttribute("aria-label", t("button.removeRepository"));
+    removeButton.addEventListener("click", () => removePluginRepositoryEntry(repository.id));
+
+    details.append(title, url, meta);
+    item.append(details, removeButton);
+    pluginRepositoryList.append(item);
   }
 }
 
-function normalizePluginRepository(repository, repositoryUrl) {
+async function loadPluginRepositoriesPreview() {
+  repositoryPluginDescriptors = [];
+  pluginRepositoryPluginList.replaceChildren();
+
+  if (!pluginRepositories.length) {
+    renderPluginRepositories();
+    pluginRepositoryStatus.textContent = t("message.pluginRepositoryEmpty");
+    return;
+  }
+
+  pluginRepositoryStatus.textContent = t("message.pluginRepositoryLoading");
+  const nextRepositories = [];
+  for (const repositoryEntry of pluginRepositories) {
+    try {
+      const response = await fetch(repositoryEntry.url, { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const repository = await response.json();
+      const plugins = normalizePluginRepository(repository, repositoryEntry);
+      repositoryPluginDescriptors.push(...plugins);
+      nextRepositories.push({
+        ...repositoryEntry,
+        name: typeof repository.name === "string" && repository.name.trim() ? repository.name.trim() : repositoryEntry.name,
+        status: "ready",
+        lastChecked: new Date().toLocaleString(currentLanguage === "de" ? "de-DE" : "en-US"),
+        pluginCount: plugins.length,
+        error: "",
+      });
+    } catch {
+      nextRepositories.push({
+        ...repositoryEntry,
+        status: "failed",
+        lastChecked: new Date().toLocaleString(currentLanguage === "de" ? "de-DE" : "en-US"),
+        pluginCount: 0,
+        error: t("message.pluginRepositoryFailed"),
+      });
+    }
+  }
+
+  pluginRepositories = nextRepositories;
+  persistPluginRepositories();
+  persistConfiguration();
+  renderPluginRepositories();
+  renderPluginRepositoryPreview();
+  pluginRepositoryStatus.textContent = t("message.pluginRepositoryLoaded", {
+    count: repositoryPluginDescriptors.length,
+    countRepositories: pluginRepositories.length,
+  });
+}
+
+function normalizePluginRepository(repository, repositoryEntry) {
   if (!repository || typeof repository !== "object" || !Array.isArray(repository.plugins)) {
     throw new Error(t("message.pluginRepositoryInvalid"));
   }
 
   return repository.plugins
-    .map((plugin, index) => normalizeRepositoryPlugin(plugin, repositoryUrl, index))
+    .map((plugin, index) => normalizeRepositoryPlugin(plugin, repositoryEntry, index))
     .filter(Boolean);
 }
 
-function normalizeRepositoryPlugin(plugin, repositoryUrl, index) {
+function normalizeRepositoryPlugin(plugin, repositoryEntry, index) {
   if (!plugin || typeof plugin !== "object") {
     return undefined;
   }
@@ -1077,8 +1261,10 @@ function normalizeRepositoryPlugin(plugin, repositoryUrl, index) {
     name: typeof plugin.name === "string" && plugin.name.trim() ? plugin.name.trim() : id,
     version: typeof plugin.version === "string" ? plugin.version : "",
     description: typeof plugin.description === "string" ? plugin.description : "",
-    manifestUrl: resolveRepositoryUrl(repositoryUrl, plugin.manifest),
-    packageUrl: resolveRepositoryUrl(repositoryUrl, plugin.package),
+    repositoryName: repositoryEntry.name || repositoryEntry.url,
+    repositoryType: repositoryEntry.type,
+    manifestUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.manifest),
+    packageUrl: resolveRepositoryUrl(repositoryEntry.url, plugin.package),
     capabilities: Array.isArray(plugin.capabilities)
       ? plugin.capabilities.filter(capability => typeof capability === "string")
       : [],
@@ -1096,8 +1282,8 @@ function resolveRepositoryUrl(repositoryUrl, value) {
   }
 }
 
-function renderPluginRepositoryPreview(repository) {
-  pluginRepositoryList.replaceChildren();
+function renderPluginRepositoryPreview() {
+  pluginRepositoryPluginList.replaceChildren();
   for (const plugin of repositoryPluginDescriptors) {
     const item = document.createElement("article");
     const header = document.createElement("div");
@@ -1122,6 +1308,8 @@ function renderPluginRepositoryPreview(repository) {
     header.append(titleGroup, status);
     details.append(
       createDetail(t("label.version"), [plugin.version || "-"]),
+      createDetail(t("label.pluginRepositories"), [plugin.repositoryName]),
+      createDetail(t("label.pluginRepositoryType"), [t(`type.${plugin.repositoryType}`)]),
       createDetail("Manifest", [plugin.manifestUrl || "-"]),
       createDetail("Package", [plugin.packageUrl || "-"]),
       createDetail(t("label.capabilities"), plugin.capabilities),
@@ -1132,14 +1320,13 @@ function renderPluginRepositoryPreview(repository) {
     installButton.title = t("message.pluginRepositoryInstallPlanned");
     actions.append(installButton);
     item.append(header, details, actions);
-    pluginRepositoryList.append(item);
+    pluginRepositoryPluginList.append(item);
   }
 
   if (!repositoryPluginDescriptors.length) {
-    pluginRepositoryStatus.textContent = t("message.pluginRepositoryLoaded", {
-      count: 0,
-      name: repository.name ?? pluginRepositoryUrl.value.trim(),
-    });
+    const empty = document.createElement("p");
+    empty.textContent = t("message.pluginRepositoryEmpty");
+    pluginRepositoryPluginList.append(empty);
   }
 }
 
@@ -1694,6 +1881,8 @@ function setLanguage(language) {
   currentLanguage = language === "de" ? "de" : "en";
   applyTranslations();
   renderParcelProviders();
+  renderPluginRepositories();
+  renderPluginRepositoryPreview();
   renderAdministration();
   renderAppRuntimeStatus(lastAppRuntime);
   persistConfiguration();
@@ -1703,7 +1892,9 @@ void initializeAdministration();
 
 async function initializeAdministration() {
   restoreConfiguration();
-  restorePluginRepositoryUrl();
+  if (!pluginRepositories.length) {
+    restorePluginRepositories();
+  }
   await restoreAdminDeviceBinding();
   await restoreEncryptedAdminSecretsCookie();
   restoreImportedPlugins();
@@ -1716,6 +1907,8 @@ async function initializeAdministration() {
   }
   applyTranslations();
   renderParcelProviders();
+  renderPluginRepositories();
+  renderPluginRepositoryPreview();
   renderAdministration();
   pluginRepositoryStatus.textContent = t("message.pluginRepositoryEmpty");
   void loadAppRuntimeStatus();
@@ -1777,11 +1970,17 @@ openCardEditor.addEventListener("click", openEditorWithConnectionHandoff);
 importPluginPackage.addEventListener("click", () => pluginPackageFile.click());
 pluginPackageFile.addEventListener("change", importSelectedPluginPackage);
 pluginRepositoryUrl.addEventListener("input", () => {
-  persistPluginRepositoryUrl();
   persistConfiguration();
 });
-loadPluginRepository.addEventListener("click", () => {
-  void loadPluginRepositoryPreview();
+pluginRepositoryUrl.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    addPluginRepositoryEntry();
+  }
+});
+pluginRepositoryType.addEventListener("change", persistConfiguration);
+addPluginRepository.addEventListener("click", addPluginRepositoryEntry);
+refreshPluginRepositories.addEventListener("click", () => {
+  void loadPluginRepositoriesPreview();
 });
 
 forgetAdminToken.addEventListener("click", () => {

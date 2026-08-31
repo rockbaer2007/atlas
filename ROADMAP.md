@@ -107,6 +107,8 @@ additional envelope-only contract expansion.
 * Theme engine
 * Design tokens
 * Dynamic themes
+* Dedicated ATLAS dark design for Administration, Hub and plugin surfaces so the UI theme toggle has a visible effect
+* Persisted light/dark/auto preference that can follow the Home Assistant frame where ATLAS is embedded
 * CSS variable generation
 * Theme inheritance
 
@@ -194,7 +196,8 @@ additional envelope-only contract expansion.
 * Dedicated plugin documentation for authoring, lifecycle, extension APIs, examples, and publishing guidance
 * Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation
 * HACS-like ATLAS plugin repository flow:
-  * Repository URL entry in Administration
+  * Custom repository list in Administration, similar to the Home Assistant/HACS repository dialog
+  * Repository URL entry with type selection for plugin, card, integration, tool and theme sources
   * `repository.json` catalog discovery
   * Plugin preview with icon, preview image, version, capabilities and compatibility status
   * package download and install from repository metadata

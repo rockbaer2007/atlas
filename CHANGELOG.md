@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas Administration now manages custom plugin repositories in a
+  HACS-inspired list with repository type selection, refresh/remove controls
+  and a combined installable-plugin preview.
+- The roadmap now tracks a dedicated dark ATLAS design so future UI theme
+  toggles visibly affect Administration, Hub and plugin surfaces.
 - Home Assistant now provides reusable panel groups, common entity
   presentations and validated light-brightness commands.
 - Home Assistant service calls now report completion or failure, and the demo

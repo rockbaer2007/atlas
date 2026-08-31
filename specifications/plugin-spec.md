@@ -46,7 +46,16 @@ The manifest is the required contract for discovery. It should declare:
 ## Plugin Repository Flow
 
 ATLAS plugin repositories should behave similarly to a lightweight HACS-style
-catalog. Administration can accept a repository URL, load `repository.json`,
-show available plugins with icons and previews, validate compatibility and
-install the referenced package. Local ZIP import remains the manual developer
-and offline fallback.
+catalog. Administration keeps a custom repository list with a repository URL
+and source type such as plugin, card, integration, tool or theme. Each entry can
+load `repository.json`, show available plugins with icons and previews, validate
+compatibility and install the referenced package. Local ZIP import remains the
+manual developer and offline fallback.
+
+## Theme Surface Requirements
+
+The ATLAS theme system should provide a dedicated dark design for
+Administration, the Plugin Hub and plugin surfaces. The UI theme switch should
+support light, dark and automatic modes, persist the chosen mode and be able to
+follow the surrounding Home Assistant frame when embedded through ingress or a
+webpage panel.

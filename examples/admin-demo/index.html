@@ -461,6 +461,50 @@
         margin: 12px 0;
       }
 
+      .repository-actions {
+        display: grid;
+        grid-template-columns: minmax(240px, 1fr) minmax(130px, 0.35fr) minmax(120px, 0.25fr);
+        gap: 8px;
+        align-items: end;
+      }
+
+      .repository-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .repository-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: start;
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 10px;
+      }
+
+      .repository-details {
+        min-width: 0;
+      }
+
+      .repository-details p {
+        overflow-wrap: anywhere;
+        font-size: 13px;
+      }
+
+      .danger-icon-button {
+        min-width: 36px;
+        width: 36px;
+        min-height: 36px;
+        border-color: #fee2e2;
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 0;
+        font-size: 18px;
+        font-weight: 900;
+      }
+
       .visually-hidden {
         position: absolute;
         width: 1px;
@@ -536,6 +580,10 @@
         .provider-link-row,
         .parcel-provider-row {
           display: grid;
+          grid-template-columns: 1fr;
+        }
+
+        .repository-actions {
           grid-template-columns: 1fr;
         }
 
@@ -750,13 +798,32 @@
             <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
           </div>
           <div class="plugin-repository-tools">
-            <label for="plugin-repository-url" data-i18n="label.pluginRepositoryUrl">ATLAS repository URL</label>
-            <div class="field-grid">
-              <input id="plugin-repository-url" type="url" inputmode="url" placeholder="https://example.test/atlas/repository.json" data-i18n-placeholder="placeholder.pluginRepositoryUrl">
-              <button id="load-plugin-repository" type="button" data-i18n="button.loadRepository">Load repository</button>
+            <div class="panel-header">
+              <div>
+                <h3 data-i18n="label.pluginRepositories">Custom repositories</h3>
+              </div>
+              <button id="refresh-plugin-repositories" type="button" data-i18n="button.refreshRepositories">Refresh repositories</button>
+            </div>
+            <div id="plugin-repository-list" class="repository-list"></div>
+            <div class="repository-actions">
+              <div class="field-pair">
+                <label for="plugin-repository-url" data-i18n="label.pluginRepositoryUrl">Repository</label>
+                <input id="plugin-repository-url" type="url" inputmode="url" placeholder="https://example.test/atlas/repository.json" data-i18n-placeholder="placeholder.pluginRepositoryUrl">
+              </div>
+              <div class="field-pair">
+                <label for="plugin-repository-type" data-i18n="label.pluginRepositoryType">Type</label>
+                <select id="plugin-repository-type">
+                  <option value="plugin" data-i18n="type.plugin">Plugin</option>
+                  <option value="card" data-i18n="type.card">Card</option>
+                  <option value="integration" data-i18n="type.integration">Integration</option>
+                  <option value="tool" data-i18n="type.tool">Tool</option>
+                  <option value="theme" data-i18n="type.theme">Theme</option>
+                </select>
+              </div>
+              <button id="add-plugin-repository" type="button" data-i18n="button.addRepository">Add</button>
             </div>
             <output id="plugin-repository-status" aria-live="polite"></output>
-            <div id="plugin-repository-list" class="plugin-list"></div>
+            <div id="plugin-repository-plugin-list" class="plugin-list"></div>
           </div>
           <div id="plugin-list" class="plugin-list"></div>
         </section>
