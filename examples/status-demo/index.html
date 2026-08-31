@@ -2194,10 +2194,117 @@
       }
 
       #atlas-entity-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 8px;
         margin: 16px 0;
+        overflow-x: auto;
+      }
+
+      .atlas-entity-table {
+        width: 100%;
+        min-width: 680px;
+        border-collapse: collapse;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+        overflow: hidden;
+      }
+
+      .atlas-entity-table th,
+      .atlas-entity-table td {
+        border-bottom: 1px solid #d8e0ec;
+        padding: 9px 10px;
+        text-align: left;
+        vertical-align: middle;
+      }
+
+      .atlas-entity-table th {
+        background: #f8fafc;
+        color: #536079;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .atlas-entity-table tbody tr {
+        cursor: pointer;
+      }
+
+      .atlas-entity-table tbody tr:hover,
+      .atlas-entity-table tbody tr:focus-visible {
+        background: #f0fdfa;
+        outline: none;
+      }
+
+      .atlas-entity-table tbody tr[data-primary="true"] {
+        background: #ecfdf5;
+      }
+
+      .atlas-entity-table tbody tr[data-stack-selected="true"] {
+        box-shadow: inset 4px 0 0 #0f766e;
+      }
+
+      .atlas-entity-name-cell,
+      .atlas-entity-detail-cell {
+        display: grid;
+        gap: 3px;
+      }
+
+      .atlas-entity-actions-cell {
+        width: 1%;
+        white-space: nowrap;
+      }
+
+      .atlas-entity-table button {
+        border: 1px solid #0f766e;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #115e59;
+        padding: 6px 8px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .atlas-entity-table .icon-button {
+        width: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        display: inline-grid;
+        place-items: center;
+        border-color: #cbd5e1;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .atlas-entity-table .icon-button:last-child {
+        color: #b91c1c;
+      }
+
+      .atlas-entity-table .stack-checkbox {
+        width: 30px;
+        min-width: 30px;
+        min-height: 30px;
+        margin: 0;
+        accent-color: #0f766e;
+      }
+
+      .atlas-entity-table tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .atlas-entity-status {
+        color: #0f766e;
+        font-weight: 700;
+      }
+
+      .atlas-entity-id {
+        color: #536079;
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .atlas-entity-type {
+        color: #536079;
+        font-size: 13px;
+        overflow-wrap: anywhere;
       }
 
       .atlas-entity-card {
@@ -2501,10 +2608,27 @@
       :root[data-theme="dark"] .expert-template-card,
       :root[data-theme="dark"] .expert-editor-dropzone,
       :root[data-theme="dark"] .expert-selected-card-details,
-      :root[data-theme="dark"] .atlas-entity-card {
+      :root[data-theme="dark"] .atlas-entity-card,
+      :root[data-theme="dark"] .atlas-entity-table {
         border-color: #b9c9cf;
         background: #e8eef1;
         color: #102027;
+      }
+
+      :root[data-theme="dark"] .atlas-entity-table th {
+        border-color: #c7d4d9;
+        background: #dbe5e8;
+        color: #36515a;
+      }
+
+      :root[data-theme="dark"] .atlas-entity-table td {
+        border-color: #c7d4d9;
+      }
+
+      :root[data-theme="dark"] .atlas-entity-table tbody tr:hover,
+      :root[data-theme="dark"] .atlas-entity-table tbody tr:focus-visible,
+      :root[data-theme="dark"] .atlas-entity-table tbody tr[data-primary="true"] {
+        background: #d9ebe8;
       }
 
       :root[data-theme="dark"] .expert-editor-dropzone {
@@ -2533,10 +2657,16 @@
       :root[data-theme="dark"] .expert-template-card span,
       :root[data-theme="dark"] .expert-template-card .favorite-toggle,
       :root[data-theme="dark"] .atlas-entity-card small,
+      :root[data-theme="dark"] .atlas-entity-id,
+      :root[data-theme="dark"] .atlas-entity-type,
       :root[data-theme="dark"] .expert-selected-card-details h3,
       :root[data-theme="dark"] .expert-selected-card-details dt,
       :root[data-theme="dark"] .expert-selected-card-details dd {
         color: #102027;
+      }
+
+      :root[data-theme="dark"] .atlas-entity-status {
+        color: #0f766e;
       }
 
       :root[data-theme="dark"] .expert-template-card .palette-category {
@@ -2840,7 +2970,7 @@
         <output id="ha-card-import-review" aria-live="polite"></output>
         <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
         <details id="simple-entity-controls" class="entity-picker-panel" open>
-          <summary data-i18n="heading.entitySelection">Entity selection</summary>
+          <summary data-i18n="heading.entitySelection">Entities for the card</summary>
           <div class="field-grid two-column">
             <div class="field-pair">
               <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
@@ -3129,7 +3259,7 @@
         </div>
       </details>
       <details id="selected-entities-panel" class="selected-entities-panel" open>
-        <summary data-i18n="heading.selectedEntities">Selected entities</summary>
+        <summary data-i18n="heading.selectedEntities">Entities detected in HA</summary>
         <output id="stack-selection-summary" aria-live="polite"></output>
         <output id="group-summary" aria-live="polite"></output>
         <output id="group-issues" aria-live="polite"></output>

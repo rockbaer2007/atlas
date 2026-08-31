@@ -337,8 +337,12 @@ const translations = {
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnostics",
     "heading.statusPreview": "ATLAS Status Preview",
-    "heading.entitySelection": "Entity selection",
-    "heading.selectedEntities": "Selected entities",
+    "heading.entitySelection": "Entities for the card",
+    "heading.selectedEntities": "Entities detected in HA",
+    "table.entity": "Entity",
+    "table.state": "State",
+    "table.type": "Type / source",
+    "table.actions": "Actions",
     "group.overview": "Overview",
     "group.energy": "Energy",
     "group.safety": "Safety",
@@ -777,8 +781,12 @@ const translations = {
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnose",
     "heading.statusPreview": "ATLAS Status Vorschau",
-    "heading.entitySelection": "Entitätsauswahl",
-    "heading.selectedEntities": "Ausgewählte Entitäten",
+    "heading.entitySelection": "Entitäten für die Card",
+    "heading.selectedEntities": "In HA erkannte Entitäten",
+    "table.entity": "Entität",
+    "table.state": "Status",
+    "table.type": "Typ / Quelle",
+    "table.actions": "Aktionen",
     "group.overview": "Übersicht",
     "group.energy": "Energie",
     "group.safety": "Sicherheit",
@@ -1563,8 +1571,6 @@ function renderEditorMode(mode = "simple") {
   deleteHomeAssistantGroup.hidden = expert;
   duplicateHomeAssistantGroup.hidden = expert;
   simpleEntityControls.hidden = false;
-  simpleEntityControls.open = !expert;
-  selectedEntitiesPanel.open = !expert;
   simpleCardSection.hidden = expert;
   expertEditorSection.hidden = !expert;
   for (const button of editorModeButtons) {
@@ -6806,32 +6812,59 @@ function renderEntityList() {
     return;
   }
 
+  const table = document.createElement("table");
+  const thead = document.createElement("thead");
+  const tbody = document.createElement("tbody");
+  const headerRow = document.createElement("tr");
+  table.className = "atlas-entity-table";
+  table.setAttribute("aria-label", t("heading.selectedEntities"));
+  for (const key of ["table.entity", "table.state", "table.type", "table.actions"]) {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = t(key);
+    headerRow.append(th);
+  }
+  thead.append(headerRow);
+  table.append(thead, tbody);
+
   let ready = 0;
   let pending = 0;
   let blocked = 0;
   const blockedEntities = [];
   for (const entityId of entityIds) {
     const entity = entitySnapshots.get(entityId);
-    const card = document.createElement("article");
+    const row = document.createElement("tr");
+    const nameCell = document.createElement("td");
+    const valueCell = document.createElement("td");
+    const detailCell = document.createElement("td");
+    const actionCell = document.createElement("td");
     const name = document.createElement("strong");
     const value = document.createElement("span");
+    const entityIdText = document.createElement("small");
     const detail = document.createElement("small");
     const controls = document.createElement("div");
-    card.className = "atlas-entity-card";
-    card.tabIndex = 0;
-    card.setAttribute("role", "button");
-    card.setAttribute("aria-label", t("aria.showStatusPreview", { entityId }));
+    row.tabIndex = 0;
+    row.setAttribute("role", "button");
+    row.setAttribute("aria-label", t("aria.showStatusPreview", { entityId }));
+    nameCell.className = "atlas-entity-name-cell";
+    valueCell.className = "atlas-entity-status-cell";
+    detailCell.className = "atlas-entity-detail-cell";
+    actionCell.className = "atlas-entity-actions-cell";
     const presentation = entity ? createHomeAssistantEntityPresentation(entity) : undefined;
-    card.dataset.category = presentation?.category ?? "status";
+    row.dataset.category = presentation?.category ?? "status";
     if (presentation?.category === "battery" && entity?.value) {
       const batteryPercent = Number(entity.value);
-      card.dataset.batteryLevel = batteryPercent <= 20 ? "low" : batteryPercent <= 50 ? "medium" : "normal";
+      row.dataset.batteryLevel = batteryPercent <= 20 ? "low" : batteryPercent <= 50 ? "medium" : "normal";
     }
     const importedName = importedSimpleEntityNames.get(entityId);
     name.textContent = presentation?.label ?? importedName ?? entityId;
+    entityIdText.className = "atlas-entity-id";
+    entityIdText.textContent = entityId;
+    value.className = "atlas-entity-status";
     value.textContent = entity?.value && presentation?.category === "battery" && !entity.unit
       ? `${entity.value}%`
       : entity?.value ?? entity?.state ?? t("text.waiting");
+    detail.className = "atlas-entity-type";
     detail.textContent = entity?.updatedAt
       ? `${presentation?.detail ?? entityId.split(".", 1)[0]} · ${formatRelativeTime(entity.updatedAt)}`
       : importedName
@@ -6843,21 +6876,23 @@ function renderEntityList() {
       blocked += 1;
       blockedEntities.push(presentation?.label ?? entityId);
     }
-    card.addEventListener("click", () => handleEntityCardSelection(entityId));
-    card.addEventListener("keydown", event => {
+    row.addEventListener("click", () => handleEntityCardSelection(entityId));
+    row.addEventListener("keydown", event => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         handleEntityCardSelection(entityId);
       }
     });
     controls.className = "atlas-entity-card-actions";
-    card.append(name, value, detail);
+    nameCell.append(name, entityIdText);
+    valueCell.append(value);
+    detailCell.append(detail);
     const position = selectedEntityIds.indexOf(entityId);
     if (entityId === currentEntityId()) {
-      card.dataset.primary = "true";
+      row.dataset.primary = "true";
     }
     if (usesStackEntitySelection() && stackSelectedEntityIds.has(entityId)) {
-      card.dataset.stackSelected = "true";
+      row.dataset.stackSelected = "true";
     }
     const moveUp = document.createElement("button");
     const moveDown = document.createElement("button");
@@ -6926,9 +6961,11 @@ function renderEntityList() {
       });
       controls.append(action);
     }
-    card.append(controls);
-    entityList.append(card);
+    actionCell.append(controls);
+    row.append(nameCell, valueCell, detailCell, actionCell);
+    tbody.append(row);
   }
+  entityList.append(table);
   groupSummary.textContent = t("message.groupStatus", { ready, pending, blocked });
   groupIssues.textContent = blockedEntities.length ? t("message.needsAttention", { entities: blockedEntities.join(", ") }) : "";
   renderStackSelectionSummary();

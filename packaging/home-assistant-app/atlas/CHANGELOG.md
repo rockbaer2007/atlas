@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.19
+
+- Rename the entity picker section to "Entities for the card" / "Entitaeten
+  fuer die Card".
+- Rename the lower entity list to "Entities detected in HA" / "In HA erkannte
+  Entitaeten".
+- Show detected Home Assistant entities as a compact table with a separate
+  action column.
+
 ## 0.1.18
 
 - Tune the Expert card-list favorite checkbox in dark mode with a green field
