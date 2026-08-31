@@ -84,7 +84,7 @@ const targets: readonly HomeAssistantCardEditorAppReleaseTarget[] = [
     id: "standalone-docker",
     label: "Standalone Docker container",
     status: "in-progress",
-    reason: "Build the first repeatable package as one container for Administration and the Card Editor.",
+    reason: "Dockerfile and Compose wiring exist; the image still needs a verified Docker build on a host with Docker installed.",
   },
   {
     id: "home-assistant-app",

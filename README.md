@@ -47,6 +47,31 @@ pnpm build
 pnpm test
 ```
 
+Run the combined local app preview:
+
+```sh
+pnpm build
+pnpm start:app
+```
+
+Open:
+
+* App health: `http://127.0.0.1:4176/health`
+* Administration: `http://127.0.0.1:4175/`
+* Home Assistant Card Editor: `http://127.0.0.1:4174/`
+
+Build and run the standalone Docker preview:
+
+```sh
+pnpm docker:build
+pnpm docker:up
+```
+
+The container binds the app surfaces through `ATLAS_HOST=0.0.0.0` and exposes
+ports `4176`, `4175` and `4174`. Set `ATLAS_INSTANCE_ID` when a server,
+Docker host or later Home Assistant App/Add-on package needs a deliberate
+stable Administration identity.
+
 ---
 
 ## License

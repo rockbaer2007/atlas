@@ -10,6 +10,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - The Atlas Home Assistant Card Editor demo standard port is fixed to `4174`; serve it at `http://127.0.0.1:4174/`.
 - The Atlas Administration demo standard port is fixed to `4175`; serve it at `http://127.0.0.1:4175/`.
 - The combined Atlas app server standard port is fixed to `4176`; `pnpm start:app` should expose `http://127.0.0.1:4176/health` while starting Administration and Card Editor together.
+- The standalone Docker preview uses `Dockerfile`, `.dockerignore` and `docker-compose.yml`; build with `pnpm docker:build` and run with `pnpm docker:up` when Docker is available.
 - The external documentation site uses VitePress in `ugso-opensource-docs` and is maintained in German and English.
 
 ## Collaboration Rules
@@ -49,6 +50,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
   - `pnpm build` before committing broader repo changes.
   - `git diff --check` before commit.
   - Check the local demo URL when UI or demo behavior changes.
+  - For Docker packaging changes, run `pnpm docker:build` and check `/health` when Docker is available; if Docker is unavailable, state that clearly.
 - For `ugso-opensource-docs`, use npm, not pnpm:
   - `npm run docs:build`.
 - If a check cannot run, say so clearly in the final report.

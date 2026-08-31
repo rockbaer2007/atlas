@@ -36,7 +36,7 @@ await startSurface({
 });
 
 createServer((request, response) => {
-  const requestUrl = new URL(request.url ?? "/", `http://${host}:${appPort}`);
+  const requestUrl = new URL(request.url ?? "/", `http://${request.headers.host ?? `${host}:${appPort}`}`);
 
   if (requestUrl.pathname === "/health") {
     void writeHealthResponse(response);
@@ -44,13 +44,13 @@ createServer((request, response) => {
   }
 
   if (requestUrl.pathname === "/" || requestUrl.pathname === "/admin" || requestUrl.pathname === "/admin/") {
-    response.writeHead(302, { location: adminUrl });
+    response.writeHead(302, { location: createPublicSurfaceUrl(requestUrl, adminPort) });
     response.end();
     return;
   }
 
   if (requestUrl.pathname === "/editor" || requestUrl.pathname === "/editor/") {
-    response.writeHead(302, { location: editorUrl });
+    response.writeHead(302, { location: createPublicSurfaceUrl(requestUrl, editorPort) });
     response.end();
     return;
   }
@@ -58,9 +58,9 @@ createServer((request, response) => {
   writeJson(response, 404, {
     error: "not found",
     links: {
-      admin: adminUrl,
-      editor: editorUrl,
-      health: `http://${host}:${appPort}/health`,
+      admin: createPublicSurfaceUrl(requestUrl, adminPort),
+      editor: createPublicSurfaceUrl(requestUrl, editorPort),
+      health: new URL("/health", requestUrl).toString(),
     },
   });
 }).listen(appPort, host, () => {
@@ -155,4 +155,10 @@ function writeJson(response, statusCode, body) {
     "cache-control": "no-store",
   });
   response.end(JSON.stringify(body, null, 2));
+}
+
+function createPublicSurfaceUrl(requestUrl, port) {
+  const url = new URL("/", requestUrl);
+  url.port = String(port);
+  return url.toString();
 }

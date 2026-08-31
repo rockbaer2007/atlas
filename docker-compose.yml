@@ -1,0 +1,17 @@
+services:
+  atlas:
+    build:
+      context: .
+    image: atlas:local
+    environment:
+      ATLAS_HOST: 0.0.0.0
+      ATLAS_APP_HOST: 0.0.0.0
+      ATLAS_APP_PORT: 4176
+      ATLAS_ADMIN_PORT: 4175
+      ATLAS_DEMO_PORT: 4174
+      ATLAS_INSTANCE_ID: ${ATLAS_INSTANCE_ID:-atlas-local}
+    ports:
+      - "4176:4176"
+      - "4175:4175"
+      - "4174:4174"
+    restart: unless-stopped
