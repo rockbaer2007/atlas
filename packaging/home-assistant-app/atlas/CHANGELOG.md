@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+
+- Use ingress-safe relative Card Editor Admin API paths so saved Add-on
+  connection settings can load before auto-connect.
+
 ## 0.1.6
 
 - Remove the static loopback Administration link from the Card Editor and route
