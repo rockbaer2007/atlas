@@ -165,6 +165,9 @@ Developer Tools
 - Use Hub categories such as Editors, Automation/Devices and Dashboards/Panels
   to reduce clutter in the Home Assistant sidebar while keeping direct access
   inside ATLAS.
+- After the main functionality is stable, replace placeholder plugin previews
+  with real screenshots and reduce Hub preview media to roughly two thirds of
+  the current height so the plugin overview stays compact.
 
 ## Long-term Goal
 
