@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.22
+
+- Keep the detected Home Assistant entities table collapsed by default in both
+  Simple and Expert mode.
+
 ## 0.1.21
 
 - Use ATLAS example entities as a Simple card export fallback when no entities
