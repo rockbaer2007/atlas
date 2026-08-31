@@ -69,6 +69,23 @@ Administration owns the first shared browser preference through
 `atlas.themePreference`. ATLAS surfaces can resolve that preference locally so
 the Plugin Hub and later plugins follow the same light, dark or automatic mode.
 
+## Language Requirements
+
+Administration should own the ATLAS default language setting and persist it as
+part of the local administration configuration. ATLAS surfaces should restore
+that preference consistently across Administration, Plugin Hub and plugin
+surfaces.
+
+English (`en`) is the required fallback language for ATLAS UI text and
+documentation routing. If a German (`de`) or French (`fr`) translation key is
+missing, the surface must fall back to English rather than showing an empty or
+broken label.
+
+French (`fr`) is planned as the third core ATLAS language. UI translation
+tables, plugin metadata presentation and documentation navigation should be
+expanded from German/English to German/English/French while keeping matching
+structure across languages.
+
 ## Reference Plugin: ATLAS File Studio
 
 ATLAS File Studio is planned as the second official reference plugin. It should

@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Roadmap and plugin specification now track ATLAS internationalization:
+  persisted default language settings, required English fallback and planned
+  French UI/documentation expansion.
 - Atlas Administration now has a real light/dark/auto theme switch backed by
   persisted ATLAS theme state, and the Plugin Hub follows that preference.
 - Roadmap and plugin specification now track ATLAS File Studio as the second

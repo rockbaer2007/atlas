@@ -247,6 +247,29 @@ additional envelope-only contract expansion.
 
 ---
 
+## 0.9 – Internationalization
+
+**Status:** 📅 Planned
+
+### Objectives
+
+* Store the ATLAS default language in Administration settings
+* Apply the saved language across Administration, Plugin Hub and plugin surfaces
+* Keep `en` as the required fallback language whenever a translation key is missing
+* Extend ATLAS UI language support from German/English to French
+* Extend ATLAS documentation from German/English to French
+* Keep language navigation consistent across DE, EN and FR
+* Mark generated or placeholder French content clearly until reviewed
+
+### Success Criteria
+
+* ATLAS consistently restores the user's preferred language
+* All core ATLAS surfaces can run in German, English and French
+* Documentation is maintained in matching DE/EN/FR structure
+* Missing translations fall back safely to English
+
+---
+
 ## 1.0 – Stable Release
 
 **Status:** 📅 Future
@@ -254,7 +277,7 @@ additional envelope-only contract expansion.
 ### Objectives
 
 * Stable public APIs
-* Complete documentation
+* Complete German, English and French documentation
 * Fully tested framework
 * Long-term support
 * Community readiness
