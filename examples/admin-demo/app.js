@@ -261,7 +261,7 @@ const translations = {
     "label.accessToken": "Access Token",
     "label.translationProvider": "Uebersetzungsmodul",
     "label.rememberToken": "Token lokal fuer die Administration merken",
-    "label.autoConnectEditor": "Card Editor nach Uebergabe automatisch verbinden",
+    "label.autoConnectEditor": "Card Editor nach Übergabe automatisch verbinden",
     "label.version": "Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
@@ -660,7 +660,7 @@ function persistConfiguration() {
     translationApiKeyConfiguredByProvider: createTranslationApiKeyConfiguredByProvider(translationApiKeys),
     parcelProviders: readParcelProviderSettings(),
     rememberToken: rememberAdminToken.checked,
-    autoConnectEditor: autoConnectEditor.checked && rememberAdminToken.checked && Boolean(token),
+    autoConnectEditor: autoConnectEditor.checked,
     tokenConfigured: rememberAdminToken.checked && Boolean(token),
   };
   localStorage.setItem(adminStorageKey, JSON.stringify(configuration));
@@ -887,7 +887,6 @@ function saveConnectionSettings() {
     rememberAdminToken.checked = true;
   }
   if (autoConnectEditor.checked && !token) {
-    autoConnectEditor.checked = false;
     adminSaveState.textContent = t("message.autoConnectNeedsToken");
   } else {
     adminSaveState.textContent = token ? t("message.savedWithToken") : t("message.saved");
@@ -924,7 +923,7 @@ function restoreConfiguration() {
         migratedConfiguration = true;
       }
     }
-    if (saved?.autoConnectEditor === true && saved?.rememberToken === true && homeAssistantToken.value.trim()) {
+    if (saved?.autoConnectEditor === true) {
       autoConnectEditor.checked = true;
     }
     if (migratedConfiguration) {
@@ -962,7 +961,7 @@ async function restoreServerConnectionSettings() {
       rememberAdminToken.checked = true;
     }
     void persistEncryptedAdminSecretsCookie(readAdminSecrets());
-    if (saved.autoConnectEditor === true && homeAssistantToken.value.trim()) {
+    if (saved.autoConnectEditor === true) {
       autoConnectEditor.checked = true;
     }
     renderAdministration();
