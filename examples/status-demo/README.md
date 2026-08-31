@@ -39,6 +39,12 @@ inspect/activate/export-package actions and exports the generated
 credential boundary: Home Assistant tokens stay in the central admin area,
 while the editor receives a session-only handoff. Plugins receive only approved
 context such as Home Assistant URL, WebSocket path and declared capabilities.
+The Card Editor includes an opt-in Problem melden / Report problem flow. It
+creates a sanitized debug report preview before anything is copied or opened on
+GitHub. The report can include editor mode, selected entities, export settings,
+resource status and the current card preview, but Home Assistant tokens,
+provider API keys, cookies and localStorage are recorded as intentionally
+excluded.
 
 Enter one or more comma-separated Entity IDs before connecting, or use the
 domain-filtered entity picker to add known demo entities. Once a live event

@@ -82,6 +82,32 @@
         outline-offset: 2px;
       }
 
+      .header-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .problem-report-button {
+        min-height: 34px;
+        border: 1px solid #0f766e;
+        border-radius: 4px;
+        background: #ffffff;
+        color: #115e59;
+        padding: 7px 10px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .problem-report-button:hover,
+      .problem-report-button:focus-visible {
+        background: #e6fffb;
+        outline: 0;
+      }
+
       .status-controls {
         display: flex;
         gap: 8px;
@@ -1708,6 +1734,22 @@
         line-height: 1.45;
       }
 
+      .problem-report-preview {
+        box-sizing: border-box;
+        width: 100%;
+        min-height: 340px;
+        resize: vertical;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #f8fafc;
+        color: #172033;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        line-height: 1.45;
+        white-space: pre;
+      }
+
       .ha-card-style-review {
         max-height: 260px;
         overflow: auto;
@@ -2318,6 +2360,10 @@
           display: grid;
         }
 
+        .header-actions {
+          justify-content: flex-start;
+        }
+
         .expert-editor-workbench {
           grid-template-columns: 1fr;
         }
@@ -2348,9 +2394,12 @@
           <h1 data-i18n="page.title">ATLAS Home Assistant Card Editor</h1>
           <p data-i18n="page.subtitle">Build Simple or Expert Home Assistant cards from live or local entities.</p>
         </div>
-        <div class="language-toggle" role="group" aria-label="Language" data-i18n-aria-label="aria.language">
-          <button type="button" data-language="de" aria-pressed="false">DE</button>
-          <button type="button" data-language="en" aria-pressed="true">EN</button>
+        <div class="header-actions">
+          <button id="open-problem-report" class="problem-report-button" type="button" data-i18n="button.reportProblem">Report problem</button>
+          <div class="language-toggle" role="group" aria-label="Language" data-i18n-aria-label="aria.language">
+            <button type="button" data-language="de" aria-pressed="false">DE</button>
+            <button type="button" data-language="en" aria-pressed="true">EN</button>
+          </div>
         </div>
       </div>
       <div class="connection-config compact-panel">
@@ -2743,6 +2792,23 @@
                 <button id="apply-ha-card-paste-import" type="button" data-i18n="button.applyImport">Import into editor</button>
               </div>
               <output id="ha-card-paste-import-status" aria-live="polite"></output>
+            </div>
+          </section>
+        </div>
+        <div id="problem-report-backdrop" class="modal-backdrop" hidden>
+          <section class="tabbed-card-dialog" role="dialog" aria-modal="true" aria-labelledby="problem-report-title">
+            <header>
+              <h2 id="problem-report-title" data-i18n="heading.problemReport">Report problem</h2>
+              <button id="close-problem-report" type="button" class="icon-button" data-i18n-aria-label="aria.closeProblemReport" data-i18n-title="aria.closeProblemReport" aria-label="Close problem report" title="Close problem report">&times;</button>
+            </header>
+            <div class="tabbed-card-dialog-body single-column">
+              <p class="dialog-hint" data-i18n="message.problemReportHint">Review the debug data before copying or opening GitHub. Home Assistant tokens and provider API keys are never included.</p>
+              <textarea id="problem-report-preview" class="problem-report-preview" readonly spellcheck="false"></textarea>
+              <div class="connection-actions">
+                <button id="copy-problem-report" type="button" data-i18n="button.copyProblemReport">Copy report</button>
+                <button id="open-problem-issue" type="button" data-i18n="button.openProblemIssue">Open GitHub issue</button>
+              </div>
+              <output id="problem-report-status" aria-live="polite"></output>
             </div>
           </section>
         </div>

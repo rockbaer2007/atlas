@@ -57,6 +57,13 @@ const statusMessage = document.querySelector("#status-message");
 const selectedEntitiesPanel = document.querySelector("#selected-entities-panel");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
+const openProblemReport = document.querySelector("#open-problem-report");
+const problemReportBackdrop = document.querySelector("#problem-report-backdrop");
+const closeProblemReport = document.querySelector("#close-problem-report");
+const problemReportPreview = document.querySelector("#problem-report-preview");
+const copyProblemReport = document.querySelector("#copy-problem-report");
+const openProblemIssue = document.querySelector("#open-problem-issue");
+const problemReportStatus = document.querySelector("#problem-report-status");
 const homeAssistantUrl = document.querySelector("#home-assistant-url");
 const connectionReadiness = document.querySelector("#connection-readiness");
 const connectionState = document.querySelector("#connection-state");
@@ -196,6 +203,7 @@ const groupIssues = document.querySelector("#group-issues");
 const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCache";
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
+const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
 const adminOrigin = "http://127.0.0.1:4175";
 const adminConnectionApiUrl = `${adminOrigin}/api/admin-connection`;
 const adminConnectionCookieName = "atlas_admin_connection";
@@ -302,6 +310,9 @@ const translations = {
     "button.unavailable": "Unavailable",
     "button.simpleMode": "Simple",
     "button.expertMode": "Expert",
+    "button.reportProblem": "Report problem",
+    "button.copyProblemReport": "Copy report",
+    "button.openProblemIssue": "Open GitHub issue",
     "button.turnOn": "Turn on",
     "button.turnOff": "Turn off",
     "link.openAdmin": "Open Atlas Administration",
@@ -313,6 +324,7 @@ const translations = {
     "heading.selectedCardDetails": "Selected card",
     "heading.exportHaCard": "Export HA card",
     "heading.pasteHaCard": "Paste HA card YAML",
+    "heading.problemReport": "Report problem",
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnostics",
     "heading.statusPreview": "ATLAS Status Preview",
@@ -344,6 +356,7 @@ const translations = {
     "aria.closeStackCardSettings": "Close stack settings",
     "aria.closeHaCardExport": "Close HA card export",
     "aria.closeHaCardPasteImport": "Close HA card YAML import",
+    "aria.closeProblemReport": "Close problem report",
     "aria.showStatusPreview": "Show {entityId} in the ATLAS Status Preview",
     "aria.moveEntityUp": "Move {entityId} up",
     "aria.moveEntityDown": "Move {entityId} down",
@@ -461,6 +474,11 @@ const translations = {
     "message.exportPathHint": "Choose a save location if your browser supports it, or use the normal download fallback.",
     "message.savePickerUnavailable": "Your browser cannot choose a save location here. Use Download instead.",
     "message.copyPreviewFailed": "Copy failed: use the preview text instead.",
+    "message.problemReportHint": "Review the debug data before copying or opening GitHub. Home Assistant tokens and provider API keys are never included.",
+    "message.problemReportReady": "Problem report preview created. Review it before sharing.",
+    "message.problemReportCopied": "Problem report copied to clipboard.",
+    "message.problemReportCopyFailed": "Copy failed: use the preview text instead.",
+    "message.problemIssueOpened": "GitHub issue opened with the reviewed debug report.",
     "message.resourcesCopiedWithDependency": "ATLAS and {dependency} Lovelace resources {format} copied to clipboard.",
     "message.atlasResourceCopied": "ATLAS Lovelace resource {format} copied to clipboard.",
     "message.copyDependencyFailed": "Copy failed: use the dependency path instead.",
@@ -728,6 +746,9 @@ const translations = {
     "button.unavailable": "Nicht verfügbar",
     "button.simpleMode": "Simple",
     "button.expertMode": "Expert",
+    "button.reportProblem": "Problem melden",
+    "button.copyProblemReport": "Report kopieren",
+    "button.openProblemIssue": "GitHub-Issue öffnen",
     "button.turnOn": "Einschalten",
     "button.turnOff": "Ausschalten",
     "link.openAdmin": "Atlas Administration öffnen",
@@ -739,6 +760,7 @@ const translations = {
     "heading.selectedCardDetails": "Ausgewählte Card",
     "heading.exportHaCard": "HA-Card exportieren",
     "heading.pasteHaCard": "HA-Card-YAML einfügen",
+    "heading.problemReport": "Problem melden",
     "heading.tabs": "Tabs",
     "heading.diagnostics": "Diagnose",
     "heading.statusPreview": "ATLAS Status Vorschau",
@@ -770,6 +792,7 @@ const translations = {
     "aria.closeStackCardSettings": "Stack-Einstellungen schließen",
     "aria.closeHaCardExport": "HA-Card-Export schließen",
     "aria.closeHaCardPasteImport": "HA-Card-YAML-Import schließen",
+    "aria.closeProblemReport": "Problembericht schließen",
     "aria.showStatusPreview": "{entityId} in der ATLAS Status Vorschau anzeigen",
     "aria.moveEntityUp": "{entityId} nach oben verschieben",
     "aria.moveEntityDown": "{entityId} nach unten verschieben",
@@ -887,6 +910,11 @@ const translations = {
     "message.exportPathHint": "Wähle einen Speicherort, wenn dein Browser das unterstützt, oder nutze den normalen Download-Fallback.",
     "message.savePickerUnavailable": "Dein Browser kann hier keinen Speicherort wählen. Nutze stattdessen Download.",
     "message.copyPreviewFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Vorschautext.",
+    "message.problemReportHint": "Prüfe die Debug-Daten vor dem Kopieren oder Öffnen von GitHub. Home-Assistant-Tokens und Provider-API-Keys werden nie eingefügt.",
+    "message.problemReportReady": "Problembericht-Vorschau erstellt. Bitte vor dem Teilen prüfen.",
+    "message.problemReportCopied": "Problembericht in die Zwischenablage kopiert.",
+    "message.problemReportCopyFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Vorschautext.",
+    "message.problemIssueOpened": "GitHub-Issue mit geprüftem Debug-Bericht geöffnet.",
     "message.resourcesCopiedWithDependency": "ATLAS- und {dependency}-Lovelace-Ressourcen {format} in die Zwischenablage kopiert.",
     "message.atlasResourceCopied": "ATLAS-Lovelace-Ressource {format} in die Zwischenablage kopiert.",
     "message.copyDependencyFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Abhängigkeitspfad.",
@@ -6391,6 +6419,213 @@ async function writeClipboardText(text) {
   }
 }
 
+function redactPossiblySensitiveText(text) {
+  return String(text)
+    .replace(/(authorization:\s*bearer\s+)[^\s"'`]+/gi, "$1[redacted]")
+    .replace(/((?:access_)?token\s*[:=]\s*)[^\s"'`]+/gi, "$1[redacted]")
+    .replace(/((?:api[_-]?key|secret|password)\s*[:=]\s*)[^\s"'`]+/gi, "$1[redacted]");
+}
+
+function sanitizeDebugValue(value, key = "") {
+  if (/token|secret|password|api[_-]?key|authorization/i.test(key)) {
+    if (typeof value === "boolean") return value;
+    return value ? "[redacted]" : value;
+  }
+  if (typeof value === "string") {
+    return redactPossiblySensitiveText(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(item => sanitizeDebugValue(item));
+  }
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([entryKey, entryValue]) => [
+        entryKey,
+        sanitizeDebugValue(entryValue, entryKey),
+      ]),
+    );
+  }
+  return value;
+}
+
+function sanitizeDebugUrl(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return "";
+  }
+  try {
+    const url = new URL(value.trim());
+    url.username = "";
+    url.password = "";
+    for (const key of [...url.searchParams.keys()]) {
+      if (/token|secret|password|api[_-]?key|authorization/i.test(key)) {
+        url.searchParams.set(key, "[redacted]");
+      }
+    }
+    return url.toString();
+  } catch {
+    return redactPossiblySensitiveText(value);
+  }
+}
+
+function deriveProblemReportWebSocketUrl(configuration) {
+  try {
+    return deriveHomeAssistantWebSocketUrl(configuration);
+  } catch {
+    return "";
+  }
+}
+
+function createProblemReportData() {
+  const configuration = createHomeAssistantConnectionConfiguration({ url: homeAssistantUrl.value });
+  const canIncludeCardPreview = canExportHaCard();
+  const activeCardPayload = canIncludeCardPreview ? createHaCardExportPayload() : undefined;
+  const resourceAnalysis = lovelaceResourcesChecked ? analyzeTemporaryHaCardResources(lovelaceResources) : undefined;
+
+  return sanitizeDebugValue({
+    schema: 1,
+    type: "atlas.card-editor.problem-report.v1",
+    generatedAt: new Date().toISOString(),
+    app: {
+      name: "ATLAS Home Assistant Card Editor",
+      demoUrl: sanitizeDebugUrl(window.location.href),
+      language: currentLanguage,
+      editorMode: activeEditorMode,
+    },
+    connection: {
+      homeAssistantUrl: sanitizeDebugUrl(homeAssistantUrl.value),
+      websocketUrl: sanitizeDebugUrl(deriveProblemReportWebSocketUrl(configuration)),
+      lifecycleState: connectionLifecycleState,
+      sessionHandoffTokenConfigured: Boolean(adminConnectionToken),
+      sessionHandoffTokenIncluded: false,
+      autoReconnectAttempts: reconnectAttempts,
+    },
+    translation: {
+      provider: normalizeTranslationProvider(adminTranslationProvider),
+      apiEndpoint: sanitizeDebugUrl(adminTranslationApiEndpoint),
+      apiKeyConfigured: adminTranslationApiKeyConfigured,
+      apiKeyConfiguredByProvider: adminTranslationApiKeyConfiguredByProvider,
+      apiKeyIncluded: false,
+      autoTranslateRequested: cardAutoTranslate.checked,
+    },
+    card: {
+      canExport: canIncludeCardPreview,
+      name: currentHaCardExportName(),
+      format: haCardFormat.value,
+      target: activeEditorMode === "expert" ? "expert" : haCardTarget.value,
+      layout: activeEditorMode === "expert" ? "expert-grid" : haCardLayout.value,
+      styleExport: haCardStyleExport.value,
+      scriptFilename: currentHaCardScriptFilename(),
+      exportLanguages: selectedCardExportLanguages(),
+      preview: activeCardPayload ? {
+        filename: activeCardPayload.manifest.filename,
+        mimeType: activeCardPayload.manifest.mimeType,
+        content: activeCardPayload.content,
+      } : undefined,
+    },
+    simple: {
+      group: homeAssistantGroup.value,
+      groupName: homeAssistantGroupName.value,
+      entityIds: trackedEntityIds(),
+      stackEntityIds: selectedStackEntityIds(),
+      importedCardPresent: Boolean(importedSimpleCard),
+      importedStyleBlocks: importedSimpleStyleInspection ? {
+        global: importedSimpleStyleInspection.globalStyles.length,
+        cards: importedSimpleStyleInspection.cardStyles.length,
+        layout: importedSimpleStyleInspection.layoutStyles.length,
+      } : undefined,
+    },
+    expert: {
+      cardName: currentExpertCardName(),
+      selectedFieldIndex: selectedExpertFieldIndex,
+      editing: expertFieldEditing,
+      surfaceSize: expertEditorSurfaceSize,
+      fields: normalizedExpertEditorFields(),
+      summary: expertEditorSummary.textContent,
+    },
+    resources: {
+      checked: lovelaceResourcesChecked,
+      loadedCount: lovelaceResources.length,
+      analysis: resourceAnalysis ? {
+        total: resourceAnalysis.total,
+        hacs: resourceAnalysis.hacs,
+        known: resourceAnalysis.known.slice(0, 30),
+        scanOnly: resourceAnalysis.scanOnly.slice(0, 30),
+        ignored: resourceAnalysis.ignored.slice(0, 30),
+      } : undefined,
+      recentEvents: lovelaceResourceDebugEvents.slice(-10),
+      dependencyText: haCardDependency.textContent,
+    },
+    browser: {
+      userAgent: navigator.userAgent,
+      viewport: {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        devicePixelRatio: window.devicePixelRatio,
+      },
+      clipboardApiAvailable: Boolean(navigator.clipboard?.writeText),
+      saveFilePickerAvailable: typeof window.showSaveFilePicker === "function",
+    },
+    ui: {
+      statusMessage: statusMessage.textContent,
+      connectionReadiness: connectionReadiness.textContent,
+      entitySyncState: entitySyncState.textContent,
+      adminHandoffState: adminHandoffState.textContent,
+      translationModuleState: adminTranslationModuleState.textContent,
+      importReview: haCardImportReview.textContent,
+    },
+    privacy: {
+      homeAssistantTokenIncluded: false,
+      providerApiKeysIncluded: false,
+      cookiesIncluded: false,
+      localStorageIncluded: false,
+    },
+  });
+}
+
+function createProblemReportPreviewText() {
+  const report = createProblemReportData();
+  return [
+    "## ATLAS Home Assistant Card Editor problem report",
+    "",
+    "I reviewed this opt-in debug report before sharing it.",
+    "",
+    "Home Assistant tokens, provider API keys, cookies and localStorage are not included.",
+    "",
+    "```json",
+    JSON.stringify(report, null, 2),
+    "```",
+  ].join("\n");
+}
+
+function openProblemReportDialog() {
+  problemReportPreview.value = createProblemReportPreviewText();
+  problemReportStatus.textContent = t("message.problemReportReady");
+  problemReportBackdrop.hidden = false;
+  problemReportPreview.focus();
+  problemReportPreview.select();
+}
+
+function closeProblemReportDialog() {
+  problemReportBackdrop.hidden = true;
+}
+
+async function copyProblemReportPreview() {
+  try {
+    await writeClipboardText(problemReportPreview.value || createProblemReportPreviewText());
+    problemReportStatus.textContent = t("message.problemReportCopied");
+  } catch {
+    problemReportStatus.textContent = t("message.problemReportCopyFailed");
+  }
+}
+
+function openProblemReportIssue() {
+  const body = problemReportPreview.value || createProblemReportPreviewText();
+  const title = encodeURIComponent("Home Assistant Card Editor problem report");
+  const encodedBody = encodeURIComponent(body);
+  window.open(`${problemReportIssueUrl}?title=${title}&body=${encodedBody}`, "_blank", "noopener,noreferrer");
+  problemReportStatus.textContent = t("message.problemIssueOpened");
+}
+
 function createGroupId(title) {
   const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "home-assistant-card";
   let candidate = `group-${slug}`;
@@ -6878,6 +7113,18 @@ for (const button of languageButtons) {
     setLanguage(button.dataset.language);
   });
 }
+
+openProblemReport.addEventListener("click", openProblemReportDialog);
+closeProblemReport.addEventListener("click", closeProblemReportDialog);
+problemReportBackdrop.addEventListener("click", event => {
+  if (event.target === problemReportBackdrop) {
+    closeProblemReportDialog();
+  }
+});
+copyProblemReport.addEventListener("click", () => {
+  void copyProblemReportPreview();
+});
+openProblemIssue.addEventListener("click", openProblemReportIssue);
 
 homeAssistantUrl.addEventListener("input", () => {
   renderConnectionReadiness();
