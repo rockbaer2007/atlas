@@ -195,6 +195,18 @@
         font-size: 15px;
       }
 
+      input[readonly],
+      input:disabled {
+        border-color: var(--atlas-border);
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-muted);
+        cursor: default;
+      }
+
+      .checkbox-row input:disabled + span {
+        color: var(--atlas-muted);
+      }
+
       input:focus,
       select:focus,
       button:focus-visible {
@@ -203,6 +215,10 @@
       }
 
       .field-pair.wide {
+        grid-column: 1 / -1;
+      }
+
+      .field-grid .wide {
         grid-column: 1 / -1;
       }
 
@@ -786,6 +802,7 @@
                 <label for="home-assistant-token" data-i18n="label.accessToken">Access token</label>
                 <input id="home-assistant-token" type="password" autocomplete="off" spellcheck="false">
               </div>
+              <p id="admin-connection-mode-hint" class="field-hint wide" data-i18n="message.connectionStandaloneHint">In Docker and Linux mode these values are managed here.</p>
             </div>
           </details>
 
@@ -877,7 +894,7 @@
           <button id="save-admin-settings" type="button" data-i18n="button.saveSettings">Save settings</button>
           <button id="forget-admin-token" class="secondary" type="button" data-i18n="button.forgetToken">Forget token</button>
           <button id="export-admin-settings" type="button" data-i18n="button.exportSettings">Export settings</button>
-          <button id="open-card-editor" type="button" data-i18n="button.openEditor">Open Card Editor</button>
+          <button id="open-card-editor" type="button" data-i18n="button.openEditor">Open Plugin Hub</button>
         </div>
       </section>
 

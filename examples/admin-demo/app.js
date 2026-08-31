@@ -31,6 +31,7 @@ const saveAdminSettings = document.querySelector("#save-admin-settings");
 const forgetAdminToken = document.querySelector("#forget-admin-token");
 const exportAdminSettings = document.querySelector("#export-admin-settings");
 const openCardEditor = document.querySelector("#open-card-editor");
+const adminConnectionModeHint = document.querySelector("#admin-connection-mode-hint");
 const importPluginPackage = document.querySelector("#import-plugin-package");
 const pluginPackageFile = document.querySelector("#plugin-package-file");
 const openPluginRepositoryDialog = document.querySelector("#open-plugin-repository-dialog");
@@ -165,6 +166,7 @@ let repositoryPluginDescriptors = [];
 let pendingRepositoryPreview;
 let lastEditorWindow;
 let lastAppRuntime;
+let currentDistributionTarget = "standalone-docker-preview";
 let currentAdminDeviceBinding;
 let currentParcelProviderSettings = normalizeParcelProviderSettings();
 
@@ -208,7 +210,7 @@ const translations = {
     "button.saveSettings": "Save settings",
     "button.forgetToken": "Forget token",
     "button.exportSettings": "Export settings",
-    "button.openEditor": "Open Card Editor",
+    "button.openEditor": "Open Plugin Hub",
     "button.refreshRuntime": "Refresh status",
     "button.inspect": "Inspect",
     "button.activate": "Activate",
@@ -238,6 +240,8 @@ const translations = {
     "aria.language": "Language",
     "aria.theme": "Theme",
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
+    "message.connectionHaAppHint": "These Home Assistant connection values come from the Home Assistant App/Add-on options.",
+    "message.connectionStandaloneHint": "In Docker and Linux mode these values are managed here.",
     "message.openAiApiKeyLink": "Get OpenAI API key:",
     "message.geminiApiKeyLink": "Get Gemini API key:",
     "message.deeplApiKeyLink": "Get DeepL API key:",
@@ -259,8 +263,8 @@ const translations = {
     "message.settingsExported": "Settings exported.",
     "message.secretsInvalidForDevice": "Saved secrets belong to another Atlas Administration instance and were ignored.",
     "message.autoConnectNeedsToken": "Auto-connect needs a saved access token.",
-    "message.editorOpened": "Card Editor opened and connection settings handed over.",
-    "message.editorOpenedWithoutToken": "Card Editor opened. Home Assistant connection still needs a saved access token.",
+    "message.editorOpened": "Plugin Hub opened and connection settings saved.",
+    "message.editorOpenedWithoutToken": "Plugin Hub opened. Home Assistant connection still needs a saved access token.",
     "message.editorReady": "Card Editor requested connection settings.",
     "message.editorTokenMissing": "Save or enter an access token before opening the Card Editor.",
     "message.pluginInspected": "{name}: {points} extension points, {capabilities} capabilities.",
@@ -363,7 +367,7 @@ const translations = {
     "button.saveSettings": "Einstellungen speichern",
     "button.forgetToken": "Token vergessen",
     "button.exportSettings": "Einstellungen exportieren",
-    "button.openEditor": "Card Editor oeffnen",
+    "button.openEditor": "Plugin-Hub oeffnen",
     "button.refreshRuntime": "Status aktualisieren",
     "button.inspect": "Pruefen",
     "button.activate": "Aktivieren",
@@ -393,6 +397,8 @@ const translations = {
     "aria.language": "Sprache",
     "aria.theme": "Darstellung",
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Faehigkeiten.",
+    "message.connectionHaAppHint": "Diese Home-Assistant-Verbindungswerte kommen aus den Home-Assistant-App/Add-on-Optionen.",
+    "message.connectionStandaloneHint": "Im Docker- und Linux-Modus werden diese Werte hier verwaltet.",
     "message.openAiApiKeyLink": "OpenAI API-Key erhalten:",
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
     "message.deeplApiKeyLink": "DeepL API-Key erhalten:",
@@ -414,8 +420,8 @@ const translations = {
     "message.settingsExported": "Einstellungen exportiert.",
     "message.secretsInvalidForDevice": "Gespeicherte Secrets gehoeren zu einer anderen Atlas-Administration-Instanz und wurden ignoriert.",
     "message.autoConnectNeedsToken": "Auto-connect braucht einen gespeicherten Access Token.",
-    "message.editorOpened": "Card Editor geoeffnet und Verbindungseinstellungen uebergeben.",
-    "message.editorOpenedWithoutToken": "Card Editor geoeffnet. Die Home-Assistant-Verbindung braucht noch einen gespeicherten Access Token.",
+    "message.editorOpened": "Plugin-Hub geoeffnet und Verbindungseinstellungen gespeichert.",
+    "message.editorOpenedWithoutToken": "Plugin-Hub geoeffnet. Die Home-Assistant-Verbindung braucht noch einen gespeicherten Access Token.",
     "message.editorReady": "Card Editor hat Verbindungseinstellungen angefordert.",
     "message.editorTokenMissing": "Gib zuerst einen Access Token ein oder speichere ihn, bevor du den Card Editor oeffnest.",
     "message.pluginInspected": "{name}: {points} Extension Points, {capabilities} Faehigkeiten.",
@@ -507,6 +513,7 @@ function applyTranslations() {
   for (const button of themeButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.themeMode === currentThemePreference));
   }
+  applyHomeAssistantConnectionEditMode();
 }
 
 function normalizeThemePreference(value) {
@@ -544,6 +551,26 @@ function restoreThemePreference(savedPreference) {
     currentThemePreference = normalizeThemePreference(savedPreference);
   }
   applyThemePreference();
+}
+
+function normalizeDistributionTarget(value) {
+  return typeof value === "string" && value.trim() ? value.trim() : "standalone-docker-preview";
+}
+
+function isHomeAssistantAppDistribution(value = currentDistributionTarget) {
+  return normalizeDistributionTarget(value).startsWith("home-assistant-app");
+}
+
+function applyHomeAssistantConnectionEditMode() {
+  const readonly = isHomeAssistantAppDistribution();
+  homeAssistantUrl.readOnly = readonly;
+  homeAssistantToken.readOnly = readonly;
+  rememberAdminToken.disabled = readonly;
+  autoConnectEditor.disabled = readonly;
+  forgetAdminToken.disabled = readonly;
+  adminConnectionModeHint.textContent = readonly
+    ? t("message.connectionHaAppHint")
+    : t("message.connectionStandaloneHint");
 }
 
 function currentWebSocketPath() {
@@ -851,6 +878,7 @@ async function persistServerConnectionSettings(configuration) {
     body: JSON.stringify({
       url: configuration.url,
       token: configuration.rememberToken ? configuration.token : "",
+      rememberToken: configuration.rememberToken,
       autoConnectEditor: configuration.autoConnectEditor,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
@@ -1508,6 +1536,10 @@ async function restoreServerConnectionSettings() {
     }
 
     const saved = await response.json();
+    if (typeof saved.distributionTarget === "string") {
+      currentDistributionTarget = normalizeDistributionTarget(saved.distributionTarget);
+      applyHomeAssistantConnectionEditMode();
+    }
     if (typeof saved.url === "string" && saved.url) {
       homeAssistantUrl.value = saved.url;
     }
@@ -1523,10 +1555,14 @@ async function restoreServerConnectionSettings() {
       homeAssistantToken.value = saved.token;
       rememberAdminToken.checked = true;
     }
-    void persistEncryptedAdminSecretsCookie(readAdminSecrets());
-    if (saved.autoConnectEditor === true) {
-      autoConnectEditor.checked = true;
+    if (typeof saved.rememberToken === "boolean") {
+      rememberAdminToken.checked = saved.rememberToken || Boolean(homeAssistantToken.value.trim());
     }
+    void persistEncryptedAdminSecretsCookie(readAdminSecrets());
+    if (typeof saved.autoConnectEditor === "boolean") {
+      autoConnectEditor.checked = saved.autoConnectEditor;
+    }
+    applyHomeAssistantConnectionEditMode();
     renderAdministration();
   } catch {
     // The Admin server may not have saved settings yet; local settings remain usable.
@@ -1707,10 +1743,13 @@ function renderAppRuntimeStatus(runtime) {
     appRuntimeSurfaces.replaceChildren();
     appRuntimeLinks.replaceChildren();
     appRuntimeDistribution.replaceChildren();
+    applyHomeAssistantConnectionEditMode();
     return;
   }
 
   const surfaces = runtime.surfaces ?? {};
+  currentDistributionTarget = normalizeDistributionTarget(runtime.distribution?.current);
+  applyHomeAssistantConnectionEditMode();
   appRuntimeSummary.textContent = t("message.appRuntimeSummary", {
     name: runtime.name ?? "ATLAS",
     version: runtime.version ?? "-",
@@ -1866,11 +1905,15 @@ function openEditorWithConnectionHandoff() {
   adminSaveState.textContent = homeAssistantToken.value
     ? t("message.editorOpened")
     : t("message.editorOpenedWithoutToken");
-  window.location.assign(createEditorNavigationUrl());
+  window.location.assign(createHubNavigationUrl());
 }
 
 function createEditorNavigationUrl() {
   return createPortNavigationUrl(4174, "/", "atlasAdminHandoff=1", `${editorOrigin}/?atlasAdminHandoff=1`);
+}
+
+function createHubNavigationUrl() {
+  return lastAppRuntime?.urls?.hub ?? createPortNavigationUrl(4176, "/hub");
 }
 
 function createPortOrigin(port) {

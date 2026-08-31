@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.15
+
+- Rename the Administration launch button from Card Editor to Plugin Hub.
+- Open the Plugin Hub from Administration in the same browser surface.
+- Treat Home Assistant App/Add-on connection values as option-managed and show
+  the Home Assistant URL, token and connection checkboxes as read-only controls.
+
 ## 0.1.14
 
 - Add the shared ATLAS light/dark/auto theme switch to the Card Editor.

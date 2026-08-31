@@ -606,6 +606,7 @@ function normalizeAdminConnectionSettings(settings, previousSettings) {
   return {
     url: typeof settings.url === "string" ? settings.url : "",
     token: typeof settings.token === "string" ? settings.token : "",
+    rememberToken: settings.rememberToken === true,
     autoConnectEditor: settings.autoConnectEditor === true,
     translationProvider,
     translationApiEndpoint: normalizeTranslationApiEndpoint(settings.translationApiEndpoint),
@@ -692,6 +693,7 @@ function createInitialAdminConnectionSettingsFromEnv() {
   return normalizeAdminConnectionSettings({
     url,
     token: rememberToken && tokenUsable ? token : "",
+    rememberToken,
     autoConnectEditor,
     translationProvider: "none",
   });
@@ -713,7 +715,9 @@ function sanitizeAdminConnectionSettings(settings, { includeSecrets = false } = 
   return {
     url: settings.url,
     token: settings.token,
+    rememberToken: settings.rememberToken,
     autoConnectEditor: settings.autoConnectEditor,
+    distributionTarget: process.env.ATLAS_DISTRIBUTION_TARGET ?? "standalone-docker-preview",
     translationProvider: settings.translationProvider,
     translationApiEndpoint: settings.translationApiEndpoint,
     translationApiKeyConfigured: settings.translationApiKeyConfigured,
