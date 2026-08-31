@@ -1790,7 +1790,10 @@ function requestAdminConnectionHandoff() {
 
 function renderConnectionLifecycle(lifecycle) {
   connectionLifecycleState = lifecycle.state;
-  if (lifecycle.state === "closed" || lifecycle.state === "failed") {
+  if (
+    lifecycle.state === "failed"
+    || (lifecycle.state === "closed" && (!reconnectToken || reconnectAttempts >= 3))
+  ) {
     activeConnectionSignature = "";
   }
   connectionState.dataset.state = lifecycle.state;
@@ -1821,6 +1824,14 @@ function renderConnectionLifecycle(lifecycle) {
 
 function createConnectionSignature(configuration, token) {
   return `${deriveHomeAssistantWebSocketUrl(configuration)}|${token}`;
+}
+
+function hasMatchingActiveConnectionAttempt(connectionSignature) {
+  return activeConnectionSignature === connectionSignature
+    && (
+      ["connecting", "authenticating", "connected"].includes(connectionLifecycleState)
+      || Boolean(reconnectTimer)
+    );
 }
 
 function scheduleReconnect() {
@@ -7058,10 +7069,7 @@ async function connectHomeAssistant() {
   }
 
   const connectionSignature = createConnectionSignature(configuration, adminConnectionToken);
-  const duplicateActiveConnection =
-    activeConnectionSignature === connectionSignature
-    && ["connecting", "authenticating", "connected"].includes(connectionLifecycleState);
-  if (duplicateActiveConnection) {
+  if (hasMatchingActiveConnectionAttempt(connectionSignature)) {
     return;
   }
 
