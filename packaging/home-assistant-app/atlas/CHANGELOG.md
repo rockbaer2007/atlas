@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.27
+
+- Use the real ATLAS app icon in the Administration repository button.
+- Serve PNG assets with an explicit `image/png` content type in the
+  Administration demo server.
+
 ## 0.1.26
 
 - Add an ATLAS-branded repository button with teal, cyan and orange accents in
