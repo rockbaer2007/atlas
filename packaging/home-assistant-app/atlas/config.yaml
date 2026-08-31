@@ -1,5 +1,5 @@
 name: "ATLAS"
-version: "0.1.1"
+version: "0.1.2"
 slug: "atlas"
 description: "ATLAS Administration and Home Assistant Card Editor preview"
 url: "https://github.com/rockbaer2007/atlas"
@@ -26,6 +26,6 @@ options:
 schema:
   atlas_instance_id: "str"
   home_assistant_url: "url"
-  home_assistant_token: "password"
+  home_assistant_token: "str"
   remember_home_assistant_token: "bool"
   auto_connect_editor: "bool"

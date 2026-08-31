@@ -55,4 +55,6 @@ Administration or the Add-on options.
 The Add-on configuration can provide the Home Assistant URL, a long-lived
 access token, whether ATLAS Administration should import that token on startup
 and whether the Card Editor should auto-connect after the handoff. The token is
-not stored permanently by the Card Editor.
+shown as text because Home Assistant can mask local password fields on reload
+and pass only a shortened placeholder to the Add-on. The token is not stored
+permanently by the Card Editor.

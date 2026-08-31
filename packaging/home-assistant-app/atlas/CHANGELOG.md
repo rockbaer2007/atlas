@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Use a plain string schema for the Home Assistant token option so local
+  Add-on configuration reloads do not pass a shortened password placeholder to
+  ATLAS Administration.
+- Ignore masked or implausibly short Add-on token values during startup.
+
 ## 0.1.1
 
 - Add Home Assistant URL, token, token-import and auto-connect options.

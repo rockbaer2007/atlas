@@ -49,8 +49,11 @@ uebernehmen**, wenn ATLAS den Token beim Start an die Administration uebergeben
 soll. Aktiviere **Card Editor automatisch verbinden**, wenn der Editor nach dem
 Handoff direkt verbinden soll.
 
-Der Token wird nicht dauerhaft im Card Editor gespeichert. Administration
-bleibt der Besitzer der Verbindungseinstellungen.
+Der Token wird bewusst als Textfeld angezeigt. Home Assistant kann lokale
+Password-Felder beim Wiederladen maskieren und dann nur einen gekuerzten
+Platzhalter an das Add-on uebergeben. ATLAS ignoriert solche zu kurzen oder
+maskierten Werte beim Start. Der Token wird nicht dauerhaft im Card Editor
+gespeichert. Administration bleibt der Besitzer der Verbindungseinstellungen.
 
 ## Add Editor as Dashboard/Webpage
 
@@ -71,5 +74,8 @@ ATLAS should pass the token to Administration on startup. Enable
 **Auto-connect Card Editor** when the editor should connect immediately after
 the handoff.
 
-The token is not stored permanently by the Card Editor. Administration remains
-the owner of the connection settings.
+The token is intentionally shown as a text field. Home Assistant can mask local
+password fields on reload and pass only a shortened placeholder to the Add-on.
+ATLAS ignores masked or implausibly short token values during startup. The token
+is not stored permanently by the Card Editor. Administration remains the owner
+of the connection settings.

@@ -650,17 +650,31 @@ function createInitialAdminConnectionSettingsFromEnv() {
   const token = process.env.ATLAS_ADMIN_HOME_ASSISTANT_TOKEN?.trim() ?? "";
   const rememberToken = process.env.ATLAS_ADMIN_REMEMBER_HOME_ASSISTANT_TOKEN === "1";
   const autoConnectEditor = process.env.ATLAS_ADMIN_AUTO_CONNECT_EDITOR === "1";
+  const tokenUsable = isPlausibleHomeAssistantAccessToken(token);
 
   if (!url && (!rememberToken || !token) && !autoConnectEditor) {
     return undefined;
   }
 
+  if (rememberToken && token && !tokenUsable) {
+    console.warn(`ATLAS ignored Add-on Home Assistant token value with length ${token.length}.`);
+  } else if (rememberToken && tokenUsable) {
+    console.log(`ATLAS imported Add-on Home Assistant token with length ${token.length}.`);
+  }
+
   return normalizeAdminConnectionSettings({
     url,
-    token: rememberToken ? token : "",
+    token: rememberToken && tokenUsable ? token : "",
     autoConnectEditor,
     translationProvider: "none",
   });
+}
+
+function isPlausibleHomeAssistantAccessToken(token) {
+  if (!token) return false;
+  if (token.length < 80) return false;
+  if (/^\*+$/.test(token) || /^•+$/.test(token)) return false;
+  return true;
 }
 
 function canReadAdminConnectionSecrets(request, requestUrl) {
