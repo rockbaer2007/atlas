@@ -608,6 +608,7 @@ function normalizeAdminConnectionSettings(settings, previousSettings) {
     token: typeof settings.token === "string" ? settings.token : "",
     rememberToken: settings.rememberToken === true,
     autoConnectEditor: settings.autoConnectEditor === true,
+    editorStartMode: normalizeEditorStartMode(settings.editorStartMode),
     translationProvider,
     translationApiEndpoint: normalizeTranslationApiEndpoint(settings.translationApiEndpoint),
     translationApiKeys,
@@ -678,9 +679,10 @@ function createInitialAdminConnectionSettingsFromEnv() {
   const token = process.env.ATLAS_ADMIN_HOME_ASSISTANT_TOKEN?.trim() ?? "";
   const rememberToken = process.env.ATLAS_ADMIN_REMEMBER_HOME_ASSISTANT_TOKEN === "1";
   const autoConnectEditor = process.env.ATLAS_ADMIN_AUTO_CONNECT_EDITOR === "1";
+  const editorStartMode = normalizeEditorStartMode(process.env.ATLAS_ADMIN_EDITOR_START_MODE);
   const tokenUsable = isPlausibleHomeAssistantAccessToken(token);
 
-  if (!url && (!rememberToken || !token) && !autoConnectEditor) {
+  if (!url && (!rememberToken || !token) && !autoConnectEditor && editorStartMode === "simple") {
     return undefined;
   }
 
@@ -695,8 +697,13 @@ function createInitialAdminConnectionSettingsFromEnv() {
     token: rememberToken && tokenUsable ? token : "",
     rememberToken,
     autoConnectEditor,
+    editorStartMode,
     translationProvider: "none",
   });
+}
+
+function normalizeEditorStartMode(value) {
+  return value === "expert" ? "expert" : "simple";
 }
 
 function isPlausibleHomeAssistantAccessToken(token) {
@@ -717,6 +724,7 @@ function sanitizeAdminConnectionSettings(settings, { includeSecrets = false } = 
     token: settings.token,
     rememberToken: settings.rememberToken,
     autoConnectEditor: settings.autoConnectEditor,
+    editorStartMode: normalizeEditorStartMode(settings.editorStartMode),
     distributionTarget: process.env.ATLAS_DISTRIBUTION_TARGET ?? "standalone-docker-preview",
     translationProvider: settings.translationProvider,
     translationApiEndpoint: settings.translationApiEndpoint,

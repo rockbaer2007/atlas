@@ -32,6 +32,7 @@ const forgetAdminToken = document.querySelector("#forget-admin-token");
 const exportAdminSettings = document.querySelector("#export-admin-settings");
 const openCardEditor = document.querySelector("#open-card-editor");
 const adminConnectionModeHint = document.querySelector("#admin-connection-mode-hint");
+const editorStartMode = document.querySelector("#editor-start-mode");
 const importPluginPackage = document.querySelector("#import-plugin-package");
 const pluginPackageFile = document.querySelector("#plugin-package-file");
 const openPluginRepositoryDialog = document.querySelector("#open-plugin-repository-dialog");
@@ -192,6 +193,7 @@ const translations = {
     "label.translationProvider": "Translation module",
     "label.rememberToken": "Remember token locally for Administration",
     "label.autoConnectEditor": "Auto-connect Card Editor after handoff",
+    "label.editorStartMode": "Editor start mode",
     "label.appUrl": "App",
     "label.adminUrl": "Administration",
     "label.editorUrl": "Card Editor",
@@ -292,6 +294,8 @@ const translations = {
     "type.integration": "Integration",
     "type.tool": "Tool",
     "type.theme": "Theme",
+    "mode.simple": "Simple",
+    "mode.expert": "Expert",
     "policy.token": "The Card Editor receives the token only as a browser session handoff.",
     "policy.paths": "Plugins receive approved URLs, WebSocket paths and resource paths.",
     "policy.capabilities": "Capabilities are declared through the Runtime plugin manifest.",
@@ -349,6 +353,7 @@ const translations = {
     "label.translationProvider": "Uebersetzungsmodul",
     "label.rememberToken": "Token lokal fuer die Administration merken",
     "label.autoConnectEditor": "Card Editor nach Übergabe automatisch verbinden",
+    "label.editorStartMode": "Editor-Startmodus",
     "label.appUrl": "App",
     "label.adminUrl": "Administration",
     "label.editorUrl": "Card Editor",
@@ -449,6 +454,8 @@ const translations = {
     "type.integration": "Integration",
     "type.tool": "Tool",
     "type.theme": "Theme",
+    "mode.simple": "Simple",
+    "mode.expert": "Expert",
     "policy.token": "Der Card Editor erhaelt den Token nur als Browser-Sitzungsuebergabe.",
     "policy.paths": "Plugins erhalten freigegebene URLs, WebSocket-Pfade und Ressourcenpfade.",
     "policy.capabilities": "Faehigkeiten werden ueber das Runtime-Plugin-Manifest deklariert.",
@@ -557,6 +564,10 @@ function normalizeDistributionTarget(value) {
   return typeof value === "string" && value.trim() ? value.trim() : "standalone-docker-preview";
 }
 
+function normalizeEditorStartMode(value) {
+  return value === "expert" ? "expert" : "simple";
+}
+
 function isHomeAssistantAppDistribution(value = currentDistributionTarget) {
   return normalizeDistributionTarget(value).startsWith("home-assistant-app");
 }
@@ -565,6 +576,7 @@ function applyHomeAssistantConnectionEditMode() {
   const readonly = isHomeAssistantAppDistribution();
   homeAssistantUrl.readOnly = readonly;
   homeAssistantToken.readOnly = readonly;
+  editorStartMode.disabled = readonly;
   rememberAdminToken.disabled = readonly;
   autoConnectEditor.disabled = readonly;
   forgetAdminToken.disabled = readonly;
@@ -857,6 +869,7 @@ function persistConfiguration() {
     translationApiKeyConfiguredByProvider: createTranslationApiKeyConfiguredByProvider(translationApiKeys),
     parcelProviders: readParcelProviderSettings(),
     pluginRepositories,
+    editorStartMode: normalizeEditorStartMode(editorStartMode.value),
     rememberToken: rememberAdminToken.checked,
     autoConnectEditor: autoConnectEditor.checked,
     tokenConfigured: rememberAdminToken.checked && Boolean(token),
@@ -880,6 +893,7 @@ async function persistServerConnectionSettings(configuration) {
       token: configuration.rememberToken ? configuration.token : "",
       rememberToken: configuration.rememberToken,
       autoConnectEditor: configuration.autoConnectEditor,
+      editorStartMode: configuration.editorStartMode,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
       translationApiKeys: configuration.translationApiKeys,
@@ -898,6 +912,7 @@ function persistSharedConnectionCookie(configuration) {
     `${adminConnectionCookieName}=${encodeURIComponent(JSON.stringify({
       url: configuration.url,
       autoConnectEditor: configuration.autoConnectEditor,
+      editorStartMode: configuration.editorStartMode,
       translationProvider: configuration.translationProvider,
       translationApiEndpoint: configuration.translationApiEndpoint,
       translationApiKeyConfigured: configuration.translationApiKeyConfigured,
@@ -1103,6 +1118,9 @@ function restoreConfiguration() {
     restoreThemePreference(saved?.themePreference);
     if (typeof saved?.url === "string") {
       homeAssistantUrl.value = saved.url;
+    }
+    if (typeof saved?.editorStartMode === "string") {
+      editorStartMode.value = normalizeEditorStartMode(saved.editorStartMode);
     }
     if (typeof saved?.translationProvider === "string") {
       setTranslationProvider(saved.translationProvider);
@@ -1562,6 +1580,9 @@ async function restoreServerConnectionSettings() {
     if (typeof saved.autoConnectEditor === "boolean") {
       autoConnectEditor.checked = saved.autoConnectEditor;
     }
+    if (typeof saved.editorStartMode === "string") {
+      editorStartMode.value = normalizeEditorStartMode(saved.editorStartMode);
+    }
     applyHomeAssistantConnectionEditMode();
     renderAdministration();
   } catch {
@@ -1848,6 +1869,7 @@ async function createAdminSettingsExport() {
     settings: {
       language: currentLanguage,
       url: homeAssistantUrl.value.trim(),
+      editorStartMode: normalizeEditorStartMode(editorStartMode.value),
       translationProvider: currentTranslationProvider(),
       translationApiEndpoint: defaultTranslationApiEndpoint,
       parcelProviders: readParcelProviderSettings(),
@@ -1882,6 +1904,7 @@ function createEditorConnectionHandoff() {
     url: homeAssistantUrl.value.trim(),
     token: homeAssistantToken.value,
     autoConnect: autoConnectEditor.checked,
+    editorStartMode: normalizeEditorStartMode(editorStartMode.value),
     translationProvider: provider,
     translationApiEndpoint: defaultTranslationApiEndpoint,
     translationApiKeyConfigured: translationApiKeyConfiguredByProvider[provider] === true,
@@ -2158,6 +2181,8 @@ homeAssistantToken.addEventListener("input", () => {
     persistConfiguration();
   }
 });
+
+editorStartMode.addEventListener("change", persistConfiguration);
 
 rememberAdminToken.addEventListener("change", () => {
   if (!rememberAdminToken.checked) {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.16
+
+- Add the Home Assistant App/Add-on `editor_start_mode` option for Simple or
+  Expert Card Editor startup.
+- Pass the selected editor start mode from the Home Assistant options through
+  Administration into the Card Editor handoff and saved connection settings.
+- Improve Card Editor dark theme styling for controls, resource hints, entity
+  selection and Home Assistant card preview surfaces.
+
 ## 0.1.15
 
 - Rename the Administration launch button from Card Editor to Plugin Hub.

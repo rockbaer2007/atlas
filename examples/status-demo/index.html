@@ -2407,6 +2407,12 @@
 
       :root[data-theme="dark"] .connection-config input,
       :root[data-theme="dark"] .connection-config select,
+      :root[data-theme="dark"] .entity-domain-shortcuts button,
+      :root[data-theme="dark"] .entity-search-control button,
+      :root[data-theme="dark"] .editor-mode-toggle button,
+      :root[data-theme="dark"] .expert-palette-toolbar button,
+      :root[data-theme="dark"] .expert-template-sizing select,
+      :root[data-theme="dark"] .expert-title-row button,
       :root[data-theme="dark"] textarea,
       :root[data-theme="dark"] pre,
       :root[data-theme="dark"] .diagnostics-panel summary {
@@ -2417,7 +2423,17 @@
 
       :root[data-theme="dark"] .connection-config .remember-secret,
       :root[data-theme="dark"] .atlas-entity-card small,
+      :root[data-theme="dark"] .ha-card-visual-row small,
+      :root[data-theme="dark"] .expert-template-card small,
+      :root[data-theme="dark"] .expert-template-card span,
+      :root[data-theme="dark"] .expert-template-card .favorite-toggle,
       :root[data-theme="dark"] #stack-selection-summary,
+      :root[data-theme="dark"] #selected-entity,
+      :root[data-theme="dark"] #ha-card-import-review,
+      :root[data-theme="dark"] #ha-card-dependency,
+      :root[data-theme="dark"] #temporary-ha-card-resource-list,
+      :root[data-theme="dark"] .entity-picker-status,
+      :root[data-theme="dark"] .card-export-language-hint,
       :root[data-theme="dark"] .dialog-hint {
         color: var(--atlas-muted);
       }
@@ -2437,6 +2453,86 @@
         border-color: var(--atlas-accent);
         background: var(--atlas-accent-soft);
         color: var(--atlas-accent);
+      }
+
+      :root[data-theme="dark"] .entity-domain-shortcuts button[aria-pressed="true"],
+      :root[data-theme="dark"] .editor-mode-toggle button[aria-pressed="true"] {
+        border-color: var(--atlas-accent);
+        background: var(--atlas-accent-soft);
+        color: var(--atlas-accent);
+      }
+
+      :root[data-theme="dark"] .resource-hint-field,
+      :root[data-theme="dark"] .temporary-resource-debug,
+      :root[data-theme="dark"] .ha-card-visual-preview,
+      :root[data-theme="dark"] .ha-card-visual-card,
+      :root[data-theme="dark"] .ha-card-visual-row,
+      :root[data-theme="dark"] .expert-template-card,
+      :root[data-theme="dark"] .expert-editor-dropzone,
+      :root[data-theme="dark"] .expert-surface-field,
+      :root[data-theme="dark"] .overview-entity-picker,
+      :root[data-theme="dark"] .overview-entity-editor-row,
+      :root[data-theme="dark"] .overview-entity-domain-filters label,
+      :root[data-theme="dark"] .overview-entity-picker-results button,
+      :root[data-theme="dark"] .tabbed-card-tab-row,
+      :root[data-theme="dark"] .expert-selected-card-details {
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .ha-card-visual-card strong,
+      :root[data-theme="dark"] .ha-card-visual-row strong,
+      :root[data-theme="dark"] .resource-hint-field strong,
+      :root[data-theme="dark"] .temporary-resource-debug summary,
+      :root[data-theme="dark"] .expert-surface-field-title,
+      :root[data-theme="dark"] .expert-selected-card-details h3,
+      :root[data-theme="dark"] .expert-selected-card-details dt,
+      :root[data-theme="dark"] .expert-selected-card-details dd {
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .resource-hint-field:has(#ha-card-dependency[data-required="true"]),
+      :root[data-theme="dark"] .resource-hint-field:has(#ha-card-dependency[data-status="installed"]),
+      :root[data-theme="dark"] .resource-hint-field:has(#ha-card-dependency[data-status="missing"]) {
+        background: var(--atlas-panel-soft);
+      }
+
+      :root[data-theme="dark"] .card-type-badge,
+      :root[data-theme="dark"] .ha-card-visual-type,
+      :root[data-theme="dark"] .ha-card-entity-style-badge {
+        background: #123f4e;
+        color: #7dd3fc;
+      }
+
+      :root[data-theme="dark"] .card-type-badge[data-card-kind="core"] {
+        background: #26313b;
+        color: #cbd5e1;
+      }
+
+      :root[data-theme="dark"] .card-type-badge[data-card-kind="mushroom"] {
+        background: #113c30;
+        color: #7ee6c9;
+      }
+
+      :root[data-theme="dark"] .card-type-badge[data-card-kind="tabbed"] {
+        background: #172554;
+        color: #bfdbfe;
+      }
+
+      :root[data-theme="dark"] .card-type-badge[data-card-kind="bubble"][data-card-variant="switch"] {
+        background: #123d24;
+        color: #bbf7d0;
+      }
+
+      :root[data-theme="dark"] .card-type-badge[data-card-kind="bubble"][data-card-variant="slider"] {
+        background: #3e300a;
+        color: #fde68a;
+      }
+
+      :root[data-theme="dark"] .card-type-badge[data-card-kind="bubble"][data-card-variant="name"] {
+        background: #2e1f58;
+        color: #ddd6fe;
       }
 
       :root[data-theme="dark"] .atlas-status {

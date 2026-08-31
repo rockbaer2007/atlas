@@ -1155,6 +1155,10 @@ function normalizeThemePreference(value) {
   return ["auto", "light", "dark"].includes(value) ? value : "auto";
 }
 
+function normalizeEditorStartMode(value) {
+  return value === "expert" ? "expert" : "simple";
+}
+
 function currentSystemTheme() {
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
@@ -1756,6 +1760,11 @@ function applyAdminConnectionSettings(settings, { autoConnect = false } = {}) {
   const nextTranslationProvider = incomingTranslationProvider === "none" && adminTranslationProvider !== "none"
     ? adminTranslationProvider
     : incomingTranslationProvider;
+  if (typeof settings.editorStartMode === "string") {
+    initialEditorMode = normalizeEditorStartMode(settings.editorStartMode);
+    renderEditorMode(initialEditorMode);
+    appliedSettings = true;
+  }
   if (nextTranslationProvider !== adminTranslationProvider) {
     appliedSettings = true;
   }
