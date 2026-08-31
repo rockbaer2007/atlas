@@ -1342,7 +1342,7 @@ function postEditorConnectionHandoff(editorWindow) {
 
 function openEditorWithConnectionHandoff() {
   persistConfiguration();
-  lastEditorWindow = window.open(`${editorOrigin}/?atlasAdminHandoff=1`, "atlas-card-editor");
+  lastEditorWindow = window.open(`${editorOrigin}/?atlasAdminHandoff=1`, "_blank", "noopener=false,noreferrer=false");
   if (!lastEditorWindow) {
     return;
   }
