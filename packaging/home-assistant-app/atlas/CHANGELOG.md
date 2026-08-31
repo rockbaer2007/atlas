@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- Route Card Editor Admin API calls through the editor surface so Add-on option
+  auto-connect works directly from Home Assistant ingress.
+
 ## 0.1.2
 
 - Use a plain string schema for the Home Assistant token option so local

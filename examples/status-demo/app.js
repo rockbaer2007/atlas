@@ -205,7 +205,9 @@ const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCach
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
 const adminOrigin = "http://127.0.0.1:4175";
-const adminConnectionApiUrl = `${adminOrigin}/api/admin-connection`;
+const adminConnectionApiUrl = "/api/admin-connection";
+const adminLovelaceResourcesApiUrl = "/api/homeassistant/lovelace-resources";
+const adminCardTranslationApiUrl = "/api/card-translation";
 const adminConnectionCookieName = "atlas_admin_connection";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const cardTargets = listHomeAssistantCardTargets();
@@ -2279,7 +2281,7 @@ async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
   addLovelaceResourceDebugEvent("Admin proxy request sent: /api/homeassistant/lovelace-resources");
   renderTemporaryHaCardResourceList("rest-loading");
   try {
-    const response = await fetch(`${adminOrigin}/api/homeassistant/lovelace-resources`, {
+    const response = await fetch(adminLovelaceResourcesApiUrl, {
       headers: {
         Accept: "application/json",
       },
@@ -6352,7 +6354,7 @@ async function requestCardLocaleTranslations(cardPackage, targetLanguages) {
     throw new Error("source locale missing");
   }
 
-  const response = await fetch(`${adminOrigin}/api/card-translation`, {
+  const response = await fetch(adminCardTranslationApiUrl, {
     method: "POST",
     mode: "cors",
     headers: { "content-type": "application/json" },

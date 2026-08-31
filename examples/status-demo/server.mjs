@@ -9,6 +9,11 @@ const port = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const adminPort = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const adminHost = process.env.ATLAS_ADMIN_HOST ?? process.env.ATLAS_HOST ?? "127.0.0.1";
 const adminUrl = `http://${adminHost}:${adminPort}/`;
+const adminApiPaths = new Set([
+  "/api/admin-connection",
+  "/api/card-translation",
+  "/api/homeassistant/lovelace-resources",
+]);
 const mimeTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -21,6 +26,12 @@ await startAdministrationServerIfNeeded();
 
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", "http://localhost");
+
+  if (adminApiPaths.has(requestUrl.pathname)) {
+    void proxyAdminApiRequest(request, response, requestUrl);
+    return;
+  }
+
   const requestPath = requestUrl.pathname === "/"
     ? "/examples/status-demo/index.html"
     : requestUrl.pathname;
@@ -45,6 +56,48 @@ createServer((request, response) => {
 }).listen(port, host, () => {
   console.log(`ATLAS status demo: http://${host}:${port}/`);
 });
+
+async function proxyAdminApiRequest(request, response, requestUrl) {
+  try {
+    const targetUrl = new URL(requestUrl.pathname, adminUrl);
+    targetUrl.search = requestUrl.search;
+    const body = await readRequestBody(request);
+    const headers = {};
+    if (request.headers["content-type"]) {
+      headers["content-type"] = request.headers["content-type"];
+    }
+
+    const adminResponse = await fetch(targetUrl, {
+      method: request.method,
+      headers,
+      body: body.length ? body : undefined,
+    });
+    const responseBody = await adminResponse.text();
+    response.writeHead(adminResponse.status, {
+      "content-type": adminResponse.headers.get("content-type") ?? "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    });
+    response.end(responseBody);
+  } catch (error) {
+    response.writeHead(502, {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    });
+    response.end(JSON.stringify({
+      error: "admin api unavailable",
+      message: error instanceof Error ? error.message : String(error),
+    }));
+  }
+}
+
+function readRequestBody(request) {
+  return new Promise((resolveBody, rejectBody) => {
+    const chunks = [];
+    request.on("data", chunk => chunks.push(chunk));
+    request.on("end", () => resolveBody(Buffer.concat(chunks)));
+    request.on("error", rejectBody);
+  });
+}
 
 async function startAdministrationServerIfNeeded() {
   if (await isServerReady(adminUrl)) {
