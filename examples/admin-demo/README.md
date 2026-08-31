@@ -35,6 +35,10 @@ The preferred distribution order is: first a standalone Docker container for
 Administration plus Card Editor, then a Home Assistant App/Add-on package
 derived from the same container/runtime, then an optional Linux installer for
 VM, LXC or bare Linux with a systemd service.
+The shared packaging contract is documented in
+`docs/deployment/ATLAS_APP_DISTRIBUTION.md` so the Administration preview,
+Docker image, Home Assistant App/Add-on and Linux installer keep one runtime
+shape.
 Plugin activation state is also stored locally so the demo administration view
 survives reloads without turning imported plugins back into a fresh list.
 The administration page also stores the selected Card translation module for

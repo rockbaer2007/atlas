@@ -24,6 +24,8 @@ For the standalone app packaging path, `pnpm start:app` starts both surfaces
 together and exposes `http://127.0.0.1:4176/health` for Docker, Home Assistant
 App/Add-on and Linux service checks. `http://127.0.0.1:4176/app` returns the
 runtime links, ports and distribution order for packaging tools.
+The shared distribution contract is tracked in
+`docs/deployment/ATLAS_APP_DISTRIBUTION.md`.
 
 The Home Assistant controls validate a connection target, show the derived
 WebSocket endpoint and can connect to an instance after Atlas Administration

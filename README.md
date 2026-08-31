@@ -73,6 +73,11 @@ ports `4176`, `4175` and `4174`. Set `ATLAS_INSTANCE_ID` when a server,
 Docker host or later Home Assistant App/Add-on package needs a deliberate
 stable Administration identity.
 
+The packaged-app distribution path is documented in
+[`docs/deployment/ATLAS_APP_DISTRIBUTION.md`](docs/deployment/ATLAS_APP_DISTRIBUTION.md).
+It keeps standalone Docker first, then derives the Home Assistant App/Add-on
+and Linux VM/LXC installer from the same runtime contract.
+
 ---
 
 ## License
