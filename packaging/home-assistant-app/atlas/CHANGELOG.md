@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.24
+
+- Limit the detected Home Assistant entities table height to roughly ten rows
+  with an internal scrollbar.
+- Keep the detected entity table header visible while scrolling.
+
 ## 0.1.23
 
 - Add a compact entity overview table inside the "Entities for the card"

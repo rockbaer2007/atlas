@@ -2194,8 +2194,10 @@
       }
 
       #atlas-entity-list {
+        max-height: 486px;
         margin: 16px 0;
-        overflow-x: auto;
+        overflow: auto;
+        scrollbar-gutter: stable;
       }
 
       .atlas-entity-table {
@@ -2221,6 +2223,9 @@
       }
 
       .atlas-entity-table th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
         background: #f8fafc;
         color: #536079;
         font-size: 12px;
