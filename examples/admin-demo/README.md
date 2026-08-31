@@ -22,6 +22,10 @@ packages back into the local administration list as validated descriptors. The
 import path does not execute plugin code; it only reads package metadata so the
 plugin can be inspected, activated in the demo state, exported again or removed
 from the local import list.
+The administration view also includes an App release readiness panel for the
+Card Editor. It tracks the local-preview entrypoints, completed safeguards such
+as the opt-in problem report flow, the reference plugin package path and the
+remaining standalone/HACS release targets.
 Plugin activation state is also stored locally so the demo administration view
 survives reloads without turning imported plugins back into a fresh list.
 The administration page also stores the selected Card translation module for

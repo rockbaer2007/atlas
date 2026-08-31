@@ -8,6 +8,7 @@ import {
 
 import {
   createHomeAssistantCardEditorPlugin,
+  createHomeAssistantCardEditorAppReleaseReadiness,
   createHomeAssistantCardEditorPluginInstallPackage,
   HomeAssistantCardEditorExtensionPoints,
   HomeAssistantCardEditorPluginCapabilities,
@@ -107,5 +108,31 @@ describe("Home Assistant card editor plugin", () => {
         "atlas.plugin.package-builder",
       ],
     });
+  });
+
+  it("describes app release readiness for Administration and the Card Editor", () => {
+    const readiness = createHomeAssistantCardEditorAppReleaseReadiness();
+
+    expect(readiness).toMatchObject({
+      kind: "atlas.homeassistant.card-editor.app-release-readiness",
+      appId: "atlas.homeassistant.card-editor",
+      releaseChannel: "local-preview",
+      summary: {
+        ready: 3,
+        inProgress: 1,
+        planned: 1,
+      },
+      recommendedNextStep: "Turn the local preview into a repeatable standalone app package with Administration as the launch surface.",
+    });
+    expect(readiness.entrypoints.map(entrypoint => entrypoint.port)).toEqual([4175, 4174]);
+    expect(readiness.checks.map(check => [check.id, check.status])).toContainEqual([
+      "problem-report-preview",
+      "ready",
+    ]);
+    expect(readiness.targets.map(target => [target.id, target.status])).toEqual([
+      ["self-hosted", "in-progress"],
+      ["atlas-plugin", "ready"],
+      ["home-assistant-hacs", "planned"],
+    ]);
   });
 });

@@ -5,6 +5,7 @@ import {
   RuntimePluginCatalog,
 } from "@atlas/runtime";
 import {
+  createHomeAssistantCardEditorAppReleaseReadiness,
   createHomeAssistantCardEditorPlugin,
   createHomeAssistantCardEditorPluginInstallPackage,
   createHomeAssistantConnectionConfiguration,
@@ -35,6 +36,9 @@ const adminSaveState = document.querySelector("#admin-save-state");
 const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
+const appReleaseSummary = document.querySelector("#app-release-summary");
+const appReleaseChecks = document.querySelector("#app-release-checks");
+const appReleaseTargets = document.querySelector("#app-release-targets");
 const parcelProviderSummary = document.querySelector("#parcel-provider-summary");
 const parcelProviderList = document.querySelector("#parcel-provider-list");
 const adminStorageKey = "atlas.administration.configuration";
@@ -143,6 +147,9 @@ const translations = {
     "heading.haConnection": "Home Assistant connection",
     "heading.translationSettings": "Card translation",
     "heading.parcelSettings": "Parcel service providers",
+    "heading.appRelease": "App release readiness",
+    "heading.releaseChecks": "Release checks",
+    "heading.releaseTargets": "Distribution targets",
     "heading.plugins": "Installed plugins",
     "heading.policy": "Plugin access policy",
     "label.haUrl": "Home Assistant URL",
@@ -181,6 +188,8 @@ const translations = {
     "message.geminiApiKeyLink": "Get Gemini API key:",
     "message.deeplApiKeyLink": "Get DeepL API key:",
     "message.pluginsHint": "The Home Assistant Card Editor is the first official reference plugin.",
+    "message.appReleaseHint": "Track the local app path before the later Home Assistant/HACS integration.",
+    "message.appReleaseSummary": "{ready} ready, {inProgress} in progress, {planned} planned",
     "message.parcelProviderSummary": "{enabled} of {total} service providers enabled. Public tracking links are prefilled automatically; account-only providers stay marked for later connection.",
     "message.pluginSummary": "{total} plugins, {active} active, {available} available, {disabled} disabled",
     "message.policySummary": "Current approved context: Home Assistant URL {url}, WebSocket path {websocket}.",
@@ -208,6 +217,25 @@ const translations = {
     "text.pluginStatusAvailable": "Available",
     "text.pluginStatusActive": "Active",
     "text.pluginStatusDisabled": "Disabled",
+    "text.releaseStatusReady": "Ready",
+    "text.releaseStatusInProgress": "In progress",
+    "text.releaseStatusPlanned": "Planned",
+    "release.admin-session-handoff.label": "Administration session handoff",
+    "release.admin-session-handoff.reason": "The editor receives Home Assistant connection settings from Administration without shared token storage.",
+    "release.problem-report-preview.label": "Opt-in problem reports",
+    "release.problem-report-preview.reason": "The editor previews sanitized debug data before copy or GitHub issue creation.",
+    "release.plugin-install-package.label": "Reference plugin package",
+    "release.plugin-install-package.reason": "Administration can export the Home Assistant Card Editor as an .atlas-plugin.json package.",
+    "release.hacs-card-bundle.label": "HACS card bundle export",
+    "release.hacs-card-bundle.reason": "Card bundles can be exported and imported, while the final installable repository flow still needs release wiring.",
+    "release.home-assistant-frontend.label": "Home Assistant frontend integration",
+    "release.home-assistant-frontend.reason": "The local app and reference plugin path come before the later native Home Assistant/HACS frontend integration.",
+    "release.self-hosted.label": "Standalone / self-hosted app",
+    "release.self-hosted.reason": "Administration and Card Editor already run as separate local web surfaces with a defined handoff boundary.",
+    "release.atlas-plugin.label": "ATLAS reference plugin",
+    "release.atlas-plugin.reason": "The Card Editor is registered as the first official ATLAS reference plugin and can be exported as a plugin package.",
+    "release.home-assistant-hacs.label": "Home Assistant / HACS integration",
+    "release.home-assistant-hacs.reason": "HACS-oriented card bundles exist first; native Home Assistant installation remains the later distribution target.",
     "text.parcelStatusReady": "Ready",
     "text.parcelStatusManualAccount": "Account required",
     "text.parcelAuthPublicTracking": "Public tracking link",
@@ -220,6 +248,9 @@ const translations = {
     "heading.haConnection": "Home-Assistant-Verbindung",
     "heading.translationSettings": "Card-Uebersetzung",
     "heading.parcelSettings": "Paket-Dienstleister",
+    "heading.appRelease": "App-Freigabe",
+    "heading.releaseChecks": "Freigabe-Checks",
+    "heading.releaseTargets": "Ausgabeziele",
     "heading.plugins": "Installierte Plugins",
     "heading.policy": "Plugin-Zugriffsregel",
     "label.haUrl": "Home Assistant URL",
@@ -258,6 +289,8 @@ const translations = {
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
     "message.deeplApiKeyLink": "DeepL API-Key erhalten:",
     "message.pluginsHint": "Der Home Assistant Card Editor ist das erste offizielle Referenz-Plugin.",
+    "message.appReleaseHint": "Verfolge den lokalen App-Pfad vor der späteren Home-Assistant/HACS-Integration.",
+    "message.appReleaseSummary": "{ready} bereit, {inProgress} in Arbeit, {planned} geplant",
     "message.parcelProviderSummary": "{enabled} von {total} Dienstleistern aktiv. Oeffentliche Tracking-Links sind automatisch vorbelegt; Konto-Dienstleister bleiben fuer die spaetere Anbindung markiert.",
     "message.pluginSummary": "{total} Plugins, {active} aktiv, {available} verfuegbar, {disabled} deaktiviert",
     "message.policySummary": "Aktuell freigegebener Kontext: Home-Assistant-URL {url}, WebSocket-Pfad {websocket}.",
@@ -285,6 +318,25 @@ const translations = {
     "text.pluginStatusAvailable": "Verfuegbar",
     "text.pluginStatusActive": "Aktiv",
     "text.pluginStatusDisabled": "Deaktiviert",
+    "text.releaseStatusReady": "Bereit",
+    "text.releaseStatusInProgress": "In Arbeit",
+    "text.releaseStatusPlanned": "Geplant",
+    "release.admin-session-handoff.label": "Administration-Sitzungsübergabe",
+    "release.admin-session-handoff.reason": "Der Editor erhält Home-Assistant-Verbindungseinstellungen aus der Administration ohne gemeinsam gespeicherten Token.",
+    "release.problem-report-preview.label": "Opt-in-Problemberichte",
+    "release.problem-report-preview.reason": "Der Editor zeigt bereinigte Debug-Daten vor dem Kopieren oder Öffnen eines GitHub-Issues als Vorschau.",
+    "release.plugin-install-package.label": "Referenz-Plugin-Paket",
+    "release.plugin-install-package.reason": "Die Administration kann den Home Assistant Card Editor als .atlas-plugin.json-Paket exportieren.",
+    "release.hacs-card-bundle.label": "HACS-Card-Bundle-Export",
+    "release.hacs-card-bundle.reason": "Card-Bundles können exportiert und importiert werden; der finale installierbare Repository-Flow braucht noch Release-Verdrahtung.",
+    "release.home-assistant-frontend.label": "Home-Assistant-Frontend-Integration",
+    "release.home-assistant-frontend.reason": "Der lokale App- und Referenz-Plugin-Pfad kommt vor der späteren nativen Home-Assistant/HACS-Frontend-Integration.",
+    "release.self-hosted.label": "Standalone / selbst gehostete App",
+    "release.self-hosted.reason": "Administration und Card Editor laufen bereits als getrennte lokale Web-Oberflächen mit definierter Übergabegrenze.",
+    "release.atlas-plugin.label": "ATLAS-Referenz-Plugin",
+    "release.atlas-plugin.reason": "Der Card Editor ist als erstes offizielles ATLAS-Referenz-Plugin registriert und kann als Plugin-Paket exportiert werden.",
+    "release.home-assistant-hacs.label": "Home Assistant / HACS-Integration",
+    "release.home-assistant-hacs.reason": "HACS-orientierte Card-Bundles existieren zuerst; die native Home-Assistant-Installation bleibt das spätere Ausgabeziel.",
     "text.parcelStatusReady": "Fertig",
     "text.parcelStatusManualAccount": "Konto noetig",
     "text.parcelAuthPublicTracking": "Oeffentlicher Tracking-Link",
@@ -968,11 +1020,53 @@ function translatePluginStatus(status) {
   return t("text.pluginStatusAvailable");
 }
 
+function translateReleaseStatus(status) {
+  if (status === "ready") return t("text.releaseStatusReady");
+  if (status === "in-progress") return t("text.releaseStatusInProgress");
+  return t("text.releaseStatusPlanned");
+}
+
 function translatePluginAction(action) {
   if (action === "activate") return t("button.activate");
   if (action === "deactivate") return t("button.deactivate");
   if (action === "export-package") return t("button.exportPackage");
   return t("button.inspect");
+}
+
+function createReadinessItem(entry) {
+  const item = document.createElement("div");
+  const title = document.createElement("div");
+  const reason = document.createElement("div");
+  const status = document.createElement("span");
+
+  item.className = "readiness-item";
+  title.className = "readiness-title";
+  reason.className = "readiness-reason";
+  status.className = "readiness-status";
+  status.dataset.status = entry.status;
+
+  title.textContent = t(`release.${entry.id}.label`) === `release.${entry.id}.label`
+    ? entry.label
+    : t(`release.${entry.id}.label`);
+  reason.textContent = t(`release.${entry.id}.reason`) === `release.${entry.id}.reason`
+    ? entry.reason
+    : t(`release.${entry.id}.reason`);
+  status.textContent = translateReleaseStatus(entry.status);
+
+  item.append(title, reason, status);
+  return item;
+}
+
+function renderAppReleaseReadiness() {
+  const readiness = createHomeAssistantCardEditorAppReleaseReadiness();
+
+  appReleaseSummary.textContent = t("message.appReleaseSummary", readiness.summary);
+  appReleaseChecks.replaceChildren(
+    ...readiness.checks.map(check => createReadinessItem(check)),
+  );
+  appReleaseTargets.replaceChildren(
+    ...readiness.targets.map(target => createReadinessItem(target)),
+  );
 }
 
 function createDetail(label, values) {
@@ -1200,6 +1294,7 @@ function renderAdministration() {
     url: homeAssistantUrl.value.trim() || "-",
     websocket: currentWebSocketPath(),
   });
+  renderAppReleaseReadiness();
   pluginList.replaceChildren();
 
   for (const plugin of view.plugins) {

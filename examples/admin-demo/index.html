@@ -361,6 +361,61 @@
         gap: 10px;
       }
 
+      .app-release-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+        gap: 10px;
+      }
+
+      .readiness-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .readiness-item {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.34fr) minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 8px 12px;
+        border: 1px solid #d8e0ec;
+        border-radius: 6px;
+        background: #f8fafc;
+        padding: 9px;
+      }
+
+      .readiness-title {
+        color: #172033;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .readiness-reason {
+        color: #536079;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .readiness-status {
+        min-width: 86px;
+        border-radius: 999px;
+        background: #e2e8f0;
+        color: #475569;
+        padding: 4px 8px;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: center;
+      }
+
+      .readiness-status[data-status="ready"] {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .readiness-status[data-status="in-progress"] {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
       .plugin-tools {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -435,6 +490,8 @@
         .plugin-header,
         .admin-grid,
         .field-grid,
+        .app-release-grid,
+        .readiness-item,
         .provider-row,
         .provider-link-row,
         .parcel-provider-row {
@@ -586,6 +643,26 @@
           <button id="forget-admin-token" class="secondary" type="button" data-i18n="button.forgetToken">Forget token</button>
           <button id="export-admin-settings" type="button" data-i18n="button.exportSettings">Export settings</button>
           <button id="open-card-editor" type="button" data-i18n="button.openEditor">Open Card Editor</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="app-release-heading">
+        <div class="panel-header">
+          <div>
+            <h2 id="app-release-heading" data-i18n="heading.appRelease">App release readiness</h2>
+            <p data-i18n="message.appReleaseHint">Track the local app path before the later Home Assistant/HACS integration.</p>
+          </div>
+          <output id="app-release-summary" aria-live="polite"></output>
+        </div>
+        <div class="app-release-grid">
+          <div>
+            <h3 data-i18n="heading.releaseChecks">Release checks</h3>
+            <div id="app-release-checks" class="readiness-list"></div>
+          </div>
+          <div>
+            <h3 data-i18n="heading.releaseTargets">Distribution targets</h3>
+            <div id="app-release-targets" class="readiness-list"></div>
+          </div>
         </div>
       </section>
 

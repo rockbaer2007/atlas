@@ -80,6 +80,10 @@ display the editor through the Plugin Catalog.
 `createHomeAssistantCardEditorPluginInstallPackage()` projects the same
 reference plugin into the Runtime install-package contract with a manifest,
 README and example Home Assistant card YAML.
+`createHomeAssistantCardEditorAppReleaseReadiness()` describes the local app
+release path with Administration and Card Editor entrypoints, completed
+safeguards such as opt-in problem reports, the reference plugin package state
+and the remaining standalone/HACS distribution targets.
 
 Frontend integration plans describe the resource that makes ATLAS itself
 available inside Home Assistant. Hosts can choose the current self-hosted server
