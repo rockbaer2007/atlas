@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.4
+
+- Keep the Administration "Open Card Editor" button on the current Home
+  Assistant host instead of navigating to the fixed local loopback URL.
+
 ## 0.1.3
 
 - Route Card Editor Admin API calls through the editor surface so Add-on option

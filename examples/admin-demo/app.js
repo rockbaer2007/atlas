@@ -1345,7 +1345,21 @@ function openEditorWithConnectionHandoff() {
   adminSaveState.textContent = homeAssistantToken.value
     ? t("message.editorOpened")
     : t("message.editorOpenedWithoutToken");
-  window.location.assign(`${editorOrigin}/?atlasAdminHandoff=1`);
+  window.location.assign(createEditorNavigationUrl());
+}
+
+function createEditorNavigationUrl() {
+  try {
+    const editorUrl = new URL(editorOrigin);
+    const navigationUrl = new URL(window.location.href);
+    navigationUrl.port = editorUrl.port;
+    navigationUrl.pathname = "/";
+    navigationUrl.search = "atlasAdminHandoff=1";
+    navigationUrl.hash = "";
+    return navigationUrl.toString();
+  } catch {
+    return `${editorOrigin}/?atlasAdminHandoff=1`;
+  }
 }
 
 function receiveEditorReady(event) {
