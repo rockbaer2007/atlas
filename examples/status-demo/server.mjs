@@ -25,7 +25,13 @@ const mimeTypes = {
 await startAdministrationServerIfNeeded();
 
 createServer((request, response) => {
-  const requestUrl = new URL(request.url ?? "/", "http://localhost");
+  const requestUrl = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
+
+  if (requestUrl.pathname === "/admin" || requestUrl.pathname === "/admin/") {
+    response.writeHead(302, { location: createPublicPortUrl(requestUrl, adminPort) });
+    response.end();
+    return;
+  }
 
   if (adminApiPaths.has(requestUrl.pathname)) {
     void proxyAdminApiRequest(request, response, requestUrl);
@@ -88,6 +94,12 @@ async function proxyAdminApiRequest(request, response, requestUrl) {
       message: error instanceof Error ? error.message : String(error),
     }));
   }
+}
+
+function createPublicPortUrl(requestUrl, targetPort) {
+  const url = new URL("/", requestUrl);
+  url.port = String(targetPort);
+  return url.toString();
 }
 
 function readRequestBody(request) {

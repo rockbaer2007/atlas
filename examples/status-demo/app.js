@@ -205,7 +205,7 @@ const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCache";
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
-const adminOrigin = "http://127.0.0.1:4175";
+const adminOrigin = createPortOrigin(4175);
 const adminConnectionApiUrl = "/api/admin-connection";
 const adminLovelaceResourcesApiUrl = "/api/homeassistant/lovelace-resources";
 const adminCardTranslationApiUrl = "/api/card-translation";
@@ -1792,16 +1792,32 @@ function requestAdminConnectionHandoff() {
 }
 
 function createAdminNavigationUrl() {
+  return createPortNavigationUrl(4175);
+}
+
+function createPortOrigin(port) {
   try {
-    const targetUrl = new URL(adminOrigin);
-    const navigationUrl = new URL(window.location.href);
-    navigationUrl.port = targetUrl.port;
-    navigationUrl.pathname = "/";
-    navigationUrl.search = "";
-    navigationUrl.hash = "";
-    return navigationUrl.toString();
+    const url = new URL(window.location.href);
+    url.port = String(port);
+    url.pathname = "/";
+    url.search = "";
+    url.hash = "";
+    return url.origin;
   } catch {
-    return adminOrigin;
+    return "";
+  }
+}
+
+function createPortNavigationUrl(port, pathname = "/", search = "", fallback = "") {
+  try {
+    const url = new URL(window.location.href);
+    url.port = String(port);
+    url.pathname = pathname;
+    url.search = search;
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return fallback;
   }
 }
 

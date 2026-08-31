@@ -133,8 +133,8 @@ const parcelProviderDefaults = [
     capabilities: ["account-link", "manual-status"],
   },
 ];
-const editorOrigin = "http://127.0.0.1:4174";
-const appRuntimeApiUrl = "http://127.0.0.1:4176/app";
+const editorOrigin = createPortOrigin(4174);
+const appRuntimeApiUrl = createPortNavigationUrl(4176, "/app");
 const longTermCookieMaxAge = 31536000;
 const pluginCatalog = new RuntimePluginCatalog();
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
@@ -1349,16 +1349,32 @@ function openEditorWithConnectionHandoff() {
 }
 
 function createEditorNavigationUrl() {
+  return createPortNavigationUrl(4174, "/", "atlasAdminHandoff=1", `${editorOrigin}/?atlasAdminHandoff=1`);
+}
+
+function createPortOrigin(port) {
   try {
-    const editorUrl = new URL(editorOrigin);
+    const url = new URL(window.location.href);
+    url.port = String(port);
+    url.pathname = "/";
+    url.search = "";
+    url.hash = "";
+    return url.origin;
+  } catch {
+    return "";
+  }
+}
+
+function createPortNavigationUrl(port, pathname = "/", search = "", fallback = "") {
+  try {
     const navigationUrl = new URL(window.location.href);
-    navigationUrl.port = editorUrl.port;
-    navigationUrl.pathname = "/";
-    navigationUrl.search = "atlasAdminHandoff=1";
+    navigationUrl.port = String(port);
+    navigationUrl.pathname = pathname;
+    navigationUrl.search = search;
     navigationUrl.hash = "";
     return navigationUrl.toString();
   } catch {
-    return `${editorOrigin}/?atlasAdminHandoff=1`;
+    return fallback;
   }
 }
 

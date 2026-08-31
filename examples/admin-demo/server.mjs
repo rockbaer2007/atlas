@@ -84,7 +84,6 @@ const parcelProviderDefaults = [
   },
 ];
 const openAiTranslationModel = process.env.ATLAS_OPENAI_TRANSLATION_MODEL ?? "gpt-5.6-luna";
-const editorOrigin = "http://127.0.0.1:4174";
 const adminDeviceFilePath = process.env.ATLAS_ADMIN_DEVICE_FILE
   ? resolve(process.env.ATLAS_ADMIN_DEVICE_FILE)
   : join(homedir(), ".atlas", "admin-device.json");
@@ -144,7 +143,7 @@ createServer((request, response) => {
 
 async function handleAdminConnectionRequest(request, response) {
   const requestUrl = new URL(request.url ?? "/", "http://localhost");
-  writeCorsHeaders(response);
+  writeCorsHeaders(request, response);
 
   if (request.method === "OPTIONS") {
     response.writeHead(204);
@@ -192,7 +191,7 @@ async function handleAdminConnectionRequest(request, response) {
 }
 
 async function handleAdminDeviceRequest(request, response) {
-  writeCorsHeaders(response);
+  writeCorsHeaders(request, response);
 
   if (request.method === "OPTIONS") {
     response.writeHead(204);
@@ -214,7 +213,7 @@ async function handleAdminDeviceRequest(request, response) {
 }
 
 async function handleHomeAssistantLovelaceResourcesRequest(request, response) {
-  writeCorsHeaders(response);
+  writeCorsHeaders(request, response);
 
   if (request.method === "OPTIONS") {
     response.writeHead(204);
@@ -284,7 +283,7 @@ async function handleHomeAssistantLovelaceResourcesRequest(request, response) {
 }
 
 async function handleCardTranslationRequest(request, response) {
-  writeCorsHeaders(response);
+  writeCorsHeaders(request, response);
 
   if (request.method === "OPTIONS") {
     response.writeHead(204);
@@ -349,10 +348,38 @@ function writeJsonResponse(response, statusCode, body) {
   response.end(JSON.stringify(body));
 }
 
-function writeCorsHeaders(response) {
-  response.setHeader("access-control-allow-origin", editorOrigin);
+function writeCorsHeaders(request, response) {
+  const origin = typeof request.headers.origin === "string"
+    ? request.headers.origin
+    : createEditorOriginFromRequest(request);
+  if (isEditorOriginForRequest(request, origin)) {
+    response.setHeader("access-control-allow-origin", origin);
+  }
   response.setHeader("access-control-allow-methods", "GET, PUT, POST, DELETE, OPTIONS");
   response.setHeader("access-control-allow-headers", "content-type");
+}
+
+function createEditorOriginFromRequest(request) {
+  try {
+    const url = new URL(`http://${request.headers.host ?? "localhost"}`);
+    url.port = "4174";
+    return url.origin;
+  } catch {
+    return "";
+  }
+}
+
+function isEditorOriginForRequest(request, origin) {
+  if (!origin) {
+    return false;
+  }
+  try {
+    const requestUrl = new URL(`http://${request.headers.host ?? "localhost"}`);
+    const originUrl = new URL(origin);
+    return originUrl.hostname === requestUrl.hostname && originUrl.port === "4174";
+  } catch {
+    return false;
+  }
 }
 
 function deriveHomeAssistantRestApiUrl(sourceUrl, pathname) {
@@ -679,7 +706,7 @@ function isPlausibleHomeAssistantAccessToken(token) {
 
 function canReadAdminConnectionSecrets(request, requestUrl) {
   return requestUrl.searchParams.get("includeSecrets") === "1"
-    && request.headers.origin !== editorOrigin;
+    && !isEditorOriginForRequest(request, request.headers.origin);
 }
 
 function sanitizeAdminConnectionSettings(settings, { includeSecrets = false } = {}) {

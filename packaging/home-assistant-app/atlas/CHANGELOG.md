@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.6
+
+- Remove the static loopback Administration link from the Card Editor and route
+  `/admin` to the current Home Assistant host on port `4175`.
+- Derive Administration runtime metadata from the current host so visible links
+  no longer fall back to `127.0.0.1` in Home Assistant.
+
 ## 0.1.5
 
 - Derive the Card Editor "Open Atlas Administration" link from the current
