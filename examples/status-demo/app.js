@@ -6427,6 +6427,20 @@ function redactPossiblySensitiveText(text) {
 }
 
 function sanitizeDebugValue(value, key = "") {
+  if (/configured/i.test(key)) {
+    if (Array.isArray(value)) {
+      return value.map(item => sanitizeDebugValue(item));
+    }
+    if (value && typeof value === "object") {
+      return Object.fromEntries(
+        Object.entries(value).map(([entryKey, entryValue]) => [
+          entryKey,
+          typeof entryValue === "boolean" ? entryValue : sanitizeDebugValue(entryValue, entryKey),
+        ]),
+      );
+    }
+    return typeof value === "boolean" ? value : sanitizeDebugValue(value);
+  }
   if (/token|secret|password|api[_-]?key|authorization/i.test(key)) {
     if (typeof value === "boolean") return value;
     return value ? "[redacted]" : value;
