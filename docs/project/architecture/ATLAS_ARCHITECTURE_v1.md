@@ -148,6 +148,24 @@ Developer Tools
 - Add a later generator path that can create a new ATLAS plugin from the
   template with the correct folder structure and metadata.
 
+### Late Hub Expansion: External Home Assistant Surfaces
+
+- Treat this as a late roadmap item after the core ATLAS App/Add-on, plugin
+  repository workflow and first real plugins are stable.
+- Let the Plugin Hub also act as an optional Home Assistant workspace for
+  external web surfaces such as ESPHome Builder, ESPHome Designer,
+  Zigbee2MQTT, ioBroker, FHEM, Button Builder and similar editor/tool pages.
+- Start with manual entries that store a name, category, icon/logo, active
+  state and a relative Home Assistant path such as `/5c53de3b_esphome`.
+- Prefer relative Home Assistant paths over fixed IP URLs so entries keep
+  working when the Home Assistant host or ingress route changes.
+- Later add Home Assistant discovery for panels, add-on ingress routes and
+  dashboards so ATLAS can suggest external tools automatically and the user
+  only chooses which entries should appear in the Hub.
+- Use Hub categories such as Editors, Automation/Devices and Dashboards/Panels
+  to reduce clutter in the Home Assistant sidebar while keeping direct access
+  inside ATLAS.
+
 ## Long-term Goal
 
 Atlas becomes a provider-based platform where integrations are plugins rather than core features.
