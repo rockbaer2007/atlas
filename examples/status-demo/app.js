@@ -206,9 +206,9 @@ const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCach
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
 const adminOrigin = createPortOrigin(4175);
-const adminConnectionApiUrl = "api/admin-connection";
-const adminLovelaceResourcesApiUrl = "api/homeassistant/lovelace-resources";
-const adminCardTranslationApiUrl = "api/card-translation";
+const adminConnectionApiUrl = createCurrentSurfaceUrl("api/admin-connection");
+const adminLovelaceResourcesApiUrl = createCurrentSurfaceUrl("api/homeassistant/lovelace-resources");
+const adminCardTranslationApiUrl = createCurrentSurfaceUrl("api/card-translation");
 const adminConnectionCookieName = "atlas_admin_connection";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const cardTargets = listHomeAssistantCardTargets();
@@ -1793,6 +1793,20 @@ function requestAdminConnectionHandoff() {
 
 function createAdminNavigationUrl() {
   return createPortNavigationUrl(4175);
+}
+
+function createCurrentSurfaceUrl(path) {
+  try {
+    const baseUrl = new URL(window.location.href);
+    if (!baseUrl.pathname.endsWith("/")) {
+      baseUrl.pathname = `${baseUrl.pathname}/`;
+    }
+    baseUrl.search = "";
+    baseUrl.hash = "";
+    return new URL(path, baseUrl).toString();
+  } catch {
+    return path;
+  }
 }
 
 function createPortOrigin(port) {

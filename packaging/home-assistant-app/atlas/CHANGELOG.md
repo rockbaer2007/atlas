@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.8
+
+- Resolve Card Editor Admin API requests against the current editor surface URL
+  with a normalized trailing slash so Home Assistant ingress can load saved
+  settings before auto-connect even when the ingress URL has no trailing slash.
+
 ## 0.1.7
 
 - Use ingress-safe relative Card Editor Admin API paths so saved Add-on
