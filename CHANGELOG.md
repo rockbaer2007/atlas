@@ -8,14 +8,16 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Editor and Administration placeholders now use a dedicated brighter
+  placeholder color in dark mode so hint text remains readable.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.17`, and the Home Assistant app package as `0.1.54`.
 - Card Editor Home Assistant connection details are now collapsible, stay
   collapsed while connected, open automatically for missing tokens,
   disconnected or failed states, and show App/Add-on specific configuration
   guidance where relevant.
 - Card Editor Administration and Plugin Hub navigation now use always-visible
   buttons outside the connection details block.
-- Atlas Framework packages now identify the current local preview as
-  `0.2.0-alpha.16`, and the Home Assistant app package as `0.1.53`.
 - Home Assistant Add-on README now describes the GitHub repository install path
   first and keeps local package preparation under development notes.
 - Atlas Framework packages now identify the current local preview as
