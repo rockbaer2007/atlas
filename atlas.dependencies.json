@@ -51,6 +51,12 @@
       ]
     },
     {
+      "package": "file-studio",
+      "allowed": [
+        "runtime"
+      ]
+    },
+    {
       "package": "devtools",
       "allowed": []
     }

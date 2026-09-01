@@ -37,6 +37,10 @@
       "layer": 6
     },
     {
+      "name": "@atlas/file-studio",
+      "layer": 6
+    },
+    {
       "name": "@atlas/devtools",
       "layer": 6
     }
