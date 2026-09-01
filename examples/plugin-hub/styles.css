@@ -207,8 +207,8 @@ h1 {
   :root {
     --atlas-bg: #0e1214;
     --atlas-panel: #171d20;
-    --atlas-text: #f4f8fa;
-    --atlas-muted: #a9bac4;
+    --atlas-text: #f7fcfd;
+    --atlas-muted: #c3d3d8;
     --atlas-border: #303c42;
     --atlas-accent: #2dd4bf;
     --atlas-warn: #facc15;
@@ -229,8 +229,8 @@ h1 {
   color-scheme: dark;
   --atlas-bg: #0e1214;
   --atlas-panel: #171d20;
-  --atlas-text: #f4f8fa;
-  --atlas-muted: #a9bac4;
+  --atlas-text: #f7fcfd;
+  --atlas-muted: #c3d3d8;
   --atlas-border: #303c42;
   --atlas-accent: #2dd4bf;
   --atlas-warn: #facc15;
