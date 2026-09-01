@@ -8,12 +8,15 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas Administration now loads external plugin repositories and plugin
+  packages without custom request headers so GitHub Raw works in browser CORS
+  mode.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.14`, and the Home Assistant app package as `0.1.51`.
 - Atlas Administration now normalizes saved GitHub plugin repository URLs during
   refresh, so existing `github.com/...` entries are reloaded through their
   `raw.githubusercontent.com/.../repository.json` document.
 - Repository remove buttons now use a trash icon instead of a plain `x`.
-- Atlas Framework packages now identify the current local preview as
-  `0.2.0-alpha.13`, and the Home Assistant app package as `0.1.50`.
 - The Card Editor now shows a direct Plugin Hub link below the Atlas
   Administration link.
 - German Admin, Card Editor and Plugin Hub UI strings now use proper umlauts in
