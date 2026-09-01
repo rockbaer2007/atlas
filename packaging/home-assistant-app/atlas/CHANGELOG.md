@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.34
+
+- Widen the Administration App-Freigabe output-goals column so release target
+  descriptions have enough room beside the checks list.
+- Pin the Ausgabeziele card grid areas so the status badge stays to the right
+  and the description spans the full target card width.
+
 ## 0.1.33
 
 - Fix the Administration release target layout so output goal descriptions use
