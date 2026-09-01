@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio image preview modals are now resizable, start at `75vw` by `70vh`,
+  remember their size and reuse the Card Editor diagonal resize handle style.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.34`, the Home Assistant app package as `0.1.76`, and ATLAS File
+  Studio as `0.1.18`.
 - File Studio image previews now open in a centered modal overlay instead of
   occupying space below the editor field.
 - Atlas Framework packages now identify the current local preview as
