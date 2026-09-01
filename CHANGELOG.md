@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas plugin repositories now require an explicit ATLAS marker
+  (`atlas.type: plugin-repository`) and repository plugins require
+  `atlas.type: plugin`, so Home Assistant add-on repositories and unrelated
+  JSON feeds are not accepted as plugin sources.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.11`, and the Home Assistant app package as `0.1.48`.
 - Atlas Administration now rejects Home Assistant add-on repositories in the
   ATLAS plugin repository dialog and only stores sources that resolve to
   `kind: atlas.plugin.repository`.
