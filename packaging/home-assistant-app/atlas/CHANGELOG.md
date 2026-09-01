@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.33
+
+- Fix the Administration release target layout so output goal descriptions use
+  the available card width instead of wrapping as one word per line.
+- Keep the layout adjustment scoped to the Ausgabeziele/distribution target
+  list while other readiness lists retain their compact row layout.
+
 ## 0.1.32
 
 - Add `logo` as a first-class plugin asset alongside icon and preview.
