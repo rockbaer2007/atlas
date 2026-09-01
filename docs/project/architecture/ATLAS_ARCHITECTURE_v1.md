@@ -148,6 +148,24 @@ Developer Tools
 - Add a later generator path that can create a new ATLAS plugin from the
   template with the correct folder structure and metadata.
 
+### Planned Plugin: Automation Extractor
+
+- Add the existing Windows automation extractor direction as an independent
+  ATLAS plugin after File Studio has stable editing, saving and validation
+  flows.
+- Use File Studio as the adjacent file access surface, but keep the extractor
+  as its own plugin so automation analysis, filtering and export can evolve
+  independently from generic file editing.
+- Start with scoped Home Assistant automation files such as
+  `/config/automations.yaml`, packages and included automation fragments.
+- Extract automation IDs, aliases, triggers, conditions, actions, referenced
+  entities, scripts, scenes, helpers and notification targets.
+- Show a structured automation overview with search, grouping, warnings and
+  exportable summaries.
+- Keep write operations out of the first extractor increment; begin read-only
+  and add refactoring/splitting actions only after backup and validation flows
+  are proven.
+
 ### Late Hub Expansion: External Home Assistant Surfaces
 
 - Treat this as a late roadmap item after the core ATLAS App/Add-on, plugin
