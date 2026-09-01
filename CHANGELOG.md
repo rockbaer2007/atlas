@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio editor font-size controls now apply A-/A+ changes immediately
+  instead of reloading the previous saved preference before saving the new size.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.38`, the Home Assistant app package as `0.1.80`, and ATLAS File
+  Studio as `0.1.22`.
 - File Studio image previews now include zoom out, 100% and zoom in controls,
   and ZIP files open a simple archive-content modal without extraction.
 - Atlas Framework packages now identify the current local preview as
