@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio now previews PNG, JPG/JPEG, SVG, GIF, WebP, BMP and ICO files in
+  the editor area with contained scaling and a scoped asset route.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.32`, the Home Assistant app package as `0.1.74`, and ATLAS File
+  Studio as `0.1.16`.
 - File Studio `/addons` access is now governed by an explicit approval flag:
   Home Assistant App/Add-on installs read it from the Add-on configuration and
   show it read-only in Administration, while standalone/Docker mode can manage
