@@ -13,6 +13,10 @@
       "layer": 1
     },
     {
+      "name": "@atlas/notifyarchive",
+      "layer": 1
+    },
+    {
       "name": "@atlas/runtime",
       "layer": 2
     },

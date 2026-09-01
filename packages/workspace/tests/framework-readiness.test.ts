@@ -58,6 +58,7 @@ describe("Atlas framework readiness", () => {
       "@atlas/workspace",
       "@atlas/foundation",
       "@atlas/kernel",
+      "@atlas/notifyarchive",
       "@atlas/runtime",
       "@atlas/core",
       "@atlas/renderer",
@@ -69,6 +70,7 @@ describe("Atlas framework readiness", () => {
     expect(ATLAS_WORKSPACE_PACKAGE_INVENTORY.map((workspacePackage) => workspacePackage.layer)).toEqual([
       0,
       0,
+      1,
       1,
       2,
       3,
@@ -137,7 +139,7 @@ describe("Atlas framework readiness", () => {
 
     expect(manifest.framework).toEqual({
       name: "Atlas",
-      version: "0.2.0-alpha.1",
+      version: "0.2.0-alpha.2",
       channel: "alpha",
     });
     expect(manifest.packages).toEqual(activeDirectories);

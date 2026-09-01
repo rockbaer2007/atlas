@@ -15,6 +15,10 @@
       ]
     },
     {
+      "package": "notifyarchive",
+      "allowed": []
+    },
+    {
       "package": "runtime",
       "allowed": [
         "kernel",
@@ -42,6 +46,7 @@
     {
       "package": "homeassistant",
       "allowed": [
+        "runtime",
         "theme"
       ]
     },

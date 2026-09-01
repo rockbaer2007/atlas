@@ -2,6 +2,7 @@ export type AtlasWorkspacePackageName =
   | "@atlas/workspace"
   | "@atlas/foundation"
   | "@atlas/kernel"
+  | "@atlas/notifyarchive"
   | "@atlas/runtime"
   | "@atlas/core"
   | "@atlas/renderer"
@@ -13,6 +14,7 @@ export type AtlasWorkspacePackageDirectory =
   | "workspace"
   | "foundation"
   | "kernel"
+  | "notifyarchive"
   | "runtime"
   | "core"
   | "renderer"
@@ -59,7 +61,7 @@ export interface AtlasPlannedIntegrationClosure {
 export interface AtlasFrameworkReadiness {
   readonly framework: {
     readonly name: "Atlas";
-    readonly version: "0.2.0-alpha.1";
+    readonly version: "0.2.0-alpha.2";
     readonly channel: "alpha";
   };
   readonly packages: readonly AtlasWorkspacePackageDescriptor[];
@@ -101,6 +103,14 @@ export const ATLAS_WORKSPACE_PACKAGE_INVENTORY: readonly AtlasWorkspacePackageDe
       allowedDependencies: ["foundation"],
     },
     {
+      name: "@atlas/notifyarchive",
+      directory: "notifyarchive",
+      layer: 1,
+      status: "active",
+      publicApi: "open",
+      allowedDependencies: [],
+    },
+    {
       name: "@atlas/runtime",
       directory: "runtime",
       layer: 2,
@@ -138,7 +148,7 @@ export const ATLAS_WORKSPACE_PACKAGE_INVENTORY: readonly AtlasWorkspacePackageDe
       layer: 6,
       status: "active",
       publicApi: "open",
-      allowedDependencies: ["theme"],
+      allowedDependencies: ["runtime", "theme"],
     },
     {
       name: "@atlas/devtools",
@@ -169,7 +179,7 @@ export function createAtlasFrameworkReadiness(): AtlasFrameworkReadiness {
   return {
     framework: {
       name: "Atlas",
-      version: "0.2.0-alpha.1",
+      version: "0.2.0-alpha.2",
       channel: "alpha",
     },
     packages: ATLAS_WORKSPACE_PACKAGE_INVENTORY.map((workspacePackage) => ({
