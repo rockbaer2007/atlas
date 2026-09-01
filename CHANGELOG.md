@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio image previews now include zoom out, 100% and zoom in controls,
+  and ZIP files open a simple archive-content modal without extraction.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.37`, the Home Assistant app package as `0.1.79`, and ATLAS File
+  Studio as `0.1.21`.
 - File Studio image preview modals now auto-size to the opened image, keep
   small images at natural size and only shrink oversized images proportionally.
 - Atlas Framework packages now identify the current local preview as
