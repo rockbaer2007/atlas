@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Plugin metadata can now carry localized `nameI18n` and `descriptionI18n`
+  values, and Administration plus Plugin Hub render the active UI language with
+  English/string fallbacks.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.7`, and the Home Assistant app package as `0.1.43`.
 - Plugin Hub no longer shows the direct Card Editor header link, and the Card
   Editor dark mode now keeps Expert/editor panels on the shared dark
   Administration palette.

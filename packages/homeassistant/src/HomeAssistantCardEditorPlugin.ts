@@ -63,8 +63,16 @@ export function createHomeAssistantCardEditorPlugin(): RuntimePlugin {
     manifest: {
       id: HomeAssistantCardEditorPluginId,
       name: "ATLAS Home Assistant Card Editor",
-      version: "0.2.0-alpha.6",
+      nameI18n: {
+        de: "ATLAS Home Assistant Karten-Editor",
+        en: "ATLAS Home Assistant Card Editor",
+      },
+      version: "0.2.0-alpha.7",
       description: "Reference plugin for Home Assistant card editing, entity selection and HACS-oriented exports.",
+      descriptionI18n: {
+        de: "Referenz-Plugin fuer Home-Assistant-Kartenbearbeitung, Entitaetsauswahl und HACS-orientierte Exporte.",
+        en: "Reference plugin for Home Assistant card editing, entity selection and HACS-oriented exports.",
+      },
       icon: "icon.svg",
       logo: "logo.svg",
       preview: "preview.svg",

@@ -73,6 +73,19 @@ function t(key, parameters = {}) {
   return text;
 }
 
+function localizedPluginText(plugin, field, fallback = "") {
+  const localized = plugin?.[`${field}I18n`];
+  if (localized && typeof localized === "object" && !Array.isArray(localized)) {
+    const text = localized[currentLanguage] ?? localized.en ?? localized.de;
+    if (typeof text === "string" && text.trim()) {
+      return text.trim();
+    }
+  }
+
+  const value = plugin?.[field];
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
 function applyLanguage() {
   document.documentElement.lang = currentLanguage;
   for (const element of document.querySelectorAll("[data-i18n]")) {
@@ -203,18 +216,19 @@ function createPluginCard(plugin) {
   titleRow.className = "plugin-title-row";
 
   const imageUrl = plugin.iconUrl || plugin.logoUrl || plugin.previewUrl;
+  const pluginName = localizedPluginText(plugin, "name", plugin.id);
   let icon;
   if (imageUrl) {
     icon = document.createElement("img");
     icon.className = "plugin-image";
-    icon.alt = t("alt.pluginImage", { name: plugin.name });
+    icon.alt = t("alt.pluginImage", { name: pluginName });
     icon.src = imageUrl;
   }
 
   const title = document.createElement("div");
   const name = document.createElement("h2");
   name.className = "plugin-name";
-  name.textContent = plugin.name;
+  name.textContent = pluginName;
   const version = document.createElement("div");
   version.className = "plugin-version";
   version.textContent = plugin.version;
@@ -232,7 +246,7 @@ function createPluginCard(plugin) {
 
   const description = document.createElement("p");
   description.className = "plugin-description";
-  description.textContent = plugin.description;
+  description.textContent = localizedPluginText(plugin, "description", plugin.id);
   body.append(description);
 
   const capabilities = document.createElement("div");

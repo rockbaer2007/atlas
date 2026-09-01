@@ -328,8 +328,10 @@ function readPluginManifest(directoryName, requestUrl) {
     return {
       id,
       name: typeof manifest.name === "string" ? manifest.name : id,
+      nameI18n: normalizeLocalizedPluginText(manifest.nameI18n),
       version: typeof manifest.version === "string" ? manifest.version : "0.0.0",
       description: typeof manifest.description === "string" ? manifest.description : "",
+      descriptionI18n: normalizeLocalizedPluginText(manifest.descriptionI18n),
       status: typeof manifest.status === "string" ? manifest.status : "available",
       order: Number.isFinite(manifest.order) ? manifest.order : 999,
       capabilities: Array.isArray(manifest.capabilities)
@@ -343,6 +345,18 @@ function readPluginManifest(directoryName, requestUrl) {
   } catch {
     return undefined;
   }
+}
+
+function normalizeLocalizedPluginText(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const entries = Object.entries(value)
+    .filter(([locale, text]) => locale.trim() && typeof text === "string" && text.trim())
+    .map(([locale, text]) => [locale.trim().toLowerCase(), text.trim()]);
+
+  return entries.length ? Object.fromEntries(entries) : undefined;
 }
 
 function createPluginEntryUrl(entry, requestUrl) {

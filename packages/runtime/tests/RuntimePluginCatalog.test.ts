@@ -25,8 +25,16 @@ describe("RuntimePluginCatalog", () => {
       manifest: {
         id: "atlas.plugin.catalog",
         name: "Catalog plugin",
+        nameI18n: {
+          de: "Katalog-Plugin",
+          en: "Catalog plugin",
+        },
         version: "1.0.0",
         description: "Discovery metadata",
+        descriptionI18n: {
+          de: "Erkennungsmetadaten",
+          en: "Discovery metadata",
+        },
         icon: "icon.svg",
         logo: "logo.svg",
         preview: "preview.svg",
@@ -42,8 +50,16 @@ describe("RuntimePluginCatalog", () => {
     expect(descriptor).toEqual({
       id: "atlas.plugin.catalog",
       name: "Catalog plugin",
+      nameI18n: {
+        de: "Katalog-Plugin",
+        en: "Catalog plugin",
+      },
       version: "1.0.0",
       description: "Discovery metadata",
+      descriptionI18n: {
+        de: "Erkennungsmetadaten",
+        en: "Discovery metadata",
+      },
       icon: "icon.svg",
       logo: "logo.svg",
       preview: "preview.svg",

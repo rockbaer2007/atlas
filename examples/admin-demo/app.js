@@ -536,6 +536,31 @@ function t(key, values = {}) {
   return text;
 }
 
+function localizedPluginText(plugin, field, fallback = "") {
+  const localized = plugin?.[`${field}I18n`];
+  if (localized && typeof localized === "object" && !Array.isArray(localized)) {
+    const text = localized[currentLanguage] ?? localized.en ?? localized.de;
+    if (typeof text === "string" && text.trim()) {
+      return text.trim();
+    }
+  }
+
+  const value = plugin?.[field];
+  return typeof value === "string" && value.trim() ? value.trim() : fallback;
+}
+
+function normalizeLocalizedPluginText(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return undefined;
+  }
+
+  const entries = Object.entries(value)
+    .filter(([locale, text]) => locale.trim() && typeof text === "string" && text.trim())
+    .map(([locale, text]) => [locale.trim().toLowerCase(), text.trim()]);
+
+  return entries.length ? Object.fromEntries(entries) : undefined;
+}
+
 function applyTranslations() {
   document.documentElement.lang = currentLanguage;
   document.title = t("page.title");
@@ -1391,8 +1416,8 @@ function renderPluginRepositoryDialogPreview(plugins) {
 
     item.className = "repository-preview-card";
     media.className = "repository-preview-media";
-    title.textContent = plugin.name;
-    description.textContent = plugin.description || plugin.id;
+    title.textContent = localizedPluginText(plugin, "name", plugin.id);
+    description.textContent = localizedPluginText(plugin, "description", plugin.id);
     meta.textContent = [plugin.version, plugin.packageUrl ? "Package" : "Manifest"].filter(Boolean).join(" · ");
     if (plugin.logoUrl || plugin.iconUrl) {
       const icon = document.createElement("img");
@@ -1536,8 +1561,10 @@ function normalizeRepositoryPlugin(plugin, repositoryEntry, index) {
   return {
     id,
     name: typeof plugin.name === "string" && plugin.name.trim() ? plugin.name.trim() : id,
+    nameI18n: normalizeLocalizedPluginText(plugin.nameI18n),
     version: typeof plugin.version === "string" ? plugin.version : "",
     description: typeof plugin.description === "string" ? plugin.description : "",
+    descriptionI18n: normalizeLocalizedPluginText(plugin.descriptionI18n),
     repositoryId: `${repositoryEntry.type}:${repositoryEntry.url}`,
     repositoryName: repositoryEntry.name || repositoryEntry.url,
     repositoryType: repositoryEntry.type,
@@ -1672,12 +1699,14 @@ function normalizeRepositoryPluginManifest(manifest, fallbackPlugin) {
 
   const id = typeof manifest.id === "string" && manifest.id.trim() ? manifest.id.trim() : fallbackPlugin.id;
   const name = typeof manifest.name === "string" && manifest.name.trim() ? manifest.name.trim() : fallbackPlugin.name;
+  const nameI18n = normalizeLocalizedPluginText(manifest.nameI18n) ?? fallbackPlugin.nameI18n;
   const version = typeof manifest.version === "string" && manifest.version.trim()
     ? manifest.version.trim()
     : fallbackPlugin.version;
   const description = typeof manifest.description === "string" && manifest.description.trim()
     ? manifest.description.trim()
     : fallbackPlugin.description;
+  const descriptionI18n = normalizeLocalizedPluginText(manifest.descriptionI18n) ?? fallbackPlugin.descriptionI18n;
   const dependencies = Array.isArray(manifest.dependencies) ? manifest.dependencies : [];
   const extensionPoints = Array.isArray(manifest.extensionPoints)
     ? manifest.extensionPoints.filter(value => typeof value === "string")
@@ -1691,8 +1720,10 @@ function normalizeRepositoryPluginManifest(manifest, fallbackPlugin) {
   return {
     id,
     name,
+    nameI18n,
     version,
     description,
+    descriptionI18n,
     icon: typeof manifest.icon === "string" ? manifest.icon : "",
     logo: typeof manifest.logo === "string" ? manifest.logo : "",
     preview: typeof manifest.preview === "string" ? manifest.preview : "",
@@ -1752,7 +1783,7 @@ async function installRepositoryPluginPackage(plugin) {
       { name: descriptor.name },
     );
   } catch {
-    adminSaveState.textContent = t("message.pluginRepositoryInstallFailed", { name: plugin.name });
+    adminSaveState.textContent = t("message.pluginRepositoryInstallFailed", { name: localizedPluginText(plugin, "name", plugin.id) });
   }
 }
 
@@ -1769,7 +1800,7 @@ function removeRepositoryPluginPackage(plugin) {
   persistPluginState();
   renderPluginRepositoryPreview();
   renderAdministration();
-  adminSaveState.textContent = t("message.pluginRepositoryPluginRemoved", { name: plugin.name });
+  adminSaveState.textContent = t("message.pluginRepositoryPluginRemoved", { name: localizedPluginText(plugin, "name", plugin.id) });
 }
 
 function renderPluginRepositoryPreview() {
@@ -1795,8 +1826,8 @@ function renderPluginRepositoryPreview() {
     details.className = "plugin-details";
     actions.className = "action-grid";
 
-    title.textContent = plugin.name;
-    description.textContent = plugin.description || plugin.id;
+    title.textContent = localizedPluginText(plugin, "name", plugin.id);
+    description.textContent = localizedPluginText(plugin, "description", plugin.id);
     if (installState.updateAvailable) {
       status.textContent = t("message.pluginRepositoryUpdateAvailable", {
         installed: installState.installedVersion,
@@ -2343,10 +2374,11 @@ function receiveEditorReady(event) {
 }
 
 function handlePluginAction(action, plugin) {
+  const pluginName = localizedPluginText(plugin, "name", plugin.id);
   if (action === "activate") {
     activePluginIds.add(plugin.id);
     persistPluginState();
-    adminSaveState.textContent = t("message.pluginActivated", { name: plugin.name });
+    adminSaveState.textContent = t("message.pluginActivated", { name: pluginName });
     renderAdministration();
     return;
   }
@@ -2354,7 +2386,7 @@ function handlePluginAction(action, plugin) {
   if (action === "deactivate") {
     activePluginIds.delete(plugin.id);
     persistPluginState();
-    adminSaveState.textContent = t("message.pluginDeactivated", { name: plugin.name });
+    adminSaveState.textContent = t("message.pluginDeactivated", { name: pluginName });
     renderAdministration();
     return;
   }
@@ -2364,12 +2396,12 @@ function handlePluginAction(action, plugin) {
       ? createHomeAssistantCardEditorPluginInstallPackage()
       : createRuntimePluginInstallPackage({ plugin });
     downloadTextFile(pluginPackage.filename, JSON.stringify(pluginPackage, null, 2), "application/json");
-    adminSaveState.textContent = t("message.pluginPackageExported", { name: plugin.name });
+    adminSaveState.textContent = t("message.pluginPackageExported", { name: pluginName });
     return;
   }
 
   adminSaveState.textContent = t("message.pluginInspected", {
-    name: plugin.name,
+    name: pluginName,
     points: plugin.extensionPoints.length,
     capabilities: plugin.provides.length,
   });
@@ -2385,7 +2417,7 @@ function removeImportedPluginPackage(plugin) {
   persistImportedPlugins();
   persistPluginState();
   renderAdministration();
-  adminSaveState.textContent = t("message.pluginPackageRemoved", { name: plugin.name });
+  adminSaveState.textContent = t("message.pluginPackageRemoved", { name: localizedPluginText(plugin, "name", plugin.id) });
 }
 
 async function importSelectedPluginPackage() {
@@ -2407,7 +2439,7 @@ async function importSelectedPluginPackage() {
     importedPluginDescriptors = [...importedPluginDescriptors, plugin];
     persistImportedPlugins();
     renderAdministration();
-    adminSaveState.textContent = t("message.pluginPackageImported", { name: plugin.name });
+    adminSaveState.textContent = t("message.pluginPackageImported", { name: localizedPluginText(plugin, "name", plugin.id) });
   } catch {
     adminSaveState.textContent = t("message.pluginPackageImportFailed");
   } finally {
@@ -2446,8 +2478,8 @@ function renderAdministration() {
     details.className = "plugin-details";
     actions.className = "action-grid";
 
-    title.textContent = plugin.name;
-    description.textContent = plugin.description ?? plugin.id;
+    title.textContent = localizedPluginText(plugin, "name", plugin.id);
+    description.textContent = localizedPluginText(plugin, "description", plugin.id);
     status.textContent = translatePluginStatus(plugin.status);
     const displayAssetUrl = resolvePluginDisplayAssetUrl(plugin, "logo")
       || resolvePluginDisplayAssetUrl(plugin, "icon");

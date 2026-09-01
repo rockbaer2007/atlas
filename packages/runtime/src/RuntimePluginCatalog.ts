@@ -9,8 +9,10 @@ import type { RuntimeModule } from "./RuntimeModule";
 export type RuntimePluginDescriptor = Readonly<{
   id: string;
   name: string;
+  nameI18n?: Readonly<Record<string, string>>;
   version: string;
   description?: string;
+  descriptionI18n?: Readonly<Record<string, string>>;
   icon?: string;
   logo?: string;
   preview?: string;
@@ -73,8 +75,10 @@ export function describeRuntimePlugin(plugin: RuntimePlugin): RuntimePluginDescr
   return {
     id: manifest.id,
     name: manifest.name,
+    nameI18n: manifest.nameI18n,
     version: manifest.version,
     description: manifest.description,
+    descriptionI18n: manifest.descriptionI18n,
     icon: manifest.icon,
     logo: manifest.logo,
     preview: manifest.preview,

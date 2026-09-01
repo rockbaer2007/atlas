@@ -48,8 +48,10 @@ export function serializeRuntimePluginInstallManifest(
   return `${JSON.stringify({
     id: plugin.id,
     name: plugin.name,
+    nameI18n: plugin.nameI18n,
     version: plugin.version,
     description: plugin.description,
+    descriptionI18n: plugin.descriptionI18n,
     icon: plugin.icon,
     logo: plugin.logo,
     preview: plugin.preview,
@@ -104,8 +106,10 @@ function readRuntimePluginDescriptor(value: unknown): RuntimePluginDescriptor {
   return {
     id: readRequiredString(value.id, "Runtime plugin id is required."),
     name: readRequiredString(value.name, "Runtime plugin name is required."),
+    nameI18n: readOptionalLocalizedText(value.nameI18n),
     version: readRequiredString(value.version, "Runtime plugin version is required."),
     description: readOptionalString(value.description),
+    descriptionI18n: readOptionalLocalizedText(value.descriptionI18n),
     icon: readOptionalString(value.icon),
     logo: readOptionalString(value.logo),
     preview: readOptionalString(value.preview),
@@ -191,6 +195,25 @@ function readOptionalString(value: unknown): string | undefined {
   }
 
   return value.trim() || undefined;
+}
+
+function readOptionalLocalizedText(value: unknown): Readonly<Record<string, string>> | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  if (!isRecord(value)) {
+    throw new Error("Runtime plugin localized text fields must be objects.");
+  }
+
+  const entries: [string, string][] = [];
+  for (const [locale, text] of Object.entries(value)) {
+    if (locale.trim() && typeof text === "string" && text.trim()) {
+      entries.push([locale.trim().toLowerCase(), text.trim()]);
+    }
+  }
+
+  return entries.length ? Object.fromEntries(entries) : undefined;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

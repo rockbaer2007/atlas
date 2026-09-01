@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.43
+
+- Add localized plugin metadata fields for names and descriptions.
+- Show translated plugin names and descriptions in Atlas Administration and the
+  Plugin Hub based on the selected UI language, with English/string fallback.
+- Bump Atlas Framework package metadata to `0.2.0-alpha.7` for the update
+  package.
+
 ## 0.1.42
 
 - Remove the direct Card Editor header link from the Plugin Hub.
