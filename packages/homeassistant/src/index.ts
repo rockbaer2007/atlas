@@ -11,6 +11,7 @@ export * from "./HomeAssistantCardConfiguration";
 export * from "./HomeAssistantCardArtifactInspection";
 export * from "./HomeAssistantCardEditorPlan";
 export * from "./HomeAssistantCardEditorHacsBundle";
+export * from "./HomeAssistantCardEditorProblemReport";
 export * from "./HomeAssistantCardEditorReference";
 export * from "./HomeAssistantCardEditorPlugin";
 export * from "./HomeAssistantCardEditorAppRelease";

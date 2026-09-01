@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.35
+
+- Move the Card Editor problem report sanitizer, preview text and GitHub issue
+  URL generation into the shared Home Assistant package.
+- Add tests that verify token, authorization header, cookie, localStorage and
+  provider API key redaction before debug reports are copied or opened.
+
 ## 0.1.34
 
 - Widen the Administration App-Freigabe output-goals column so release target

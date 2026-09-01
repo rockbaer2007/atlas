@@ -29,6 +29,9 @@ import {
   createHomeAssistantPanelGroup,
   createHomeAssistantServiceCommand,
   createHomeAssistantStatusPanelRegistry,
+  createHomeAssistantCardEditorProblemReport,
+  createHomeAssistantCardEditorProblemReportPreviewText,
+  createHomeAssistantCardEditorProblemReportIssueUrl,
   filterHomeAssistantEntityCatalog,
   listHomeAssistantEntityCatalogDomains,
   listHomeAssistantEntityDomainShortcuts,
@@ -50,6 +53,7 @@ import {
   findHomeAssistantStatusPanel,
   inspectHomeAssistantConnectionReadiness,
   bindHomeAssistantEntityStatusPanel,
+  sanitizeHomeAssistantCardEditorDebugUrl,
 } from "@atlas/homeassistant";
 
 const statusRoot = document.querySelector("#atlas-status-root");
@@ -6612,68 +6616,6 @@ async function writeClipboardText(text) {
   }
 }
 
-function redactPossiblySensitiveText(text) {
-  return String(text)
-    .replace(/(authorization:\s*bearer\s+)[^\s"'`]+/gi, "$1[redacted]")
-    .replace(/((?:access_)?token\s*[:=]\s*)[^\s"'`]+/gi, "$1[redacted]")
-    .replace(/((?:api[_-]?key|secret|password)\s*[:=]\s*)[^\s"'`]+/gi, "$1[redacted]");
-}
-
-function sanitizeDebugValue(value, key = "") {
-  if (/configured/i.test(key)) {
-    if (Array.isArray(value)) {
-      return value.map(item => sanitizeDebugValue(item));
-    }
-    if (value && typeof value === "object") {
-      return Object.fromEntries(
-        Object.entries(value).map(([entryKey, entryValue]) => [
-          entryKey,
-          typeof entryValue === "boolean" ? entryValue : sanitizeDebugValue(entryValue, entryKey),
-        ]),
-      );
-    }
-    return typeof value === "boolean" ? value : sanitizeDebugValue(value);
-  }
-  if (/token|secret|password|api[_-]?key|authorization/i.test(key)) {
-    if (typeof value === "boolean") return value;
-    return value ? "[redacted]" : value;
-  }
-  if (typeof value === "string") {
-    return redactPossiblySensitiveText(value);
-  }
-  if (Array.isArray(value)) {
-    return value.map(item => sanitizeDebugValue(item));
-  }
-  if (value && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).map(([entryKey, entryValue]) => [
-        entryKey,
-        sanitizeDebugValue(entryValue, entryKey),
-      ]),
-    );
-  }
-  return value;
-}
-
-function sanitizeDebugUrl(value) {
-  if (typeof value !== "string" || !value.trim()) {
-    return "";
-  }
-  try {
-    const url = new URL(value.trim());
-    url.username = "";
-    url.password = "";
-    for (const key of [...url.searchParams.keys()]) {
-      if (/token|secret|password|api[_-]?key|authorization/i.test(key)) {
-        url.searchParams.set(key, "[redacted]");
-      }
-    }
-    return url.toString();
-  } catch {
-    return redactPossiblySensitiveText(value);
-  }
-}
-
 function deriveProblemReportWebSocketUrl(configuration) {
   try {
     return deriveHomeAssistantWebSocketUrl(configuration);
@@ -6688,19 +6630,16 @@ function createProblemReportData() {
   const activeCardPayload = canIncludeCardPreview ? createHaCardExportPayload() : undefined;
   const resourceAnalysis = lovelaceResourcesChecked ? analyzeTemporaryHaCardResources(lovelaceResources) : undefined;
 
-  return sanitizeDebugValue({
-    schema: 1,
-    type: "atlas.card-editor.problem-report.v1",
-    generatedAt: new Date().toISOString(),
+  return createHomeAssistantCardEditorProblemReport({
     app: {
       name: "ATLAS Home Assistant Card Editor",
-      demoUrl: sanitizeDebugUrl(window.location.href),
+      demoUrl: sanitizeHomeAssistantCardEditorDebugUrl(window.location.href),
       language: currentLanguage,
       editorMode: activeEditorMode,
     },
     connection: {
-      homeAssistantUrl: sanitizeDebugUrl(homeAssistantUrl.value),
-      websocketUrl: sanitizeDebugUrl(deriveProblemReportWebSocketUrl(configuration)),
+      homeAssistantUrl: sanitizeHomeAssistantCardEditorDebugUrl(homeAssistantUrl.value),
+      websocketUrl: sanitizeHomeAssistantCardEditorDebugUrl(deriveProblemReportWebSocketUrl(configuration)),
       lifecycleState: connectionLifecycleState,
       sessionHandoffTokenConfigured: Boolean(adminConnectionToken),
       sessionHandoffTokenIncluded: false,
@@ -6708,7 +6647,7 @@ function createProblemReportData() {
     },
     translation: {
       provider: normalizeTranslationProvider(adminTranslationProvider),
-      apiEndpoint: sanitizeDebugUrl(adminTranslationApiEndpoint),
+      apiEndpoint: sanitizeHomeAssistantCardEditorDebugUrl(adminTranslationApiEndpoint),
       apiKeyConfigured: adminTranslationApiKeyConfigured,
       apiKeyConfiguredByProvider: adminTranslationApiKeyConfiguredByProvider,
       apiKeyIncluded: false,
@@ -6780,28 +6719,11 @@ function createProblemReportData() {
       translationModuleState: adminTranslationModuleState.textContent,
       importReview: haCardImportReview.textContent,
     },
-    privacy: {
-      homeAssistantTokenIncluded: false,
-      providerApiKeysIncluded: false,
-      cookiesIncluded: false,
-      localStorageIncluded: false,
-    },
   });
 }
 
 function createProblemReportPreviewText() {
-  const report = createProblemReportData();
-  return [
-    "## ATLAS Home Assistant Card Editor problem report",
-    "",
-    "I reviewed this opt-in debug report before sharing it.",
-    "",
-    "Home Assistant tokens, provider API keys, cookies and localStorage are not included.",
-    "",
-    "```json",
-    JSON.stringify(report, null, 2),
-    "```",
-  ].join("\n");
+  return createHomeAssistantCardEditorProblemReportPreviewText(createProblemReportData());
 }
 
 function openProblemReportDialog() {
@@ -6827,9 +6749,10 @@ async function copyProblemReportPreview() {
 
 function openProblemReportIssue() {
   const body = problemReportPreview.value || createProblemReportPreviewText();
-  const title = encodeURIComponent("Home Assistant Card Editor problem report");
-  const encodedBody = encodeURIComponent(body);
-  window.open(`${problemReportIssueUrl}?title=${title}&body=${encodedBody}`, "_blank", "noopener,noreferrer");
+  window.open(createHomeAssistantCardEditorProblemReportIssueUrl({
+    baseUrl: problemReportIssueUrl,
+    body,
+  }), "_blank", "noopener,noreferrer");
   problemReportStatus.textContent = t("message.problemIssueOpened");
 }
 
