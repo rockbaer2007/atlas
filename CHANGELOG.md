@@ -8,6 +8,13 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Plugin Hub no longer shows the direct Card Editor header link, and the Card
+  Editor dark mode now keeps Expert/editor panels on the shared dark
+  Administration palette.
+- Card Editor and Plugin Hub language/theme toggles now keep explicit dark-mode
+  contrast for selected and unselected states.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.6`, and the Home Assistant app package as `0.1.42`.
 - Atlas Editor and Plugin Hub now share the darker Administration theme palette
   for dark mode backgrounds, panels, borders and accent contrast.
 - Atlas Framework packages now identify the current local preview as

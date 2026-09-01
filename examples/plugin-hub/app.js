@@ -8,7 +8,6 @@ const translations = {
   en: {
     "heading.hub": "Plugin Hub",
     "link.admin": "Administration",
-    "link.editor": "Card Editor",
     "aria.surfaces": "ATLAS surfaces",
     "aria.language": "Language",
     "aria.filters": "Plugin filters",
@@ -30,7 +29,6 @@ const translations = {
   de: {
     "heading.hub": "Plugin Hub",
     "link.admin": "Administration",
-    "link.editor": "Card Editor",
     "aria.surfaces": "ATLAS-Oberflaechen",
     "aria.language": "Sprache",
     "aria.filters": "Plugin-Filter",

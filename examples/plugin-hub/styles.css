@@ -268,6 +268,20 @@ h1 {
   color: #7ee6c9;
 }
 
+:root[data-theme="dark"] .language-toggle {
+  border-color: var(--atlas-border-strong);
+  background: var(--atlas-panel);
+}
+
+:root[data-theme="dark"] .language-toggle button {
+  color: var(--atlas-text);
+}
+
+:root[data-theme="dark"] .language-toggle button[aria-pressed="true"] {
+  background: var(--atlas-accent);
+  color: var(--atlas-on-accent);
+}
+
 :root[data-theme="dark"] .plugin-status[data-status="planned"] {
   background: #3e300a;
   color: #facc15;

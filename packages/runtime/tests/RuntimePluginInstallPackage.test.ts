@@ -11,7 +11,7 @@ import {
 const plugin: RuntimePluginDescriptor = {
   id: "atlas.plugin.homeassistant-card-editor",
   name: "ATLAS Home Assistant Card Editor",
-  version: "0.2.0-alpha.5",
+  version: "0.2.0-alpha.6",
   description: "Reference plugin",
   icon: "icon.svg",
   logo: "logo.svg",
@@ -26,7 +26,7 @@ describe("RuntimePluginInstallPackage", () => {
     expect(JSON.parse(serializeRuntimePluginInstallManifest(plugin))).toEqual({
       id: "atlas.plugin.homeassistant-card-editor",
       name: "ATLAS Home Assistant Card Editor",
-      version: "0.2.0-alpha.5",
+      version: "0.2.0-alpha.6",
       description: "Reference plugin",
       icon: "icon.svg",
       logo: "logo.svg",
@@ -84,7 +84,7 @@ describe("RuntimePluginInstallPackage", () => {
     expect(parsed.plugin).toMatchObject({
       id: "atlas.plugin.homeassistant-card-editor",
       name: "ATLAS Home Assistant Card Editor",
-      version: "0.2.0-alpha.5",
+      version: "0.2.0-alpha.6",
       dependencies: [{ id: "atlas.runtime", version: "^0.2.0", optional: true }],
     });
     expect(parsed.files).toHaveLength(1);

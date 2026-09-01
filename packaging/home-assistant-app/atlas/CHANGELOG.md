@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.42
+
+- Remove the direct Card Editor header link from the Plugin Hub.
+- Keep Card Editor Expert/editor panels on the shared dark Administration
+  palette instead of switching them back to light panel colors.
+- Improve dark-mode contrast for language and theme toggles in the Card Editor
+  and Plugin Hub.
+- Bump Atlas Framework package metadata to `0.2.0-alpha.6` for the update
+  package.
+
 ## 0.1.41
 
 - Remove the Home Assistant handoff action from custom repository rows in Atlas

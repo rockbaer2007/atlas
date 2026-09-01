@@ -2728,50 +2728,50 @@
       :root[data-theme="dark"] .atlas-entity-card,
       :root[data-theme="dark"] .atlas-entity-table,
       :root[data-theme="dark"] .atlas-card-entity-overview-table {
-        border-color: #b9c9cf;
-        background: #e8eef1;
-        color: #102027;
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel);
+        color: var(--atlas-text);
       }
 
       :root[data-theme="dark"] .atlas-entity-table th {
-        border-color: #c7d4d9;
-        background: #dbe5e8;
-        color: #36515a;
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-muted);
       }
 
       :root[data-theme="dark"] .atlas-entity-sort-button[data-active-sort="true"]::after {
-        color: #0f766e;
+        color: var(--atlas-accent);
       }
 
       :root[data-theme="dark"] .atlas-entity-table td {
-        border-color: #c7d4d9;
+        border-color: var(--atlas-border);
       }
 
       :root[data-theme="dark"] .atlas-entity-table tbody tr:hover,
       :root[data-theme="dark"] .atlas-entity-table tbody tr:focus-visible,
       :root[data-theme="dark"] .atlas-entity-table tbody tr[data-primary="true"] {
-        background: #d9ebe8;
+        background: var(--atlas-accent-soft);
       }
 
       :root[data-theme="dark"] .expert-editor-dropzone {
-        border-color: #5aa79d;
-        background: #eaf1ef;
-        color: #41626a;
+        border-color: var(--atlas-accent);
+        background: var(--atlas-panel);
+        color: var(--atlas-muted);
       }
 
       :root[data-theme="dark"] .expert-surface-grid {
         background:
-          linear-gradient(to right, rgba(15, 118, 110, 0.18) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(15, 118, 110, 0.18) 1px, transparent 1px);
+          linear-gradient(to right, rgba(45, 212, 191, 0.18) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(45, 212, 191, 0.18) 1px, transparent 1px);
         background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
       }
 
       :root[data-theme="dark"] .expert-template-card:hover,
       :root[data-theme="dark"] .expert-template-card:focus-visible,
       :root[data-theme="dark"] .expert-template-card.selected {
-        border-color: #0f766e;
-        background: #d9ebe8;
-        box-shadow: inset 4px 0 0 #0f766e;
+        border-color: var(--atlas-accent);
+        background: var(--atlas-accent-soft);
+        box-shadow: inset 4px 0 0 var(--atlas-accent);
       }
 
       :root[data-theme="dark"] .expert-template-card strong,
@@ -2784,15 +2784,15 @@
       :root[data-theme="dark"] .expert-selected-card-details h3,
       :root[data-theme="dark"] .expert-selected-card-details dt,
       :root[data-theme="dark"] .expert-selected-card-details dd {
-        color: #102027;
+        color: var(--atlas-text);
       }
 
       :root[data-theme="dark"] .atlas-entity-status {
-        color: #0f766e;
+        color: var(--atlas-accent);
       }
 
       :root[data-theme="dark"] .expert-template-card .palette-category {
-        color: #0f766e;
+        color: var(--atlas-accent);
       }
 
       :root[data-theme="dark"] .expert-template-card .favorite-toggle input {
@@ -2837,8 +2837,25 @@
 
       :root[data-theme="dark"] #scan-expert-palette-cards {
         border-color: var(--atlas-accent);
-        background: #0f766e;
-        color: #ffffff;
+        background: var(--atlas-accent);
+        color: var(--atlas-on-accent);
+      }
+
+      :root[data-theme="dark"] .language-toggle,
+      :root[data-theme="dark"] .theme-toggle {
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel);
+      }
+
+      :root[data-theme="dark"] .language-toggle button,
+      :root[data-theme="dark"] .theme-toggle button {
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .language-toggle button[aria-pressed="true"],
+      :root[data-theme="dark"] .theme-toggle button[aria-pressed="true"] {
+        background: var(--atlas-accent);
+        color: var(--atlas-on-accent);
       }
 
       :root[data-theme="dark"] #reset-expert-template-sizing,

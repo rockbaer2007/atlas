@@ -1,7 +1,7 @@
 {
   "id": "atlas.plugin.homeassistant-card-editor",
   "name": "Home Assistant Card Editor",
-  "version": "0.2.0-alpha.5",
+  "version": "0.2.0-alpha.6",
   "description": "Visual Simple and Expert card editor with Home Assistant entity selection and HACS-oriented export.",
   "status": "active",
   "order": 10,
