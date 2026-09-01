@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Card Editor dark mode now keeps the header subtitle, Card export language
+  labels and translation controls readable in the GitHub-installed Home
+  Assistant add-on.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.8`, and the Home Assistant app package as `0.1.45`.
 - Plugin metadata can now carry localized `nameI18n` and `descriptionI18n`
   values, and Administration plus Plugin Hub render the active UI language with
   English/string fallbacks.
