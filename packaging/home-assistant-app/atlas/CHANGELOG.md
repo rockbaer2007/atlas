@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.37
+
+- Add a tested My Home Assistant add-on repository deep link for repository
+  URLs.
+- Show an "Open in Home Assistant" action next to Administration repository
+  entries and repository plugin install actions.
+- Strip credentials, fragments and sensitive query parameters before building
+  repository deep links.
+
 ## 0.1.36
 
 - Add DE/EN language selection to the Plugin Hub.
