@@ -8,6 +8,15 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas Administration now keeps repository plugin update checks cache-aware,
+  shows available and installed plugin versions separately and removes the
+  Home Assistant handoff action from ATLAS plugin cards.
+- Atlas demo navigation links now preserve the selected light, dark or auto
+  theme across Administration, Card Editor and Plugin Hub test pages.
+- Dark theme text contrast is brighter across Administration, Card Editor and
+  Plugin Hub surfaces.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.3`, and the Home Assistant app package as `0.1.39`.
 - Roadmap and plugin specification now track ATLAS internationalization:
   persisted default language settings, required English fallback and planned
   French UI/documentation expansion.

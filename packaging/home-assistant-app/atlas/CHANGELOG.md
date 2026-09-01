@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.1.39
+
+- Show repository plugins with separate available and installed version labels
+  in Atlas Administration.
+- Refresh repository and plugin package requests without browser-cache reuse so
+  plugin updates appear reliably in the Administration dialog.
+- Remove the Home Assistant handoff action from ATLAS plugin cards.
+
+## 0.1.38
+
+- Brighten dark theme text colors across Administration, Card Editor and Plugin
+  Hub surfaces.
+- Preserve the selected theme when navigating through the local demo and test
+  links.
+- Bump Atlas Framework package metadata to `0.2.0-alpha.2` for the update
+  package.
+
 ## 0.1.37
 
 - Add a tested My Home Assistant add-on repository deep link for repository
