@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Card Editor dark mode now uses the brighter link accent for transparent
+  action buttons and connected/translation status lines in the Home Assistant
+  add-on.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.9`, and the Home Assistant app package as `0.1.46`.
 - Card Editor dark mode now keeps the header subtitle, Card export language
   labels and translation controls readable in the GitHub-installed Home
   Assistant add-on.
