@@ -15,10 +15,10 @@ Make ATLAS File Studio `/addons` access explicit and environment aware.
   only when the effective approval is active.
 - Updated File Studio root status text so the UI shows when `/addons` is
   visible.
-- Bumped Atlas Framework packages to `0.2.0-alpha.32`, Home Assistant App/Add-on
-  to `0.1.74`, and File Studio to `0.1.16`.
+- Bumped Atlas Framework packages to `0.2.0-alpha.33`, Home Assistant App/Add-on
+  to `0.1.75`, and File Studio to `0.1.17`.
 - Added File Studio image previews for PNG, JPG/JPEG, SVG, GIF, WebP, BMP and
-  ICO files through the scoped asset route.
+  ICO files through the scoped asset route and moved them into a modal overlay.
 
 ## Verification
 

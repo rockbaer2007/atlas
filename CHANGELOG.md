@@ -8,8 +8,13 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
-- File Studio now previews PNG, JPG/JPEG, SVG, GIF, WebP, BMP and ICO files in
-  the editor area with contained scaling and a scoped asset route.
+- File Studio image previews now open in a centered modal overlay instead of
+  occupying space below the editor field.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.33`, the Home Assistant app package as `0.1.75`, and ATLAS File
+  Studio as `0.1.17`.
+- File Studio now previews PNG, JPG/JPEG, SVG, GIF, WebP, BMP and ICO files with
+  contained scaling and a scoped asset route.
 - Atlas Framework packages now identify the current local preview as
   `0.2.0-alpha.32`, the Home Assistant app package as `0.1.74`, and ATLAS File
   Studio as `0.1.16`.
