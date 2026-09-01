@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Atlas Administration now rejects Home Assistant add-on repositories in the
+  ATLAS plugin repository dialog and only stores sources that resolve to
+  `kind: atlas.plugin.repository`.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.10`, and the Home Assistant app package as `0.1.47`.
 - Card Editor dark mode now uses the brighter link accent for transparent
   action buttons and connected/translation status lines in the Home Assistant
   add-on.
