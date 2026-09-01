@@ -1,11 +1,15 @@
 :root {
   color-scheme: light dark;
-  --atlas-bg: #eef4f6;
+  --atlas-bg: #f5f7fb;
   --atlas-panel: #ffffff;
-  --atlas-text: #132432;
-  --atlas-muted: #607485;
-  --atlas-border: #ccd9df;
-  --atlas-accent: #0f8f83;
+  --atlas-panel-soft: #f8fafc;
+  --atlas-text: #172033;
+  --atlas-muted: #536079;
+  --atlas-border: #d8e0ec;
+  --atlas-border-strong: #cbd5e1;
+  --atlas-accent: #0f766e;
+  --atlas-accent-strong: #0b5f59;
+  --atlas-on-accent: #ffffff;
   --atlas-warn: #c58a00;
 }
 
@@ -65,7 +69,7 @@ h1 {
   padding: 4px;
   border: 1px solid var(--atlas-border);
   border-radius: 8px;
-  background: color-mix(in srgb, var(--atlas-panel), var(--atlas-bg) 28%);
+  background: var(--atlas-panel);
 }
 
 .language-toggle button {
@@ -82,7 +86,7 @@ h1 {
 
 .language-toggle button[aria-pressed="true"] {
   background: var(--atlas-accent);
-  color: #ffffff;
+  color: var(--atlas-on-accent);
 }
 
 .hub-actions a,
@@ -205,12 +209,16 @@ h1 {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --atlas-bg: #0e1214;
-    --atlas-panel: #171d20;
+    --atlas-bg: #0f1417;
+    --atlas-panel: #171f23;
+    --atlas-panel-soft: #11191d;
     --atlas-text: #f7fcfd;
     --atlas-muted: #c3d3d8;
-    --atlas-border: #303c42;
+    --atlas-border: #2f4046;
+    --atlas-border-strong: #40535b;
     --atlas-accent: #2dd4bf;
+    --atlas-accent-strong: #14b8a6;
+    --atlas-on-accent: #06201d;
     --atlas-warn: #facc15;
   }
 
@@ -227,23 +235,31 @@ h1 {
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --atlas-bg: #0e1214;
-  --atlas-panel: #171d20;
+  --atlas-bg: #0f1417;
+  --atlas-panel: #171f23;
+  --atlas-panel-soft: #11191d;
   --atlas-text: #f7fcfd;
   --atlas-muted: #c3d3d8;
-  --atlas-border: #303c42;
+  --atlas-border: #2f4046;
+  --atlas-border-strong: #40535b;
   --atlas-accent: #2dd4bf;
+  --atlas-accent-strong: #14b8a6;
+  --atlas-on-accent: #06201d;
   --atlas-warn: #facc15;
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --atlas-bg: #eef4f6;
+  --atlas-bg: #f5f7fb;
   --atlas-panel: #ffffff;
-  --atlas-text: #132432;
-  --atlas-muted: #607485;
-  --atlas-border: #ccd9df;
-  --atlas-accent: #0f8f83;
+  --atlas-panel-soft: #f8fafc;
+  --atlas-text: #172033;
+  --atlas-muted: #536079;
+  --atlas-border: #d8e0ec;
+  --atlas-border-strong: #cbd5e1;
+  --atlas-accent: #0f766e;
+  --atlas-accent-strong: #0b5f59;
+  --atlas-on-accent: #ffffff;
   --atlas-warn: #c58a00;
 }
 
@@ -258,7 +274,7 @@ h1 {
 }
 
 :root[data-theme="dark"] .plugin-image {
-  background: #10191d;
+  background: var(--atlas-panel-soft);
 }
 
 @media (max-width: 680px) {

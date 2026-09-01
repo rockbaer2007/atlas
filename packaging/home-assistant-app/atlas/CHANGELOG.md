@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.40
+
+- Align the Card Editor and Plugin Hub dark theme palette with Atlas
+  Administration for darker backgrounds, panels, borders and accent contrast.
+- Bump Atlas Framework package metadata to `0.2.0-alpha.4` for the update
+  package.
+
 ## 0.1.39
 
 - Show repository plugins with separate available and installed version labels
