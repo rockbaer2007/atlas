@@ -9,6 +9,8 @@ const port = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const adminPort = Number(process.env.ATLAS_ADMIN_PORT ?? "4175");
 const adminHost = process.env.ATLAS_ADMIN_HOST ?? process.env.ATLAS_HOST ?? "127.0.0.1";
 const adminUrl = `http://${adminHost}:${adminPort}/`;
+const skipAdminAutostart = process.env.ATLAS_SKIP_ADMIN_AUTOSTART === "1";
+const suppressSurfaceUrlLogs = process.env.ATLAS_SUPPRESS_SURFACE_URL_LOGS === "1";
 const adminApiPaths = new Set([
   "/api/admin-connection",
   "/api/card-translation",
@@ -22,7 +24,9 @@ const mimeTypes = {
   ".map": "application/json; charset=utf-8",
 };
 
-await startAdministrationServerIfNeeded();
+if (!skipAdminAutostart) {
+  await startAdministrationServerIfNeeded();
+}
 
 createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", `http://${request.headers.host ?? "localhost"}`);
@@ -60,7 +64,9 @@ createServer((request, response) => {
   });
   createReadStream(filePath).pipe(response);
 }).listen(port, host, () => {
-  console.log(`ATLAS status demo: http://${host}:${port}/`);
+  if (!suppressSurfaceUrlLogs) {
+    console.log(`ATLAS status demo: http://${host}:${port}/`);
+  }
 });
 
 async function proxyAdminApiRequest(request, response, requestUrl) {

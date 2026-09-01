@@ -33,6 +33,7 @@ await startSurface({
   env: {
     ATLAS_ADMIN_HOST: surfaceHost,
     ATLAS_ADMIN_PORT: String(adminPort),
+    ATLAS_SUPPRESS_SURFACE_URL_LOGS: "1",
   },
 });
 
@@ -45,6 +46,8 @@ await startSurface({
     ATLAS_ADMIN_HOST: surfaceHost,
     ATLAS_DEMO_PORT: String(editorPort),
     ATLAS_ADMIN_PORT: String(adminPort),
+    ATLAS_SKIP_ADMIN_AUTOSTART: "1",
+    ATLAS_SUPPRESS_SURFACE_URL_LOGS: "1",
   },
 });
 
