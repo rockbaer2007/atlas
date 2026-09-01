@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant Add-on README now describes the GitHub repository install path
+  first and keeps local package preparation under development notes.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.15`, and the Home Assistant app package as `0.1.52`.
 - Atlas Administration now loads external plugin repositories and plugin
   packages without custom request headers so GitHub Raw works in browser CORS
   mode.
