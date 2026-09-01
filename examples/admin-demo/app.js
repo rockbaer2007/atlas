@@ -9,7 +9,6 @@ import {
   createHomeAssistantCardEditorPlugin,
   createHomeAssistantCardEditorPluginInstallPackage,
   createHomeAssistantConnectionConfiguration,
-  createHomeAssistantAddOnRepositoryLink,
   deriveHomeAssistantWebSocketUrl,
   HomeAssistantCardEditorPluginId,
 } from "@atlas/homeassistant";
@@ -237,7 +236,6 @@ const translations = {
     "button.refreshRepositories": "Refresh repositories",
     "button.removeRepository": "Remove repository",
     "button.installRepositoryPackage": "Install",
-    "button.openRepositoryInHomeAssistant": "Open in Home Assistant",
     "button.updateRepositoryPackage": "Update",
     "button.removeRepositoryPackage": "Remove",
     "button.removeImportedPackage": "Remove import",
@@ -310,7 +308,6 @@ const translations = {
     "message.pluginRepositoryInstalledVersion": "Installed: {version}",
     "message.pluginRepositoryNotInstalled": "Not installed",
     "message.pluginRepositoryNoPackage": "No installable package or manifest URL.",
-    "message.pluginRepositoryHomeAssistantLink": "Opens the My Home Assistant add app repository dialog with this repository URL pre-filled.",
     "type.plugin": "Plugin",
     "type.card": "Card",
     "type.integration": "Integration",
@@ -414,7 +411,6 @@ const translations = {
     "button.refreshRepositories": "Repositories aktualisieren",
     "button.removeRepository": "Repository entfernen",
     "button.installRepositoryPackage": "Installieren",
-    "button.openRepositoryInHomeAssistant": "In Home Assistant oeffnen",
     "button.updateRepositoryPackage": "Aktualisieren",
     "button.removeRepositoryPackage": "Entfernen",
     "button.removeImportedPackage": "Import entfernen",
@@ -487,7 +483,6 @@ const translations = {
     "message.pluginRepositoryInstalledVersion": "Installiert: {version}",
     "message.pluginRepositoryNotInstalled": "Nicht installiert",
     "message.pluginRepositoryNoPackage": "Keine installierbare Paket- oder Manifest-URL.",
-    "message.pluginRepositoryHomeAssistantLink": "Oeffnet den My-Home-Assistant-Dialog zum Hinzufuegen eines App-Repositories mit dieser Repository-URL.",
     "type.plugin": "Plugin",
     "type.card": "Card",
     "type.integration": "Integration",
@@ -1435,7 +1430,6 @@ function renderPluginRepositories() {
     const url = document.createElement("p");
     const meta = document.createElement("p");
     const actions = document.createElement("div");
-    const homeAssistantLink = createHomeAssistantRepositoryLink(repository.url);
     const removeButton = document.createElement("button");
 
     item.className = "repository-card";
@@ -1457,9 +1451,6 @@ function renderPluginRepositories() {
     removeButton.addEventListener("click", () => removePluginRepositoryEntry(repository.id));
 
     details.append(title, url, meta);
-    if (homeAssistantLink) {
-      actions.append(homeAssistantLink);
-    }
     actions.append(removeButton);
     item.append(details, actions);
     pluginRepositoryList.append(item);
@@ -1604,22 +1595,6 @@ function createNoCacheUrl(value) {
   } catch {
     return value;
   }
-}
-
-function createHomeAssistantRepositoryLink(repositoryUrl) {
-  const link = createHomeAssistantAddOnRepositoryLink({ repositoryUrl });
-  if (!link) {
-    return undefined;
-  }
-
-  const anchor = document.createElement("a");
-  anchor.className = "secondary repository-home-assistant-link";
-  anchor.href = link;
-  anchor.target = "_blank";
-  anchor.rel = "noreferrer";
-  anchor.textContent = t("button.openRepositoryInHomeAssistant");
-  anchor.title = t("message.pluginRepositoryHomeAssistantLink");
-  return anchor;
 }
 
 function findInstalledPlugin(pluginId) {

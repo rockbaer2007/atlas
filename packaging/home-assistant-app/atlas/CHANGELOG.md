@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.41
+
+- Remove the Home Assistant handoff action from custom repository rows in Atlas
+  Administration.
+- Bump Atlas Framework package metadata to `0.2.0-alpha.5` for the update
+  package.
+
 ## 0.1.40
 
 - Align the Card Editor and Plugin Hub dark theme palette with Atlas

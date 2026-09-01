@@ -11,7 +11,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 - Atlas Editor and Plugin Hub now share the darker Administration theme palette
   for dark mode backgrounds, panels, borders and accent contrast.
 - Atlas Framework packages now identify the current local preview as
-  `0.2.0-alpha.4`, and the Home Assistant app package as `0.1.40`.
+  `0.2.0-alpha.5`, and the Home Assistant app package as `0.1.41`.
+- Atlas Administration no longer shows the Home Assistant handoff action on
+  custom repository rows.
 - Atlas Administration now keeps repository plugin update checks cache-aware,
   shows available and installed plugin versions separately and removes the
   Home Assistant handoff action from ATLAS plugin cards.
