@@ -8,6 +8,15 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio `/addons` access is now governed by an explicit approval flag:
+  Home Assistant App/Add-on installs read it from the Add-on configuration and
+  show it read-only in Administration, while standalone/Docker mode can manage
+  it in Administration.
+- The File Studio API now exposes enabled root scopes and only shows `/addons`
+  next to `/config` when the effective approval is active.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.31`, the Home Assistant app package as `0.1.73`, and ATLAS File
+  Studio as `0.1.15`.
 - Editor and Administration placeholders now use a dedicated brighter
   placeholder color in dark mode so hint text remains readable.
 - Atlas Framework packages now identify the current local preview as
