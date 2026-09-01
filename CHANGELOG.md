@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio image preview modals now auto-size to the opened image, keep
+  small images at natural size and only shrink oversized images proportionally.
+- Atlas Framework packages now identify the current local preview as
+  `0.2.0-alpha.36`, the Home Assistant app package as `0.1.78`, and ATLAS File
+  Studio as `0.1.20`.
 - File Studio image previews now start at `70vw` by `70vh`, resize between
   `40vw`/`40vh` and `80vw`/`80vh`, and fit SVGs into the full preview stage.
 - Atlas Framework packages now identify the current local preview as
