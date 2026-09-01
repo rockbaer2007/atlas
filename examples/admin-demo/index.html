@@ -542,7 +542,7 @@
 
       .readiness-item {
         display: grid;
-        grid-template-columns: minmax(180px, 0.34fr) minmax(0, 1fr) auto;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: start;
         gap: 8px 12px;
         border: 1px solid var(--atlas-border);
@@ -558,9 +558,11 @@
       }
 
       .readiness-reason {
+        grid-column: 1 / -1;
         color: var(--atlas-muted);
         font-size: 12px;
         line-height: 1.4;
+        max-width: 72ch;
       }
 
       .readiness-status {
