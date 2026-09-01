@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.81` now marks the Home Assistant token
+  option as a masked password field in the native Add-on configuration UI.
 - File Studio editor font-size controls now apply A-/A+ changes immediately
   instead of reloading the previous saved preference before saving the new size.
 - Atlas Framework packages now identify the current local preview as
