@@ -562,6 +562,15 @@ function normalizeThemePreference(value) {
   return ["auto", "light", "dark"].includes(value) ? value : "auto";
 }
 
+function readThemePreferenceFromLocation() {
+  try {
+    const preference = new URL(window.location.href).searchParams.get("theme");
+    return ["auto", "light", "dark"].includes(preference) ? preference : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function currentSystemTheme() {
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
@@ -588,9 +597,11 @@ function setThemePreference(preference) {
 
 function restoreThemePreference(savedPreference) {
   try {
-    currentThemePreference = normalizeThemePreference(savedPreference ?? localStorage.getItem(atlasThemeStorageKey));
+    currentThemePreference = normalizeThemePreference(
+      readThemePreferenceFromLocation() ?? savedPreference ?? localStorage.getItem(atlasThemeStorageKey),
+    );
   } catch {
-    currentThemePreference = normalizeThemePreference(savedPreference);
+    currentThemePreference = normalizeThemePreference(readThemePreferenceFromLocation() ?? savedPreference);
   }
   applyThemePreference();
 }
@@ -2271,11 +2282,31 @@ function openEditorWithConnectionHandoff() {
 }
 
 function createEditorNavigationUrl() {
-  return createPortNavigationUrl(4174, "/", "atlasAdminHandoff=1", `${editorOrigin}/?atlasAdminHandoff=1`);
+  const search = new URLSearchParams();
+  search.set("atlasAdminHandoff", "1");
+  search.set("theme", currentThemePreference);
+  return createPortNavigationUrl(4174, "/", search.toString(), `${editorOrigin}/?${search.toString()}`);
 }
 
 function createHubNavigationUrl() {
-  return lastAppRuntime?.urls?.hub ?? createPortNavigationUrl(4176, "/hub");
+  return appendThemeSearch(lastAppRuntime?.urls?.hub) || createPortNavigationUrl(4176, "/hub", createThemeSearch());
+}
+
+function createThemeSearch() {
+  const search = new URLSearchParams();
+  search.set("theme", currentThemePreference);
+  return search.toString();
+}
+
+function appendThemeSearch(value) {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value, window.location.href);
+    url.searchParams.set("theme", currentThemePreference);
+    return url.toString();
+  } catch {
+    return value;
+  }
 }
 
 function createPortOrigin(port) {

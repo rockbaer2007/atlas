@@ -1,6 +1,7 @@
 const pluginGrid = document.querySelector("#plugin-grid");
 const pluginSummary = document.querySelector("#plugin-summary");
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
+const surfaceLinks = Array.from(document.querySelectorAll(".hub-actions a[href]"));
 const atlasThemeStorageKey = "atlas.themePreference";
 const hubLanguageStorageKey = "atlas.pluginHub.language";
 const translations = {
@@ -98,12 +99,21 @@ function setLanguage(language) {
   renderPlugins(lastPlugins);
 }
 
-function applyThemePreference() {
-  let preference = "auto";
+function readThemePreferenceFromLocation() {
   try {
-    preference = localStorage.getItem(atlasThemeStorageKey) ?? "auto";
+    const preference = new URL(window.location.href).searchParams.get("theme");
+    return ["auto", "light", "dark"].includes(preference) ? preference : undefined;
   } catch {
-    preference = "auto";
+    return undefined;
+  }
+}
+
+function applyThemePreference() {
+  let preference = readThemePreferenceFromLocation() ?? "auto";
+  try {
+    preference = readThemePreferenceFromLocation() ?? localStorage.getItem(atlasThemeStorageKey) ?? "auto";
+  } catch {
+    preference = readThemePreferenceFromLocation() ?? "auto";
   }
   if (!["auto", "light", "dark"].includes(preference)) {
     preference = "auto";
@@ -115,6 +125,19 @@ function applyThemePreference() {
       : "light";
   document.documentElement.dataset.theme = resolvedTheme;
   document.documentElement.dataset.themePreference = preference;
+  bindSurfaceLinks(preference);
+}
+
+function bindSurfaceLinks(preference) {
+  for (const link of surfaceLinks) {
+    try {
+      const url = new URL(link.getAttribute("href"), window.location.href);
+      url.searchParams.set("theme", preference);
+      link.href = url.toString();
+    } catch {
+      // Keep the static link if URL construction is unavailable.
+    }
+  }
 }
 
 async function loadPlugins() {

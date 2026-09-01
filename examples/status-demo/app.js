@@ -1183,6 +1183,15 @@ function normalizeThemePreference(value) {
   return ["auto", "light", "dark"].includes(value) ? value : "auto";
 }
 
+function readThemePreferenceFromLocation() {
+  try {
+    const preference = new URL(window.location.href).searchParams.get("theme");
+    return ["auto", "light", "dark"].includes(preference) ? preference : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function normalizeEditorStartMode(value) {
   return value === "expert" ? "expert" : "simple";
 }
@@ -1198,6 +1207,7 @@ function applyThemePreference() {
   for (const button of themeButtons) {
     button.setAttribute("aria-pressed", String(button.dataset.themeMode === currentThemePreference));
   }
+  bindAdminNavigationLinks();
 }
 
 function setThemePreference(preference) {
@@ -1213,9 +1223,11 @@ function setThemePreference(preference) {
 
 function restoreThemePreference(savedPreference) {
   try {
-    currentThemePreference = normalizeThemePreference(savedPreference ?? localStorage.getItem(atlasThemeStorageKey));
+    currentThemePreference = normalizeThemePreference(
+      readThemePreferenceFromLocation() ?? savedPreference ?? localStorage.getItem(atlasThemeStorageKey),
+    );
   } catch {
-    currentThemePreference = normalizeThemePreference(savedPreference);
+    currentThemePreference = normalizeThemePreference(readThemePreferenceFromLocation() ?? savedPreference);
   }
   applyThemePreference();
 }
@@ -1881,7 +1893,13 @@ function requestAdminConnectionHandoff() {
 }
 
 function createAdminNavigationUrl() {
-  return createPortNavigationUrl(4175);
+  return createPortNavigationUrl(4175, "/", createThemeSearch());
+}
+
+function createThemeSearch() {
+  const search = new URLSearchParams();
+  search.set("theme", currentThemePreference);
+  return search.toString();
 }
 
 function createCurrentSurfaceUrl(path) {
