@@ -1,11 +1,102 @@
 const pluginGrid = document.querySelector("#plugin-grid");
 const pluginSummary = document.querySelector("#plugin-summary");
+const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const atlasThemeStorageKey = "atlas.themePreference";
+const hubLanguageStorageKey = "atlas.pluginHub.language";
+const translations = {
+  en: {
+    "heading.hub": "Plugin Hub",
+    "link.admin": "Administration",
+    "link.editor": "Card Editor",
+    "aria.surfaces": "ATLAS surfaces",
+    "aria.language": "Language",
+    "aria.filters": "Plugin filters",
+    "message.loading": "Loading plugins...",
+    "message.catalogUnavailable": "Plugin catalog unavailable.",
+    "message.unknownCatalogError": "Unknown plugin catalog error.",
+    "message.noPlugins": "No plugins installed",
+    "message.noPluginsHint": "Open Administration to add an ATLAS plugin repository or import a plugin package.",
+    "summary.noPlugins": "No plugins installed",
+    "summary.oneActive": "1 active plugin opens directly from ATLAS start",
+    "summary.many": "{plugins} plugins detected, {active} active",
+    "button.open": "Open",
+    "button.planned": "Planned",
+    "status.active": "Active",
+    "status.available": "Available",
+    "status.planned": "Planned",
+    "alt.pluginImage": "{name} plugin image",
+  },
+  de: {
+    "heading.hub": "Plugin Hub",
+    "link.admin": "Administration",
+    "link.editor": "Card Editor",
+    "aria.surfaces": "ATLAS-Oberflaechen",
+    "aria.language": "Sprache",
+    "aria.filters": "Plugin-Filter",
+    "message.loading": "Plugins werden geladen...",
+    "message.catalogUnavailable": "Plugin-Katalog nicht erreichbar.",
+    "message.unknownCatalogError": "Unbekannter Plugin-Katalogfehler.",
+    "message.noPlugins": "Keine Plugins installiert",
+    "message.noPluginsHint": "Oeffne die Administration, um ein ATLAS-Plugin-Repository hinzuzufuegen oder ein Plugin-Paket zu importieren.",
+    "summary.noPlugins": "Keine Plugins installiert",
+    "summary.oneActive": "1 aktives Plugin oeffnet direkt vom ATLAS-Start",
+    "summary.many": "{plugins} Plugins erkannt, {active} aktiv",
+    "button.open": "Oeffnen",
+    "button.planned": "Geplant",
+    "status.active": "Aktiv",
+    "status.available": "Verfuegbar",
+    "status.planned": "Geplant",
+    "alt.pluginImage": "{name} Plugin-Bild",
+  },
+};
+let currentLanguage = readStoredLanguage();
+let lastPlugins = [];
 
 applyThemePreference();
 window.matchMedia?.("(prefers-color-scheme: dark)")?.addEventListener("change", applyThemePreference);
+applyLanguage();
 
 loadPlugins();
+
+function readStoredLanguage() {
+  try {
+    return localStorage.getItem(hubLanguageStorageKey) === "en" ? "en" : "de";
+  } catch {
+    return "de";
+  }
+}
+
+function t(key, parameters = {}) {
+  let text = translations[currentLanguage]?.[key] ?? translations.en[key] ?? key;
+  for (const [name, value] of Object.entries(parameters)) {
+    text = text.replaceAll(`{${name}}`, String(value));
+  }
+  return text;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = currentLanguage;
+  for (const element of document.querySelectorAll("[data-i18n]")) {
+    element.textContent = t(element.dataset.i18n);
+  }
+  for (const element of document.querySelectorAll("[data-i18n-aria-label]")) {
+    element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+  }
+  for (const button of languageButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
+  }
+}
+
+function setLanguage(language) {
+  currentLanguage = language === "en" ? "en" : "de";
+  try {
+    localStorage.setItem(hubLanguageStorageKey, currentLanguage);
+  } catch {
+    // Ignore storage failures in restricted browser contexts.
+  }
+  applyLanguage();
+  renderPlugins(lastPlugins);
+}
 
 function applyThemePreference() {
   let preference = "auto";
@@ -35,16 +126,17 @@ async function loadPlugins() {
     const catalog = await response.json();
     renderPlugins(Array.isArray(catalog.plugins) ? catalog.plugins : []);
   } catch (error) {
-    pluginSummary.textContent = "Plugin catalog unavailable.";
+    pluginSummary.textContent = t("message.catalogUnavailable");
     pluginGrid.innerHTML = "";
     const message = document.createElement("p");
     message.className = "plugin-description";
-    message.textContent = error instanceof Error ? error.message : "Unknown plugin catalog error.";
+    message.textContent = error instanceof Error ? error.message : t("message.unknownCatalogError");
     pluginGrid.append(message);
   }
 }
 
 function renderPlugins(plugins) {
+  lastPlugins = plugins;
   const activePlugins = plugins.filter(plugin => plugin.status === "active" && plugin.entryUrl);
   pluginSummary.textContent = createPluginSummaryText(plugins, activePlugins);
   pluginGrid.innerHTML = "";
@@ -55,14 +147,14 @@ function renderPlugins(plugins) {
     body.className = "plugin-body";
     const title = document.createElement("h2");
     title.className = "plugin-name";
-    title.textContent = "No plugins installed";
+    title.textContent = t("message.noPlugins");
     const description = document.createElement("p");
     description.className = "plugin-description";
-    description.textContent = "Open Administration to add an ATLAS plugin repository or import a plugin package.";
+    description.textContent = t("message.noPluginsHint");
     const action = document.createElement("a");
     action.className = "plugin-action";
     action.href = "/admin";
-    action.textContent = "Administration";
+    action.textContent = t("link.admin");
     body.append(title, description, action);
     empty.append(body);
     pluginGrid.append(empty);
@@ -74,20 +166,14 @@ function renderPlugins(plugins) {
 }
 
 function createPluginSummaryText(plugins, activePlugins) {
-  if (!plugins.length) return "No plugins installed";
-  if (activePlugins.length === 1) return "1 active plugin opens directly from ATLAS start";
-  return `${plugins.length} plugins detected, ${activePlugins.length} active`;
+  if (!plugins.length) return t("summary.noPlugins");
+  if (activePlugins.length === 1) return t("summary.oneActive");
+  return t("summary.many", { plugins: plugins.length, active: activePlugins.length });
 }
 
 function createPluginCard(plugin) {
   const card = document.createElement("article");
   card.className = "plugin-card";
-
-  const preview = document.createElement("img");
-  preview.className = "plugin-preview";
-  preview.src = plugin.previewUrl || plugin.logoUrl || plugin.iconUrl;
-  preview.alt = `${plugin.name} preview`;
-  card.append(preview);
 
   const body = document.createElement("div");
   body.className = "plugin-body";
@@ -95,13 +181,13 @@ function createPluginCard(plugin) {
   const titleRow = document.createElement("div");
   titleRow.className = "plugin-title-row";
 
-  const iconUrl = plugin.iconUrl || plugin.logoUrl;
+  const imageUrl = plugin.iconUrl || plugin.logoUrl || plugin.previewUrl;
   let icon;
-  if (iconUrl) {
+  if (imageUrl) {
     icon = document.createElement("img");
-    icon.className = "plugin-icon";
-    icon.alt = "";
-    icon.src = iconUrl;
+    icon.className = "plugin-image";
+    icon.alt = t("alt.pluginImage", { name: plugin.name });
+    icon.src = imageUrl;
   }
 
   const title = document.createElement("div");
@@ -116,18 +202,12 @@ function createPluginCard(plugin) {
   const status = document.createElement("span");
   status.className = "plugin-status";
   status.dataset.status = plugin.status;
-  status.textContent = plugin.status;
+  status.textContent = t(`status.${plugin.status}`) === `status.${plugin.status}`
+    ? plugin.status
+    : t(`status.${plugin.status}`);
 
   titleRow.append(...[icon, title, status].filter(Boolean));
   body.append(titleRow);
-
-  if (plugin.logoUrl) {
-    const logo = document.createElement("img");
-    logo.className = "plugin-logo";
-    logo.src = plugin.logoUrl;
-    logo.alt = `${plugin.name} logo`;
-    body.append(logo);
-  }
 
   const description = document.createElement("p");
   description.className = "plugin-description";
@@ -145,7 +225,7 @@ function createPluginCard(plugin) {
 
   const action = document.createElement("a");
   action.className = "plugin-action";
-  action.textContent = plugin.entryUrl ? "Open" : "Planned";
+  action.textContent = plugin.entryUrl ? t("button.open") : t("button.planned");
   if (plugin.entryUrl) {
     action.href = plugin.entryUrl;
   } else {
@@ -157,4 +237,8 @@ function createPluginCard(plugin) {
 
   card.append(body);
   return card;
+}
+
+for (const button of languageButtons) {
+  button.addEventListener("click", () => setLanguage(button.dataset.language));
 }

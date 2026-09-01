@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.36
+
+- Add DE/EN language selection to the Plugin Hub.
+- Reduce Plugin Hub plugin imagery to one smaller image per plugin card.
+- Remove the duplicate preview/logo rendering from current Plugin Hub cards.
+
 ## 0.1.35
 
 - Move the Card Editor problem report sanitizer, preview text and GitHub issue
