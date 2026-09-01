@@ -205,6 +205,8 @@ const translations = {
     "label.healthUrl": "Health",
     "label.distributionOrder": "Distribution order",
     "label.version": "Version",
+    "label.availableVersion": "Available version",
+    "label.installedVersion": "Installed version",
     "label.extensionPoints": "Extension points",
     "label.capabilities": "Capabilities",
     "label.compatibility": "Compatibility",
@@ -380,6 +382,8 @@ const translations = {
     "label.healthUrl": "Health",
     "label.distributionOrder": "Distributionsreihenfolge",
     "label.version": "Version",
+    "label.availableVersion": "Verfuegbare Version",
+    "label.installedVersion": "Installierte Version",
     "label.extensionPoints": "Extension Points",
     "label.capabilities": "Faehigkeiten",
     "label.compatibility": "Kompatibilitaet",
@@ -1476,7 +1480,10 @@ async function loadPluginRepositoriesPreview() {
   const nextRepositories = [];
   for (const repositoryEntry of pluginRepositories) {
     try {
-      const response = await fetch(repositoryEntry.url, { cache: "no-store" });
+      const response = await fetch(createNoCacheUrl(repositoryEntry.url), {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -1589,6 +1596,16 @@ function resolveRepositoryUrl(repositoryUrl, value) {
   }
 }
 
+function createNoCacheUrl(value) {
+  try {
+    const url = new URL(value, window.location.href);
+    url.searchParams.set("_atlasCacheBust", String(Date.now()));
+    return url.toString();
+  } catch {
+    return value;
+  }
+}
+
 function createHomeAssistantRepositoryLink(repositoryUrl) {
   const link = createHomeAssistantAddOnRepositoryLink({ repositoryUrl });
   if (!link) {
@@ -1646,7 +1663,10 @@ function repositoryPluginInstallState(plugin) {
 
 async function fetchRepositoryPluginInstallPackage(plugin) {
   if (plugin.packageUrl) {
-    const response = await fetch(plugin.packageUrl, { cache: "no-store" });
+    const response = await fetch(createNoCacheUrl(plugin.packageUrl), {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!response.ok) {
       throw new Error("Repository plugin package could not be loaded.");
     }
@@ -1654,7 +1674,10 @@ async function fetchRepositoryPluginInstallPackage(plugin) {
   }
 
   if (plugin.manifestUrl) {
-    const response = await fetch(plugin.manifestUrl, { cache: "no-store" });
+    const response = await fetch(createNoCacheUrl(plugin.manifestUrl), {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" },
+    });
     if (!response.ok) {
       throw new Error("Repository plugin manifest could not be loaded.");
     }
@@ -1827,7 +1850,10 @@ function renderPluginRepositoryPreview() {
       item.append(preview);
     }
     details.append(
-      createDetail(t("label.version"), [plugin.version || "-"]),
+      createDetail(t("label.availableVersion"), [plugin.version || "-"]),
+      createDetail(t("label.installedVersion"), [
+        installState.installed ? installState.installedVersion || "-" : t("message.pluginRepositoryNotInstalled"),
+      ]),
       createDetail(t("label.pluginRepositories"), [plugin.repositoryName]),
       createDetail(t("label.pluginRepositoryType"), [t(`type.${plugin.repositoryType}`)]),
       createDetail(t("label.compatibility"), formatRepositoryPluginCompatibility(plugin.compatibility)),
@@ -1853,10 +1879,6 @@ function renderPluginRepositoryPreview() {
       void installRepositoryPluginPackage(plugin);
     });
     actions.append(installButton);
-    const homeAssistantLink = createHomeAssistantRepositoryLink(plugin.repositoryUrl);
-    if (homeAssistantLink) {
-      actions.append(homeAssistantLink);
-    }
     if (installState.removable) {
       removeButton.type = "button";
       removeButton.className = "secondary";
