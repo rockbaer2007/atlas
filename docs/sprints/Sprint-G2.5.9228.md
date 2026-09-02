@@ -31,6 +31,10 @@ Implementation:
   `action: domain.service` entries.
 * Bumped the bundled Automation Exporter / Editor plugin to `0.1.3`.
 * Bumped the Home Assistant App/Add-on package to `0.1.124`.
+* Added Studio-like YAML highlighting to the Automation Exporter / Editor
+  details preview.
+* Bumped the bundled Automation Exporter / Editor plugin to `0.1.4`.
+* Bumped the Home Assistant App/Add-on package to `0.1.125`.
 
 Validation:
 
