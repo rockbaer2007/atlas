@@ -39,6 +39,10 @@ Implementation:
   visible entries with internal scrolling.
 * Bumped the bundled Automation Exporter / Editor plugin to `0.1.5`.
 * Bumped the Home Assistant App/Add-on package to `0.1.126`.
+* Added a planned File Studio switch between `/config` and the Automation
+  Exporter output folder when the exporter plugin is installed.
+* Made Plugin Hub sidebar URLs collapsible by default on plugin cards.
+* Bumped the Home Assistant App/Add-on package to `0.1.127`.
 
 Validation:
 
