@@ -13,6 +13,9 @@ node_modules/
 dist/
 build/
 coverage/
+output/
+tmp/
+backups/
 
 # TypeScript
 *.tsbuildinfo

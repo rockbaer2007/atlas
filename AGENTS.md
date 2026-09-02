@@ -92,7 +92,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - The local Administration server may provide saved connection settings to the Card Editor on port `4174` after `Save settings`, so reloads and direct editor opens still work.
 - Auto-connect belongs to Atlas Administration and may be sent as part of the session handoff.
 - Plugins should receive approved URLs, resource paths and capabilities, but not raw access tokens.
-
+- Read `ATLAS_KURZBEFEHLE.txt` in this repo before interpreting short user commands.
 ## Expert Editor Rules
 
 - The Expert editor surface uses a Home-Assistant-like grid.
@@ -147,6 +147,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 - Atlas documentation should be kept in `ugso-opensource-docs`, not as a separate VitePress site inside the Atlas repo.
 - Maintain German and English documentation together.
+- After every five Atlas commits/pushes, review and update the open-source documentation in `ugso-opensource-docs` if needed.
 - When behavior changes in Atlas, update both languages if the public docs mention that behavior.
 - Keep German and English layouts consistent.
 - Language navigation uses DE/EN and later FR with flag icons where configured in the docs site.
