@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.90` now includes the File Studio
+  32x32 icon button sizing update.
+- ATLAS File Studio now identifies as `0.1.28` for repository update detection.
 - Home Assistant App/Add-on package `0.1.89` now includes the File Studio
   toolbar cleanup with left-aligned icon buttons, right-aligned text buttons,
   Word-wrap/Replace icons and Undo/Redo controls.
