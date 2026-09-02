@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.85` now publishes the prepared
+  `atlas/` Add-on folder at the repository root for Home Assistant update
+  detection.
 - File Studio now uses local PNG asset icons for save, save-as, download,
   word-wrap and image zoom controls.
 - ATLAS File Studio now identifies as `0.1.24` for repository update detection.
