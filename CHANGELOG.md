@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.92` now includes File Studio
+  history restore, GitHub issue preparation for secret-free problem reports
+  and expanded Home Assistant YAML structure hints.
+- ATLAS File Studio now identifies as `0.1.30` for repository update detection.
 - Home Assistant App/Add-on package `0.1.91` now includes File Studio
   diagnostics, HA-oriented YAML/reload hints, save backups, history listing,
   richer search previews and conflict-aware upload/download naming.
