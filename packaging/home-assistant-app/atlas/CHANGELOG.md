@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.84
+
+- Add the File Studio PNG icon button update to the Home Assistant package so
+  Home Assistant detects a new Add-on version.
+- Bump ATLAS File Studio to `0.1.24` for repository update detection.
+
 ## 0.1.83
 
 - Move Add-on connection details to the top of the README, remove the
