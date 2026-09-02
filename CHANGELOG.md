@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.86` now includes File Studio
+  icon-button file actions for rename, delete, copy, move, search, archive
+  extraction and hidden-file display.
+- ATLAS File Studio now identifies as `0.1.25` for repository update detection.
 - Home Assistant App/Add-on package `0.1.85` now publishes the prepared
   `atlas/` Add-on folder at the repository root for Home Assistant update
   detection.
