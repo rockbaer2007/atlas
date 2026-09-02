@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.128
+
+- Refresh public GitHub and open-source documentation for the compact Plugin
+  Hub sidebar URL details and the Automation Exporter / Editor `0.1.5` state.
+- Keep packaged Add-on docs aligned with the current Home Assistant update
+  target version.
+
 ## 0.1.90
 
 - Increase File Studio icon buttons to `32x32` for better readability.

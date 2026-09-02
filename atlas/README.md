@@ -7,10 +7,13 @@ dieselbe Laufzeit wie die geprüfte Standalone-Docker-Vorschau:
 - ATLAS Administration auf Port `4175`
 - Home Assistant Card Editor als Referenz-Plugin auf Port `4174`
 - ATLAS File Studio als zweite unabhängige Plugin-Linie
+- ATLAS Automation Exporter / Editor als GitHub-installierbares Plugin
 
 Home Assistant Ingress ist für den ATLAS-App-Port aktiviert. ATLAS öffnet ein
 einzelnes aktives Plugin direkt oder zeigt den Plugin-Hub, wenn mehrere Plugins
-aktiv sind.
+aktiv sind. Im Plugin-Hub bleiben Fähigkeitslisten und Seitenleisten-URLs
+standardmäßig eingeklappt. Der Seitenleisten-Dialog kann wahlweise eine reine
+Plugin-URL oder einen fertigen `panel_iframe`-Block kopieren.
 
 ## Add-on-Verbindungsoptionen
 
@@ -37,9 +40,13 @@ wraps the same runtime used by the standalone Docker preview:
 - ATLAS Administration on port `4175`
 - Home Assistant Card Editor reference plugin on port `4174`
 - ATLAS File Studio as the second independent plugin line
+- ATLAS Automation Exporter / Editor as a GitHub-installable plugin
 
 Home Assistant Ingress is enabled for the ATLAS app port. ATLAS opens the only
 active plugin directly or shows the Plugin Hub when multiple plugins are active.
+The Plugin Hub keeps capability lists and sidebar URLs collapsed by default. The
+sidebar dialog can copy either a plain plugin URL or a ready-to-use
+`panel_iframe` block.
 
 ## Add-on connection options
 

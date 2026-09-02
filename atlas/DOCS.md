@@ -8,6 +8,10 @@ The `/app` endpoint reports this package as `home-assistant-app-preview`.
 The Add-on enables Home Assistant Ingress on the ATLAS app port. ATLAS then
 opens the only active plugin directly or shows the Plugin Hub when multiple
 plugins are active.
+The Plugin Hub keeps long capability lists and sidebar URLs collapsed by
+default so plugin cards stay compact. Its sidebar helper can copy a direct URL
+for Home Assistant Webpage dashboards or a ready-to-use `panel_iframe` YAML
+block for `configuration.yaml`.
 
 The Home Assistant token and translation provider keys stay in ATLAS
 Administration. The Card Editor receives only the current browser session

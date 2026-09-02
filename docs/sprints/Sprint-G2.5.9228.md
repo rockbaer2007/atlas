@@ -43,6 +43,9 @@ Implementation:
   Exporter output folder when the exporter plugin is installed.
 * Made Plugin Hub sidebar URLs collapsible by default on plugin cards.
 * Bumped the Home Assistant App/Add-on package to `0.1.127`.
+* Refreshed public GitHub and open-source documentation for the compact Plugin
+  Hub sidebar URL details and Automation Exporter / Editor `0.1.5`.
+* Bumped the Home Assistant App/Add-on package to `0.1.128`.
 
 Validation:
 

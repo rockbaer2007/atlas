@@ -5,15 +5,22 @@ explicit contracts and long-term maintainability.
 
 Current focus:
 
-**Stabilized Framework Contracts**
+**Home Assistant App/Add-on and Plugins**
 
-The G2.5 sprint line is complete. ATLAS now has a stabilized foundation,
-runtime, renderer and integration-boundary contract surface with no planned
-sprints remaining in the current sprint ledger.
+ATLAS now ships a combined app runtime for Home Assistant-oriented workflows:
+Administration, Plugin Hub, the Home Assistant Card Editor, ATLAS File Studio
+and ATLAS Automation Exporter / Editor. The current Home Assistant App/Add-on
+package is `0.1.128`.
 
-The recommended next phase is product-facing implementation: turn the renderer
-contracts into a concrete mounted output scenario before opening Theme, Home
-Assistant or Devtools execution paths.
+The Plugin Hub opens one active plugin directly, shows a selection when several
+plugins are active and keeps capability plus sidebar URL details collapsed by
+default. It can copy either a plugin URL for Home Assistant Webpage dashboards
+or a ready-to-use `panel_iframe` YAML block.
+
+ATLAS Automation Exporter / Editor is available as a GitHub-installable plugin
+at version `0.1.5`. It can analyze `/config/automations.yaml` or uploaded YAML,
+show highlighted automation details, detect modern `action:` service calls and
+export selected automations with timestamped filenames.
 
 ---
 
@@ -60,6 +67,7 @@ Open:
 * App health: `http://127.0.0.1:4176/health`
 * Administration: `http://127.0.0.1:4175/`
 * Home Assistant Card Editor: `http://127.0.0.1:4174/`
+* Plugin Hub and installed plugin routing: `http://127.0.0.1:4176/`
 
 Build and run the standalone Docker preview:
 
