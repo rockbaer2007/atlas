@@ -64,7 +64,7 @@ The repository entry point is `repository.json`.
 | `icon` | recommended | Relative or absolute URL to a compact square plugin icon. |
 | `logo` | recommended | Relative or absolute URL to a wider ATLAS-branded plugin logo. |
 | `preview` | recommended | Relative or absolute URL to a preview image or screenshot. |
-| `entry` | recommended | Plugin launch path used by the App Hub after the repository plugin is installed and synchronized by Administration. |
+| `entry` | recommended | Plugin launch path used by the App Hub after the repository plugin is installed and synchronized by Administration. Local plugins can omit `entry` when their plugin folder contains an `index.html`; ATLAS then exposes `/plugin-assets/<plugin-folder>/index.html` automatically. |
 | `package` | recommended | Relative or absolute URL to an install package. |
 | `manifest` | fallback | Relative or absolute URL to a plugin manifest. |
 | `capabilities` | no | Declared capability strings shown before install. |
