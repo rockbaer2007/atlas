@@ -30,6 +30,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Check `git status --short` before making changes.
 - Commit focused changes with clear messages.
 - Push finished work to GitHub when the user asked for ongoing Atlas progress or when a commit was created as part of the requested work.
+- Every user-visible Atlas or Home Assistant package update must include a matching version bump before commit and push, so Home Assistant and repository update checks can detect it.
 - Keep Atlas and `ugso-opensource-docs` commits separate.
 - If docs are changed in `ugso-opensource-docs`, build and commit that repo separately.
 
