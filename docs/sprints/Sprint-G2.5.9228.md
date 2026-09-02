@@ -27,6 +27,10 @@ Implementation:
   warnings-only filter.
 * Bumped the bundled Automation Exporter / Editor plugin to `0.1.2`.
 * Bumped the Home Assistant App/Add-on package to `0.1.123`.
+* Extended Automation Exporter / Editor service detection to modern
+  `action: domain.service` entries.
+* Bumped the bundled Automation Exporter / Editor plugin to `0.1.3`.
+* Bumped the Home Assistant App/Add-on package to `0.1.124`.
 
 Validation:
 
