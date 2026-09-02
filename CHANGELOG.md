@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.88` now includes automatic
+  read-only plugin update checks in Atlas Administration after app start or
+  reload.
 - Home Assistant App/Add-on package `0.1.87` now includes the File Studio
   toolbar order update with adjacent Color-icon font zoom buttons followed by
   the text-based word-wrap button.
