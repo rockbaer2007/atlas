@@ -461,6 +461,13 @@ body.is-resizing .splitter {
   );
 }
 
+.asset-icon-button.icon-zoom-out::before {
+  background-image: image-set(
+    url("icons/24x24/Zoom-out.png") 1x,
+    url("icons/48x48/Zoom-out.png") 2x
+  );
+}
+
 .tree-status,
 .tree-note {
   margin-bottom: 10px;
