@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.94` now includes File Studio in-app
+  dialogs, multi-select actions, drag-and-drop uploads, search filters and
+  backup comparison.
+- ATLAS File Studio now identifies as `0.1.32` for repository update detection.
 - Home Assistant App/Add-on package `0.1.93` now includes the File Studio
   Dateibaum header layout fix with the `/config` label above the icon toolbar.
 - ATLAS File Studio now identifies as `0.1.31` for repository update detection.
