@@ -16,6 +16,10 @@ Implementation:
 * Kept the first version conservative: it downloads selected YAML files and
   links to File Studio instead of writing back into Home Assistant directly.
 * Bumped the Home Assistant App/Add-on package to `0.1.120`.
+* Aligned the bundled Automation Exporter / Editor plugin with the GitHub
+  install package `0.1.1`.
+* Bumped the Home Assistant App/Add-on package to `0.1.121` after the external
+  install package fix.
 
 Validation:
 
