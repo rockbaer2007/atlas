@@ -35,6 +35,10 @@ Implementation:
   details preview.
 * Bumped the bundled Automation Exporter / Editor plugin to `0.1.4`.
 * Bumped the Home Assistant App/Add-on package to `0.1.125`.
+* Limited the Automation Exporter / Editor automation list to roughly 15
+  visible entries with internal scrolling.
+* Bumped the bundled Automation Exporter / Editor plugin to `0.1.5`.
+* Bumped the Home Assistant App/Add-on package to `0.1.126`.
 
 Validation:
 
