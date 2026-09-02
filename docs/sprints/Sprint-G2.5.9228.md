@@ -23,6 +23,10 @@ Implementation:
 * Made Plugin Hub capability lists collapsible by default for all plugin cards.
 * Bumped the Home Assistant App/Add-on package to `0.1.122` for the Hub UI
   refinement.
+* Added Automation Exporter / Editor analysis hints, warning summary and a
+  warnings-only filter.
+* Bumped the bundled Automation Exporter / Editor plugin to `0.1.2`.
+* Bumped the Home Assistant App/Add-on package to `0.1.123`.
 
 Validation:
 
