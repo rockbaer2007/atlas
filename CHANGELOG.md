@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.87` now includes the File Studio
+  toolbar order update with adjacent Color-icon font zoom buttons followed by
+  the text-based word-wrap button.
+- ATLAS File Studio now identifies as `0.1.26` for repository update detection.
 - Home Assistant App/Add-on package `0.1.86` now includes File Studio
   icon-button file actions for rename, delete, copy, move, search, archive
   extraction and hidden-file display.
