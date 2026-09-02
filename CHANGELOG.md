@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio now uses local PNG asset icons for save, save-as, download,
+  word-wrap and image zoom-in icon buttons.
+- ATLAS File Studio now identifies as `0.1.23` for repository update detection.
 - Home Assistant App/Add-on package `0.1.83` now removes the extra
   installation/local-test/sidebar README blocks and keeps German connection
   options above the matching English reference text.
