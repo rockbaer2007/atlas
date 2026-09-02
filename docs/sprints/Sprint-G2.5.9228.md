@@ -20,6 +20,9 @@ Implementation:
   install package `0.1.1`.
 * Bumped the Home Assistant App/Add-on package to `0.1.121` after the external
   install package fix.
+* Made Plugin Hub capability lists collapsible by default for all plugin cards.
+* Bumped the Home Assistant App/Add-on package to `0.1.122` for the Hub UI
+  refinement.
 
 Validation:
 
