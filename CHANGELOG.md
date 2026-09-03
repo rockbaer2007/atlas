@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.131` now fixes Ingress loading for
+  Administration/Card Editor module imports and normalizes the Hub launch path
+  for the Card Editor.
 - Home Assistant App/Add-on package `0.1.130` now includes the Automation
   Exporter / Editor Plugin Hub header button and the Expert Card Editor
   three-column lower work area.
