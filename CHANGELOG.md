@@ -8,6 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.138` now links Administration to the
+  public ATLAS verified plugin list in the open-source documentation.
 - Home Assistant App/Add-on package `0.1.137` now lets the Automation Exporter
   load the real `/config/automations.yaml` and adds Card-Editor-style theme and
   language controls to File Studio and Automation Exporter.
