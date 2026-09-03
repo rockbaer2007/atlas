@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.136` now passes the Administration
+  language to the Hub, Card Editor and local plugins, keeps plugin language
+  changes temporary, and lists the Automation Exporter / Editor in
+  Administration.
 - Home Assistant App/Add-on package `0.1.135` now rewrites Plugin Hub icons and
   launch URLs onto the active ATLAS/Ingress base path so File Studio and
   Automation Exporter no longer open stale 404 routes.
