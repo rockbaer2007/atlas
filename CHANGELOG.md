@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.143` adds Automation Exporter /
+  Editor write-back into `/config/automations.yaml` with timestamped backups
+  and ID/alias based merging.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.11` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.142` extends Automation Exporter /
   Editor exports with direct File Studio file links, YAML copy actions,
   conflict preview and grouped domain/area/device metadata.
