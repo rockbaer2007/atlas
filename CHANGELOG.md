@@ -8,6 +8,14 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.140` now uses proper German umlauts
+  in current Atlas, plugin and package UI text.
+- Repository working guidelines now require proper German characters in
+  German user-facing text while keeping technical IDs and paths ASCII where
+  required.
+- ATLAS File Studio now identifies as `0.1.37`, the Home Assistant Card Editor
+  as `0.2.0-alpha.48`, and the Automation Exporter / Editor as `0.1.9` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.139` now lets the Automation Exporter
   write selected automations into the chosen File Studio `/config` export
   folder and falls back to browser downloads if writing is unavailable.

@@ -269,7 +269,7 @@ function renderButtons() {
   elements.moveTabUp.disabled = state.selectedIndex === 0;
   elements.moveTabDown.disabled = state.selectedIndex >= state.config.tabs.length - 1;
   elements.deleteTab.disabled = oneTab;
-  elements.addChildCard.textContent = isStackCard(type) ? "Unterkarte hinzufuegen" : "Entity hinzufuegen";
+  elements.addChildCard.textContent = isStackCard(type) ? "Unterkarte hinzufügen" : "Entity hinzufügen";
   elements.childCardType.disabled = !isStackCard(type);
 }
 
@@ -429,7 +429,7 @@ function addChildCard() {
   const entity = elements.childCardEntity.value.trim();
   const title = elements.childCardTitle.value.trim();
   if (!entity && elements.childCardType.value !== "markdown") {
-    elements.statusMessage.textContent = "Bitte eine Entity fuer die Unterkarte eintragen.";
+    elements.statusMessage.textContent = "Bitte eine Entity für die Unterkarte eintragen.";
     return;
   }
 

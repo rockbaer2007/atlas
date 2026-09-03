@@ -40,6 +40,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Use `apply_patch` for manual file edits.
 - Keep edits scoped to the task.
 - Prefer ASCII in new or edited files unless the file already uses non-ASCII or there is a clear reason.
+- German user-facing UI, plugin, Home Assistant package and documentation text should use proper German characters (`ä`, `ö`, `ü`, `Ä`, `Ö`, `Ü`, `ß`) instead of ASCII substitutions such as `ae`, `oe`, `ue` or `ss`; keep technical IDs, file names, slugs, code keys and protocol strings ASCII where required.
 - Do not add unrelated refactors.
 - Use existing local patterns, APIs, tests, and naming.
 - Prefer structured parsers and existing utilities over ad hoc string handling.

@@ -216,7 +216,7 @@ class TabbedCardV2Panel extends HTMLElement {
         <header>
           <div>
             <h1>Tabbed Card V2</h1>
-            <p>Visual Editor fuer tabbasierte Lovelace-Karten.</p>
+            <p>Visual Editor für tabbasierte Lovelace-Karten.</p>
           </div>
           ${this._panel?.config?.showUpdateHint === false ? "" : `
             <p>Updates steuerst du in HACS bei diesem Repository. Aktiviere dort Auto-Update, wenn neue Releases automatisch installiert werden sollen.</p>

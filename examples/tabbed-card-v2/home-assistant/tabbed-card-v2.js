@@ -325,7 +325,7 @@ class TabbedCardV2Editor extends HTMLElement {
       <div class="panel">
         <h3>Tabbed Card V2</h3>
         <p>
-          Diese Karte wird ueber die Tabbed Card V2 Editor-App eingerichtet.
+          Diese Karte wird über die Tabbed Card V2 Editor-App eingerichtet.
           Der kleine Home-Assistant-Dialog bleibt bewusst schlank; komplexe Tabs,
           Unterkarten und HACS-Abhaengigkeiten bearbeitest du im separaten Editor.
         </p>
@@ -338,8 +338,8 @@ class TabbedCardV2Editor extends HTMLElement {
           </a>
         </div>
         <p>
-          Installiere nur diese Card ueber HACS. Erstelle die YAML in der Editor-App
-          und fuege sie hier ueber "Code-Editor anzeigen" ein.
+          Installiere nur diese Card über HACS. Erstelle die YAML in der Editor-App
+          und füge sie hier über "Code-Editor anzeigen" ein.
         </p>
       </div>
     `;

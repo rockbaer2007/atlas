@@ -11,7 +11,7 @@
       "step": {
         "init": {
           "title": "Tabbed Card V2 Editor",
-          "description": "Einstellungen fuer den Tabbed Card V2 Editor.",
+          "description": "Einstellungen für den Tabbed Card V2 Editor.",
           "data": {
             "show_in_sidebar": "In der Seitenleiste anzeigen",
             "show_update_hint": "HACS-Update-Hinweis im Editor anzeigen"
