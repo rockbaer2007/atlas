@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.145` stores Automation Exporter /
+  Editor exports in timestamped run folders while keeping the YAML filenames
+  clean.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.13` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.144` makes the Automation Exporter /
   Editor top area calmer by placing compact Status, Source and Export folder
   columns above a single tools action stack.
