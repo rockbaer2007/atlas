@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.133` now serves extensionless browser
+  module re-exports with a `.js` fallback and ships Admin/Card Editor browser
+  bundles so Admin plugin cards render again.
+- Home Assistant App/Add-on package `0.1.132` now fixes Admin and Card Editor
+  import-map module resolution by using browser-valid relative module paths.
 - Home Assistant App/Add-on package `0.1.131` now fixes Ingress loading for
   Administration/Card Editor module imports and normalizes the Hub launch path
   for the Card Editor.
