@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.134` now keeps Administration to
+  Plugin Hub navigation on the active Home Assistant Ingress base path so the
+  Admin Hub button no longer opens a 404 route.
 - Home Assistant App/Add-on package `0.1.133` now serves extensionless browser
   module re-exports with a `.js` fallback and ships Admin/Card Editor browser
   bundles so Admin plugin cards render again.
