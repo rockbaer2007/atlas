@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.141` now labels the Administration
+  update panel as external plugin repository updates, separate from installed
+  bundled plugins.
 - Home Assistant App/Add-on package `0.1.140` now uses proper German umlauts
   in current Atlas, plugin and package UI text.
 - Repository working guidelines now require proper German characters in
