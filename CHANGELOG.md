@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.142` extends Automation Exporter /
+  Editor exports with direct File Studio file links, YAML copy actions,
+  conflict preview and grouped domain/area/device metadata.
+- File Studio can open an initial file or folder from a `path` URL parameter.
+- ATLAS File Studio now identifies as `0.1.38` and the Automation Exporter /
+  Editor as `0.1.10` for repository update detection.
 - Home Assistant App/Add-on package `0.1.141` now labels the Administration
   update panel as external plugin repository updates, separate from installed
   bundled plugins.
