@@ -1191,7 +1191,7 @@
 
       .expert-editor-controls {
         display: grid;
-        grid-template-columns: repeat(4, minmax(96px, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 8px;
       }
 
@@ -1283,7 +1283,7 @@
       }
 
       .expert-editor-controls .wide {
-        grid-column: 1 / -1;
+        grid-column: span 2;
       }
 
       .expert-editor-controls .span-2 {
@@ -3460,7 +3460,7 @@
               </div>
             </div>
             <div class="expert-editor-controls">
-              <div class="field-pair span-2">
+              <div class="field-pair">
                 <label for="expert-card-name" data-i18n="label.expertCardName">Expert card name</label>
                 <input id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card" data-i18n-placeholder="placeholder.expertCardName">
               </div>
@@ -3472,17 +3472,19 @@
                 <label for="expert-target" data-i18n="label.cardFamily">Card family</label>
                 <select id="expert-target"></select>
               </div>
-              <div id="expert-bubble-type-control" class="field-pair span-2" hidden>
+              <div id="expert-bubble-type-control" class="field-pair" hidden>
                 <label for="expert-bubble-button-type" data-i18n="label.bubbleButtonType">Bubble button type</label>
                 <select id="expert-bubble-button-type"></select>
               </div>
-              <label class="wide" for="expert-title" data-i18n="label.title">Title</label>
-              <div class="expert-title-row wide">
+              <div class="field-pair span-2">
+                <label for="expert-title" data-i18n="label.title">Title</label>
+                <div class="expert-title-row">
                 <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty" data-i18n-placeholder="placeholder.expertTitle">
                 <button id="apply-expert-title" type="button" data-i18n="button.applyTitle">Apply title</button>
                 <button id="use-entity-name-as-title" type="button" data-i18n="button.useEntityName">Use entity name</button>
+                </div>
               </div>
-              <div class="field-pair span-2">
+              <div class="field-pair">
                 <label for="expert-entity" data-i18n="label.entity">Entity</label>
                 <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty" data-i18n-placeholder="placeholder.expertEntity">
               </div>

@@ -11,7 +11,9 @@ plugins are active.
 The Plugin Hub keeps long capability lists and sidebar URLs collapsed by
 default so plugin cards stay compact. Its sidebar helper can copy a direct URL
 for Home Assistant Webpage dashboards or a ready-to-use `panel_iframe` YAML
-block for `configuration.yaml`.
+block for `configuration.yaml`. Administration and Card Editor are also served
+through app-local routes so Home Assistant Ingress and remote browsers do not
+need direct access to the separate local development ports.
 
 The Home Assistant token and translation provider keys stay in ATLAS
 Administration. The Card Editor receives only the current browser session

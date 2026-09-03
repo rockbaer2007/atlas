@@ -10,12 +10,13 @@ Current focus:
 ATLAS now ships a combined app runtime for Home Assistant-oriented workflows:
 Administration, Plugin Hub, the Home Assistant Card Editor, ATLAS File Studio
 and ATLAS Automation Exporter / Editor. The current Home Assistant App/Add-on
-package is `0.1.128`.
+package is `0.1.129`.
 
 The Plugin Hub opens one active plugin directly, shows a selection when several
 plugins are active and keeps capability plus sidebar URL details collapsed by
-default. It can copy either a plugin URL for Home Assistant Webpage dashboards
-or a ready-to-use `panel_iframe` YAML block.
+default. Card Editor, Administration and plugin asset URLs can run through the
+ATLAS app route so Home Assistant Ingress and remote browsers do not have to
+reach the separate local development ports directly.
 
 ATLAS Automation Exporter / Editor is available as a GitHub-installable plugin
 at version `0.1.5`. It can analyze `/config/automations.yaml` or uploaded YAML,

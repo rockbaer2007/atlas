@@ -46,6 +46,12 @@ Implementation:
 * Refreshed public GitHub and open-source documentation for the compact Plugin
   Hub sidebar URL details and Automation Exporter / Editor `0.1.5`.
 * Bumped the Home Assistant App/Add-on package to `0.1.128`.
+* Served Administration and Card Editor through app-local `/admin` and
+  `/editor` routes to avoid broken cross-device Home Assistant links.
+* Preserved Home Assistant Ingress base paths for Plugin Hub, File Studio and
+  local plugin asset URLs.
+* Made the Expert Card Editor control area a compact three-column form.
+* Bumped the Home Assistant App/Add-on package to `0.1.129`.
 
 Validation:
 

@@ -13,7 +13,10 @@ Home Assistant Ingress ist für den ATLAS-App-Port aktiviert. ATLAS öffnet ein
 einzelnes aktives Plugin direkt oder zeigt den Plugin-Hub, wenn mehrere Plugins
 aktiv sind. Im Plugin-Hub bleiben Fähigkeitslisten und Seitenleisten-URLs
 standardmäßig eingeklappt. Der Seitenleisten-Dialog kann wahlweise eine reine
-Plugin-URL oder einen fertigen `panel_iframe`-Block kopieren.
+Plugin-URL oder einen fertigen `panel_iframe`-Block kopieren. Administration
+und Card Editor sind zusätzlich über App-Routen erreichbar, damit Hub- und
+Seitenleisten-Links auch über Home Assistant Ingress und von anderen Rechnern
+funktionieren.
 
 ## Add-on-Verbindungsoptionen
 
@@ -46,7 +49,9 @@ Home Assistant Ingress is enabled for the ATLAS app port. ATLAS opens the only
 active plugin directly or shows the Plugin Hub when multiple plugins are active.
 The Plugin Hub keeps capability lists and sidebar URLs collapsed by default. The
 sidebar dialog can copy either a plain plugin URL or a ready-to-use
-`panel_iframe` block.
+`panel_iframe` block. Administration and Card Editor are also available through
+app routes so Hub and sidebar links work through Home Assistant Ingress and from
+other client devices.
 
 ## Add-on connection options
 
