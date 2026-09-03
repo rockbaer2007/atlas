@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.135` now rewrites Plugin Hub icons and
+  launch URLs onto the active ATLAS/Ingress base path so File Studio and
+  Automation Exporter no longer open stale 404 routes.
 - Home Assistant App/Add-on package `0.1.134` now keeps Administration to
   Plugin Hub navigation on the active Home Assistant Ingress base path so the
   Admin Hub button no longer opens a 404 route.
