@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.139` now lets the Automation Exporter
+  write selected automations into the chosen File Studio `/config` export
+  folder and falls back to browser downloads if writing is unavailable.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.8` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.138` now links Administration to the
   public ATLAS verified plugin list in the open-source documentation.
 - Home Assistant App/Add-on package `0.1.137` now lets the Automation Exporter
