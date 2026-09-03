@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.130` now includes the Automation
+  Exporter / Editor Plugin Hub header button and the Expert Card Editor
+  three-column lower work area.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.6` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.96` now includes the File Studio
   SVG trash icon, right-aligned trash button and empty/full trash color states.
 - ATLAS File Studio now identifies as `0.1.34` for repository update detection.
