@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.137` now lets the Automation Exporter
+  load the real `/config/automations.yaml` and adds Card-Editor-style theme and
+  language controls to File Studio and Automation Exporter.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.7` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.136` now passes the Administration
   language to the Hub, Card Editor and local plugins, keeps plugin language
   changes temporary, and lists the Automation Exporter / Editor in
