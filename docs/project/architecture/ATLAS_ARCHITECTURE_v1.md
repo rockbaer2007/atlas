@@ -162,9 +162,11 @@ Developer Tools
   entities, scripts, scenes, helpers and notification targets.
 - Show a structured automation overview with search, grouping, warnings and
   exportable summaries.
-- Keep write operations out of the first extractor increment; begin read-only
-  and add refactoring/splitting actions only after backup and validation flows
-  are proven.
+- Keep Home Assistant system-file write-back out of the Automation Exporter /
+  Editor because direct write-back can break running systems. Opening or reading
+  local automation files should still create a timestamped safety backup first.
+- Treat later editing as a File Studio handoff or export/import workflow instead
+  of a direct overwrite of `automations.yaml`.
 
 ### Late Hub Expansion: External Home Assistant Surfaces
 
