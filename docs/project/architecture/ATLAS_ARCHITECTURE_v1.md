@@ -164,7 +164,9 @@ Developer Tools
   exportable summaries.
 - Keep Home Assistant system-file write-back out of the Automation Exporter /
   Editor because direct write-back can break running systems. Opening or reading
-  local automation files should still create a timestamped safety backup first.
+  local automation files should still create a safety backup first. Store backups
+  in a timestamped folder and keep the original filename unchanged so manual
+  restore is easier.
 - Treat later editing as a File Studio handoff or export/import workflow instead
   of a direct overwrite of `automations.yaml`.
 
