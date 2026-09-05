@@ -110,6 +110,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Scanned Home Assistant/HACS resources can appear in the palette when connected.
 - Duplicate palette entries should be avoided.
 - Unsupported or scan-only resources should be visible as information but not treated as safely draggable until mapped.
+- Unknown HACS card resources should later support a guided local mapping flow: Atlas asks for the provided `custom:*` card types, stores the mapping locally, and may allow exporting/sharing it for reviewed Atlas mappings.
 
 ## Import And Export Rules
 
@@ -162,6 +163,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Future direction includes a visual drag-and-drop editor with templates in a sidebar.
 - Future direction includes Bubble, Mushroom, built-in Entity/Entities, Button, Sensor, Grid, Thermostat, Link, Webpage, vertical-stack, and horizontal-stack options.
 - Future direction includes detecting installed Home Assistant resources and offering relevant card/entity choices.
+- Future direction includes guided mapping for unknown HACS cards, including local user-defined card-type mappings and later export/sharing for reviewed community mappings.
 - Future direction includes using Atlas directly on a server, in Docker, as a Home Assistant App/Add-on, through an optional Linux VM/LXC/bare-metal installer, or as a later Home Assistant/HACS frontend integration.
 - Preferred ATLAS distribution order: build the standalone Docker container first, derive the Home Assistant App/Add-on packaging from that container second, and add the Linux/systemd installer third only after the container path is stable.
 - Future direction includes a separate plugin documentation area for authoring, lifecycle, extension APIs, examples, and publishing guidance.

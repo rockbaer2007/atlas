@@ -143,6 +143,9 @@ Developer Tools
 - Give every plugin its own function-specific icon and logo with a consistent
   ATLAS overlay, and show those assets in Administration, Plugin Hub and
   repository previews.
+- Add a guided mapping flow for unknown Home Assistant/HACS card resources:
+  users can enter the provided `custom:*` card types, Atlas stores the mapping
+  locally, and later versions may export or share reviewed mappings.
 - Derive an official plugin template from the demo repository after the
   installation and update flow is stable.
 - Add a later generator path that can create a new ATLAS plugin from the
