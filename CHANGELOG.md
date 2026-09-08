@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.173` marks Automation Exporter /
+  Editor ID and alias conflicts directly in the automation list.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.20` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.172` removes completed Automation
   Exporter / Editor roadmap entries and leaves conflict pre-marking as the next
   visible step.
