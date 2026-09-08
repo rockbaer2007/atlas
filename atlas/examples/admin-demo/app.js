@@ -36,6 +36,10 @@ const saveAdminSettings = document.querySelector("#save-admin-settings");
 const forgetAdminToken = document.querySelector("#forget-admin-token");
 const exportAdminSettings = document.querySelector("#export-admin-settings");
 const openCardEditor = document.querySelector("#open-card-editor");
+const openSidebarPluginDialog = document.querySelector("#open-sidebar-plugin-dialog");
+const sidebarPluginDialog = document.querySelector("#sidebar-plugin-dialog");
+const sidebarPluginList = document.querySelector("#sidebar-plugin-list");
+const closeSidebarPluginDialog = document.querySelector("#close-sidebar-plugin-dialog");
 const adminConnectionModeHint = document.querySelector("#admin-connection-mode-hint");
 const editorStartMode = document.querySelector("#editor-start-mode");
 const importPluginPackage = document.querySelector("#import-plugin-package");
@@ -61,6 +65,7 @@ const pluginSummary = document.querySelector("#plugin-summary");
 const pluginList = document.querySelector("#plugin-list");
 const policySummary = document.querySelector("#policy-summary");
 const allowAddonsPath = document.querySelector("#allow-addons-path");
+const fileStudioPathAccessInputs = Array.from(document.querySelectorAll("[data-file-studio-path-access]"));
 const fileStudioAccessHint = document.querySelector("#file-studio-access-hint");
 const refreshAppRuntime = document.querySelector("#refresh-app-runtime");
 const appRuntimeSummary = document.querySelector("#app-runtime-summary");
@@ -85,8 +90,8 @@ const sharedPluginCatalogCookieName = "atlas_plugin_catalog";
 const adminSecretsKeyStorageKey = "atlas.administration.secretsCookieKey";
 const legacyAdminTranslationApiKeysCookieName = "atlas_admin_translation_api_keys";
 const legacyAdminTranslationApiKeysKeyStorageKey = "atlas.administration.translationApiKeysCookieKey";
-const adminConnectionApiPath = "/api/admin-connection";
-const adminDeviceApiPath = "/api/admin-device";
+const adminConnectionApiPath = createAdminApiUrl("api/admin-connection");
+const adminDeviceApiPath = createAdminApiUrl("api/admin-device");
 const defaultTranslationApiEndpoint = "https://api.deepl.com/v2/translate";
 const translationProviderValues = ["none", "chatgpt", "gemini", "deepl-free", "deepl-pro", "custom-ai"];
 const pluginRepositoryTypeValues = ["plugin", "card", "integration", "tool", "theme"];
@@ -165,21 +170,55 @@ const parcelProviderDefaults = [
   },
 ];
 const editorOrigin = createPortOrigin(4174);
-const appRuntimeApiUrl = createPortNavigationUrl(4176, "/app");
+const appRuntimeApiUrl = createAppRuntimeApiUrl();
 const longTermCookieMaxAge = 31536000;
 const pluginCatalog = new RuntimePluginCatalog();
+const AutomationExporterPluginId = "atlas.plugin.automation-exporter-editor";
 pluginCatalog.register(createHomeAssistantCardEditorPlugin());
 pluginCatalog.register(createFileStudioPlugin());
+pluginCatalog.register({
+  manifest: {
+    id: AutomationExporterPluginId,
+    name: "ATLAS Automation Exporter / Editor",
+    nameI18n: {
+      de: "ATLAS Automation Exporter / Editor",
+      en: "ATLAS Automation Exporter / Editor",
+    },
+    version: "0.1.16",
+    description: "Analyze Home Assistant automations, export selected entries and continue editing them through File Studio.",
+    descriptionI18n: {
+      de: "Home-Assistant-Automationen analysieren, ausgewählte Einträge exportieren und über File Studio weiter bearbeiten.",
+      en: "Analyze Home Assistant automations, export selected entries and continue editing them through File Studio.",
+    },
+    icon: "icon.svg",
+    preview: "preview.svg",
+    extensionPoints: ["homeassistant.automation"],
+    provides: [
+      "homeassistant.automation-analysis",
+      "homeassistant.automation-export",
+      "atlas.yaml-upload",
+      "atlas.file-studio-handoff",
+      "atlas.scoped-filesystem",
+    ],
+  },
+  async activate() {},
+});
 const bundledPluginIds = new Set(pluginCatalog.list().map(plugin => plugin.id));
 const localPluginAssetDirectories = {
   [HomeAssistantCardEditorPluginId]: "homeassistant-card-editor",
   [FileStudioPluginId]: "file-studio",
+  [AutomationExporterPluginId]: "automation-exporter-editor",
   "atlas.plugin.simple-editor": "simple-editor",
 };
+const defaultActivePluginIds = [
+  HomeAssistantCardEditorPluginId,
+  FileStudioPluginId,
+  AutomationExporterPluginId,
+];
 
 let currentLanguage = "en";
 let currentThemePreference = "auto";
-let activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
+let activePluginIds = new Set(defaultActivePluginIds);
 let importedPluginDescriptors = [];
 let pluginRepositories = [];
 let repositoryPluginDescriptors = [];
@@ -205,9 +244,10 @@ const translations = {
     "heading.releaseChecks": "Release checks",
     "heading.releaseTargets": "Distribution targets",
     "heading.plugins": "Installed plugins",
-    "heading.pluginUpdates": "Plugin updates",
+    "heading.pluginUpdates": "External plugin updates",
     "heading.policy": "Plugin access policy",
     "heading.addPluginRepository": "Add ATLAS repository",
+    "heading.sidebarPluginDialog": "Plugin sidebar entry",
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access token",
     "label.translationProvider": "Translation module",
@@ -228,11 +268,17 @@ const translations = {
     "label.icon": "Icon",
     "label.logo": "Logo",
     "label.preview": "Preview",
+    "label.sidebarYaml": "configuration.yaml",
     "label.pluginRepositories": "Custom repositories",
     "label.pluginRepositoryUrl": "Repository",
     "label.pluginRepositoryType": "Type",
     "label.parcelEnabled": "Enabled",
     "label.allowAddonsPath": "Allow File Studio access to /addons",
+    "label.fileStudioAccessConfig": "config",
+    "label.fileStudioAccessWww": "www",
+    "label.fileStudioAccessCustomComponents": "custom_components",
+    "label.fileStudioAccessAddons": "addons",
+    "label.fileStudioAccessParentOfConfig": "parent-of-config",
     "theme.auto": "Auto",
     "theme.light": "Light",
     "theme.dark": "Dark",
@@ -246,6 +292,10 @@ const translations = {
     "button.deactivate": "Deactivate",
     "button.exportPackage": "Export package",
     "button.importPackage": "Import package",
+    "button.openSidebarPluginDialog": "Add plugin to sidebar",
+    "button.verifiedPlugins": "Verified Plugins",
+    "button.prepareSidebarPlugin": "Copy YAML",
+    "button.close": "Close",
     "button.openRepositoryDialog": "Add ATLAS repository",
     "button.previewRepository": "Preview repository",
     "button.addRepository": "Add",
@@ -275,8 +325,8 @@ const translations = {
     "message.accessHint": "Tokens stay in Administration. Plugins receive approved paths and capabilities only.",
     "message.connectionHaAppHint": "These Home Assistant connection values come from the Home Assistant App/Add-on options.",
     "message.connectionStandaloneHint": "In Docker and Linux mode these values are managed here.",
-    "message.fileStudioAccessHaAppHint": "In Home Assistant App/Add-on mode this approval comes from the App/Add-on configuration.",
-    "message.fileStudioAccessStandaloneHint": "In Docker and Linux mode this approval is managed here.",
+    "message.fileStudioAccessHaAppHint": "In Home Assistant App/Add-on mode these file capabilities come from the App/Add-on configuration.",
+    "message.fileStudioAccessStandaloneHint": "In Docker and Linux mode these file capabilities are managed here.",
     "message.openAiApiKeyLink": "Get OpenAI API key:",
     "message.geminiApiKeyLink": "Get Gemini API key:",
     "message.deeplApiKeyLink": "Get DeepL API key:",
@@ -290,6 +340,7 @@ const translations = {
     "message.appReleaseHint": "Track the local app path before the later Home Assistant/HACS integration.",
     "message.appReleaseSummary": "{ready} ready, {inProgress} in progress, {planned} planned",
     "message.parcelProviderSummary": "{enabled} of {total} service providers enabled. Public tracking links are prefilled automatically; account-only providers stay marked for later connection.",
+    "message.preparedForLaterUse": "(prepared for later use)",
     "message.pluginSummary": "{total} plugins, {active} active, {available} available, {disabled} disabled",
     "message.policySummary": "Current approved context: Home Assistant URL {url}, WebSocket path {websocket}.",
     "message.saved": "Settings saved.",
@@ -331,22 +382,29 @@ const translations = {
     "message.pluginRepositoryBundledVersion": "Built in: {version}",
     "message.pluginRepositoryNotInstalled": "Not installed",
     "message.pluginRepositoryNoPackage": "No installable package or manifest URL.",
-    "message.pluginUpdatesHint": "Atlas checks custom plugin repositories on Administration start and after reload.",
+    "message.sidebarPluginDialogHint": "Prepare a Home Assistant sidebar entry and copy the panel_iframe YAML block.",
+    "message.sidebarPluginCopied": "{name} panel_iframe YAML copied.",
+    "message.sidebarPluginUnavailable": "No launch URL available yet.",
+    "message.pluginUpdatesHint": "Atlas checks only external custom plugin repositories here, not the bundled plugins installed below.",
     "message.pluginUpdatesChecking": "Checking plugin repositories for updates...",
-    "message.pluginUpdatesNoRepositories": "No custom plugin repositories configured yet.",
-    "message.pluginUpdatesNone": "No plugin updates found. Last checked: {checkedAt}.",
-    "message.pluginUpdatesFound": "{count} plugin update(s) found. Last checked: {checkedAt}.",
-    "message.pluginUpdatesPending": "Plugin update check has not run yet.",
+    "message.pluginUpdatesNoRepositories": "No external custom plugin repositories configured yet.",
+    "message.pluginUpdatesNone": "No external plugin updates found. Last checked: {checkedAt}.",
+    "message.pluginUpdatesFound": "{count} external plugin update(s) found. Last checked: {checkedAt}.",
+    "message.pluginUpdatesPending": "External plugin update check has not run yet.",
     "type.plugin": "Plugin",
     "type.card": "Card",
     "type.integration": "Integration",
     "type.tool": "Tool",
     "type.theme": "Theme",
+    "guide.sidebarStep1": "Open Home Assistant Settings > Dashboards.",
+    "guide.sidebarStep2": "Add a dashboard of type Webpage.",
+    "guide.sidebarStep3": "Paste the copied panel_iframe block into configuration.yaml or create a matching Webpage dashboard entry.",
+    "guide.sidebarStep4": "Check the YAML configuration, reload Panel iFrames or restart Home Assistant.",
     "mode.simple": "Simple",
     "mode.expert": "Expert",
     "policy.token": "The Card Editor receives the token only as a browser session handoff.",
     "policy.paths": "Plugins receive approved URLs, WebSocket paths and resource paths.",
-    "policy.capabilities": "Capabilities are declared through the Runtime plugin manifest.",
+    "policy.capabilities": "Capabilities are declared through the Runtime plugin manifest and file paths are released here.",
     "text.pluginStatusAvailable": "Available",
     "text.pluginStatusActive": "Active",
     "text.pluginStatusDisabled": "Disabled",
@@ -394,9 +452,10 @@ const translations = {
     "heading.releaseChecks": "Freigabe-Checks",
     "heading.releaseTargets": "Ausgabeziele",
     "heading.plugins": "Installierte Plugins",
-    "heading.pluginUpdates": "Plugin-Updates",
+    "heading.pluginUpdates": "Externe Plugin-Updates",
     "heading.policy": "Plugin-Zugriffsregel",
     "heading.addPluginRepository": "ATLAS Repository hinzufügen",
+    "heading.sidebarPluginDialog": "Plugin als Seitenleisteneintrag",
     "label.haUrl": "Home Assistant URL",
     "label.accessToken": "Access Token",
     "label.translationProvider": "Übersetzungsmodul",
@@ -417,11 +476,17 @@ const translations = {
     "label.icon": "Icon",
     "label.logo": "Logo",
     "label.preview": "Vorschau",
+    "label.sidebarYaml": "configuration.yaml",
     "label.pluginRepositories": "Benutzerdefinierte Repositories",
     "label.pluginRepositoryUrl": "Repository",
     "label.pluginRepositoryType": "Typ",
     "label.parcelEnabled": "Aktiv",
     "label.allowAddonsPath": "File-Studio-Zugriff auf /addons erlauben",
+    "label.fileStudioAccessConfig": "config",
+    "label.fileStudioAccessWww": "www",
+    "label.fileStudioAccessCustomComponents": "custom_components",
+    "label.fileStudioAccessAddons": "addons",
+    "label.fileStudioAccessParentOfConfig": "parent-of-config",
     "theme.auto": "Auto",
     "theme.light": "Hell",
     "theme.dark": "Dunkel",
@@ -435,6 +500,10 @@ const translations = {
     "button.deactivate": "Deaktivieren",
     "button.exportPackage": "Paket exportieren",
     "button.importPackage": "Paket importieren",
+    "button.openSidebarPluginDialog": "Plugin zur Seitenleiste hinzufügen",
+    "button.verifiedPlugins": "Geprüfte Plugins",
+    "button.prepareSidebarPlugin": "YAML kopieren",
+    "button.close": "Schließen",
     "button.openRepositoryDialog": "ATLAS Repository hinzufügen",
     "button.previewRepository": "Repository prüfen",
     "button.addRepository": "Hinzufügen",
@@ -464,8 +533,8 @@ const translations = {
     "message.accessHint": "Tokens bleiben in der Administration. Plugins erhalten nur freigegebene Pfade und Fähigkeiten.",
     "message.connectionHaAppHint": "Diese Home-Assistant-Verbindungswerte kommen aus den Home-Assistant-App/Add-on-Optionen.",
     "message.connectionStandaloneHint": "Im Docker- und Linux-Modus werden diese Werte hier verwaltet.",
-    "message.fileStudioAccessHaAppHint": "Im Home-Assistant-App/Add-on-Modus kommt diese Freigabe aus der App/Add-on-Konfiguration.",
-    "message.fileStudioAccessStandaloneHint": "Im Docker- und Linux-Modus wird diese Freigabe hier verwaltet.",
+    "message.fileStudioAccessHaAppHint": "Im Home-Assistant-App/Add-on-Modus kommen diese Datei-Fähigkeiten aus der App/Add-on-Konfiguration.",
+    "message.fileStudioAccessStandaloneHint": "Im Docker- und Linux-Modus werden diese Datei-Fähigkeiten hier verwaltet.",
     "message.openAiApiKeyLink": "OpenAI API-Key erhalten:",
     "message.geminiApiKeyLink": "Gemini API-Key erhalten:",
     "message.deeplApiKeyLink": "DeepL API-Key erhalten:",
@@ -479,6 +548,7 @@ const translations = {
     "message.appReleaseHint": "Verfolge den lokalen App-Pfad vor der späteren Home-Assistant/HACS-Integration.",
     "message.appReleaseSummary": "{ready} bereit, {inProgress} in Arbeit, {planned} geplant",
     "message.parcelProviderSummary": "{enabled} von {total} Dienstleistern aktiv. Öffentliche Tracking-Links sind automatisch vorbelegt; Konto-Dienstleister bleiben für die spätere Anbindung markiert.",
+    "message.preparedForLaterUse": "(vorbereitet für spätere Nutzung)",
     "message.pluginSummary": "{total} Plugins, {active} aktiv, {available} verfügbar, {disabled} deaktiviert",
     "message.policySummary": "Aktuell freigegebener Kontext: Home-Assistant-URL {url}, WebSocket-Pfad {websocket}.",
     "message.saved": "Einstellungen gespeichert.",
@@ -520,22 +590,29 @@ const translations = {
     "message.pluginRepositoryBundledVersion": "Eingebaut: {version}",
     "message.pluginRepositoryNotInstalled": "Nicht installiert",
     "message.pluginRepositoryNoPackage": "Keine installierbare Paket- oder Manifest-URL.",
-    "message.pluginUpdatesHint": "Atlas prüft benutzerdefinierte Plugin-Repositories beim Start der Administration und nach einem Reload.",
+    "message.sidebarPluginDialogHint": "Bereitet einen Home-Assistant-Seitenleisteneintrag vor und kopiert den panel_iframe-YAML-Block.",
+    "message.sidebarPluginCopied": "{name}: panel_iframe-YAML kopiert.",
+    "message.sidebarPluginUnavailable": "Noch keine Start-URL verfügbar.",
+    "message.pluginUpdatesHint": "Atlas prüft hier nur externe benutzerdefinierte Plugin-Repositories, nicht die unten installierten mitgelieferten Plugins.",
     "message.pluginUpdatesChecking": "Plugin-Repositories werden auf Updates geprüft...",
-    "message.pluginUpdatesNoRepositories": "Noch keine benutzerdefinierten Plugin-Repositories eingerichtet.",
-    "message.pluginUpdatesNone": "Keine Plugin-Updates gefunden. Zuletzt geprüft: {checkedAt}.",
-    "message.pluginUpdatesFound": "{count} Plugin-Update(s) gefunden. Zuletzt geprüft: {checkedAt}.",
-    "message.pluginUpdatesPending": "Plugin-Update-Prüfung wurde noch nicht ausgeführt.",
+    "message.pluginUpdatesNoRepositories": "Noch keine externen Plugin-Repositories eingerichtet.",
+    "message.pluginUpdatesNone": "Keine externen Plugin-Updates gefunden. Zuletzt geprüft: {checkedAt}.",
+    "message.pluginUpdatesFound": "{count} externe Plugin-Update(s) gefunden. Zuletzt geprüft: {checkedAt}.",
+    "message.pluginUpdatesPending": "Externe Plugin-Update-Prüfung wurde noch nicht ausgeführt.",
     "type.plugin": "Plugin",
     "type.card": "Card",
     "type.integration": "Integration",
     "type.tool": "Tool",
     "type.theme": "Theme",
+    "guide.sidebarStep1": "Öffne Home Assistant Einstellungen > Dashboards.",
+    "guide.sidebarStep2": "Füge ein Dashboard vom Typ Webseite hinzu.",
+    "guide.sidebarStep3": "Füge den kopierten panel_iframe-Block in configuration.yaml ein oder lege einen passenden Webseiten-Dashboard-Eintrag an.",
+    "guide.sidebarStep4": "Prüfe die YAML-Konfiguration und lade Panel-iFrames neu oder starte Home Assistant neu.",
     "mode.simple": "Simple",
     "mode.expert": "Expert",
     "policy.token": "Der Card Editor erhält den Token nur als Browser-Sitzungsübergabe.",
     "policy.paths": "Plugins erhalten freigegebene URLs, WebSocket-Pfade und Ressourcenpfade.",
-    "policy.capabilities": "Fähigkeiten werden über das Runtime-Plugin-Manifest deklariert.",
+    "policy.capabilities": "Fähigkeiten werden über das Runtime-Plugin-Manifest deklariert und Dateipfade hier freigegeben.",
     "text.pluginStatusAvailable": "Verfügbar",
     "text.pluginStatusActive": "Aktiv",
     "text.pluginStatusDisabled": "Deaktiviert",
@@ -638,6 +715,15 @@ function readThemePreferenceFromLocation() {
   }
 }
 
+function readLanguageFromLocation() {
+  try {
+    const language = new URL(window.location.href).searchParams.get("language");
+    return language === "de" || language === "en" ? language : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function currentSystemTheme() {
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
@@ -697,6 +783,11 @@ function applyHomeAssistantConnectionEditMode() {
     ? t("message.connectionHaAppHint")
     : t("message.connectionStandaloneHint");
   allowAddonsPath.disabled = readonly;
+  for (const input of fileStudioPathAccessInputs) {
+    if (input.dataset.fileStudioPathAccess !== "config") {
+      input.disabled = readonly;
+    }
+  }
   fileStudioAccessHint.textContent = readonly
     ? t("message.fileStudioAccessHaAppHint")
     : t("message.fileStudioAccessStandaloneHint");
@@ -874,20 +965,43 @@ function renderParcelProviders() {
 }
 
 function normalizeFileStudioAccessSettings(settings = {}) {
+  const allowedPaths = settings && typeof settings.allowedPaths === "object" && !Array.isArray(settings.allowedPaths)
+    ? settings.allowedPaths
+    : {};
   return {
-    allowAddonsPath: settings?.allowAddonsPath === true,
+    allowAddonsPath: settings?.allowAddonsPath === true || allowedPaths.addons === true,
+    allowWwwPath: settings?.allowWwwPath === true || allowedPaths.www === true,
+    allowCustomComponentsPath: settings?.allowCustomComponentsPath === true || allowedPaths.customComponents === true,
+    allowParentOfConfigPath: settings?.allowParentOfConfigPath === true || allowedPaths.parentOfConfig === true,
+    allowedPaths: {
+      config: true,
+      www: settings?.allowWwwPath === true || allowedPaths.www === true,
+      customComponents: settings?.allowCustomComponentsPath === true || allowedPaths.customComponents === true,
+      addons: settings?.allowAddonsPath === true || allowedPaths.addons === true,
+      parentOfConfig: settings?.allowParentOfConfigPath === true || allowedPaths.parentOfConfig === true,
+    },
   };
 }
 
 function readFileStudioAccessSettings() {
+  const allowedPaths = Object.fromEntries(fileStudioPathAccessInputs
+    .map(input => [input.dataset.fileStudioPathAccess, input.checked]));
   return normalizeFileStudioAccessSettings({
     allowAddonsPath: allowAddonsPath.checked,
+    allowWwwPath: allowedPaths.www === true,
+    allowCustomComponentsPath: allowedPaths.customComponents === true,
+    allowParentOfConfigPath: allowedPaths.parentOfConfig === true,
+    allowedPaths,
   });
 }
 
 function applyFileStudioAccessSettings(settings) {
   const normalized = normalizeFileStudioAccessSettings(settings);
   allowAddonsPath.checked = normalized.allowAddonsPath;
+  for (const input of fileStudioPathAccessInputs) {
+    const key = input.dataset.fileStudioPathAccess;
+    input.checked = key === "config" ? true : normalized.allowedPaths[key] === true;
+  }
   applyHomeAssistantConnectionEditMode();
 }
 
@@ -1250,7 +1364,10 @@ function restoreConfiguration() {
   try {
     const saved = JSON.parse(localStorage.getItem(adminStorageKey) ?? "null");
     let migratedConfiguration = false;
-    if (saved?.language === "de" || saved?.language === "en") {
+    const urlLanguage = readLanguageFromLocation();
+    if (urlLanguage) {
+      currentLanguage = urlLanguage;
+    } else if (saved?.language === "de" || saved?.language === "en") {
       currentLanguage = saved.language;
     }
     restoreThemePreference(saved?.themePreference);
@@ -1657,6 +1774,7 @@ function normalizeRepositoryPlugin(plugin, repositoryEntry, index) {
     : `repository-plugin-${index + 1}`;
   return {
     id,
+    slug: typeof plugin.slug === "string" && plugin.slug.trim() ? plugin.slug.trim() : "",
     name: typeof plugin.name === "string" && plugin.name.trim() ? plugin.name.trim() : id,
     nameI18n: normalizeLocalizedPluginText(plugin.nameI18n),
     version: typeof plugin.version === "string" ? plugin.version : "",
@@ -2132,6 +2250,7 @@ async function installRepositoryPluginPackage(plugin) {
       logoUrl: plugin.logoUrl,
       previewUrl: plugin.previewUrl,
       entry: plugin.entry,
+      slug: plugin.slug,
       compatibility: plugin.compatibility,
       files: installPackage.files,
       installedAt: new Date().toISOString(),
@@ -2358,9 +2477,12 @@ function restorePluginState() {
     const savedPluginIds = Array.isArray(saved?.activePluginIds)
       ? saved.activePluginIds.filter(pluginId => typeof pluginId === "string")
       : undefined;
-    activePluginIds = new Set(savedPluginIds ?? [HomeAssistantCardEditorPluginId]);
+    activePluginIds = new Set(savedPluginIds ?? defaultActivePluginIds);
+    for (const pluginId of defaultActivePluginIds) {
+      activePluginIds.add(pluginId);
+    }
   } catch {
-    activePluginIds = new Set([HomeAssistantCardEditorPluginId]);
+    activePluginIds = new Set(defaultActivePluginIds);
     localStorage.removeItem(adminPluginStateStorageKey);
   }
 }
@@ -2412,6 +2534,7 @@ function persistSharedPluginCatalogCookie() {
       logoUrl: resolvePluginDisplayAssetUrl(plugin, "logo"),
       previewUrl: resolvePluginDisplayAssetUrl(plugin, "preview"),
       entry: plugin.entry,
+      slug: plugin.slug,
     }));
 
   const encodedCatalog = encodeURIComponent(JSON.stringify({ plugins }));
@@ -2434,7 +2557,7 @@ function resolvePluginDisplayAssetUrl(plugin, kind) {
     return "";
   }
 
-  return `/atlas-plugins/${encodeURIComponent(directory)}/${assetPath}`;
+  return createAppRouteNavigationUrl(`/plugin-assets/${encodeURIComponent(directory)}/${assetPath}`);
 }
 
 function isImportedPlugin(pluginId) {
@@ -2736,16 +2859,187 @@ function createEditorNavigationUrl() {
   const search = new URLSearchParams();
   search.set("atlasAdminHandoff", "1");
   search.set("theme", currentThemePreference);
+  search.set("language", currentLanguage);
   return createPortNavigationUrl(4174, "/", search.toString(), `${editorOrigin}/?${search.toString()}`);
 }
 
 function createHubNavigationUrl() {
+  if (isAppRouteSurface()) {
+    return createAppRouteNavigationUrl("/hub", createThemeSearch());
+  }
   return appendThemeSearch(lastAppRuntime?.urls?.hub) || createPortNavigationUrl(4176, "/hub", createThemeSearch());
+}
+
+function createPluginNavigationUrl(plugin) {
+  const entry = typeof plugin?.entry === "string" ? plugin.entry.trim() : "";
+  if (plugin.id === HomeAssistantCardEditorPluginId || entry === "editor") {
+    return createEditorNavigationUrl();
+  }
+  if (plugin.id === FileStudioPluginId) {
+    return appendThemeSearch(createAppRouteNavigationUrl("/plugin-assets/file-studio/index.html"));
+  }
+  if (plugin.id === AutomationExporterPluginId) {
+    return appendThemeSearch(createAppRouteNavigationUrl("/plugin-assets/automation-exporter-editor/index.html"));
+  }
+  if (entry === "admin") {
+    return appendThemeSearch(lastAppRuntime?.urls?.admin) || createPortNavigationUrl(4175, "/", createThemeSearch());
+  }
+  if (!entry) {
+    return "";
+  }
+
+  try {
+    const appUrl = new URL(lastAppRuntime?.urls?.app ?? createPortNavigationUrl(4176, "/"), window.location.href);
+    appUrl.pathname = "/";
+    appUrl.search = "";
+    appUrl.hash = "";
+    const pluginUrl = new URL(entry.replace(/^\/+/, ""), appUrl);
+    pluginUrl.searchParams.set("theme", currentThemePreference);
+    pluginUrl.searchParams.set("language", currentLanguage);
+    return pluginUrl.toString();
+  } catch {
+    return "";
+  }
+}
+
+function createPluginSidebarIcon(plugin) {
+  if (plugin.id === HomeAssistantCardEditorPluginId) return "mdi:view-dashboard-edit";
+  if (plugin.id === FileStudioPluginId) return "mdi:file-document-edit";
+  return "mdi:puzzle";
+}
+
+function openSidebarPluginEntryDialog() {
+  renderSidebarPluginEntries();
+  if (typeof sidebarPluginDialog.showModal === "function") {
+    sidebarPluginDialog.showModal();
+  } else {
+    sidebarPluginDialog.setAttribute("open", "");
+  }
+}
+
+function shouldOpenSidebarPluginEntryDialog() {
+  try {
+    const url = new URL(window.location.href);
+    return url.searchParams.get("sidebar") === "plugins"
+      || url.searchParams.get("dialog") === "plugin-sidebar"
+      || url.hash === "#plugin-sidebar";
+  } catch {
+    return false;
+  }
+}
+
+function closeSidebarPluginEntryDialog() {
+  sidebarPluginDialog.close?.();
+  sidebarPluginDialog.removeAttribute("open");
+}
+
+function renderSidebarPluginEntries() {
+  sidebarPluginList.replaceChildren();
+  const plugins = currentPluginDescriptors()
+    .slice()
+    .sort((left, right) => (left.order ?? 999) - (right.order ?? 999) || localizedPluginText(left, "name", left.id).localeCompare(localizedPluginText(right, "name", right.id)));
+
+  for (const plugin of plugins) {
+    sidebarPluginList.append(createSidebarPluginEntry(plugin));
+  }
+}
+
+function createSidebarPluginEntry(plugin) {
+  const card = document.createElement("article");
+  const body = document.createElement("div");
+  const title = document.createElement("div");
+  const meta = document.createElement("div");
+  const yamlLabel = document.createElement("span");
+  const yaml = document.createElement("pre");
+  const yamlCode = document.createElement("code");
+  const action = document.createElement("button");
+  const name = localizedPluginText(plugin, "name", plugin.id);
+  const url = createPluginNavigationUrl(plugin);
+  const icon = createPluginSidebarIcon(plugin);
+  const panelId = createPanelIframeId(plugin, name);
+  const panelIframeYaml = url ? createPanelIframeYaml({ panelId, name, url, icon }) : "";
+  const status = activePluginIds.has(plugin.id) ? t("text.pluginStatusActive") : translatePluginStatus(plugin.status);
+
+  card.className = "sidebar-plugin-card";
+  title.className = "sidebar-plugin-title";
+  meta.className = "sidebar-plugin-meta";
+  yamlLabel.className = "sidebar-plugin-yaml-label";
+  yaml.className = "sidebar-plugin-yaml";
+  title.textContent = name;
+  meta.append(
+    createTextLine(`${status} · ${plugin.version}`),
+    createTextLine(url || t("message.sidebarPluginUnavailable")),
+    createTextLine(icon),
+  );
+  yamlLabel.textContent = t("label.sidebarYaml");
+  yamlCode.textContent = panelIframeYaml;
+  yaml.append(yamlCode);
+  action.type = "button";
+  action.className = "accent";
+  action.textContent = t("button.prepareSidebarPlugin");
+  action.disabled = !url;
+  action.addEventListener("click", () => copySidebarPluginEntry({ name, url, icon, panelId, panelIframeYaml }));
+
+  body.append(title, meta);
+  if (panelIframeYaml) {
+    body.append(yamlLabel, yaml);
+  }
+  card.append(body, action);
+  return card;
+}
+
+function createTextLine(text) {
+  const line = document.createElement("span");
+  line.textContent = text;
+  return line;
+}
+
+async function copySidebarPluginEntry({ name, url, icon, panelId, panelIframeYaml }) {
+  const text = panelIframeYaml || createPanelIframeYaml({ panelId, name, url, icon });
+
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const fallback = document.createElement("textarea");
+    fallback.value = text;
+    fallback.className = "visually-hidden";
+    document.body.append(fallback);
+    fallback.select();
+    document.execCommand("copy");
+    fallback.remove();
+  }
+
+  adminSaveState.textContent = t("message.sidebarPluginCopied", { name });
+}
+
+function createPanelIframeId(plugin, name) {
+  const source = plugin?.id || name || "atlas_plugin";
+  const suffix = String(source)
+    .toLowerCase()
+    .replace(/^atlas\.plugin\./, "atlas_")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return suffix || "atlas_plugin";
+}
+
+function createPanelIframeYaml({ panelId, name, url, icon }) {
+  return [
+    "panel_iframe:",
+    `  ${panelId}:`,
+    `    title: "${escapeYamlDoubleQuotedString(name)}"`,
+    `    url: "${escapeYamlDoubleQuotedString(url)}"`,
+    `    icon: "${escapeYamlDoubleQuotedString(icon)}"`,
+  ].join("\n");
+}
+
+function escapeYamlDoubleQuotedString(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 
 function createThemeSearch() {
   const search = new URLSearchParams();
   search.set("theme", currentThemePreference);
+  search.set("language", currentLanguage);
   return search.toString();
 }
 
@@ -2754,6 +3048,7 @@ function appendThemeSearch(value) {
   try {
     const url = new URL(value, window.location.href);
     url.searchParams.set("theme", currentThemePreference);
+    url.searchParams.set("language", currentLanguage);
     return url.toString();
   } catch {
     return value;
@@ -2786,8 +3081,49 @@ function createPortNavigationUrl(port, pathname = "/", search = "", fallback = "
   }
 }
 
+function createAppRuntimeApiUrl() {
+  if (isAppRouteSurface()) {
+    return createAppRouteNavigationUrl("/app");
+  }
+  return createPortNavigationUrl(4176, "/app");
+}
+
+function createAdminApiUrl(path) {
+  return isAppRouteSurface()
+    ? createAppRouteNavigationUrl(path)
+    : createPortNavigationUrl(4176, `/${String(path).replace(/^\/+/, "")}`);
+}
+
+function isAppRouteSurface() {
+  try {
+    const url = new URL(window.location.href);
+    return url.port === "4176"
+      || url.pathname.includes("/api/hassio_ingress/")
+      || url.pathname.includes("/ingress/");
+  } catch {
+    return false;
+  }
+}
+
+function createAppRouteNavigationUrl(pathname, search = "") {
+  try {
+    const url = new URL(window.location.href);
+    const knownRoutes = ["/admin", "/admin/", "/editor", "/editor/", "/hub", "/hub/"];
+    const route = knownRoutes.find(candidate => url.pathname === candidate || url.pathname.endsWith(candidate));
+    const routeIndex = route ? url.pathname.lastIndexOf(route) : -1;
+    const basePath = routeIndex >= 0 ? url.pathname.slice(0, routeIndex) : "";
+    url.pathname = `${basePath}/${String(pathname).replace(/^\/+/, "")}`.replace(/\/{2,}/g, "/");
+    url.search = search;
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return pathname;
+  }
+}
+
 function receiveEditorReady(event) {
-  if (event.origin !== editorOrigin || event.data?.type !== "atlas.editor.ready.v1") {
+  const allowedOrigin = isAppRouteSurface() ? window.location.origin : editorOrigin;
+  if (event.origin !== allowedOrigin || event.data?.type !== "atlas.editor.ready.v1") {
     return;
   }
 
@@ -2995,6 +3331,9 @@ async function initializeAdministration() {
   void loadPluginRepositoriesPreview();
   void loadAppRuntimeStatus();
   void restoreServerConnectionSettings();
+  if (shouldOpenSidebarPluginEntryDialog()) {
+    openSidebarPluginEntryDialog();
+  }
 }
 
 for (const button of languageButtons) {
@@ -3031,6 +3370,14 @@ homeAssistantToken.addEventListener("input", () => {
 
 editorStartMode.addEventListener("change", persistConfiguration);
 allowAddonsPath.addEventListener("change", persistConfiguration);
+for (const input of fileStudioPathAccessInputs) {
+  input.addEventListener("change", () => {
+    if (input.dataset.fileStudioPathAccess === "addons") {
+      allowAddonsPath.checked = input.checked;
+    }
+    persistConfiguration();
+  });
+}
 
 rememberAdminToken.addEventListener("change", () => {
   if (!rememberAdminToken.checked) {
@@ -3062,6 +3409,8 @@ exportAdminSettings.addEventListener("click", () => {
 });
 
 openCardEditor.addEventListener("click", openEditorWithConnectionHandoff);
+openSidebarPluginDialog?.addEventListener("click", openSidebarPluginEntryDialog);
+closeSidebarPluginDialog.addEventListener("click", closeSidebarPluginEntryDialog);
 importPluginPackage.addEventListener("click", () => pluginPackageFile.click());
 pluginPackageFile.addEventListener("change", importSelectedPluginPackage);
 openPluginRepositoryDialog.addEventListener("click", openPluginRepositoryAddDialog);

@@ -120,6 +120,7 @@
         flex-wrap: wrap;
         gap: 8px;
         justify-content: flex-end;
+        align-items: center;
       }
 
       .language-toggle,
@@ -151,6 +152,28 @@
       .theme-toggle button[aria-pressed="true"] {
         background: var(--atlas-accent);
         color: var(--atlas-on-accent);
+      }
+
+      .header-doc-link {
+        min-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--atlas-border-strong);
+        border-radius: 6px;
+        background: var(--atlas-panel);
+        color: var(--atlas-accent);
+        padding: 6px 10px;
+        font-size: 13px;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .header-doc-link:hover,
+      .header-doc-link:focus-visible {
+        border-color: var(--atlas-accent);
+        background: var(--atlas-panel-soft);
+        outline: 0;
       }
 
       .admin-grid {
@@ -337,6 +360,25 @@
       .provider-key {
         min-height: 32px;
         font-size: 14px;
+      }
+
+      .future-note {
+        color: var(--atlas-orange);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .capability-scope-list {
+        display: grid;
+        gap: 8px;
+        padding: 10px;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+      }
+
+      .capability-scope-list .checkbox-row {
+        margin: 0;
       }
 
       .parcel-provider-list {
@@ -651,6 +693,81 @@
         gap: 8px;
       }
 
+      .sidebar-dialog {
+        width: min(900px, 80vw);
+        max-height: 80vh;
+      }
+
+      .sidebar-dialog .dialog-panel {
+        max-height: 80vh;
+        overflow: hidden;
+      }
+
+      .sidebar-plugin-list {
+        display: grid;
+        gap: 10px;
+        max-height: min(48vh, 460px);
+        overflow: auto;
+        padding-right: 4px;
+      }
+
+      .sidebar-plugin-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: start;
+        border: 1px solid var(--atlas-border);
+        border-left: 4px solid var(--atlas-orange);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+        padding: 10px;
+      }
+
+      .sidebar-plugin-title {
+        color: var(--atlas-text);
+        font-weight: 800;
+      }
+
+      .sidebar-plugin-meta {
+        display: grid;
+        gap: 4px;
+        margin-top: 4px;
+        color: var(--atlas-muted);
+        font-size: 12px;
+      }
+
+      .sidebar-plugin-yaml-label {
+        display: block;
+        margin-top: 10px;
+        color: var(--atlas-accent);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .sidebar-plugin-yaml {
+        max-width: 100%;
+        margin: 6px 0 0;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel);
+        color: var(--atlas-text);
+        padding: 8px;
+        overflow: auto;
+        font-size: 12px;
+        line-height: 1.45;
+        white-space: pre;
+      }
+
+      .sidebar-guide {
+        display: grid;
+        gap: 6px;
+        margin: 0;
+        padding-left: 20px;
+        color: var(--atlas-muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
       .plugin-repository-tools {
         display: grid;
         gap: 10px;
@@ -896,14 +1013,14 @@
     <script type="importmap">
       {
         "imports": {
-          "@atlas/core": "/packages/core/dist/index.js",
-          "@atlas/foundation": "/packages/foundation/dist/index.js",
-          "@atlas/kernel": "/packages/kernel/dist/index.js",
-          "@atlas/renderer": "/packages/renderer/dist/index.js",
-          "@atlas/runtime": "/packages/runtime/dist/index.js",
-          "@atlas/theme": "/packages/theme/dist/index.js",
-          "@atlas/file-studio": "/packages/file-studio/dist/index.js",
-          "@atlas/homeassistant": "/packages/homeassistant/dist/index.js"
+          "@atlas/core": "./packages/core/dist/index.js",
+          "@atlas/foundation": "./packages/foundation/dist/index.js",
+          "@atlas/kernel": "./packages/kernel/dist/index.js",
+          "@atlas/renderer": "./packages/renderer/dist/index.js",
+          "@atlas/runtime": "./packages/runtime/dist/index.js",
+          "@atlas/theme": "./packages/theme/dist/index.js",
+          "@atlas/file-studio": "./packages/file-studio/dist/index.js",
+          "@atlas/homeassistant": "./packages/homeassistant/dist/index.js"
         }
       }
     </script>
@@ -916,6 +1033,13 @@
           <p data-i18n="page.subtitle">Manage plugins, install packages and central Home Assistant access.</p>
         </div>
         <div class="header-controls">
+          <a
+            class="header-doc-link"
+            href="https://opensource.ugso-software.de/projects/atlas-plugins/gepruefte-plugins"
+            target="_blank"
+            rel="noreferrer"
+            data-i18n="button.verifiedPlugins"
+          >Verified Plugins</a>
           <div class="theme-toggle" role="group" aria-label="Theme" data-i18n-aria-label="aria.theme">
             <button type="button" data-theme-mode="auto" aria-pressed="true" data-i18n="theme.auto">Auto</button>
             <button type="button" data-theme-mode="light" aria-pressed="false" data-i18n="theme.light">Light</button>
@@ -1028,7 +1152,10 @@
           </details>
 
           <details>
-            <summary data-i18n="heading.parcelSettings">Parcel service providers</summary>
+            <summary>
+              <span data-i18n="heading.parcelSettings">Parcel service providers</span>
+              <span class="future-note" data-i18n="message.preparedForLaterUse">(prepared for later use)</span>
+            </summary>
             <div class="settings-section-body">
               <p id="parcel-provider-summary"></p>
               <div id="parcel-provider-list" class="parcel-provider-list"></div>
@@ -1145,10 +1272,28 @@
         <aside class="panel" aria-labelledby="policy-heading">
           <h2 id="policy-heading" data-i18n="heading.policy">Plugin access policy</h2>
           <p id="policy-summary"></p>
-          <label class="checkbox-row" for="allow-addons-path">
-            <input id="allow-addons-path" type="checkbox">
-            <span data-i18n="label.allowAddonsPath">Allow File Studio access to /addons</span>
-          </label>
+          <div class="capability-scope-list" role="group" aria-labelledby="policy-heading">
+            <label class="checkbox-row">
+              <input type="checkbox" data-file-studio-path-access="config" checked disabled>
+              <span data-i18n="label.fileStudioAccessConfig">config</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" data-file-studio-path-access="www">
+              <span data-i18n="label.fileStudioAccessWww">www</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" data-file-studio-path-access="customComponents">
+              <span data-i18n="label.fileStudioAccessCustomComponents">custom_components</span>
+            </label>
+            <label class="checkbox-row" for="allow-addons-path">
+              <input id="allow-addons-path" type="checkbox" data-file-studio-path-access="addons">
+              <span data-i18n="label.fileStudioAccessAddons">addons</span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" data-file-studio-path-access="parentOfConfig">
+              <span data-i18n="label.fileStudioAccessParentOfConfig">parent-of-config</span>
+            </label>
+          </div>
           <p id="file-studio-access-hint" class="field-hint" data-i18n="message.fileStudioAccessStandaloneHint">In Docker and Linux mode this approval is managed here.</p>
           <ul class="policy-list">
             <li data-i18n="policy.token">The Card Editor receives the token only as a browser session handoff.</li>
@@ -1191,6 +1336,26 @@
         </div>
       </form>
     </dialog>
-    <script type="module" src="/examples/admin-demo/app.js"></script>
+    <dialog id="sidebar-plugin-dialog" class="sidebar-dialog" aria-labelledby="sidebar-plugin-dialog-heading">
+      <form class="dialog-panel" method="dialog">
+        <div class="panel-header">
+          <div>
+            <h2 id="sidebar-plugin-dialog-heading" data-i18n="heading.sidebarPluginDialog">Plugin als Seitenleisteneintrag</h2>
+            <p data-i18n="message.sidebarPluginDialogHint">Prepare a Home Assistant Webpage dashboard entry for an ATLAS plugin.</p>
+          </div>
+        </div>
+        <div id="sidebar-plugin-list" class="sidebar-plugin-list"></div>
+        <ol class="sidebar-guide">
+          <li data-i18n="guide.sidebarStep1">Open Home Assistant Settings > Dashboards.</li>
+          <li data-i18n="guide.sidebarStep2">Add a dashboard of type Webpage.</li>
+          <li data-i18n="guide.sidebarStep3">Use the copied name, URL and icon suggestion.</li>
+          <li data-i18n="guide.sidebarStep4">Enable Show in sidebar and save.</li>
+        </ol>
+        <div class="dialog-actions">
+          <button id="close-sidebar-plugin-dialog" class="secondary" type="button" data-i18n="button.close">Close</button>
+        </div>
+      </form>
+    </dialog>
+    <script src="examples/admin-demo/app.bundle.js"></script>
   </body>
 </html>

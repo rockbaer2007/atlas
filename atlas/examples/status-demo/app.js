@@ -58,6 +58,7 @@ import {
 
 const statusRoot = document.querySelector("#atlas-status-root");
 const statusMessage = document.querySelector("#status-message");
+const editorLoadingNotice = document.querySelector("#editor-loading-notice");
 const selectedEntitiesPanel = document.querySelector("#selected-entities-panel");
 const buttons = Array.from(document.querySelectorAll("[data-entity-state]"));
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
@@ -140,6 +141,7 @@ const haCardVisualPreview = document.querySelector("#ha-card-visual-preview");
 const resetSimplePreview = document.querySelector("#reset-simple-preview");
 const haCardDependency = document.querySelector("#ha-card-dependency");
 const toggleTemporaryResourceDebug = document.querySelector("#toggle-temporary-resource-debug");
+const toggleAutomaticCardTypeMapping = document.querySelector("#toggle-automatic-card-type-mapping");
 const temporaryResourceDebug = document.querySelector("#temporary-resource-debug");
 const temporaryHaCardResourceList = document.querySelector("#temporary-ha-card-resource-list");
 const haCardImportReview = document.querySelector("#ha-card-import-review");
@@ -167,6 +169,12 @@ const expertColumn = document.querySelector("#expert-column");
 const expertRow = document.querySelector("#expert-row");
 const expertWidth = document.querySelector("#expert-width");
 const expertHeight = document.querySelector("#expert-height");
+const expertGridColumnsControl = document.querySelector("#expert-grid-columns");
+const expertGridRowsControl = document.querySelector("#expert-grid-rows");
+const expertGridZoomControl = document.querySelector("#expert-grid-zoom");
+const expertGridColumnsOutput = document.querySelector("#expert-grid-columns-output");
+const expertGridRowsOutput = document.querySelector("#expert-grid-rows-output");
+const expertGridZoomOutput = document.querySelector("#expert-grid-zoom-output");
 const addExpertField = document.querySelector("#add-expert-field");
 const editExpertField = document.querySelector("#edit-expert-field");
 const arrangeExpertFields = document.querySelector("#arrange-expert-fields");
@@ -231,7 +239,8 @@ let currentThemePreference = "auto";
 const translations = {
   en: {
     "page.title": "ATLAS Home Assistant Card Editor",
-    "page.subtitle": "Build Simple or Expert Home Assistant cards from live or local entities.",
+    "page.subtitle": "Build Expert Home Assistant cards from live or local entities.",
+    "message.editorLoading": "Please wait, the editor is loading. This can take 5-10 seconds. The notice stays visible briefly so the editor can finish initializing.",
     "heading.resourceHint": "Resource hint",
     "heading.temporaryResourceDebug": "Temporary HA card resource check",
     "label.haUrl": "Home Assistant URL",
@@ -249,6 +258,7 @@ const translations = {
     "label.entitySearch": "Entity search",
     "label.entityPicker": "Entity picker",
     "label.showTemporaryResourceDebug": "Show resource debug",
+    "label.automaticCardTypeMapping": "Automatic card type mapping",
     "label.haCardPreview": "HA card preview",
     "label.haCardCode": "HA card code",
     "label.expertHaCardCode": "Expert HA card code",
@@ -269,6 +279,9 @@ const translations = {
     "label.row": "Row",
     "label.width": "Width",
     "label.height": "Height",
+    "label.gridColumns": "X",
+    "label.gridRows": "Y",
+    "label.gridZoom": "Zoom",
     "button.connect": "Connect",
     "button.disconnect": "Disconnect",
     "button.saveGroup": "Save group",
@@ -425,10 +438,14 @@ const translations = {
     "message.invalidConnectionUrl": "Home Assistant URL is invalid.",
     "message.paletteEntriesDetected": "{total} palette entries detected from loaded HA resources, including {hacs} /hacsfiles resources.",
     "message.noPaletteEntriesDetected": "No additional scan-only palette entries detected from loaded HA resources.",
+    "message.mapCustomCardPrompt": "Enter the Lovelace card type for {label}. Example: custom:mini-graph-card",
+    "message.mapCustomCardInvalid": "Mapping cancelled: enter a valid custom:* card type.",
+    "message.mapCustomCardSaved": "{label} mapped to {type}. The card is now available in the palette.",
+    "message.autoCustomCardMappingsCreated": "{count} unknown resources were automatically mapped to custom card types.",
     "message.refreshingResources": "{message} Refreshing Lovelace resources from Home Assistant.",
     "message.connectAndScanAgain": "{message} Connect to Home Assistant and scan again to refresh the list.",
     "message.templateSizeSet": "{template} size set to {columns} columns and {rows} rows.",
-    "message.surfaceResized": "Expert editor surface resized: +{columns} columns, +{rows} rows.",
+    "message.surfaceResized": "Expert editor grid set to {columns}x{rows}.",
     "message.surfaceSizeReset": "Expert editor surface size reset to the default.",
     "message.arrangeNeedsFields": "Add Expert fields before arranging the editor surface.",
     "message.fieldsArranged": "Expert fields arranged. Overlaps: {previous} -> {next}.",
@@ -564,6 +581,8 @@ const translations = {
     "text.allEntityTypes": "All entity types",
     "text.all": "All",
     "text.favorite": "Favorite",
+    "text.hiddenCard": "Hidden",
+    "text.automaticCardTypeMappingWarning": "Safety notice: only use this option if you know what you are doing. ATLAS will try to map unknown registered resources automatically to a custom:* card type.",
     "text.scannedOnly": "Scanned only",
     "text.builtIn": "Built-in",
     "text.resourceUnchecked": "Resource unchecked",
@@ -609,17 +628,22 @@ const translations = {
     "text.auto": "auto",
     "text.categoryCore": "Core",
     "text.categoryCommunity": "Community",
+    "text.categoryMappedHacs": "Mapped HACS card",
+    "text.categoryMappedHa": "Mapped HA card",
     "text.registeredNotMapped": "{category} registered, not mapped yet",
+    "text.mappedCustomCard": "Mapped as {type}",
+    "text.mapCardType": "Map card type",
     "text.paletteDetail": "{layout}, {size}, {target}",
     "text.scannedCardUnavailable": "{label} is registered in Home Assistant, but ATLAS does not map this custom card yet.",
     "text.paletteCardSelected": "{label} selected from the card list.",
-    "text.paletteSelectionChanged": "Favorite selection changed. Use Save favorites to apply it.",
+    "text.paletteSelectionChanged": "Palette selection changed. Use Save favorites to apply it.",
     "text.noPaletteSearchResults": "No matching cards found.",
-    "text.fullCardListVisible": "Full Core and Community card list is visible for favorite selection.",
+    "text.fullCardListVisible": "Full Core and Community card list is visible, including hidden cards.",
     "text.savedFavoritesVisible": "Saved favorites are visible.",
     "text.favoritesSaved": "{count} favorite cards saved.",
-    "text.allCardsRemainVisible": "Favorite selection saved. All cards remain visible.",
-    "text.allCardsVisibleAgain": "All Core and Community cards are visible again.",
+    "text.allCardsRemainVisible": "Favorite selection saved. The normal card list stays visible without hidden cards.",
+    "text.allCardsVisibleAgain": "Favorite selection reset. The normal card list stays visible without hidden cards.",
+    "text.hiddenCardsUpdated": "Hidden cards updated.",
     "text.templateSizesReset": "Template sizes reset to their defaults.",
     "text.removeField": "Remove {field}",
     "text.fieldRemoved": "{field} removed from the Expert editor preview.",
@@ -671,6 +695,7 @@ const translations = {
     "target.thermostat": "Thermostat",
     "target.link": "Link",
     "target.webpage": "Webpage",
+    "target.custom-card": "Custom card",
     "target.mushroom-template": "Mushroom template",
     "target.bubble": "Bubble",
     "target.tabbed-card-v2": "Tabbed Card V2",
@@ -691,7 +716,8 @@ const translations = {
   },
   de: {
     "page.title": "ATLAS Home Assistant Card Editor",
-    "page.subtitle": "Erstelle Simple- oder Expert-Home-Assistant-Cards aus Live- oder lokalen Entitäten.",
+    "page.subtitle": "Erstelle Expert-Home-Assistant-Cards aus Live- oder lokalen Entitäten.",
+    "message.editorLoading": "Bitte warten, der Editor wird geladen. Das kann 5-10 Sekunden dauern. Der Hinweis bleibt kurz sichtbar, damit der Editor fertig initialisieren kann.",
     "heading.resourceHint": "Ressourcen-Hinweis",
     "heading.temporaryResourceDebug": "Temporärer HA-Card-Ressourcencheck",
     "label.haUrl": "Home Assistant URL",
@@ -709,6 +735,7 @@ const translations = {
     "label.entitySearch": "Entität suchen",
     "label.entityPicker": "Entitätsauswahl",
     "label.showTemporaryResourceDebug": "Ressourcen-Debug anzeigen",
+    "label.automaticCardTypeMapping": "Automatische Cardtypzuordnung",
     "label.haCardPreview": "HA-Card-Vorschau",
     "label.haCardCode": "HA-Card-Code",
     "label.expertHaCardCode": "Expert-HA-Card-Code",
@@ -729,6 +756,9 @@ const translations = {
     "label.row": "Zeile",
     "label.width": "Breite",
     "label.height": "Höhe",
+    "label.gridColumns": "X",
+    "label.gridRows": "Y",
+    "label.gridZoom": "Zoom",
     "button.connect": "Verbinden",
     "button.disconnect": "Trennen",
     "button.saveGroup": "Gruppe speichern",
@@ -885,10 +915,14 @@ const translations = {
     "message.invalidConnectionUrl": "Home-Assistant-URL ist ungültig.",
     "message.paletteEntriesDetected": "{total} Palette-Einträge aus geladenen HA-Ressourcen erkannt, davon {hacs} /hacsfiles-Ressourcen.",
     "message.noPaletteEntriesDetected": "Keine zusätzlichen Scan-only-Palette-Einträge aus geladenen HA-Ressourcen erkannt.",
+    "message.mapCustomCardPrompt": "Gib den Lovelace-Card-Typ für {label} ein. Beispiel: custom:mini-graph-card",
+    "message.mapCustomCardInvalid": "Mapping abgebrochen: Bitte einen gültigen custom:*-Card-Typ eingeben.",
+    "message.mapCustomCardSaved": "{label} wurde {type} zugeordnet. Die Card ist jetzt in der Palette nutzbar.",
+    "message.autoCustomCardMappingsCreated": "{count} unbekannte Ressourcen wurden automatisch Custom-Card-Typen zugeordnet.",
     "message.refreshingResources": "{message} Lovelace-Ressourcen werden von Home Assistant aktualisiert.",
     "message.connectAndScanAgain": "{message} Verbinde Home Assistant und scanne erneut, um die Liste zu aktualisieren.",
     "message.templateSizeSet": "{template} Größe auf {columns} Spalten und {rows} Zeilen gesetzt.",
-    "message.surfaceResized": "Expert-Editor-Fläche geändert: +{columns} Spalten, +{rows} Zeilen.",
+    "message.surfaceResized": "Expert-Editor-Raster auf {columns}x{rows} gesetzt.",
     "message.surfaceSizeReset": "Expert-Editor-Fläche auf Standardgröße zurückgesetzt.",
     "message.arrangeNeedsFields": "Füge Expert-Felder hinzu, bevor du die Editor-Fläche anordnest.",
     "message.fieldsArranged": "Expert-Felder angeordnet. Überlappungen: {previous} -> {next}.",
@@ -1024,6 +1058,8 @@ const translations = {
     "text.allEntityTypes": "Alle Entitätstypen",
     "text.all": "Alle",
     "text.favorite": "Favorit",
+    "text.hiddenCard": "Versteckt",
+    "text.automaticCardTypeMappingWarning": "Sicherheitshinweis: Nutze diese Option nur, wenn du weißt, was du tust. ATLAS versucht dann, unbekannte registrierte Ressourcen automatisch einem custom:* Card-Typ zuzuordnen.",
     "text.scannedOnly": "Nur Scan",
     "text.builtIn": "Eingebaut",
     "text.resourceUnchecked": "Ressource ungeprüft",
@@ -1069,17 +1105,22 @@ const translations = {
     "text.auto": "auto",
     "text.categoryCore": "Core",
     "text.categoryCommunity": "Community",
+    "text.categoryMappedHacs": "Gemappte HACS-Card",
+    "text.categoryMappedHa": "Gemappte HA-Card",
     "text.registeredNotMapped": "{category} registriert, noch nicht gemappt",
+    "text.mappedCustomCard": "Gemappt als {type}",
+    "text.mapCardType": "Card-Typ zuordnen",
     "text.paletteDetail": "{layout}, {size}, {target}",
     "text.scannedCardUnavailable": "{label} ist in Home Assistant registriert, aber ATLAS mappt diese Custom Card noch nicht.",
     "text.paletteCardSelected": "{label} aus der Card-Liste ausgewählt.",
-    "text.paletteSelectionChanged": "Favoritenauswahl geändert. Nutze Favoriten speichern, um sie anzuwenden.",
+    "text.paletteSelectionChanged": "Palettenauswahl geändert. Nutze Favoriten speichern, um sie anzuwenden.",
     "text.noPaletteSearchResults": "Keine passenden Cards gefunden.",
-    "text.fullCardListVisible": "Die volle Core- und Community-Card-Liste ist zur Favoritenauswahl sichtbar.",
+    "text.fullCardListVisible": "Die volle Core- und Community-Card-Liste ist sichtbar, inklusive versteckter Cards.",
     "text.savedFavoritesVisible": "Gespeicherte Favoriten sind sichtbar.",
     "text.favoritesSaved": "{count} Favoriten-Cards gespeichert.",
-    "text.allCardsRemainVisible": "Favoritenauswahl gespeichert. Alle Cards bleiben sichtbar.",
-    "text.allCardsVisibleAgain": "Alle Core- und Community-Cards sind wieder sichtbar.",
+    "text.allCardsRemainVisible": "Favoritenauswahl gespeichert. Die normale Card-Liste bleibt ohne versteckte Cards sichtbar.",
+    "text.allCardsVisibleAgain": "Favoritenauswahl zurückgesetzt. Die normale Card-Liste bleibt ohne versteckte Cards sichtbar.",
+    "text.hiddenCardsUpdated": "Versteckte Cards aktualisiert.",
     "text.templateSizesReset": "Template-Größen auf Standard zurückgesetzt.",
     "text.removeField": "{field} entfernen",
     "text.fieldRemoved": "{field} aus der Expert-Editor-Vorschau entfernt.",
@@ -1131,6 +1172,7 @@ const translations = {
     "target.thermostat": "Thermostat",
     "target.link": "Verknüpfung",
     "target.webpage": "Webseite",
+    "target.custom-card": "Custom Card",
     "target.mushroom-template": "Mushroom Template",
     "target.bubble": "Bubble",
     "target.tabbed-card-v2": "Tabbed Card V2",
@@ -1158,6 +1200,21 @@ function t(key, values = {}) {
     text = text.replaceAll(`{${name}}`, String(value));
   }
   return text;
+}
+
+const editorLoadingNoticeTimeout = window.setTimeout(hideEditorLoadingNotice, 20000);
+const editorLoadingNoticeMinimumVisibleMs = 12000;
+const editorLoadingNoticeStartedAt = Date.now();
+
+function hideEditorLoadingNotice() {
+  if (!editorLoadingNotice || editorLoadingNotice.hidden) return;
+  const remainingMs = editorLoadingNoticeMinimumVisibleMs - (Date.now() - editorLoadingNoticeStartedAt);
+  if (remainingMs > 0) {
+    window.setTimeout(hideEditorLoadingNotice, remainingMs);
+    return;
+  }
+  editorLoadingNotice.hidden = true;
+  window.clearTimeout(editorLoadingNoticeTimeout);
 }
 
 function applyTranslations() {
@@ -1199,7 +1256,6 @@ function setLanguage(language) {
   renderConnectionReadiness();
   renderCardTranslationModuleStatus();
   renderTemporaryHaCardResourceList();
-  persistConfiguration();
 }
 
 function normalizeThemePreference(value) {
@@ -1210,6 +1266,15 @@ function readThemePreferenceFromLocation() {
   try {
     const preference = new URL(window.location.href).searchParams.get("theme");
     return ["auto", "light", "dark"].includes(preference) ? preference : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function readLanguageFromLocation() {
+  try {
+    const language = new URL(window.location.href).searchParams.get("language");
+    return language === "de" || language === "en" ? language : undefined;
   } catch {
     return undefined;
   }
@@ -1296,6 +1361,8 @@ function translatePaletteCardLabel(card) {
 function translatePaletteCategory(category) {
   if (category === "Core") return t("text.categoryCore");
   if (category === "Community") return t("text.categoryCommunity");
+  if (category === "Mapped HACS card") return t("text.categoryMappedHacs");
+  if (category === "Mapped HA card") return t("text.categoryMappedHa");
   return category;
 }
 
@@ -1326,13 +1393,20 @@ function expertFieldTitleBase(templateId, target = expertTarget.value) {
 }
 
 function listExpertEditorCardTitles() {
-  return expertEditorFields.flatMap(field => [
-    field.id,
-    ...(field.entries ?? []).flatMap(entry => [
-      entry.id,
-      ...(entry.cards ?? []).map(card => card.id),
-    ]),
-  ]).filter(Boolean);
+  const titles = [];
+  const appendEntryTitles = entry => {
+    if (entry?.id) titles.push(entry.id);
+    for (const child of entry?.cards ?? []) {
+      appendEntryTitles(child);
+    }
+  };
+  for (const field of expertEditorFields) {
+    if (field.id) titles.push(field.id);
+    for (const entry of field.entries ?? []) {
+      appendEntryTitles(entry);
+    }
+  }
+  return titles;
 }
 
 function nextExpertEditorTitle(templateId, target = expertTarget.value) {
@@ -1388,6 +1462,8 @@ let expertPaletteCards = [
 const expertEditorFields = [];
 const expertPaletteFavoriteIds = new Set();
 const expertPaletteDraftFavoriteIds = new Set();
+const expertPaletteHiddenIds = new Set();
+const expertCustomCardMappings = new Map();
 const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
   template.id,
   {
@@ -1395,11 +1471,21 @@ const expertTemplateSizing = new Map(cardEditorTemplates.map(template => [
     rows: "auto",
   },
 ]));
-const expertGridColumns = 12;
-const expertGridRows = 12;
+const expertGridBaseColumns = 12;
+const expertGridBaseRows = 12;
+const expertGridMaxExtraColumns = 5;
+const expertGridMaxExtraRows = 5;
+const expertGridDefaultCellSize = 52;
+const expertGridGap = 4;
+const expertGridMinZoomPercent = 75;
+const expertGridMaxZoomPercent = 150;
+const expertGridZoomStepPercent = 5;
+const expertGridMinCellSize = expertGridDefaultCellSize * (expertGridMinZoomPercent / 100);
+const expertGridMaxCellSize = expertGridDefaultCellSize * (expertGridMaxZoomPercent / 100);
+let expertGridCellSize = expertGridDefaultCellSize;
+let expertGridColumns = expertGridBaseColumns;
+let expertGridRows = expertGridBaseRows;
 const expertFieldMaxResizeDelta = 5;
-const expertEditorSurfaceMaxResizeDelta = 5;
-const expertEditorSurfaceHeightStep = 40;
 let expertEditorSurfaceSize = { columns: 0, rows: 0 };
 let expertDragFieldOffset = { column: 0, row: 0 };
 let connection;
@@ -1425,7 +1511,7 @@ let lovelaceResourcesChecked = false;
 let lovelaceResourceRequestTimer;
 let activeLovelaceResourceRequestId;
 const lovelaceResourceDebugEvents = [];
-let activeEditorMode = "simple";
+let activeEditorMode = "expert";
 let importedSimpleCard;
 let importedSimpleCodePreview;
 let importedSimpleStyleInspection;
@@ -1449,7 +1535,7 @@ let entityCatalogSyncStatus = { state: "idle", count: 0, added: 0, removed: 0, r
 const stackSelectedEntityIds = new Set();
 let statusPreviewEntityId;
 let pendingImport;
-let initialEditorMode = "simple";
+let initialEditorMode = "expert";
 let initialGroupSelection = "overview";
 let initialCardTarget = "entities";
 let panelGroups = [
@@ -1467,7 +1553,10 @@ restoreThemePreference();
 
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
-  if (savedConfiguration?.language === "de" || savedConfiguration?.language === "en") {
+  const urlLanguage = readLanguageFromLocation();
+  if (urlLanguage) {
+    currentLanguage = urlLanguage;
+  } else if (savedConfiguration?.language === "de" || savedConfiguration?.language === "en") {
     currentLanguage = savedConfiguration.language;
   }
   restoreThemePreference(savedConfiguration?.themePreference);
@@ -1484,6 +1573,9 @@ try {
   if (typeof savedConfiguration?.entitySearch === "string") {
     homeAssistantEntitySearch.value = savedConfiguration.entitySearch;
   }
+  if (typeof savedConfiguration?.automaticCardTypeMapping === "boolean" && toggleAutomaticCardTypeMapping) {
+    toggleAutomaticCardTypeMapping.checked = savedConfiguration.automaticCardTypeMapping;
+  }
   if (Array.isArray(savedConfiguration?.stackEntityIds)) {
     for (const entityId of savedConfiguration.stackEntityIds) {
       if (typeof entityId === "string" && entityId.trim()) {
@@ -1499,6 +1591,22 @@ try {
       }
     }
   }
+  if (Array.isArray(savedConfiguration?.expertPaletteHiddenIds)) {
+    for (const paletteId of savedConfiguration.expertPaletteHiddenIds) {
+      if (typeof paletteId === "string" && paletteId.trim()) {
+        expertPaletteHiddenIds.add(paletteId);
+      }
+    }
+  }
+  if (Array.isArray(savedConfiguration?.expertCustomCardMappings)) {
+    for (const entry of savedConfiguration.expertCustomCardMappings) {
+      const resourceUrl = normalizeLovelaceResourceUrl(entry?.resourceUrl);
+      const customType = normalizeCustomCardType(entry?.customType);
+      if (resourceUrl && customType) {
+        expertCustomCardMappings.set(resourceUrl, customType);
+      }
+    }
+  }
   if (Array.isArray(savedConfiguration?.expertTemplateSizing)) {
     for (const entry of savedConfiguration.expertTemplateSizing) {
       if (typeof entry?.templateId === "string" && cardEditorTemplates.some(template => template.id === entry.templateId)) {
@@ -1509,9 +1617,10 @@ try {
   if (savedConfiguration?.expertEditorSurfaceSize && typeof savedConfiguration.expertEditorSurfaceSize === "object") {
     expertEditorSurfaceSize = {
       columns: clampExpertEditorSurfaceDelta(savedConfiguration.expertEditorSurfaceSize.columns),
-      rows: clampExpertEditorSurfaceDelta(savedConfiguration.expertEditorSurfaceSize.rows),
+      rows: clampExpertEditorSurfaceDelta(savedConfiguration.expertEditorSurfaceSize.rows, expertGridMaxExtraRows),
     };
   }
+  expertGridCellSize = clampExpertGridCellSize(savedConfiguration?.expertGridCellSize);
   if (Array.isArray(savedConfiguration?.expertEditorFields)) {
     expertEditorFields.push(...createHomeAssistantCardEditorPackagePlan({
       editorMode: "expert",
@@ -1521,9 +1630,7 @@ try {
   if (Number.isInteger(savedConfiguration?.selectedExpertFieldIndex)) {
     selectedExpertFieldIndex = Math.max(-1, Math.min(expertEditorFields.length - 1, savedConfiguration.selectedExpertFieldIndex));
   }
-  if (savedConfiguration?.editorMode === "expert") {
-    initialEditorMode = "expert";
-  }
+  initialEditorMode = "expert";
   if (typeof savedConfiguration?.expertCardName === "string") {
     expertCardName.value = savedConfiguration.expertCardName;
   }
@@ -1615,27 +1722,25 @@ function renderCardTargetOptions(selectedTarget = haCardTarget.value || "entitie
   syncCardLayoutState();
 }
 
-function renderEditorMode(mode = "simple") {
-  const expert = mode === "expert";
-  activeEditorMode = expert ? "expert" : "simple";
-  panelGroupControl.hidden = expert;
-  groupNameControl.hidden = expert;
-  cardTargetControl.hidden = expert;
-  cardLayoutControl.hidden = expert;
-  cardStyleExportControl.hidden = !expert;
-  saveHomeAssistantGroup.hidden = expert;
-  deleteHomeAssistantGroup.hidden = expert;
-  duplicateHomeAssistantGroup.hidden = expert;
+function renderEditorMode() {
+  activeEditorMode = "expert";
+  panelGroupControl.hidden = true;
+  groupNameControl.hidden = true;
+  cardTargetControl.hidden = true;
+  cardLayoutControl.hidden = true;
+  cardStyleExportControl.hidden = false;
+  saveHomeAssistantGroup.hidden = true;
+  deleteHomeAssistantGroup.hidden = true;
+  duplicateHomeAssistantGroup.hidden = true;
   simpleEntityControls.hidden = false;
-  simpleCardSection.hidden = expert;
-  expertEditorSection.hidden = !expert;
+  simpleCardSection.hidden = true;
+  expertEditorSection.hidden = false;
   for (const button of editorModeButtons) {
-    button.setAttribute("aria-pressed", String(button.dataset.editorMode === activeEditorMode));
+    button.setAttribute("aria-pressed", String(button.dataset.editorMode === "expert"));
   }
-  exportHaCardConfig.textContent = expert ? t("button.exportExpertHaCard") : t("button.exportHaCard");
-  copyHaCardConfig.textContent = expert ? t("button.copyExpertHaCard") : t("button.copyHaCard");
-  copyHaCardResources.textContent = expert ? t("button.copyExpertResources") : t("button.copyResources");
-  renderHaCardPreview();
+  exportHaCardConfig.textContent = t("button.exportExpertHaCard");
+  copyHaCardConfig.textContent = t("button.copyExpertHaCard");
+  copyHaCardResources.textContent = t("button.copyExpertResources");
   renderExpertEditorPreview();
 }
 
@@ -1713,6 +1818,10 @@ function renderConnectionReadiness() {
     ? t("message.connectionUrlReady", { url: deriveHomeAssistantWebSocketUrl(configuration) })
     : readiness.reason;
   renderConnectionPanelState();
+}
+
+function expertTitleForNewContainerEntry(templateId, proposedTitle) {
+  return expertTitleForNewField(templateId, proposedTitle);
 }
 
 function renderAdminHandoffState() {
@@ -1931,7 +2040,8 @@ async function applyStoredAdminConnectionSettings({ autoConnect = false } = {}) 
 }
 
 function receiveAdminConnectionHandoff(event) {
-  if (event.origin !== adminOrigin || event.data?.type !== "atlas.admin.connection.v1") {
+  const allowedOrigin = isHomeAssistantAppSurface() ? window.location.origin : adminOrigin;
+  if (event.origin !== allowedOrigin || event.data?.type !== "atlas.admin.connection.v1") {
     return;
   }
 
@@ -1947,20 +2057,27 @@ function requestAdminConnectionHandoff() {
   window.opener.postMessage({
     type: "atlas.editor.ready.v1",
     sentAt: new Date().toISOString(),
-  }, adminOrigin);
+  }, isHomeAssistantAppSurface() ? window.location.origin : adminOrigin);
 }
 
 function createAdminNavigationUrl() {
+  if (isHomeAssistantAppSurface()) {
+    return createAppRouteNavigationUrl("/admin", createThemeSearch());
+  }
   return createPortNavigationUrl(4175, "/", createThemeSearch());
 }
 
 function createHubNavigationUrl() {
+  if (isHomeAssistantAppSurface()) {
+    return createAppRouteNavigationUrl("/hub", createThemeSearch());
+  }
   return createPortNavigationUrl(4176, "/hub", createThemeSearch());
 }
 
 function createThemeSearch() {
   const search = new URLSearchParams();
   search.set("theme", currentThemePreference);
+  search.set("language", currentLanguage);
   return search.toString();
 }
 
@@ -2012,6 +2129,22 @@ function createPortNavigationUrl(port, pathname = "/", search = "", fallback = "
     return url.toString();
   } catch {
     return fallback;
+  }
+}
+
+function createAppRouteNavigationUrl(pathname, search = "") {
+  try {
+    const url = new URL(window.location.href);
+    const knownRoutes = ["/editor", "/editor/", "/admin", "/admin/", "/hub", "/hub/"];
+    const route = knownRoutes.find(candidate => url.pathname === candidate || url.pathname.endsWith(candidate));
+    const routeIndex = route ? url.pathname.lastIndexOf(route) : -1;
+    const basePath = routeIndex >= 0 ? url.pathname.slice(0, routeIndex) : "";
+    url.pathname = `${basePath}/${String(pathname).replace(/^\/+/, "")}`.replace(/\/{2,}/g, "/");
+    url.search = search;
+    url.hash = "";
+    return url.toString();
+  } catch {
+    return pathname;
   }
 }
 
@@ -2094,7 +2227,6 @@ function scheduleReconnect() {
 function persistConfiguration() {
   try {
     localStorage.setItem(configurationStorageKey, JSON.stringify({
-      language: currentLanguage,
       themePreference: currentThemePreference,
       url: homeAssistantUrl.value,
       entities: homeAssistantEntity.value,
@@ -2112,9 +2244,13 @@ function persistConfiguration() {
       adminTranslationApiKeyConfigured,
       adminTranslationApiKeyConfiguredByProvider,
       stackEntityIds: selectedStackEntityIds(),
+      automaticCardTypeMapping: toggleAutomaticCardTypeMapping?.checked === true,
       expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
+      expertPaletteHiddenIds: [...expertPaletteHiddenIds],
+      expertCustomCardMappings: serializedExpertCustomCardMappings(),
       expertTemplateSizing: serializedExpertTemplateSizing(),
       expertEditorSurfaceSize,
+      expertGridCellSize,
       expertEditorFields,
       selectedExpertFieldIndex,
       expertCardName: expertCardName.value,
@@ -2652,6 +2788,64 @@ function createLovelaceResourcePaletteId(url, index) {
   return `ha-resource-${slug || index}`;
 }
 
+function normalizeCustomCardType(value) {
+  if (typeof value !== "string") return "";
+  const trimmed = value.trim();
+  return /^custom:[A-Za-z0-9_-]+$/.test(trimmed) ? trimmed : "";
+}
+
+function suggestCustomCardTypeFromResourceUrl(url) {
+  const fileName = url.split("/").filter(Boolean).pop() ?? "";
+  const baseName = fileName
+    .replace(/\.js$/i, "")
+    .replace(/[^a-z0-9_-]+/gi, "-")
+    .replace(/^-|-$/g, "")
+    .toLowerCase();
+  return baseName ? `custom:${baseName}` : "custom:my-card";
+}
+
+function applyAutomaticCustomCardMappings(resources) {
+  if (toggleAutomaticCardTypeMapping?.checked !== true) return 0;
+  let mappedCount = 0;
+  const urls = [...new Set(resources.map(normalizeLovelaceResourceUrl).filter(Boolean))]
+    .filter(url => !shouldIgnoreLovelaceResourceUrl(url))
+    .filter(url => !url.includes("/atlas/") && !url.includes("atlas-card") && !isMappedLovelaceResourceUrl(url));
+  for (const url of urls) {
+    if (expertCustomCardMappings.has(url)) continue;
+    const customType = normalizeCustomCardType(suggestCustomCardTypeFromResourceUrl(url));
+    if (!customType || customType === "custom:my-card") continue;
+    expertCustomCardMappings.set(url, customType);
+    mappedCount += 1;
+  }
+  if (mappedCount > 0) {
+    persistConfiguration();
+  }
+  return mappedCount;
+}
+
+function serializedExpertCustomCardMappings() {
+  return [...expertCustomCardMappings.entries()].map(([resourceUrl, customType]) => ({
+    resourceUrl,
+    customType,
+  }));
+}
+
+function mapScannedExpertPaletteCard(card) {
+  if (!card?.resourceUrl) return false;
+  const suggestedType = expertCustomCardMappings.get(card.resourceUrl) ?? suggestCustomCardTypeFromResourceUrl(card.resourceUrl);
+  const customType = normalizeCustomCardType(window.prompt(t("message.mapCustomCardPrompt", { label: card.label }), suggestedType));
+  if (!customType) {
+    statusMessage.textContent = t("message.mapCustomCardInvalid");
+    return false;
+  }
+  expertCustomCardMappings.set(card.resourceUrl, customType);
+  refreshScannedExpertPaletteCards();
+  persistConfiguration();
+  renderExpertTemplatePalette();
+  statusMessage.textContent = t("message.mapCustomCardSaved", { label: card.label, type: customType });
+  return true;
+}
+
 function isHacsLovelaceResourceUrl(url) {
   return url.includes("/hacsfiles/");
 }
@@ -2809,17 +3003,23 @@ function createScannedExpertPaletteCards(resources) {
 
   const resourceCards = urls
     .filter(url => !url.includes("/atlas/") && !url.includes("atlas-card") && !isMappedLovelaceResourceUrl(url))
-    .map((url, index) => ({
-      id: createLovelaceResourcePaletteId(url, index),
-      category: isHacsLovelaceResourceUrl(url) ? "HACS resource" : "HA resource",
-      label: formatLovelaceResourceLabel(url),
-      templateId: "entity-list",
-      target: "entities",
-      preview: [url],
-      resourceUrl: url,
-      disabled: true,
-      scanned: true,
-    }));
+    .map((url, index) => {
+      const customType = expertCustomCardMappings.get(url);
+      return {
+        id: createLovelaceResourcePaletteId(url, index),
+        category: customType
+          ? (isHacsLovelaceResourceUrl(url) ? "Mapped HACS card" : "Mapped HA card")
+          : (isHacsLovelaceResourceUrl(url) ? "HACS resource" : "HA resource"),
+        label: formatLovelaceResourceLabel(url),
+        templateId: "entity-card",
+        target: customType ? "custom-card" : "entities",
+        ...(customType ? { customType } : {}),
+        preview: customType ? [customType, url] : [url],
+        resourceUrl: url,
+        disabled: !customType,
+        scanned: true,
+      };
+    });
 
   return dedupeExpertPaletteCards(resourceCards);
 }
@@ -2838,11 +3038,13 @@ function dedupeExpertPaletteCards(cards) {
 
 function refreshScannedExpertPaletteCards() {
   const staticCards = expertPaletteCards.filter(card => !card.scanned);
+  const autoMapped = applyAutomaticCustomCardMappings(lovelaceResources);
   const scannedCards = createScannedExpertPaletteCards(lovelaceResources);
   expertPaletteCards = dedupeExpertPaletteCards([...staticCards, ...scannedCards]);
   return {
     total: scannedCards.length,
     hacs: scannedCards.filter(card => card.resourceUrl && isHacsLovelaceResourceUrl(card.resourceUrl)).length,
+    autoMapped,
   };
 }
 
@@ -2857,9 +3059,12 @@ function scanExpertPaletteCardsFromHomeAssistant() {
   const scanMessage = detectedCards.total
     ? t("message.paletteEntriesDetected", { total: detectedCards.total, hacs: detectedCards.hacs })
     : t("message.noPaletteEntriesDetected");
+  const mappingMessage = detectedCards.autoMapped
+    ? ` ${t("message.autoCustomCardMappingsCreated", { count: detectedCards.autoMapped })}`
+    : "";
   statusMessage.textContent = clientReady
-    ? t("message.refreshingResources", { message: scanMessage })
-    : t("message.connectAndScanAgain", { message: scanMessage });
+    ? t("message.refreshingResources", { message: `${scanMessage}${mappingMessage}` })
+    : t("message.connectAndScanAgain", { message: `${scanMessage}${mappingMessage}` });
 }
 
 function createHaCardConfig({ useExportFallback = false } = {}) {
@@ -2947,7 +3152,7 @@ function createActiveCardEditorPlan({ useExportFallback = false } = {}) {
 }
 
 function normalizedExpertEditorFields() {
-  return expertEditorFields.map(field => isStackContainerField(field) ? normalizeStackContainerLayout(field) : field);
+  return expertEditorFields.map(normalizeEditableContainerLayout);
 }
 
 function currentExpertCardName() {
@@ -3122,6 +3327,12 @@ function collectImportedSimpleEntityNames(card) {
 
 function createExpertFieldsFromImportedCard(card) {
   const entities = getSimplePreviewCardEntities(card);
+  if (card?.type === "custom:tabbed-card-v2") {
+    return [createImportedTabbedCardExpertField(card)];
+  }
+  if (card?.type === "horizontal-stack" || card?.type === "vertical-stack") {
+    return [createImportedStackExpertField(card)];
+  }
   if (card?.type === "glance") {
     return [createImportedOverviewExpertField(card, entities)];
   }
@@ -3135,6 +3346,116 @@ function createExpertFieldsFromImportedCard(card) {
     width: 4,
     height: 2,
   }));
+}
+
+function createImportedTabbedCardExpertField(card) {
+  const tabs = Array.isArray(card.tabs) ? card.tabs : [];
+  const columns = getImportedCardColumns(card);
+  const rows = getImportedCardRows(card);
+  const entries = tabs.map((tab, index) => {
+    const attributes = tab?.attributes && typeof tab.attributes === "object" ? tab.attributes : {};
+    const tabCard = tab?.card && typeof tab.card === "object" ? tab.card : undefined;
+    return createTabbedCardTab({
+      id: typeof attributes.label === "string" && attributes.label.trim() ? attributes.label.trim() : `Tab ${index + 1}`,
+      title: typeof attributes.label === "string" && attributes.label.trim() ? attributes.label.trim() : `Tab ${index + 1}`,
+      icon: typeof attributes.icon === "string" && attributes.icon.trim() ? attributes.icon.trim() : index === 0 ? "mdi:tab" : "mdi:tab-plus",
+      cards: tabCard ? [createImportedContainerEntryFromCard(tabCard, index)] : [],
+    });
+  });
+  return {
+    id: getSimplePreviewCardTitle(card) || "Tabbed Card V2",
+    target: "tabbed-card-v2",
+    templateId: "tabbed-card-v2",
+    entityId: "",
+    layout: "vertical-stack",
+    entries,
+    activeTabIndex: Math.max(0, Math.min(Math.max(0, entries.length - 1), Number(card.options?.defaultTabIndex) || 0)),
+    ...(columns === "full" ? { columns: "full" } : {}),
+    ...(rows === "auto" ? { rows: "auto" } : {}),
+    column: 0,
+    row: 0,
+    width: columns === "full" ? expertGridColumns : 8,
+    height: Math.max(3, Math.min(8, entries.length + 2)),
+  };
+}
+
+function createImportedStackExpertField(card) {
+  const columns = getImportedCardColumns(card);
+  const rows = getImportedCardRows(card);
+  const entries = Array.isArray(card.cards)
+    ? card.cards.map((child, index) => createImportedContainerEntryFromCard(child, index))
+    : [];
+  return normalizeStackContainerLayout({
+    id: getSimplePreviewCardTitle(card) || (card.type === "horizontal-stack" ? "Horizontal stack" : "Vertical stack"),
+    target: getImportedCardTarget(card),
+    templateId: card.type === "horizontal-stack" ? "horizontal-stack" : "vertical-stack",
+    entityId: entries.find(entry => entry.entityId)?.entityId ?? "",
+    layout: card.type,
+    entries,
+    ...(columns === "full" || typeof columns === "number" ? { columns } : {}),
+    ...(rows === "auto" ? { rows: "auto" } : {}),
+    column: 0,
+    row: 0,
+    width: columns === "full" ? expertGridColumns : card.type === "horizontal-stack" ? 8 : 4,
+    height: Math.max(2, Math.min(8, entries.length || 2)),
+  });
+}
+
+function getImportedCardColumns(card) {
+  const directColumns = card?.columns;
+  const gridColumns = card?.grid_options?.columns;
+  if (directColumns === "full" || gridColumns === "full") return "full";
+  const numericColumns = typeof directColumns === "number" ? directColumns : typeof gridColumns === "number" ? gridColumns : undefined;
+  return numericColumns;
+}
+
+function getImportedCardRows(card) {
+  return card?.rows === "auto" || card?.grid_options?.rows === "auto" ? "auto" : undefined;
+}
+
+function createImportedContainerEntryFromCard(card, index = 0) {
+  const title = getSimplePreviewCardTitle(card) || `Card ${index + 1}`;
+  const entityIds = getSimplePreviewCardEntities(card).map(entity => entity.entity);
+  const target = getImportedCardTarget(card);
+  if (Array.isArray(card?.cards)) {
+    return {
+      id: title,
+      target,
+      layout: getImportedContainerLayout(card),
+      entityId: "",
+      cards: card.cards.map((child, childIndex) => createImportedContainerEntryFromCard(child, childIndex)),
+    };
+  }
+  return {
+    id: title,
+    target,
+    ...(target === "bubble" ? { bubbleButtonType: card.button_type ?? "state" } : {}),
+    entityId: entityIds[0] ?? (typeof card?.entity === "string" ? card.entity : ""),
+    ...(typeof card?.icon === "string" ? { icon: card.icon } : {}),
+  };
+}
+
+function getImportedContainerLayout(card) {
+  if (card?.type === "horizontal-stack" || card?.type === "vertical-stack" || card?.type === "grid") {
+    return card.type;
+  }
+  if (typeof card?.type === "string" && card.type.includes("horizontal")) return "horizontal-stack";
+  return "vertical-stack";
+}
+
+function getImportedCardTarget(card) {
+  if (!card || typeof card !== "object") return "entity";
+  if (card.type === "entities") return "entities";
+  if (card.type === "glance") return "glance";
+  if (card.type === "custom:mushroom-template-card" || card.type === "custom:mushroom-entity-card") return "mushroom-template";
+  if (card.type === "custom:bubble-card") return "bubble";
+  if (card.type === "custom:tabbed-card-v2") return "tabbed-card-v2";
+  if (card.type === "button") return card.tap_action?.action === "navigate" ? "link" : "button";
+  if (card.type === "sensor") return "sensor";
+  if (card.type === "thermostat") return "thermostat";
+  if (card.type === "iframe") return "webpage";
+  if (typeof card.type === "string" && card.type.startsWith("custom:")) return "custom-card";
+  return "entity";
 }
 
 function createImportedOverviewExpertField(card, entities) {
@@ -3436,11 +3757,13 @@ function expertPaletteCardMatchesSearch(card, template, query) {
 function renderExpertTemplatePalette() {
   expertTemplatePalette.replaceChildren();
   const baseCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
-    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
+    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id) && !expertPaletteHiddenIds.has(card.id))
     : expertPaletteCards;
   const visibleCards = baseCards.filter(card => {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
-    return template ? expertPaletteCardMatchesSearch(card, template, expertPaletteSearchQuery.trim()) : false;
+    if (!template) return false;
+    if (!expertPaletteShowAllCards && expertPaletteHiddenIds.has(card.id)) return false;
+    return expertPaletteCardMatchesSearch(card, template, expertPaletteSearchQuery.trim());
   });
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
   showAllExpertPaletteCards.disabled = false;
@@ -3462,6 +3785,7 @@ function renderExpertTemplatePalette() {
     item.className = "expert-template-card";
     item.classList.toggle("selected", isExpertPaletteCardSelected(card));
     item.classList.toggle("disabled", card.disabled === true);
+    item.classList.toggle("hidden-palette-card", expertPaletteHiddenIds.has(card.id));
     item.draggable = card.disabled !== true;
     item.tabIndex = 0;
     item.setAttribute("role", "button");
@@ -3481,6 +3805,8 @@ function renderExpertTemplatePalette() {
     const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType}` : "";
     detail.textContent = card.disabled === true
       ? t("text.registeredNotMapped", { category: cardCategory })
+      : card.customType
+        ? t("text.mappedCustomCard", { type: card.customType })
       : t("text.paletteDetail", {
         layout: translateTemplateLabel(template.id, template.layout),
         size: `${template.defaultWidth}x${template.defaultHeight}`,
@@ -3505,10 +3831,33 @@ function renderExpertTemplatePalette() {
       event.stopPropagation();
       setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
     });
+    const hiddenToggle = document.createElement("label");
+    hiddenToggle.className = "hidden-toggle";
+    hiddenToggle.hidden = favoriteCheckbox.checked;
+    const hiddenCheckbox = document.createElement("input");
+    hiddenCheckbox.type = "checkbox";
+    hiddenCheckbox.checked = expertPaletteHiddenIds.has(card.id);
+    hiddenToggle.append(hiddenCheckbox, t("text.hiddenCard"));
+    main.append(hiddenToggle);
+    hiddenToggle.addEventListener("click", event => event.stopPropagation());
+    hiddenCheckbox.addEventListener("change", event => {
+      event.stopPropagation();
+      setExpertPaletteCardHidden(card.id, hiddenCheckbox.checked);
+    });
 
     if (card.disabled !== true) {
       const sizing = createExpertTemplateSizingControls(template);
       meta.append(sizing);
+    } else if (card.resourceUrl) {
+      const mapButton = document.createElement("button");
+      mapButton.type = "button";
+      mapButton.className = "palette-map-button";
+      mapButton.textContent = t("text.mapCardType");
+      mapButton.addEventListener("click", event => {
+        event.stopPropagation();
+        mapScannedExpertPaletteCard(card);
+      });
+      meta.append(mapButton);
     }
     item.append(main, meta);
 
@@ -3572,9 +3921,11 @@ function isExpertPaletteCardSelected(card) {
 function setExpertPaletteFavoriteDraft(cardId, favorite) {
   if (favorite) {
     expertPaletteDraftFavoriteIds.add(cardId);
+    expertPaletteHiddenIds.delete(cardId);
   } else {
     expertPaletteDraftFavoriteIds.delete(cardId);
   }
+  persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = t("text.paletteSelectionChanged");
 }
@@ -3585,7 +3936,7 @@ function toggleExpertPaletteAllCards() {
     expertPaletteSearchQuery = "";
     expertPaletteSearch.value = "";
   } else {
-    expertPaletteShowAllCards = expertPaletteFavoriteIds.size === 0;
+    expertPaletteShowAllCards = false;
   }
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteShowAllCards
@@ -3593,12 +3944,25 @@ function toggleExpertPaletteAllCards() {
     : t("text.savedFavoritesVisible");
 }
 
+function setExpertPaletteCardHidden(cardId, hidden) {
+  if (hidden) {
+    expertPaletteHiddenIds.add(cardId);
+    expertPaletteFavoriteIds.delete(cardId);
+    expertPaletteDraftFavoriteIds.delete(cardId);
+  } else {
+    expertPaletteHiddenIds.delete(cardId);
+  }
+  persistConfiguration();
+  renderExpertTemplatePalette();
+  statusMessage.textContent = t("text.hiddenCardsUpdated");
+}
+
 function saveExpertPaletteFavoriteSelection() {
   expertPaletteFavoriteIds.clear();
   for (const cardId of expertPaletteDraftFavoriteIds) {
     expertPaletteFavoriteIds.add(cardId);
   }
-  expertPaletteShowAllCards = expertPaletteFavoriteIds.size === 0;
+  expertPaletteShowAllCards = false;
   persistConfiguration();
   renderExpertTemplatePalette();
   statusMessage.textContent = expertPaletteFavoriteIds.size
@@ -3720,6 +4084,8 @@ function selectExpertTemplate(templateId) {
   expertTemplate.value = template.id;
   syncExpertInputsFromTemplateSizing(template.id);
   expertTarget.value = template.target;
+  expertTarget.dataset.customType = "";
+  expertTarget.dataset.resourceUrl = "";
   syncExpertBubbleTypeControl();
   renderExpertTemplatePalette();
 }
@@ -3736,6 +4102,8 @@ function selectExpertPaletteCard(cardId) {
   syncExpertInputsFromTemplateSizing(template.id);
   expertTarget.value = card.target;
   expertBubbleButtonType.value = card.bubbleButtonType ?? "state";
+  expertTarget.dataset.customType = card.customType ?? "";
+  expertTarget.dataset.resourceUrl = card.resourceUrl ?? "";
   syncExpertBubbleTypeControl();
   renderExpertTemplatePalette();
   statusMessage.textContent = t("text.paletteCardSelected", { label: translatePaletteCardLabel(card) });
@@ -3868,6 +4236,11 @@ function isEditableContainerField(field) {
   return isTabbedCardField(field) || isStackContainerField(field);
 }
 
+function isContainerTemplateId(templateId) {
+  const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+  return template?.layout === "horizontal-stack" || template?.layout === "vertical-stack" || template?.layout === "grid";
+}
+
 function selectedTabbedCardField() {
   const field = expertEditorFields[selectedExpertFieldIndex];
   return isTabbedCardField(field) ? field : undefined;
@@ -3918,16 +4291,58 @@ function updateSelectedStackContainerField(updater) {
 }
 
 function createTabbedCardEntry(input = {}) {
-  const entityId = input.entityId?.trim() || expertEntity.value.trim() || currentEntityId();
+  const isContainerEntry = input.layout === "horizontal-stack" || input.layout === "vertical-stack" || input.layout === "grid";
+  const entityId = isContainerEntry ? "" : input.entityId?.trim() || expertEntity.value.trim() || currentEntityId();
   const target = input.target && input.target !== "tabbed-card-v2" ? input.target : "entity";
   const title = expertTitleForNewCardEntry(target, input.title);
   return {
     id: title,
     target,
     ...(target === "bubble" ? { bubbleButtonType: input.bubbleButtonType ?? expertBubbleButtonType.value ?? "state" } : {}),
+    ...(target === "custom-card" && normalizeCustomCardType(input.customType) ? { customType: normalizeCustomCardType(input.customType) } : {}),
+    ...(target === "custom-card" && input.resourceUrl?.trim() ? { resourceUrl: input.resourceUrl.trim() } : {}),
+    ...((input.layout === "horizontal-stack" || input.layout === "vertical-stack" || input.layout === "grid") ? { layout: input.layout } : {}),
     entityId,
     icon: input.icon?.trim() || "mdi:tab",
+    ...(Array.isArray(input.cards) && input.cards.length ? { cards: input.cards } : {}),
   };
+}
+
+function createExpertContainerEntryFromTemplate(templateId, input = {}) {
+  const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+  if (!template) return createTabbedCardEntry(input);
+  const layout = template.layout === "horizontal-stack" || template.layout === "vertical-stack" || template.layout === "grid"
+    ? template.layout
+    : undefined;
+  return createTabbedCardEntry({
+    ...input,
+    target: template.target === "tabbed-card-v2" ? "entity" : template.target,
+    customType: input.customType,
+    resourceUrl: input.resourceUrl,
+    layout,
+    title: layout ? expertTitleForNewContainerEntry(template.id, input.title) : input.title || translateTemplateLabel(template.id, template.label),
+  });
+}
+
+function createContainerEntryFromExpertField(field) {
+  const entries = field.entries ?? [];
+  if (isStackContainerField(field)) {
+    return createTabbedCardEntry({
+      title: field.id,
+      target: field.target,
+      layout: field.layout,
+      entityId: field.entityId || entries.find(entry => entry.entityId)?.entityId || currentEntityId(),
+      cards: entries,
+    });
+  }
+  return createTabbedCardEntry({
+    title: field.id,
+    entityId: field.entityId || entries.find(entry => entry.entityId)?.entityId || currentEntityId(),
+    target: field.target,
+    bubbleButtonType: field.bubbleButtonType,
+    customType: field.customType,
+    resourceUrl: field.resourceUrl,
+  });
 }
 
 function createTabbedCardTab(input = {}) {
@@ -3987,7 +4402,7 @@ function addCurrentExpertSelectionToActiveTabbedCard(input = {}) {
     statusMessage.textContent = t("message.selectTabbedCardFirst");
     return false;
   }
-  const entry = createTabbedCardEntry(input);
+  const entry = input.entry ?? createTabbedCardEntry(input);
   const tab = field.entries?.[normalizeTabbedCardTabIndex(field)] ?? entry;
   addCardToTabbedCardFieldAt(selectedExpertFieldIndex, entry);
   expertEntity.value = "";
@@ -4029,11 +4444,36 @@ function addEntryToStackContainerFieldAt(fieldIndex, entry) {
 function addCardEntryToSelectedContainer(input = {}) {
   const field = selectedEditableContainerField();
   if (!field) return false;
-  const entry = createTabbedCardEntry(input);
+  const entry = input.templateId
+    ? createExpertContainerEntryFromTemplate(input.templateId, input)
+    : createTabbedCardEntry(input);
   if (isTabbedCardField(field)) {
-    return addCurrentExpertSelectionToActiveTabbedCard(input);
+    return addCurrentExpertSelectionToActiveTabbedCard(input.templateId ? { ...input, entry } : input);
   }
   return addEntryToStackContainerFieldAt(selectedExpertFieldIndex, entry);
+}
+
+function addEntryToNestedContainerCard(reference, entry) {
+  const field = expertEditorFields[reference?.fieldIndex];
+  const card = getContainerCard(reference);
+  if (!field || !card || !(card.layout === "horizontal-stack" || card.layout === "vertical-stack" || card.layout === "grid")) return false;
+  const nextField = updateContainerCard(field, reference, nestedCard => ({
+    ...nestedCard,
+    cards: [...(nestedCard.cards ?? []), entry],
+  }));
+  if (!nextField) return false;
+  expertEditorFields[reference.fieldIndex] = isStackContainerField(nextField)
+    ? normalizeStackContainerLayout(nextField)
+    : nextField;
+  selectedExpertFieldIndex = reference.fieldIndex;
+  selectedContainerCardRef = {
+    ...reference,
+    cardPath: [...containerCardReferencePath(reference), (card.cards ?? []).length],
+  };
+  persistConfiguration();
+  renderExpertEditorPreview();
+  statusMessage.textContent = t("message.cardAddedToContainer", { card: entry.id, container: card.id });
+  return true;
 }
 
 function setActiveTabbedCardTab(fieldIndex, tabIndex) {
@@ -4061,9 +4501,11 @@ function selectContainerCard(reference) {
   selectedExpertFieldIndex = reference.fieldIndex;
   selectedContainerCardRef = reference;
   expertTitle.value = card.id;
-  expertEntity.value = card.entityId;
+  expertEntity.value = card.entityId ?? "";
   expertTarget.value = card.target;
   expertBubbleButtonType.value = card.bubbleButtonType ?? "state";
+  expertTarget.dataset.customType = card.customType ?? "";
+  expertTarget.dataset.resourceUrl = card.resourceUrl ?? "";
   syncExpertBubbleTypeControl();
   persistConfiguration();
   renderExpertFieldList();
@@ -4077,15 +4519,61 @@ function selectContainerCard(reference) {
 function getContainerCard(reference) {
   const field = expertEditorFields[reference?.fieldIndex];
   if (!field) return undefined;
+  const cardPath = containerCardReferencePath(reference);
   if (isTabbedCardField(field)) {
     const tab = field.entries?.[reference.tabIndex ?? normalizeTabbedCardTabIndex(field)];
     if (!tab) return undefined;
-    return tab.cards?.[reference.cardIndex ?? 0];
+    return getContainerCardAtPath(tab.cards ?? [], cardPath);
   }
   if (isStackContainerField(field)) {
-    return field.entries?.[reference.cardIndex ?? 0];
+    return getContainerCardAtPath(field.entries ?? [], cardPath);
   }
   return undefined;
+}
+
+function containerCardReferencePath(reference) {
+  if (Array.isArray(reference?.cardPath) && reference.cardPath.length) {
+    return reference.cardPath.map(index => Math.max(0, Math.floor(Number(index) || 0)));
+  }
+  return [Math.max(0, Math.floor(Number(reference?.cardIndex) || 0))];
+}
+
+function getContainerCardAtPath(cards, path) {
+  let card = cards[path[0]];
+  for (const index of path.slice(1)) {
+    card = card?.cards?.[index];
+  }
+  return card;
+}
+
+function updateContainerCardsAtPath(cards, path, updater) {
+  const [index, ...rest] = path;
+  if (!Number.isInteger(index) || !cards[index]) return cards;
+  return cards.map((card, cardIndex) => {
+    if (cardIndex !== index) return card;
+    if (rest.length === 0) return updater(card);
+    return {
+      ...card,
+      cards: updateContainerCardsAtPath(card.cards ?? [], rest, updater),
+    };
+  });
+}
+
+function removeContainerCardAtPath(cards, path) {
+  const [index, ...rest] = path;
+  if (!Number.isInteger(index) || !cards[index]) return cards;
+  if (rest.length === 0) {
+    return cards.filter((_, cardIndex) => cardIndex !== index);
+  }
+  return cards.map((card, cardIndex) => cardIndex === index
+    ? { ...card, cards: removeContainerCardAtPath(card.cards ?? [], rest) }
+    : card);
+}
+
+function sameContainerCardReference(first, second) {
+  if (!first || !second || first.fieldIndex !== second.fieldIndex) return false;
+  if ((first.tabIndex ?? undefined) !== (second.tabIndex ?? undefined)) return false;
+  return containerCardReferencePath(first).join(".") === containerCardReferencePath(second).join(".");
 }
 
 function updateSelectedContainerCard(updater) {
@@ -4111,12 +4599,11 @@ function updateContainerCard(field, reference, updater) {
     const tabIndex = reference.tabIndex ?? normalizeTabbedCardTabIndex(field);
     const tab = entries[tabIndex];
     if (!tab) return undefined;
-    const cards = [...(tab.cards ?? [])];
-    const cardIndex = reference.cardIndex ?? 0;
-    const card = cards[cardIndex];
+    const cardPath = containerCardReferencePath(reference);
+    const cards = tab.cards ?? [];
+    const card = getContainerCardAtPath(cards, cardPath);
     if (!card) return undefined;
-    cards[cardIndex] = updater(card);
-    entries[tabIndex] = { ...tab, cards };
+    entries[tabIndex] = { ...tab, cards: updateContainerCardsAtPath(cards, cardPath, updater) };
     return {
       ...field,
       entityId: entries[0]?.entityId ?? field.entityId,
@@ -4124,14 +4611,13 @@ function updateContainerCard(field, reference, updater) {
     };
   }
   if (isStackContainerField(field)) {
-    const cardIndex = reference.cardIndex ?? 0;
-    const card = entries[cardIndex];
+    const cardPath = containerCardReferencePath(reference);
+    const card = getContainerCardAtPath(entries, cardPath);
     if (!card) return undefined;
-    entries[cardIndex] = updater(card);
     return {
       ...field,
       entityId: entries[0]?.entityId ?? field.entityId,
-      entries,
+      entries: updateContainerCardsAtPath(entries, cardPath, updater),
     };
   }
   return undefined;
@@ -4145,11 +4631,10 @@ function removeContainerCard(reference) {
   if (isTabbedCardField(field)) {
     const tabIndex = reference.tabIndex ?? normalizeTabbedCardTabIndex(field);
     const tab = entries[tabIndex];
-    const cards = [...(tab?.cards ?? [])];
-    cards.splice(reference.cardIndex ?? 0, 1);
+    const cards = removeContainerCardAtPath(tab?.cards ?? [], containerCardReferencePath(reference));
     entries[tabIndex] = { ...tab, cards };
   } else if (isStackContainerField(field)) {
-    entries.splice(reference.cardIndex ?? 0, 1);
+    entries.splice(0, entries.length, ...removeContainerCardAtPath(entries, containerCardReferencePath(reference)));
   } else {
     return false;
   }
@@ -4174,28 +4659,35 @@ function moveContainerCardToSurface(reference, placementOverride) {
   const card = getContainerCard(reference);
   if (!field || !card) return false;
   const preferredPlacement = placementOverride ?? {};
+  const isContainerCard = card.layout === "horizontal-stack" || card.layout === "vertical-stack" || card.layout === "grid";
   const placement = findAvailableExpertSurfacePlacement(
-    preferredPlacement.width ?? 3,
-    preferredPlacement.height ?? 1,
+    preferredPlacement.width ?? (isContainerCard ? Math.max(4, Math.min(expertGridColumns, card.cards?.length || 4)) : 3),
+    preferredPlacement.height ?? (isContainerCard ? 2 : 1),
     preferredPlacement,
   );
   if (!removeContainerCard(reference)) return false;
   const templateId = templateIdForCardTarget(card.target);
   const target = card.target ?? "entity";
+  const width = placement.width ?? (isContainerCard ? Math.max(4, Math.min(expertGridColumns, card.cards?.length || 4)) : 3);
+  const height = placement.height ?? (isContainerCard ? 2 : 1);
   expertEditorFields.push({
     id: card.id,
     target,
     ...(card.bubbleButtonType ? { bubbleButtonType: card.bubbleButtonType } : {}),
-    entityId: card.entityId ?? currentEntityId(),
-    layout: "card",
+    entityId: isContainerCard ? "" : card.entityId ?? currentEntityId(),
+    layout: isContainerCard ? card.layout : "card",
+    ...(isContainerCard ? { entries: card.cards ?? [], columns: width, rows: "auto" } : {}),
     column: placement.column,
     row: placement.row,
-    width: placement.width ?? 3,
-    height: placement.height ?? 1,
-    resizeBaseWidth: placement.width ?? 3,
-    resizeBaseHeight: placement.height ?? 1,
-    templateId,
+    width,
+    height,
+    resizeBaseWidth: width,
+    resizeBaseHeight: height,
+    templateId: isContainerCard && card.layout ? card.layout : templateId,
   });
+  if (isStackContainerField(expertEditorFields[expertEditorFields.length - 1])) {
+    expertEditorFields[expertEditorFields.length - 1] = normalizeStackContainerLayout(expertEditorFields[expertEditorFields.length - 1]);
+  }
   selectedExpertFieldIndex = expertEditorFields.length - 1;
   selectedContainerCardRef = undefined;
   persistConfiguration();
@@ -4272,10 +4764,12 @@ function addPaletteCardToTabbedCardField(fieldIndex, paletteCardId) {
   const template = cardEditorTemplates.find(candidate => candidate.id === card?.templateId);
   if (!card || !template || card.disabled === true || card.target === "tabbed-card-v2") return false;
   const entityId = expertEntity.value.trim() || currentEntityId();
-  const entry = createTabbedCardEntry({
+  const entry = createExpertContainerEntryFromTemplate(template.id, {
     entityId,
-    target: card.target,
-    bubbleButtonType: card.bubbleButtonType,
+      target: card.target,
+      bubbleButtonType: card.bubbleButtonType,
+      customType: card.customType,
+      resourceUrl: card.resourceUrl,
   });
   const tab = expertEditorFields[fieldIndex]?.entries?.[normalizeTabbedCardTabIndex(expertEditorFields[fieldIndex])] ?? entry;
   const added = addCardToTabbedCardFieldAt(fieldIndex, entry);
@@ -4289,12 +4783,7 @@ function moveExpertFieldIntoTabbedCard(fieldIndex, tabbedFieldIndex) {
   const field = expertEditorFields[fieldIndex];
   const container = expertEditorFields[tabbedFieldIndex];
   if (!field || !isTabbedCardField(container) || fieldIndex === tabbedFieldIndex || field.target === "tabbed-card-v2") return false;
-  const entry = createTabbedCardEntry({
-    title: field.id,
-    entityId: field.entityId || field.entries?.[0]?.entityId || currentEntityId(),
-    target: field.target,
-    bubbleButtonType: field.bubbleButtonType,
-  });
+  const entry = createContainerEntryFromExpertField(field);
   const tab = container.entries?.[normalizeTabbedCardTabIndex(container)] ?? entry;
   expertEditorFields[tabbedFieldIndex] = addCardEntryToActiveTabInField(container, entry);
   expertEditorFields.splice(fieldIndex, 1);
@@ -4785,14 +5274,72 @@ function normalizeStackContainerLayout(field) {
   return next;
 }
 
+function normalizeTabbedCardContainerLayout(field) {
+  if (!isTabbedCardField(field)) return field;
+  const fullWidth = field.columns === "full" || field.fullWidth === true;
+  const width = fullWidth ? expertGridColumns : Math.max(4, Math.min(expertGridColumns, Math.floor(Number(field.width) || 8)));
+  const next = {
+    ...field,
+    ...(fullWidth ? { columns: "full" } : {}),
+    width,
+    column: fullWidth ? 0 : Math.min(field.column, expertGridColumns - width),
+  };
+  if (field.rows === "auto" || field.autoHeight === true) {
+    return {
+      ...next,
+      rows: "auto",
+      height: calculateTabbedCardAutoHeight(next),
+    };
+  }
+  return next;
+}
+
+function normalizeEditableContainerLayout(field) {
+  if (isTabbedCardField(field)) return normalizeTabbedCardContainerLayout(field);
+  if (isStackContainerField(field)) return normalizeStackContainerLayout(field);
+  return field;
+}
+
 function calculateStackContainerAutoHeight(field) {
-  const entries = field.entries?.length ?? 0;
-  if (entries === 0) return 2;
+  const entries = field.entries ?? [];
+  if (entries.length === 0) return 2;
   if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
     const cardsPerRow = Math.max(1, Math.floor(Math.max(1, field.width) / 4));
-    return Math.max(2, 2 + Math.ceil(entries / cardsPerRow) * 2);
+    const rowHeights = [];
+    for (let index = 0; index < entries.length; index += cardsPerRow) {
+      rowHeights.push(Math.max(...entries.slice(index, index + cardsPerRow).map(calculateContainerEntryPreviewRows)));
+    }
+    return Math.max(2, 2 + rowHeights.reduce((sum, rows) => sum + rows, 0));
   }
-  return Math.max(2, 2 + entries * 2);
+  return Math.max(2, 2 + entries.reduce((sum, entry) => sum + calculateContainerEntryPreviewRows(entry), 0));
+}
+
+function calculateTabbedCardAutoHeight(field) {
+  const entries = field.entries ?? [];
+  if (entries.length === 0) return 3;
+  const tabContentRows = entries.map(entry => {
+    const cards = entry.cards?.length ? entry.cards : [entry];
+    return cards.reduce((sum, card) => sum + calculateContainerEntryPreviewRows(card), 0);
+  });
+  return Math.max(4, 4 + Math.max(...tabContentRows));
+}
+
+function calculateContainerEntryPreviewRows(entry) {
+  const children = entry.cards ?? [];
+  if (children.length === 0) return 3;
+  const layout = entry.layout ?? "vertical-stack";
+  if (layout === "horizontal-stack") {
+    return 1 + Math.max(...children.map(calculateContainerEntryPreviewRows));
+  }
+  if (layout === "grid") {
+    const columns = Math.min(4, Math.max(1, children.length));
+    const rowHeights = [];
+    for (let index = 0; index < children.length; index += columns) {
+      rowHeights.push(Math.max(...children.slice(index, index + columns).map(calculateContainerEntryPreviewRows)));
+    }
+    return 1 + rowHeights.reduce((sum, rows) => sum + rows, 0);
+  }
+  return 1 + children.reduce((sum, child) => sum + calculateContainerEntryPreviewRows(child), 0);
 }
 
 function updateSelectedExpertFieldTarget() {
@@ -4800,10 +5347,14 @@ function updateSelectedExpertFieldTarget() {
   if (selectedContainerCardRef) {
     const nextTarget = expertTarget.value === "tabbed-card-v2" ? "entity" : expertTarget.value;
     const nextBubbleButtonType = nextTarget === "bubble" ? expertBubbleButtonType.value : undefined;
+    const nextCustomType = nextTarget === "custom-card" ? normalizeCustomCardType(expertTarget.dataset.customType) : "";
+    const nextResourceUrl = nextTarget === "custom-card" ? expertTarget.dataset.resourceUrl : "";
     return updateSelectedContainerCard(card => ({
       ...card,
       target: nextTarget,
       ...(nextBubbleButtonType ? { bubbleButtonType: nextBubbleButtonType } : { bubbleButtonType: undefined }),
+      ...(nextCustomType ? { customType: nextCustomType } : { customType: undefined }),
+      ...(nextResourceUrl ? { resourceUrl: nextResourceUrl } : { resourceUrl: undefined }),
     }));
   }
 
@@ -4811,14 +5362,20 @@ function updateSelectedExpertFieldTarget() {
   if (!field) return;
   const nextTarget = expertTarget.value;
   const nextBubbleButtonType = nextTarget === "bubble" ? expertBubbleButtonType.value : undefined;
+  const nextCustomType = nextTarget === "custom-card" ? normalizeCustomCardType(expertTarget.dataset.customType) : "";
+  const nextResourceUrl = nextTarget === "custom-card" ? expertTarget.dataset.resourceUrl : "";
   expertEditorFields[selectedExpertFieldIndex] = {
     ...field,
     target: nextTarget,
     ...(nextBubbleButtonType ? { bubbleButtonType: nextBubbleButtonType } : { bubbleButtonType: undefined }),
+    ...(nextCustomType ? { customType: nextCustomType } : { customType: undefined }),
+    ...(nextResourceUrl ? { resourceUrl: nextResourceUrl } : { resourceUrl: undefined }),
     entries: (field.entries ?? []).map(entry => ({
       ...entry,
       target: nextTarget,
       ...(nextBubbleButtonType ? { bubbleButtonType: nextBubbleButtonType } : { bubbleButtonType: undefined }),
+      ...(nextCustomType ? { customType: nextCustomType } : { customType: undefined }),
+      ...(nextResourceUrl ? { resourceUrl: nextResourceUrl } : { resourceUrl: undefined }),
     })),
   };
   persistConfiguration();
@@ -4875,86 +5432,189 @@ function clampExpertFieldOffset(value, fallback, max) {
   return Math.max(0, Math.min(max, nextValue));
 }
 
-function clampExpertEditorSurfaceDelta(value) {
+function clampExpertEditorSurfaceDelta(value, max = expertGridMaxExtraColumns) {
   const numericValue = Number(value);
   const nextValue = Number.isFinite(numericValue) ? Math.floor(numericValue) : 0;
-  return Math.max(0, Math.min(expertEditorSurfaceMaxResizeDelta, nextValue));
+  return Math.max(0, Math.min(max, nextValue));
 }
 
-function expertEditorSurfaceWidthStep() {
-  const configuredBaseWidth = Number.parseFloat(expertEditorDropzone.style.getPropertyValue("--expert-editor-base-width"));
-  const containerWidth = Number.isFinite(configuredBaseWidth) && configuredBaseWidth > 0
-    ? configuredBaseWidth
-    : expertEditorDropzone.clientWidth || 672;
-  return Math.max(48, Math.round(containerWidth / expertGridColumns));
+function clampExpertGridColumns(value) {
+  const numericValue = Number(value);
+  const nextValue = Number.isFinite(numericValue) ? Math.floor(numericValue) : expertGridBaseColumns;
+  return Math.max(expertGridBaseColumns, Math.min(expertGridBaseColumns + expertGridMaxExtraColumns, nextValue));
+}
+
+function clampExpertGridRows(value) {
+  const numericValue = Number(value);
+  const nextValue = Number.isFinite(numericValue) ? Math.floor(numericValue) : expertGridBaseRows;
+  return Math.max(expertGridBaseRows, Math.min(expertGridBaseRows + expertGridMaxExtraRows, nextValue));
+}
+
+function clampExpertGridCellSize(value) {
+  const numericValue = Number(value);
+  const nextValue = Number.isFinite(numericValue) ? numericValue : expertGridDefaultCellSize;
+  return Math.max(expertGridMinCellSize, Math.min(expertGridMaxCellSize, nextValue));
+}
+
+function cellSizeToExpertGridZoomPercent(cellSize) {
+  const rawZoomPercent = Math.round((cellSize / expertGridDefaultCellSize) * 100);
+  const steppedZoomPercent = Math.round(rawZoomPercent / expertGridZoomStepPercent) * expertGridZoomStepPercent;
+  return Math.max(
+    expertGridMinZoomPercent,
+    Math.min(expertGridMaxZoomPercent, steppedZoomPercent),
+  );
+}
+
+function expertGridZoomPercentToCellSize(value) {
+  const numericValue = Number(value);
+  const rawZoomPercent = Number.isFinite(numericValue) ? Math.floor(numericValue) : 100;
+  const zoomPercent = Math.round(rawZoomPercent / expertGridZoomStepPercent) * expertGridZoomStepPercent;
+  const clampedZoomPercent = Math.max(expertGridMinZoomPercent, Math.min(expertGridMaxZoomPercent, zoomPercent));
+  return clampExpertGridCellSize(expertGridDefaultCellSize * (clampedZoomPercent / 100));
+}
+
+function syncExpertGridSizeFromSurfaceDelta() {
+  expertGridColumns = clampExpertGridColumns(expertGridBaseColumns + clampExpertEditorSurfaceDelta(expertEditorSurfaceSize.columns));
+  expertGridRows = clampExpertGridRows(expertGridBaseRows + clampExpertEditorSurfaceDelta(expertEditorSurfaceSize.rows, expertGridMaxExtraRows));
+  expertEditorSurfaceSize = {
+    columns: expertGridColumns - expertGridBaseColumns,
+    rows: expertGridRows - expertGridBaseRows,
+  };
+}
+
+function syncExpertSurfaceDeltaFromGridSize() {
+  expertEditorSurfaceSize = {
+    columns: expertGridColumns - expertGridBaseColumns,
+    rows: expertGridRows - expertGridBaseRows,
+  };
+}
+
+function syncExpertGridControls() {
+  if (expertGridColumnsControl) {
+    expertGridColumnsControl.min = "0";
+    expertGridColumnsControl.max = String(expertGridMaxExtraColumns);
+    expertGridColumnsControl.value = String(expertGridColumns - expertGridBaseColumns);
+  }
+  if (expertGridRowsControl) {
+    expertGridRowsControl.min = "0";
+    expertGridRowsControl.max = String(expertGridMaxExtraRows);
+    expertGridRowsControl.value = String(Math.max(0, Math.min(expertGridMaxExtraRows, expertEditorSurfaceSize.rows)));
+  }
+  if (expertGridZoomControl) {
+    expertGridZoomControl.min = String(expertGridMinZoomPercent);
+    expertGridZoomControl.max = String(expertGridMaxZoomPercent);
+    expertGridZoomControl.value = String(cellSizeToExpertGridZoomPercent(expertGridCellSize));
+  }
+  if (expertGridColumnsOutput) {
+    const extraColumns = expertGridColumns - expertGridBaseColumns;
+    const extraColumnsLabel = extraColumns === 0 ? "0" : `+${extraColumns}`;
+    expertGridColumnsOutput.value = extraColumnsLabel;
+    expertGridColumnsOutput.textContent = extraColumnsLabel;
+  }
+  if (expertGridRowsOutput) {
+    const extraRows = expertGridRows - expertGridBaseRows;
+    const extraRowsLabel = extraRows === 0 ? "0" : `+${extraRows}`;
+    expertGridRowsOutput.value = extraRowsLabel;
+    expertGridRowsOutput.textContent = extraRowsLabel;
+  }
+  if (expertGridZoomOutput) {
+    const zoomPercent = cellSizeToExpertGridZoomPercent(expertGridCellSize);
+    expertGridZoomOutput.value = `${zoomPercent}%`;
+    expertGridZoomOutput.textContent = `${zoomPercent}%`;
+  }
 }
 
 function applyExpertEditorSurfaceSize() {
-  const availableWidth = expertEditorCanvasRow?.clientWidth || expertEditorCanvasRow?.parentElement?.clientWidth || 972;
-  const baseWidth = Math.max(640, availableWidth);
-  expertEditorDropzone.style.setProperty("--expert-editor-base-width", `${baseWidth}px`);
-  expertEditorDropzone.style.setProperty(
-    "--expert-editor-extra-width",
-    `${expertEditorSurfaceSize.columns * expertEditorSurfaceWidthStep()}px`,
-  );
-  expertEditorDropzone.style.setProperty(
-    "--expert-editor-extra-height",
-    `${expertEditorSurfaceSize.rows * expertEditorSurfaceHeightStep}px`,
-  );
+  syncExpertGridSizeFromSurfaceDelta();
+  expertGridRows = Math.max(expertGridRows, calculateRequiredExpertGridRows());
+  syncExpertGridControls();
+  const surfaceWidth = expertGridColumns * expertGridCellSize + Math.max(0, expertGridColumns - 1) * expertGridGap;
+  const surfaceHeight = expertGridRows * expertGridCellSize + Math.max(0, expertGridRows - 1) * expertGridGap;
+  expertEditorDropzone.style.setProperty("--expert-editor-columns", String(expertGridColumns));
+  expertEditorDropzone.style.setProperty("--expert-editor-rows", String(expertGridRows));
+  expertEditorDropzone.style.setProperty("--expert-editor-cell-size", `${expertGridCellSize}px`);
+  expertEditorDropzone.style.setProperty("--expert-editor-grid-gap", `${expertGridGap}px`);
+  expertEditorDropzone.style.setProperty("--expert-editor-surface-width", `${surfaceWidth}px`);
+  expertEditorDropzone.style.setProperty("--expert-editor-surface-height", `${surfaceHeight}px`);
 }
 
-function appendExpertEditorSurfaceResizeHandle() {
-  const handle = document.createElement("button");
-  handle.type = "button";
-  handle.className = "expert-editor-surface-resize-handle";
-  handle.setAttribute("aria-label", t("aria.resizeExpertSurface"));
-  handle.title = t("aria.resizeExpertSurface");
-  handle.addEventListener("pointerdown", startExpertEditorSurfaceResize);
-  handle.addEventListener("click", event => {
-    event.preventDefault();
-    event.stopPropagation();
+function calculateRequiredExpertGridRows() {
+  const bottomRows = expertEditorFields
+    .map(normalizeEditableContainerLayout)
+    .map(field => Math.max(0, field.row) + Math.max(1, field.height));
+  return Math.max(expertGridBaseRows, ...bottomRows);
+}
+
+function applyExpertSurfaceGridGeometry(grid) {
+  const surfaceWidth = expertGridColumns * expertGridCellSize + Math.max(0, expertGridColumns - 1) * expertGridGap;
+  const surfaceHeight = expertGridRows * expertGridCellSize + Math.max(0, expertGridRows - 1) * expertGridGap;
+  grid.style.gridTemplateColumns = `repeat(${expertGridColumns}, ${expertGridCellSize}px)`;
+  grid.style.gridTemplateRows = `repeat(${expertGridRows}, ${expertGridCellSize}px)`;
+  grid.style.gap = `${expertGridGap}px`;
+  grid.style.width = `${surfaceWidth}px`;
+  grid.style.height = `${surfaceHeight}px`;
+}
+
+function renderExpertSurfaceCells(grid) {
+  const fragment = document.createDocumentFragment();
+  for (let row = 0; row < expertGridRows; row += 1) {
+    for (let column = 0; column < expertGridColumns; column += 1) {
+      const cell = document.createElement("div");
+      cell.className = "expert-surface-cell";
+      cell.style.gridColumn = String(column + 1);
+      cell.style.gridRow = String(row + 1);
+      cell.setAttribute("aria-hidden", "true");
+      fragment.append(cell);
+    }
+  }
+  grid.append(fragment);
+}
+
+function updateExpertEditorGridSize() {
+  expertGridColumns = clampExpertGridColumns(expertGridBaseColumns + clampExpertEditorSurfaceDelta(expertGridColumnsControl?.value));
+  expertGridRows = clampExpertGridRows(expertGridBaseRows + clampExpertEditorSurfaceDelta(expertGridRowsControl?.value, expertGridMaxExtraRows));
+  syncExpertSurfaceDeltaFromGridSize();
+  clampExpertFieldsToGrid();
+  persistConfiguration();
+  renderExpertEditorPreview();
+  statusMessage.textContent = t("message.surfaceResized", {
+    columns: expertGridColumns,
+    rows: expertGridRows,
   });
-  expertEditorDropzone.append(handle);
 }
 
-function startExpertEditorSurfaceResize(event) {
-  event.preventDefault();
-  event.stopPropagation();
-  const starting = { ...expertEditorSurfaceSize };
-  const startX = event.clientX;
-  const startY = event.clientY;
-  const widthStep = expertEditorSurfaceWidthStep();
-  const heightStep = expertEditorSurfaceHeightStep;
-  document.body.style.cursor = "nwse-resize";
-
-  const applyResize = pointerEvent => {
-    expertEditorSurfaceSize = {
-      columns: clampExpertEditorSurfaceDelta(starting.columns + Math.round((pointerEvent.clientX - startX) / widthStep)),
-      rows: clampExpertEditorSurfaceDelta(starting.rows + Math.round((pointerEvent.clientY - startY) / heightStep)),
-    };
-    applyExpertEditorSurfaceSize();
-  };
-
-  const finishResize = () => {
-    window.removeEventListener("pointermove", applyResize);
-    window.removeEventListener("pointerup", finishResize);
-    document.body.style.cursor = "";
-    persistConfiguration();
-    statusMessage.textContent = t("message.surfaceResized", {
-      columns: expertEditorSurfaceSize.columns,
-      rows: expertEditorSurfaceSize.rows,
-    });
-  };
-
-  window.addEventListener("pointermove", applyResize);
-  window.addEventListener("pointerup", finishResize, { once: true });
+function updateExpertEditorZoom() {
+  expertGridCellSize = expertGridZoomPercentToCellSize(expertGridZoomControl?.value);
+  syncExpertGridControls();
+  persistConfiguration();
+  renderExpertEditorPreview();
+  statusMessage.textContent = t("message.surfaceResized", {
+    columns: expertGridColumns,
+    rows: expertGridRows,
+  });
 }
 
 function resetExpertEditorSurfaceSize() {
   expertEditorSurfaceSize = { columns: 0, rows: 0 };
-  applyExpertEditorSurfaceSize();
+  expertGridCellSize = expertGridDefaultCellSize;
+  syncExpertGridSizeFromSurfaceDelta();
   persistConfiguration();
+  renderExpertEditorPreview();
   statusMessage.textContent = t("message.surfaceSizeReset");
+}
+
+function clampExpertFieldsToGrid() {
+  for (const [index, field] of expertEditorFields.entries()) {
+    const width = Math.max(1, Math.min(expertGridColumns, field.width));
+    const height = Math.max(1, Math.min(expertGridRows, field.height));
+    expertEditorFields[index] = {
+      ...field,
+      width,
+      height,
+      column: Math.max(0, Math.min(expertGridColumns - width, field.column)),
+      row: Math.max(0, Math.min(expertGridRows - height, field.row)),
+    };
+  }
 }
 
 function arrangeExpertEditorFields() {
@@ -5129,6 +5789,10 @@ function renderExpertEditorSurface() {
   applyExpertEditorSurfaceSize();
   const grid = document.createElement("div");
   grid.className = "expert-surface-grid";
+  applyExpertSurfaceGridGeometry(grid);
+  grid.addEventListener("dragover", handleExpertEditorSurfaceDragOver);
+  grid.addEventListener("drop", handleExpertEditorSurfaceDrop);
+  renderExpertSurfaceCells(grid);
   const surfaceAnalysis = analyzeHomeAssistantCardEditorSurface(expertEditorFields);
   const overlappingFieldIds = new Set(surfaceAnalysis.overlappingFieldIds);
   if (expertEditorFields.length === 0) {
@@ -5136,14 +5800,13 @@ function renderExpertEditorSurface() {
     empty.textContent = t("message.dragCard");
     grid.append(empty);
     expertEditorDropzone.append(grid);
-    appendExpertEditorSurfaceResizeHandle();
     renderExpertSelectedCardDetails();
     return;
   }
 
   expertEditorFields.forEach((storedField, index) => {
-    const field = isStackContainerField(storedField) && (storedField.rows === "auto" || storedField.autoHeight === true)
-      ? normalizeStackContainerLayout(storedField)
+    const field = isEditableContainerField(storedField) && (storedField.rows === "auto" || storedField.autoHeight === true)
+      ? normalizeEditableContainerLayout(storedField)
       : storedField;
     const tile = document.createElement("div");
     tile.tabIndex = 0;
@@ -5235,7 +5898,6 @@ function renderExpertEditorSurface() {
     grid.append(tile);
   });
   expertEditorDropzone.append(grid);
-  appendExpertEditorSurfaceResizeHandle();
   renderExpertSelectedCardDetails();
 }
 
@@ -5244,6 +5906,44 @@ function createExpertSurfaceFieldHeader(field) {
   title.className = "expert-surface-field-title";
   title.textContent = field.id;
   return title;
+}
+
+function handleExpertEditorSurfaceDragOver(event) {
+  event.preventDefault();
+  expertEditorDropzone.classList.add("drag-over");
+}
+
+function handleExpertEditorSurfaceDrop(event) {
+  event.preventDefault();
+  if (event.currentTarget !== expertEditorDropzone) {
+    event.stopPropagation();
+  }
+  expertEditorDropzone.classList.remove("drag-over");
+  const containerCard = event.dataTransfer?.getData("application/x-atlas-container-card");
+  if (containerCard) {
+    try {
+      moveContainerCardToSurface(JSON.parse(containerCard), calculateExpertDropPlacement(event));
+    } catch {
+      statusMessage.textContent = t("message.invalidDragPayload");
+    }
+    expertDragFieldOffset = { column: 0, row: 0 };
+    return;
+  }
+  const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
+  if (fieldIndex) {
+    moveExpertEditorField(Number(fieldIndex), calculateExpertDropPlacement(event));
+    expertDragFieldOffset = { column: 0, row: 0 };
+    return;
+  }
+  const paletteCardId = event.dataTransfer?.getData("application/x-atlas-palette-card");
+  if (paletteCardId) {
+    addExpertEditorFieldFromPaletteCard(paletteCardId, calculateExpertDropPlacement(event));
+    return;
+  }
+  const templateId = event.dataTransfer?.getData("application/x-atlas-template")
+    || event.dataTransfer?.getData("text/plain")
+    || expertTemplate.value;
+  addExpertEditorFieldFromTemplate(templateId, calculateExpertDropPlacement(event));
 }
 
 function getExpertFieldStyleBlocks(field) {
@@ -5320,9 +6020,7 @@ function expertDetailSettingsText(field, card) {
     ].filter(Boolean).join(" · ");
   }
   const entries = field.entries ?? [];
-  const cardCount = isTabbedCardField(field)
-    ? entries.reduce((count, entry) => count + (entry.cards?.length ?? 0), 0)
-    : entries.length;
+  const cardCount = entries.reduce((count, entry) => count + countContainerEntryCards(entry), 0);
   return [
     `${field.layout ?? "card"}`,
     `grid c${field.column + 1}/r${field.row + 1}`,
@@ -5330,6 +6028,10 @@ function expertDetailSettingsText(field, card) {
     isTabbedCardField(field) ? `${entries.length} tabs` : "",
     isEditableContainerField(field) ? `${cardCount} cards` : "",
   ].filter(Boolean).join(" · ");
+}
+
+function countContainerEntryCards(entry) {
+  return 1 + (entry.cards ?? []).reduce((count, child) => count + countContainerEntryCards(child), 0);
 }
 
 function expertContainerColumnsText(field) {
@@ -5481,11 +6183,11 @@ function createExpertDetailContainedCards(field, fieldIndex) {
     const activeIndex = normalizeTabbedCardTabIndex(field);
     const activeTab = field.entries?.[activeIndex];
     for (const [cardIndex, card] of (activeTab?.cards ?? []).entries()) {
-      list.append(createExpertDetailCardItem(card, cardIndex));
+      appendExpertDetailCardItems(list, card, [cardIndex + 1]);
     }
   } else {
     for (const [cardIndex, card] of (field.entries ?? []).entries()) {
-      list.append(createExpertDetailCardItem(card, cardIndex));
+      appendExpertDetailCardItems(list, card, [cardIndex + 1]);
     }
   }
   if (list.children.length === 0) {
@@ -5496,11 +6198,19 @@ function createExpertDetailContainedCards(field, fieldIndex) {
   return section;
 }
 
-function createExpertDetailCardItem(card, index) {
+function appendExpertDetailCardItems(list, card, path) {
+  list.append(createExpertDetailCardItem(card, path));
+  for (const [index, child] of (card.cards ?? []).entries()) {
+    appendExpertDetailCardItems(list, child, [...path, index + 1]);
+  }
+}
+
+function createExpertDetailCardItem(card, path) {
   const item = document.createElement("li");
   const variant = getExpertPreviewVariant(card);
   item.className = "expert-detail-card-item";
-  item.textContent = `${index + 1}. ${card.id} · ${variant.label ?? card.target} · ${card.entityId || t("text.noEntity")}`;
+  const childCount = card.cards?.length ?? 0;
+  item.textContent = `${path.join(".")}. ${card.id} · ${card.layout ?? variant.label ?? card.target} · ${childCount ? `${childCount} ${t("text.containedCards")}` : card.entityId || t("text.noEntity")}`;
   return item;
 }
 
@@ -5590,13 +6300,13 @@ function listImportedStyleTypes(styles) {
 function createStackContainerInlineView(field, fieldIndex) {
   const wrapper = document.createElement("div");
   wrapper.className = "expert-tab-inline";
+  const entries = field.entries ?? [];
   const count = document.createElement("small");
-  count.textContent = t("text.tabbedCardContainer", { count: field.entries?.length ?? 0 });
+  count.textContent = t("text.tabbedCardContainer", { count: entries.length });
   const preview = document.createElement("div");
   preview.className = `expert-tab-preview ${(field.layout ?? "vertical-stack") === "horizontal-stack" ? "horizontal" : "vertical"}`;
   if ((field.layout ?? "vertical-stack") === "horizontal-stack") {
-    const minimumWidth = Math.max(33, Math.round((4 / Math.max(4, field.width)) * 100));
-    preview.style.gridTemplateColumns = `repeat(auto-fit, minmax(min(100%, ${minimumWidth}%), 1fr))`;
+    preview.style.gridTemplateColumns = `repeat(${Math.max(1, entries.length)}, minmax(0, 1fr))`;
   }
   preview.addEventListener("dragover", event => {
     event.preventDefault();
@@ -5614,19 +6324,19 @@ function createStackContainerInlineView(field, fieldIndex) {
     handleDropIntoStackContainer(event, fieldIndex);
   });
 
-  const entries = field.entries ?? [];
   if (entries.length === 0) {
     const empty = document.createElement("small");
     empty.textContent = t("message.dragCard");
     preview.append(empty);
   } else {
     entries.forEach((entry, cardIndex) => {
+      const reference = { fieldIndex, cardIndex, cardPath: [cardIndex] };
       preview.append(createContainerPreviewCard(entry, {
-        reference: { fieldIndex, cardIndex },
-        selected: selectedContainerCardRef?.fieldIndex === fieldIndex && selectedContainerCardRef?.cardIndex === cardIndex,
-        onClick: () => selectContainerCard({ fieldIndex, cardIndex }),
-        onRemove: () => removeContainerCard({ fieldIndex, cardIndex }),
-        onMoveOut: () => moveContainerCardToSurface({ fieldIndex, cardIndex }),
+        reference,
+        selected: sameContainerCardReference(selectedContainerCardRef, reference),
+        onClick: () => selectContainerCard(reference),
+        onRemove: () => removeContainerCard(reference),
+        onMoveOut: () => moveContainerCardToSurface(reference),
       }));
     });
   }
@@ -5695,17 +6405,16 @@ function createTabbedCardInlineView(field, fieldIndex) {
     empty.textContent = t("message.dragCard");
     preview.append(empty);
   } else {
-    for (const card of cards) {
+    cards.forEach((card, cardIndex) => {
+      const reference = { fieldIndex, tabIndex: activeIndex, cardIndex, cardPath: [cardIndex] };
       preview.append(createContainerPreviewCard(card, {
-        reference: { fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) },
-        selected: selectedContainerCardRef?.fieldIndex === fieldIndex
-          && selectedContainerCardRef?.tabIndex === activeIndex
-          && selectedContainerCardRef?.cardIndex === cards.indexOf(card),
-        onClick: () => selectContainerCard({ fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) }),
-        onRemove: () => removeContainerCard({ fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) }),
-        onMoveOut: () => moveContainerCardToSurface({ fieldIndex, tabIndex: activeIndex, cardIndex: cards.indexOf(card) }),
+        reference,
+        selected: sameContainerCardReference(selectedContainerCardRef, reference),
+        onClick: () => selectContainerCard(reference),
+        onRemove: () => removeContainerCard(reference),
+        onMoveOut: () => moveContainerCardToSurface(reference),
       }));
-    }
+    });
   }
 
   wrapper.append(count, tabs, preview);
@@ -5715,6 +6424,9 @@ function createTabbedCardInlineView(field, fieldIndex) {
 function createContainerPreviewCard(card, options = {}) {
   const item = document.createElement("article");
   item.className = "expert-tab-preview-card";
+  const childCount = card.cards?.length ?? 0;
+  const isContainerCard = card.layout === "horizontal-stack" || card.layout === "vertical-stack" || card.layout === "grid";
+  item.classList.toggle("nested-container-card", isContainerCard);
   const variant = getExpertPreviewVariant(card);
   if (variant.kind) {
     item.classList.add("card-kind-preview");
@@ -5735,7 +6447,9 @@ function createContainerPreviewCard(card, options = {}) {
   title.textContent = card.id;
   const detail = document.createElement("small");
   const bubbleType = card.target === "bubble" ? `, ${card.bubbleButtonType ?? "state"}` : "";
-  detail.textContent = `${translateCardTarget(card.target, card.target)}${bubbleType} - ${card.entityId || t("text.demoEntity")}`;
+  detail.textContent = isContainerCard
+    ? `${card.layout ?? "vertical-stack"} - ${childCount} ${t("text.containedCards")}`
+    : `${translateCardTarget(card.target, card.target)}${bubbleType} - ${card.entityId || t("text.demoEntity")}`;
   const actions = document.createElement("span");
   actions.className = "expert-tab-preview-card-actions";
   const moveOut = document.createElement("button");
@@ -5759,6 +6473,30 @@ function createContainerPreviewCard(card, options = {}) {
   if (variant.label) {
     item.append(createCardTypeBadge(variant));
   }
+  if (childCount > 0) {
+    const children = document.createElement("div");
+    children.className = `expert-tab-preview-children ${(card.layout ?? "vertical-stack") === "horizontal-stack" ? "horizontal" : "vertical"}`;
+    if ((card.layout ?? "vertical-stack") === "horizontal-stack") {
+      children.style.gridTemplateColumns = `repeat(${Math.max(1, childCount)}, minmax(0, 1fr))`;
+    }
+    (card.cards ?? []).forEach((child, childIndex) => {
+      const childReference = options.reference
+        ? {
+            ...options.reference,
+            cardIndex: childIndex,
+            cardPath: [...containerCardReferencePath(options.reference), childIndex],
+          }
+        : undefined;
+      children.append(createContainerPreviewCard(child, {
+        reference: childReference,
+        selected: sameContainerCardReference(selectedContainerCardRef, childReference),
+        onClick: childReference ? () => selectContainerCard(childReference) : undefined,
+        onRemove: childReference ? () => removeContainerCard(childReference) : undefined,
+        onMoveOut: childReference ? () => moveContainerCardToSurface(childReference) : undefined,
+      }));
+    });
+    item.append(children);
+  }
   item.addEventListener("click", event => {
     event.stopPropagation();
     options.onClick?.();
@@ -5775,10 +6513,31 @@ function createContainerPreviewCard(card, options = {}) {
     event.dataTransfer?.setData("application/x-atlas-container-card", JSON.stringify(options.reference));
     event.dataTransfer?.setDragImage(item, 12, 12);
   });
+  if (options.reference && isContainerCard) {
+    item.addEventListener("dragover", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      item.classList.add("drag-over");
+    });
+    item.addEventListener("dragleave", event => {
+      if (!(event.relatedTarget instanceof Node) || !item.contains(event.relatedTarget)) {
+        item.classList.remove("drag-over");
+      }
+    });
+    item.addEventListener("drop", event => {
+      event.preventDefault();
+      event.stopPropagation();
+      item.classList.remove("drag-over");
+      handleDropIntoNestedContainerCard(event, options.reference);
+    });
+  }
   return item;
 }
 
 function getExpertPreviewVariant(card) {
+  if (card?.layout === "horizontal-stack" || card?.layout === "vertical-stack" || card?.layout === "grid") {
+    return { kind: "core", detail: card.layout, label: card.layout };
+  }
   const target = card?.target ?? "entity";
   if (target === "bubble") {
     const detail = bubbleButtonTypes.includes(card.bubbleButtonType) ? card.bubbleButtonType : "state";
@@ -5811,8 +6570,7 @@ function handleDropIntoTabbedCard(event, fieldIndex) {
   const templateId = event.dataTransfer?.getData("application/x-atlas-template") || event.dataTransfer?.getData("text/plain");
   const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
   if (!template || template.id === "tabbed-card-v2") return false;
-  return addCardToTabbedCardFieldAt(fieldIndex, createTabbedCardEntry({
-    target: template.target === "tabbed-card-v2" ? "entity" : template.target,
+  return addCardToTabbedCardFieldAt(fieldIndex, createExpertContainerEntryFromTemplate(template.id, {
     entityId: expertEntity.value.trim() || currentEntityId(),
   }));
 }
@@ -5822,13 +6580,8 @@ function handleDropIntoStackContainer(event, fieldIndex) {
   const draggedFieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
   if (draggedFieldIndex) {
     const field = expertEditorFields[Number(draggedFieldIndex)];
-    if (field && Number(draggedFieldIndex) !== fieldIndex && !isEditableContainerField(field)) {
-      const entry = createTabbedCardEntry({
-        title: field.id,
-        entityId: field.entityId || field.entries?.[0]?.entityId || currentEntityId(),
-        target: field.target,
-        bubbleButtonType: field.bubbleButtonType,
-      });
+    if (field && Number(draggedFieldIndex) !== fieldIndex && !isTabbedCardField(field)) {
+      const entry = createContainerEntryFromExpertField(field);
       addEntryToStackContainerFieldAt(fieldIndex, entry);
       expertEditorFields.splice(Number(draggedFieldIndex), 1);
       const nextFieldIndex = Number(draggedFieldIndex) < fieldIndex ? fieldIndex - 1 : fieldIndex;
@@ -5846,9 +6599,11 @@ function handleDropIntoStackContainer(event, fieldIndex) {
   if (paletteCardId) {
     const card = expertPaletteCards.find(candidate => candidate.id === paletteCardId);
     if (card && card.disabled !== true && card.target !== "tabbed-card-v2") {
-      return addEntryToStackContainerFieldAt(fieldIndex, createTabbedCardEntry({
+      return addEntryToStackContainerFieldAt(fieldIndex, createExpertContainerEntryFromTemplate(card.templateId, {
         target: card.target,
         bubbleButtonType: card.bubbleButtonType,
+        customType: card.customType,
+        resourceUrl: card.resourceUrl,
         entityId: expertEntity.value.trim() || currentEntityId(),
       }));
     }
@@ -5856,8 +6611,30 @@ function handleDropIntoStackContainer(event, fieldIndex) {
   const templateId = event.dataTransfer?.getData("application/x-atlas-template") || event.dataTransfer?.getData("text/plain");
   const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
   if (!template || template.id === "tabbed-card-v2") return false;
-  return addEntryToStackContainerFieldAt(fieldIndex, createTabbedCardEntry({
-    target: template.target === "tabbed-card-v2" ? "entity" : template.target,
+  return addEntryToStackContainerFieldAt(fieldIndex, createExpertContainerEntryFromTemplate(template.id, {
+    entityId: expertEntity.value.trim() || currentEntityId(),
+  }));
+}
+
+function handleDropIntoNestedContainerCard(event, reference) {
+  const paletteCardId = event.dataTransfer?.getData("application/x-atlas-palette-card");
+  if (paletteCardId) {
+    const card = expertPaletteCards.find(candidate => candidate.id === paletteCardId);
+    if (card && card.disabled !== true && card.target !== "tabbed-card-v2") {
+      return addEntryToNestedContainerCard(reference, createExpertContainerEntryFromTemplate(card.templateId, {
+        target: card.target,
+        bubbleButtonType: card.bubbleButtonType,
+        customType: card.customType,
+        resourceUrl: card.resourceUrl,
+        entityId: expertEntity.value.trim() || currentEntityId(),
+      }));
+    }
+  }
+
+  const templateId = event.dataTransfer?.getData("application/x-atlas-template") || event.dataTransfer?.getData("text/plain");
+  const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+  if (!template || template.id === "tabbed-card-v2") return false;
+  return addEntryToNestedContainerCard(reference, createExpertContainerEntryFromTemplate(template.id, {
     entityId: expertEntity.value.trim() || currentEntityId(),
   }));
 }
@@ -6182,12 +6959,56 @@ function indentImportedStyleBlock(code, indent) {
 }
 
 function addExpertEditorField() {
+  const selectedContainerCard = selectedContainerCardRef ? getContainerCard(selectedContainerCardRef) : undefined;
+  const selectedContainerCardIsContainer = selectedContainerCard?.layout === "horizontal-stack"
+    || selectedContainerCard?.layout === "vertical-stack"
+    || selectedContainerCard?.layout === "grid";
+  if (selectedContainerCardRef && selectedContainerCardIsContainer && expertTemplate.value !== "tabbed-card-v2") {
+    const entry = isContainerTemplateId(expertTemplate.value)
+      ? createExpertContainerEntryFromTemplate(expertTemplate.value, {
+          title: undefined,
+          target: expertTarget.value,
+          bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+          customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+          resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
+        })
+      : createTabbedCardEntry({
+          title: expertTitle.value.trim() || undefined,
+          target: expertTarget.value,
+          bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+          customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+          resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
+          entityId: expertEntity.value.trim() || currentEntityId(),
+        });
+    addEntryToNestedContainerCard(selectedContainerCardRef, entry);
+    return;
+  }
+
+  if (selectedContainerCardRef && isContainerTemplateId(expertTemplate.value)) {
+    if (isTabbedCardField(expertEditorFields[selectedContainerCardRef.fieldIndex]) && Number.isInteger(selectedContainerCardRef.tabIndex)) {
+      expertEditorFields[selectedContainerCardRef.fieldIndex] = {
+        ...expertEditorFields[selectedContainerCardRef.fieldIndex],
+        activeTabIndex: selectedContainerCardRef.tabIndex,
+      };
+    }
+    addCardEntryToSelectedContainer({
+      title: undefined,
+      templateId: expertTemplate.value,
+      target: expertTarget.value,
+      bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+      customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+      resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
+    });
+    return;
+  }
+
   if (selectedContainerCardRef) {
     const updated = updateSelectedContainerCard(card => ({
       ...card,
       id: expertTitle.value.trim() || card.id,
       target: expertTarget.value === "tabbed-card-v2" ? "entity" : expertTarget.value,
       ...(expertTarget.value === "bubble" ? { bubbleButtonType: expertBubbleButtonType.value } : { bubbleButtonType: undefined }),
+      ...(expertTarget.value === "custom-card" ? { customType: expertTarget.dataset.customType, resourceUrl: expertTarget.dataset.resourceUrl } : { customType: undefined, resourceUrl: undefined }),
       entityId: expertEntity.value.trim() || card.entityId || currentEntityId(),
     }));
     if (updated) return;
@@ -6198,6 +7019,8 @@ function addExpertEditorField() {
       title: expertTitle.value.trim() || undefined,
       target: expertTarget.value,
       bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+      customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+      resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
     });
     return;
   }
@@ -6208,6 +7031,8 @@ function addExpertEditorField() {
       title: expertTitle.value.trim() || undefined,
       target: expertTarget.value,
       bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+      customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+      resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
     });
     return;
   }
@@ -6223,6 +7048,8 @@ function addExpertEditorField() {
     templateId: expertTemplate.value,
     entityId,
     title: fieldTitle,
+    customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+    resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
     column: placement.column,
     row: placement.row,
     width: sizing.width,
@@ -6248,7 +7075,7 @@ function createExpertEditorField(input) {
   const isTabbedTemplate = input.templateId === "tabbed-card-v2" || expertTarget.value === "tabbed-card-v2";
   const isContainerTemplate = isTabbedTemplate || supportsMultipleEntries;
   const entryTarget = isTabbedTemplate ? "entity" : expertTarget.value;
-  const stackEntityIds = supportsMultipleEntries
+  const stackEntityIds = isOverviewTemplate
     ? selectedStackEntityIds()
     : [];
   const width = template?.layout === "horizontal-stack"
@@ -6258,6 +7085,8 @@ function createExpertEditorField(input) {
     template: input.templateId,
     target: expertTarget.value,
     bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+    customType: expertTarget.value === "custom-card" ? normalizeCustomCardType(input.customType ?? expertTarget.dataset.customType) : undefined,
+    resourceUrl: expertTarget.value === "custom-card" ? input.resourceUrl ?? expertTarget.dataset.resourceUrl : undefined,
     entityId: isContainerTemplate ? "" : input.entityId,
     id: expertTitleForNewField(input.templateId, input.title),
     column: input.column,
@@ -6283,8 +7112,10 @@ function createExpertEditorField(input) {
         : {
             id: `${field.id} ${index + 1}`,
             target: entryTarget,
-            ...(expertTarget.value === "bubble" ? { bubbleButtonType: expertBubbleButtonType.value } : {}),
-            entityId,
+      ...(expertTarget.value === "bubble" ? { bubbleButtonType: expertBubbleButtonType.value } : {}),
+      ...(expertTarget.value === "custom-card" && normalizeCustomCardType(input.customType ?? expertTarget.dataset.customType) ? { customType: normalizeCustomCardType(input.customType ?? expertTarget.dataset.customType) } : {}),
+      ...(expertTarget.value === "custom-card" && (input.resourceUrl ?? expertTarget.dataset.resourceUrl) ? { resourceUrl: input.resourceUrl ?? expertTarget.dataset.resourceUrl } : {}),
+      entityId,
           }),
       ...(isTabbedTemplate ? { activeTabIndex: 0 } : {}),
     };
@@ -6313,22 +7144,48 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
   if (!options.preserveSelection) {
     selectExpertTemplate(templateId);
   }
-  if (!options.forceSurface && selectedTabbedCardField() && templateId !== "tabbed-card-v2") {
+  const selectedContainerCard = selectedContainerCardRef ? getContainerCard(selectedContainerCardRef) : undefined;
+  const selectedContainerCardIsContainer = selectedContainerCard?.layout === "horizontal-stack"
+    || selectedContainerCard?.layout === "vertical-stack"
+    || selectedContainerCard?.layout === "grid";
+  if (!options.forceSurface && selectedContainerCardRef && selectedContainerCardIsContainer && templateId !== "tabbed-card-v2") {
     const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
-    addCurrentExpertSelectionToActiveTabbedCard({
-      title: expertTitle.value.trim() || (template ? translateTemplateLabel(template.id, template.label) : undefined),
+    const isContainerTemplate = isContainerTemplateId(templateId);
+    const entry = createExpertContainerEntryFromTemplate(templateId, {
+      title: isContainerTemplate ? undefined : expertTitle.value.trim() || (template ? translateTemplateLabel(template.id, template.label) : undefined),
       target: expertTarget.value,
       bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+      customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+      resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
+      entityId: expertEntity.value.trim() || currentEntityId(),
+    });
+    addEntryToNestedContainerCard(selectedContainerCardRef, entry);
+    return;
+  }
+  if (!options.forceSurface && selectedTabbedCardField() && templateId !== "tabbed-card-v2") {
+    const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+    const isContainerTemplate = isContainerTemplateId(templateId);
+    addCurrentExpertSelectionToActiveTabbedCard({
+      title: isContainerTemplate ? undefined : expertTitle.value.trim() || (template ? translateTemplateLabel(template.id, template.label) : undefined),
+      templateId,
+      target: expertTarget.value,
+      bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+      customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+      resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
     });
     return;
   }
   const selectedContainer = selectedEditableContainerField();
   if (!options.forceSurface && selectedContainer && !isTabbedCardField(selectedContainer) && templateId !== "tabbed-card-v2") {
     const template = cardEditorTemplates.find(candidate => candidate.id === templateId);
+    const isContainerTemplate = isContainerTemplateId(templateId);
     addCardEntryToSelectedContainer({
-      title: expertTitle.value.trim() || (template ? translateTemplateLabel(template.id, template.label) : undefined),
+      title: isContainerTemplate ? undefined : expertTitle.value.trim() || (template ? translateTemplateLabel(template.id, template.label) : undefined),
+      templateId,
       target: expertTarget.value,
       bubbleButtonType: expertTarget.value === "bubble" ? expertBubbleButtonType.value : undefined,
+      customType: expertTarget.value === "custom-card" ? expertTarget.dataset.customType : undefined,
+      resourceUrl: expertTarget.value === "custom-card" ? expertTarget.dataset.resourceUrl : undefined,
     });
     return;
   }
@@ -6340,6 +7197,8 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
     templateId,
     entityId: expertEntity.value.trim() || currentEntityId(),
     title: fieldTitle,
+    customType: options.customType,
+    resourceUrl: options.resourceUrl,
     column: freePlacement.column,
     row: freePlacement.row,
     width: sizing.width,
@@ -6358,7 +7217,11 @@ function addExpertEditorFieldFromTemplate(templateId, placement = calculateExper
 function addExpertEditorFieldFromPaletteCard(cardId, placement = calculateExpertDropPlacement()) {
   const card = selectExpertPaletteCard(cardId);
   if (!card) return;
-  addExpertEditorFieldFromTemplate(card.templateId, placement, { preserveSelection: true });
+  addExpertEditorFieldFromTemplate(card.templateId, placement, {
+    preserveSelection: true,
+    customType: card.customType,
+    resourceUrl: card.resourceUrl,
+  });
 }
 
 function resolveExpertTemplateSizing(templateId) {
@@ -6785,6 +7648,11 @@ function createProblemReportData() {
       cardName: currentExpertCardName(),
       selectedFieldIndex: selectedExpertFieldIndex,
       editing: expertFieldEditing,
+      grid: {
+        columns: expertGridColumns,
+        rows: expertGridRows,
+        cellSize: expertGridCellSize,
+      },
       surfaceSize: expertEditorSurfaceSize,
       fields: normalizedExpertEditorFields(),
       summary: expertEditorSummary.textContent,
@@ -7581,6 +8449,16 @@ toggleTemporaryResourceDebug.addEventListener("change", () => {
   syncTemporaryResourceDebugVisibility();
   renderTemporaryHaCardResourceList();
 });
+toggleAutomaticCardTypeMapping?.addEventListener("change", () => {
+  persistConfiguration();
+  if (!toggleAutomaticCardTypeMapping.checked) return;
+  const mappedCount = applyAutomaticCustomCardMappings(lovelaceResources);
+  if (mappedCount > 0) {
+    refreshScannedExpertPaletteCards();
+    renderExpertTemplatePalette();
+    statusMessage.textContent = t("message.autoCustomCardMappingsCreated", { count: mappedCount });
+  }
+});
 homeAssistantGroup.addEventListener("change", () => {
   clearImportedSimplePreviewState();
   const group = panelGroups.find(candidate => candidate.id === homeAssistantGroup.value);
@@ -7637,6 +8515,12 @@ expertBubbleButtonType.addEventListener("change", updateSelectedExpertFieldBubbl
 for (const control of [expertColumn, expertRow, expertWidth, expertHeight]) {
   control.addEventListener("change", updateSelectedExpertFieldGeometry);
 }
+for (const control of [expertGridColumnsControl, expertGridRowsControl].filter(Boolean)) {
+  control.addEventListener("input", updateExpertEditorGridSize);
+  control.addEventListener("change", updateExpertEditorGridSize);
+}
+expertGridZoomControl?.addEventListener("input", updateExpertEditorZoom);
+expertGridZoomControl?.addEventListener("change", updateExpertEditorZoom);
 applyExpertTitle.addEventListener("click", () => {
   updateSelectedExpertFieldTitle(expertTitle.value);
 });
@@ -7688,8 +8572,7 @@ resetSimplePreview.addEventListener("click", resetSimplePreviewState);
 resetExpertPreview.addEventListener("click", resetExpertPreviewState);
 clearExpertFields.addEventListener("click", resetExpertPreviewState);
 expertEditorDropzone.addEventListener("dragover", event => {
-  event.preventDefault();
-  expertEditorDropzone.classList.add("drag-over");
+  handleExpertEditorSurfaceDragOver(event);
 });
 expertEditorDropzone.addEventListener("dragleave", event => {
   if (!(event.relatedTarget instanceof Node) || !expertEditorDropzone.contains(event.relatedTarget)) {
@@ -7697,33 +8580,7 @@ expertEditorDropzone.addEventListener("dragleave", event => {
   }
 });
 expertEditorDropzone.addEventListener("drop", event => {
-  event.preventDefault();
-  expertEditorDropzone.classList.remove("drag-over");
-  const containerCard = event.dataTransfer?.getData("application/x-atlas-container-card");
-  if (containerCard) {
-    try {
-      moveContainerCardToSurface(JSON.parse(containerCard), calculateExpertDropPlacement(event));
-    } catch {
-      statusMessage.textContent = t("message.invalidDragPayload");
-    }
-    expertDragFieldOffset = { column: 0, row: 0 };
-    return;
-  }
-  const fieldIndex = event.dataTransfer?.getData("application/x-atlas-field-index");
-  if (fieldIndex) {
-    moveExpertEditorField(Number(fieldIndex), calculateExpertDropPlacement(event));
-    expertDragFieldOffset = { column: 0, row: 0 };
-    return;
-  }
-  const paletteCardId = event.dataTransfer?.getData("application/x-atlas-palette-card");
-  if (paletteCardId) {
-    addExpertEditorFieldFromPaletteCard(paletteCardId, calculateExpertDropPlacement(event));
-    return;
-  }
-  const templateId = event.dataTransfer?.getData("application/x-atlas-template")
-    || event.dataTransfer?.getData("text/plain")
-    || expertTemplate.value;
-  addExpertEditorFieldFromTemplate(templateId, calculateExpertDropPlacement(event));
+  handleExpertEditorSurfaceDrop(event);
 });
 saveHomeAssistantGroup.addEventListener("click", () => {
   const title = homeAssistantGroupName.value.trim();
@@ -7779,9 +8636,13 @@ exportHomeAssistantConfig.addEventListener("click", () => {
     cardStyleExport: haCardStyleExport.value,
     cardScriptFilename: haCardScriptFilename.value,
     stackEntityIds: selectedStackEntityIds(),
+    automaticCardTypeMapping: toggleAutomaticCardTypeMapping?.checked === true,
     expertPaletteFavoriteIds: [...expertPaletteFavoriteIds],
+    expertPaletteHiddenIds: [...expertPaletteHiddenIds],
+    expertCustomCardMappings: serializedExpertCustomCardMappings(),
     expertTemplateSizing: serializedExpertTemplateSizing(),
     expertEditorSurfaceSize,
+    expertGridCellSize,
     expertEditorFields,
     selectedExpertFieldIndex,
     expertCardName: expertCardName.value,
@@ -7963,6 +8824,9 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     if (typeof pendingImport.entitySearch === "string") {
       homeAssistantEntitySearch.value = pendingImport.entitySearch;
     }
+    if (typeof pendingImport.automaticCardTypeMapping === "boolean" && toggleAutomaticCardTypeMapping) {
+      toggleAutomaticCardTypeMapping.checked = pendingImport.automaticCardTypeMapping;
+    }
     panelGroups = pendingImport.groups.map(createHomeAssistantPanelGroup);
     if (typeof pendingImport.cardTarget === "string" && cardTargets.some(descriptor => descriptor.target === pendingImport.cardTarget)) {
       haCardTarget.value = pendingImport.cardTarget;
@@ -7982,11 +8846,12 @@ importHomeAssistantConfig.addEventListener("change", async () => {
     if (pendingImport.expertEditorSurfaceSize && typeof pendingImport.expertEditorSurfaceSize === "object") {
       expertEditorSurfaceSize = {
         columns: clampExpertEditorSurfaceDelta(pendingImport.expertEditorSurfaceSize.columns),
-        rows: clampExpertEditorSurfaceDelta(pendingImport.expertEditorSurfaceSize.rows),
+        rows: clampExpertEditorSurfaceDelta(pendingImport.expertEditorSurfaceSize.rows, expertGridMaxExtraRows),
       };
     } else {
       expertEditorSurfaceSize = { columns: 0, rows: 0 };
     }
+    expertGridCellSize = clampExpertGridCellSize(pendingImport.expertGridCellSize);
     resetExpertTemplateSizingDefaults();
     if (Array.isArray(pendingImport.expertTemplateSizing)) {
       for (const entry of pendingImport.expertTemplateSizing) {
@@ -8016,6 +8881,35 @@ importHomeAssistantConfig.addEventListener("change", async () => {
         }
       }
     }
+    expertPaletteFavoriteIds.clear();
+    expertPaletteDraftFavoriteIds.clear();
+    if (Array.isArray(pendingImport.expertPaletteFavoriteIds)) {
+      for (const paletteId of pendingImport.expertPaletteFavoriteIds) {
+        if (typeof paletteId === "string" && paletteId.trim()) {
+          expertPaletteFavoriteIds.add(paletteId);
+          expertPaletteDraftFavoriteIds.add(paletteId);
+        }
+      }
+    }
+    expertPaletteHiddenIds.clear();
+    if (Array.isArray(pendingImport.expertPaletteHiddenIds)) {
+      for (const paletteId of pendingImport.expertPaletteHiddenIds) {
+        if (typeof paletteId === "string" && paletteId.trim()) {
+          expertPaletteHiddenIds.add(paletteId);
+        }
+      }
+    }
+    expertCustomCardMappings.clear();
+    if (Array.isArray(pendingImport.expertCustomCardMappings)) {
+      for (const entry of pendingImport.expertCustomCardMappings) {
+        const resourceUrl = normalizeLovelaceResourceUrl(entry?.resourceUrl);
+        const customType = normalizeCustomCardType(entry?.customType);
+        if (resourceUrl && customType) {
+          expertCustomCardMappings.set(resourceUrl, customType);
+        }
+      }
+    }
+    expertPaletteShowAllCards = false;
     syncCardLayoutState();
     renderGroupOptions(typeof pendingImport.selectedGroup === "string" ? pendingImport.selectedGroup : "custom");
     renderEditorMode(pendingImport.editorMode === "expert" ? "expert" : "simple");
@@ -8174,7 +9068,7 @@ function applyHomeAssistantCardImportSummary(summary) {
     selectedExpertFieldIndex = expertEditorFields.length ? 0 : -1;
     expertCardName.value = "";
     expertFieldEditing = false;
-    renderEditorMode("simple");
+    renderEditorMode(shouldOpenImportedCardInExpertMode(summary.card) ? "expert" : "simple");
   }
   persistConfiguration();
   applyingImportedSimpleSummary = true;
@@ -8189,6 +9083,12 @@ function applyHomeAssistantCardImportSummary(summary) {
     title,
     entities: entityIds.length,
   });
+}
+
+function shouldOpenImportedCardInExpertMode(card) {
+  return card?.type === "custom:tabbed-card-v2"
+    || card?.type === "horizontal-stack"
+    || card?.type === "vertical-stack";
 }
 connectButton?.addEventListener("click", connectHomeAssistant);
 disconnectButton?.addEventListener("click", disconnectHomeAssistant);
@@ -8208,6 +9108,7 @@ renderCardTranslationModuleStatus();
 renderEditorMode(initialEditorMode);
 syncTemporaryResourceDebugVisibility();
 renderTemporaryHaCardResourceList();
+hideEditorLoadingNotice();
 
 let adminHandoffRequestAttempts = 0;
 const adminHandoffRequestTimer = window.setInterval(() => {

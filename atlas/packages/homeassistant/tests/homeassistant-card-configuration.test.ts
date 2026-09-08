@@ -11,6 +11,8 @@ import {
   createHomeAssistantLovelaceResourceReferences,
   createHomeAssistantCardArtifactReview,
   createHomeAssistantCardEditorPackagePlan,
+  createHomeAssistantCardEditorConfiguration,
+  createHomeAssistantCardEditorDependencyPlan,
   createHomeAssistantCardEditorScriptExport,
   createHomeAssistantCardLocaleFiles,
   convertHomeAssistantCardModStylesToUixStyle,
@@ -388,8 +390,9 @@ describe("Home Assistant entities card configuration", () => {
       ],
     }, "yaml")).toBe([
       "type: horizontal-stack",
-      "columns: 8",
-      "rows: auto",
+      "grid_options:",
+      "  columns: 8",
+      "  rows: \"auto\"",
       "cards:",
       "  - type: \"entity\"",
       "    name: \"Status\"",
@@ -1472,6 +1475,93 @@ describe("Home Assistant entities card configuration", () => {
     });
   });
 
+  it("imports hand-written Tabbed Card V2 YAML with nested stack cards", () => {
+    const text = [
+      "type: custom:tabbed-card-v2",
+      "styles:",
+      "  --mdc-theme-primary: yellow",
+      "  --mdc-tab-text-label-color-default: lightblue",
+      "card_mod:",
+      "  style: |",
+      "    ha-card {",
+      "      background: transparent !important;",
+      "    }",
+      "options:",
+      "  defaultTabIndex: 0",
+      "rows: auto",
+      "tabs:",
+      "  - attributes:",
+      "      label: Keller",
+      "      icon: mdi:home-floor-negative-1",
+      "    card:",
+      "      type: horizontal-stack",
+      "      cards:",
+      "        - type: vertical-stack",
+      "          cards:",
+      "            - type: custom:mushroom-entity-card",
+      "              entity: switch.trockner_1_2",
+      "              tap_action:",
+      "                action: toggle",
+      "              icon: mdi:tumble-dryer",
+      "              icon_color: blue",
+      "              name: TR 1",
+      "            - type: custom:vertical-stack-in-card",
+      "              cards:",
+      "                - type: custom:mushroom-entity-card",
+      "                  entity: switch.waschmaschine_1_2",
+      "                  tap_action:",
+      "                    action: toggle",
+      "                  name: Waschmaschine 1",
+      "                - type: custom:mushroom-chips-card",
+      "                  chips:",
+      "                    - type: template",
+      "                      entity: switch.waschmaschine_1_child_lock_2",
+      "                      icon: |",
+      "                        {% if is_state(entity, 'on') %}",
+      "                          mdi:lock",
+      "                        {% else %}",
+      "                          mdi:lock-open-variant",
+      "                        {% endif %}",
+      "          title: Kellergeräte",
+      "  - attributes:",
+      "      label: Erdgeschoss",
+      "      icon: mdi:home-floor-0",
+      "    card:",
+      "      type: vertical-stack",
+      "      cards:",
+      "        - type: entities",
+      "          title: Entities 7",
+      "          entities:",
+      "            - entity: switch.trockner_1_2",
+      "grid_options:",
+      "  columns: full",
+      "  rows: auto",
+    ].join("\n");
+
+    expect(decideHomeAssistantCardArtifactImport(text)).toMatchObject({
+      action: "import",
+      inspection: {
+        kind: "home-assistant-card",
+        importable: true,
+      },
+    });
+    const summary = summarizeHomeAssistantCardImport(text);
+    expect(summary).toMatchObject({
+      target: "tabbed-card-v2",
+      title: "Keller",
+      entityIds: [
+        "switch.trockner_1_2",
+        "switch.waschmaschine_1_2",
+        "switch.waschmaschine_1_child_lock_2",
+      ],
+      card: {
+        type: "custom:tabbed-card-v2",
+        columns: "full",
+        rows: "auto",
+      },
+    });
+  });
+
   it("summarizes imported cards for host editors", () => {
     const summary = summarizeHomeAssistantCardImport([
       "type: horizontal-stack",
@@ -1676,6 +1766,70 @@ describe("Home Assistant entities card configuration", () => {
     expect(styleInspection.globalStyles).toHaveLength(1);
     expect(styleInspection.cardStyles).toHaveLength(0);
     expect(serializeHomeAssistantEntitiesCardConfiguration(summary.card, "yaml")).toContain("type: \"custom:gauge-card-pro\"");
+  });
+
+  it("exports locally mapped custom cards from expert editor fields", () => {
+    const card = createHomeAssistantCardEditorConfiguration({
+      editorMode: "expert",
+      cardName: "Mapped cards",
+      fields: [
+        {
+          id: "Mini Graph",
+          target: "custom-card",
+          customType: "custom:mini-graph-card",
+          resourceUrl: "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js",
+          entityId: "sensor.office_temperature",
+          layout: "card",
+          column: 0,
+          row: 0,
+          width: 4,
+          height: 2,
+        },
+        {
+          id: "Gauge Row",
+          target: "entities",
+          entityId: "",
+          layout: "horizontal-stack",
+          entries: [
+            {
+              id: "Gauge Pro",
+              target: "custom-card",
+              customType: "custom:gauge-card-pro",
+              resourceUrl: "/hacsfiles/gauge-card-pro/gauge-card-pro.js",
+              entityId: "sensor.total_power",
+            },
+          ],
+          column: 0,
+          row: 2,
+          width: 6,
+          height: 2,
+        },
+      ],
+    });
+
+    const yaml = serializeHomeAssistantEntitiesCardConfiguration(card, "yaml");
+    expect(yaml).toContain("type: \"custom:mini-graph-card\"");
+    expect(yaml).toContain("type: \"custom:gauge-card-pro\"");
+    expect(yaml).not.toContain("custom:atlas-raw-card");
+
+    const dependencies = createHomeAssistantCardEditorDependencyPlan({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "Mini Graph",
+          target: "custom-card",
+          customType: "custom:mini-graph-card",
+          resourceUrl: "/hacsfiles/mini-graph-card/mini-graph-card-bundle.js",
+          entityId: "sensor.office_temperature",
+          layout: "card",
+          column: 0,
+          row: 0,
+          width: 4,
+          height: 2,
+        },
+      ],
+    });
+    expect(dependencies.requiredResourcePaths).toContain("/hacsfiles/mini-graph-card/mini-graph-card-bundle.js");
   });
 
   it("rejects cards without supported entities", () => {

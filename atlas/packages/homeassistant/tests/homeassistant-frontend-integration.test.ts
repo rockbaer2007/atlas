@@ -207,6 +207,7 @@ describe("Home Assistant frontend integration planning", () => {
         "webpage",
         "bubble",
         "mushroom-template",
+        "custom-card",
         "tabbed-card-v2",
       ],
       fields: [],
@@ -969,8 +970,10 @@ describe("Home Assistant frontend integration planning", () => {
       options: {
         defaultTabIndex: 0,
       },
-      columns: "full",
-      rows: "auto",
+      grid_options: {
+        columns: "full",
+        rows: "auto",
+      },
       tabs: [
         {
           attributes: {
@@ -1108,6 +1111,154 @@ describe("Home Assistant frontend integration planning", () => {
               name: "Bottom right",
               entity: "light.bottom_right",
               show_state: true,
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  it("keeps explicit stack containers nested inside opposite stack containers", () => {
+    expect(createHomeAssistantCardEditorConfiguration({
+      editorMode: "expert",
+      fields: [
+        {
+          id: "Outer horizontal",
+          target: "entities",
+          entityId: "",
+          layout: "horizontal-stack",
+          entries: [
+            {
+              id: "Nested vertical",
+              target: "entities",
+              layout: "vertical-stack",
+              cards: [
+                {
+                  id: "Top",
+                  target: "entity",
+                  entityId: "sensor.top",
+                },
+                {
+                  id: "Bottom",
+                  target: "button",
+                  entityId: "light.bottom",
+                },
+              ],
+            },
+            {
+              id: "Right",
+              target: "sensor",
+              entityId: "sensor.right",
+            },
+            {
+              id: "Empty vertical",
+              target: "entities",
+              layout: "vertical-stack",
+              cards: [],
+            },
+          ],
+          column: 0,
+          row: 0,
+          width: 8,
+          height: 3,
+        },
+        {
+          id: "Outer vertical",
+          target: "entities",
+          entityId: "",
+          layout: "vertical-stack",
+          entries: [
+            {
+              id: "Nested horizontal",
+              target: "entities",
+              layout: "horizontal-stack",
+              cards: [
+                {
+                  id: "Left",
+                  target: "entity",
+                  entityId: "sensor.left",
+                },
+                {
+                  id: "Middle",
+                  target: "bubble",
+                  bubbleButtonType: "switch",
+                  entityId: "switch.middle",
+                },
+              ],
+            },
+            {
+              id: "Footer",
+              target: "mushroom-template",
+              entityId: "sensor.footer",
+            },
+          ],
+          column: 0,
+          row: 4,
+          width: 8,
+          height: 3,
+        },
+      ],
+    })).toEqual({
+      type: "vertical-stack",
+      cards: [
+        {
+          type: "horizontal-stack",
+          cards: [
+            {
+              type: "vertical-stack",
+              cards: [
+                {
+                  type: "entity",
+                  name: "Top",
+                  entity: "sensor.top",
+                },
+                {
+                  type: "button",
+                  name: "Bottom",
+                  entity: "light.bottom",
+                  tap_action: {
+                    action: "toggle",
+                  },
+                },
+              ],
+            },
+            {
+              type: "sensor",
+              name: "Right",
+              entity: "sensor.right",
+            },
+            {
+              type: "vertical-stack",
+              cards: [],
+            },
+          ],
+        },
+        {
+          type: "vertical-stack",
+          cards: [
+            {
+              type: "horizontal-stack",
+              cards: [
+                {
+                  type: "entity",
+                  name: "Left",
+                  entity: "sensor.left",
+                },
+                {
+                  type: "custom:bubble-card",
+                  card_type: "button",
+                  button_type: "switch",
+                  name: "Middle",
+                  entity: "switch.middle",
+                  show_state: true,
+                },
+              ],
+            },
+            {
+              type: "custom:mushroom-template-card",
+              primary: "Footer",
+              secondary: "sensor.footer",
+              entity: "sensor.footer",
             },
           ],
         },

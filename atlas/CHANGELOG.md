@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.168
+
+- Remove Automation Exporter / Editor write-back controls.
+- Create a timestamped safety backup when reading `/config/automations.yaml`.
+- Export selected automations into `export-version` with `id` and
+  `bereinigte-import-version` without `id`.
+- Bump the Automation Exporter / Editor package to `0.1.16`.
+
 ## 0.1.167
 
 - Hide the red `Hidden` checkbox while a Card Editor palette entry is selected
@@ -277,6 +285,255 @@
   Hub sidebar URL details and the Automation Exporter / Editor `0.1.5` state.
 - Keep packaged Add-on docs aligned with the current Home Assistant update
   target version.
+
+## 0.1.127
+
+- Make Plugin Hub sidebar URLs collapsible by default on plugin cards.
+- Add the planned File Studio switch between `/config` and the Automation
+  Exporter output folder to the roadmap.
+
+## 0.1.126
+
+- Limit the Automation Exporter / Editor automation list to roughly 15 visible
+  entries and scroll inside the list for larger `automations.yaml` files.
+- Bump the bundled Automation Exporter / Editor plugin to `0.1.5`.
+
+## 0.1.125
+
+- Add Studio-like YAML highlighting to the Automation Exporter / Editor details
+  preview.
+- Highlight YAML keys, strings, booleans, numbers, Home Assistant entity/service
+  tokens and comments.
+- Bump the bundled Automation Exporter / Editor plugin to `0.1.4`.
+
+## 0.1.124
+
+- Detect Home Assistant service calls written with the modern
+  `action: domain.service` syntax in Automation Exporter / Editor.
+- Keep classic `service: domain.service` detection for older automation YAML.
+- Bump the bundled Automation Exporter / Editor plugin to `0.1.3`.
+
+## 0.1.123
+
+- Add Automation Exporter / Editor analysis hints for missing ids, missing
+  aliases, duplicate ids or aliases, missing triggers/actions and disabled
+  automations.
+- Add a "warnings only" filter and warnings summary count.
+- Bump the bundled Automation Exporter / Editor plugin to `0.1.2`.
+
+## 0.1.122
+
+- Make Plugin Hub capability lists collapsible by default on every plugin card.
+- Keep plugin cards more compact while preserving full capability details on
+  demand.
+
+## 0.1.121
+
+- Align the bundled ATLAS Automation Exporter / Editor with the installable
+  GitHub plugin package `0.1.1`.
+- Keep the Home Assistant Add-on update target moving after the plugin install
+  package fix.
+
+## 0.1.120
+
+- Add the ATLAS Automation Exporter / Editor as the next Home Assistant plugin.
+- Provide a first safe automation analysis surface with system YAML loading,
+  external YAML upload, selectable exports and File Studio handoff.
+- Add a dedicated ATLAS overlay icon and plugin preview.
+
+## 0.1.119
+
+- Lighten the Expert Card Editor X/Y/Zoom slider text in dark mode.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.47`.
+
+## 0.1.118
+
+- Change the Expert Card Editor Zoom slider to 5-percent steps from `75%` to
+  `150%`.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.46`.
+
+## 0.1.117
+
+- Set the Expert Card Editor Zoom slider to roughly one and a half times the
+  compact X/Y slider width.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.45`.
+
+## 0.1.116
+
+- Make the Expert Card Editor Zoom slider use a compact percent range.
+- Change the Zoom slider range to `74%` through `150%`.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.44`.
+
+## 0.1.115
+
+- Move the Expert Card Editor X, Y and Zoom sliders into a compact toolbar above
+  the editor grid.
+- Show X and Y as additional fields from `0` to `+5` and Zoom as a percentage.
+- Start the "Entities for the card" panel collapsed by default.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.43`.
+
+## 0.1.114
+
+- Render Expert Card Editor raster cells explicitly so the horizontal and
+  vertical sliders visibly add real fields instead of stretching the grid.
+- Re-render the Expert Card Editor surface after zoom changes so cell geometry
+  stays consistent.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.42`.
+
+## 0.1.113
+
+- Stop reporting Plugin Hub URL/YAML copy success when the browser blocks direct
+  clipboard writes.
+- Show and select the URL/YAML text inline so users can copy it manually with
+  Ctrl+C in restricted Home Assistant browser contexts.
+
+## 0.1.112
+
+- Make the Card Editor export and import/entity areas visibly three-column with
+  equal-width column panels on wide screens.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.41`.
+
+## 0.1.111
+
+- Make the Plugin Hub URL/YAML copy fallback work in browser contexts where the
+  Clipboard API is blocked.
+- Show a clear copy failure message instead of failing silently.
+
+## 0.1.110
+
+- Arrange the Card Editor export controls in three side-by-side columns on wide
+  screens.
+- Arrange import, entity filtering and entity selection in three side-by-side
+  columns with a responsive single-column fallback.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.40`.
+
+## 0.1.109
+
+- Fix the Expert Card Editor raster sliders so extra columns and rows render as
+  real grid cells with stable cell geometry.
+- Bump the Home Assistant Card Editor plugin to `0.2.0-alpha.39`.
+
+## 0.1.108
+
+- Give local ATLAS plugins an automatic launch URL when their plugin folder
+  contains an `index.html` but the manifest does not define `entry`.
+- Include the automatic plugin URL in the app plugin catalog so users can add
+  plugins to the Home Assistant sidebar from the start.
+
+## 0.1.107
+
+- Add spacing between the File Studio tree and the access note.
+- Reduce the File Studio access note text size slightly.
+
+## 0.1.106
+
+- Add an Expert Card Editor zoom slider that scales square grid cells evenly.
+- Keep column and row sliders dedicated to field count only.
+- Reposition the vertical grid slider so it sits beside the editor surface.
+
+## 0.1.105
+
+- Replace the Expert Card Editor surface stretch handle with horizontal and
+  vertical grid sliders.
+- Keep Expert editor grid cells square while increasing or reducing the
+  available column and row count.
+
+## 0.1.104
+
+- Add a separate "Copy URL" action to the Plugin Hub sidebar helper for users
+  who create Home Assistant Webpage dashboards manually.
+
+## 0.1.103
+
+- Move the Home Assistant sidebar helper dialog into the Plugin Hub.
+- Remove the visible Administration button for sidebar preparation.
+- Always provide an ATLAS File Studio fallback URL for sidebar YAML.
+
+## 0.1.102
+
+- Open the plugin sidebar helper dialog directly from the Plugin Hub.
+- Add ready-to-copy `panel_iframe` YAML blocks for plugin sidebar entries.
+- Fix ATLAS File Studio sidebar preparation by showing its direct plugin URL.
+
+## 0.1.101
+
+- Add a Plugin Hub hint for adding plugins to the Home Assistant sidebar as
+  Webpage dashboards.
+- Show direct sidebar URLs for launchable plugins, including ATLAS File Studio.
+
+## 0.1.100
+
+- Add an Atlas Administration dialog that lists current plugins and prepares
+  Home Assistant Webpage dashboard/sidebar entries with name, URL and icon.
+
+## 0.1.99
+
+- Keep the File Studio editor pane fixed-height for large files so the editor
+  scrolls internally and status texts remain visible.
+- Bump ATLAS File Studio to `0.1.36` for repository update detection.
+
+## 0.1.98
+
+- Mark parcel service providers in Atlas Administration as prepared for later
+  use with an orange note.
+
+## 0.1.97
+
+- Add explicit File Studio path capability switches for `/config/www`,
+  `/config/custom_components`, `/addons` and `parent-of-config`.
+- Keep Home Assistant tokens Admin-owned while plugins receive scoped file
+  capabilities only.
+- Finalize Plugin Hub behavior for zero, one and multiple active plugins.
+- Align the Plugin Hub action color with the ATLAS teal/orange UI language.
+- Document the Home Assistant update flow and the meaning of old/target
+  version labels.
+- Bump ATLAS File Studio to `0.1.35` for repository update detection.
+
+## 0.1.96
+
+- Add a dedicated SVG trash icon for File Studio.
+- Move the File Studio trash control to the far right of the editor toolbar
+  behind a separator.
+- Show the trash icon gray when empty and red when entries exist.
+- Bump ATLAS File Studio to `0.1.34` for repository update detection.
+
+## 0.1.95
+
+- Move File Studio delete operations into a restorable ATLAS trash area.
+- Add File Studio favorites for quick path access and a compact favorite toggle.
+- Expand Home Assistant YAML hints for common root keys, automations, scripts
+  and direct secret values.
+- Refine File Studio file-type icons with compact type badges.
+- Bump ATLAS File Studio to `0.1.33` for repository update detection.
+
+## 0.1.94
+
+- Add File Studio in-app dialogs for prompts, confirmations, history and
+  problem-report previews.
+- Add multi-select delete/copy/move actions, drag-and-drop uploads, search
+  filters and backup comparison.
+- Bump ATLAS File Studio to `0.1.32` for repository update detection.
+
+## 0.1.93
+
+- Move the File Studio Dateibaum icon toolbar below the `Dateibaum /config`
+  title row so narrow panes no longer push icons into the next column.
+- Bump ATLAS File Studio to `0.1.31` for repository update detection.
+
+## 0.1.92
+
+- Add File Studio restore from history with a safety backup before restoring.
+- Add GitHub issue preparation for secret-free File Studio problem reports.
+- Expand Home Assistant YAML hints for automations, scripts, packages and
+  `configuration.yaml`.
+- Bump ATLAS File Studio to `0.1.30` for repository update detection.
+
+## 0.1.91
+
+- Add File Studio diagnostics with opt-in debug report preview.
+- Add HA-oriented YAML/reload hints, automatic save backups, history listing,
+  richer search previews and conflict-aware upload/download naming.
+- Bump ATLAS File Studio to `0.1.29` for repository update detection.
 
 ## 0.1.90
 

@@ -1,13 +1,21 @@
 const pluginGrid = document.querySelector("#plugin-grid");
 const pluginSummary = document.querySelector("#plugin-summary");
+const openSidebarDialog = document.querySelector("#open-sidebar-dialog");
+const sidebarDialog = document.querySelector("#sidebar-dialog");
+const sidebarPluginList = document.querySelector("#sidebar-plugin-list");
+const closeSidebarDialog = document.querySelector("#close-sidebar-dialog");
 const languageButtons = Array.from(document.querySelectorAll("[data-language]"));
 const surfaceLinks = Array.from(document.querySelectorAll(".hub-actions a[href]"));
 const atlasThemeStorageKey = "atlas.themePreference";
-const hubLanguageStorageKey = "atlas.pluginHub.language";
+const FileStudioPluginId = "atlas.plugin.file-studio";
+const HomeAssistantCardEditorPluginId = "atlas.plugin.homeassistant-card-editor";
+const AutomationExporterPluginId = "atlas.plugin.automation-exporter-editor";
 const translations = {
   en: {
     "heading.hub": "Plugin Hub",
+    "heading.sidebarDialog": "Plugin sidebar entry",
     "link.admin": "Administration",
+    "link.sidebarHelper": "Open sidebar dialog",
     "aria.surfaces": "ATLAS surfaces",
     "aria.language": "Language",
     "aria.filters": "Plugin filters",
@@ -16,19 +24,40 @@ const translations = {
     "message.unknownCatalogError": "Unknown plugin catalog error.",
     "message.noPlugins": "No plugins installed",
     "message.noPluginsHint": "Open Administration to add an ATLAS plugin repository or import a plugin package.",
+    "message.sidebarHint": "Plugins can be added to the Home Assistant sidebar as Webpage dashboards. Open the dialog to copy the prepared values.",
+    "message.sidebarDialogHint": "Copy a ready panel_iframe YAML block for Home Assistant.",
+    "message.sidebarPluginUnavailable": "No launch URL available yet.",
+    "message.sidebarPluginUrlCopied": "{name} URL copied.",
+    "message.sidebarPluginYamlCopied": "{name} panel_iframe YAML copied.",
+    "message.sidebarPluginCopyFallback": "{name}: browser copy is blocked. The text is selected below; press Ctrl+C.",
+    "label.sidebarUrl": "Sidebar URL",
+    "label.sidebarYaml": "configuration.yaml",
+    "label.sidebarUrlToggle": "Show sidebar URL",
+    "label.capabilitiesToggle": "Show capabilities ({count})",
+    "label.noCapabilities": "No capabilities declared",
     "summary.noPlugins": "No plugins installed",
     "summary.oneActive": "1 active plugin opens directly from ATLAS start",
     "summary.many": "{plugins} plugins detected, {active} active",
     "button.open": "Open",
+    "button.copyUrl": "Copy URL",
+    "button.copyYaml": "Copy YAML",
+    "button.close": "Close",
     "button.planned": "Planned",
+    "button.disabled": "Disabled",
     "status.active": "Active",
     "status.available": "Available",
     "status.planned": "Planned",
+    "status.disabled": "Disabled",
     "alt.pluginImage": "{name} plugin image",
+    "guide.sidebarStep1": "Open configuration.yaml or Home Assistant Settings > Dashboards.",
+    "guide.sidebarStep2": "Paste the copied panel_iframe block or create a Webpage dashboard entry.",
+    "guide.sidebarStep3": "Check YAML and reload Panel iFrames or restart Home Assistant.",
   },
   de: {
     "heading.hub": "Plugin Hub",
+    "heading.sidebarDialog": "Plugin als Seitenleisteneintrag",
     "link.admin": "Administration",
+    "link.sidebarHelper": "Seitenleisten-Dialog öffnen",
     "aria.surfaces": "ATLAS-Oberflächen",
     "aria.language": "Sprache",
     "aria.filters": "Plugin-Filter",
@@ -37,15 +66,34 @@ const translations = {
     "message.unknownCatalogError": "Unbekannter Plugin-Katalogfehler.",
     "message.noPlugins": "Keine Plugins installiert",
     "message.noPluginsHint": "Öffne die Administration, um ein ATLAS-Plugin-Repository hinzuzufügen oder ein Plugin-Paket zu importieren.",
+    "message.sidebarHint": "Plugins können in Home Assistant als Webseiten-Dashboard zur Seitenleiste hinzugefügt werden. Öffne den Dialog, um die vorbereiteten Werte zu kopieren.",
+    "message.sidebarDialogHint": "Kopiert einen fertigen panel_iframe-YAML-Block für Home Assistant.",
+    "message.sidebarPluginUnavailable": "Noch keine Start-URL verfügbar.",
+    "message.sidebarPluginUrlCopied": "{name}: URL kopiert.",
+    "message.sidebarPluginYamlCopied": "{name}: panel_iframe-YAML kopiert.",
+    "message.sidebarPluginCopyFallback": "{name}: Browser-Kopieren blockiert. Der Text ist unten markiert; bitte Strg+C drücken.",
+    "label.sidebarUrl": "Seitenleisten-URL",
+    "label.sidebarYaml": "configuration.yaml",
+    "label.sidebarUrlToggle": "Seitenleisten-URL anzeigen",
+    "label.capabilitiesToggle": "Fähigkeiten anzeigen ({count})",
+    "label.noCapabilities": "Keine Fähigkeiten deklariert",
     "summary.noPlugins": "Keine Plugins installiert",
     "summary.oneActive": "1 aktives Plugin öffnet direkt vom ATLAS-Start",
     "summary.many": "{plugins} Plugins erkannt, {active} aktiv",
     "button.open": "Öffnen",
+    "button.copyUrl": "URL kopieren",
+    "button.copyYaml": "YAML kopieren",
+    "button.close": "Schließen",
     "button.planned": "Geplant",
+    "button.disabled": "Deaktiviert",
     "status.active": "Aktiv",
     "status.available": "Verfügbar",
     "status.planned": "Geplant",
+    "status.disabled": "Deaktiviert",
     "alt.pluginImage": "{name} Plugin-Bild",
+    "guide.sidebarStep1": "Öffne configuration.yaml oder Home Assistant Einstellungen > Dashboards.",
+    "guide.sidebarStep2": "Füge den kopierten panel_iframe-Block ein oder lege einen Webseiten-Dashboard-Eintrag an.",
+    "guide.sidebarStep3": "Prüfe YAML und lade Panel-iFrames neu oder starte Home Assistant neu.",
   },
 };
 let currentLanguage = readStoredLanguage();
@@ -59,7 +107,11 @@ loadPlugins();
 
 function readStoredLanguage() {
   try {
-    return localStorage.getItem(hubLanguageStorageKey) === "en" ? "en" : "de";
+    const urlLanguage = new URL(window.location.href).searchParams.get("language");
+    if (urlLanguage === "de" || urlLanguage === "en") {
+      return urlLanguage;
+    }
+    return sessionStorage.getItem("atlas.pluginHub.sessionLanguage") === "en" ? "en" : "de";
   } catch {
     return "de";
   }
@@ -102,12 +154,26 @@ function applyLanguage() {
 function setLanguage(language) {
   currentLanguage = language === "en" ? "en" : "de";
   try {
-    localStorage.setItem(hubLanguageStorageKey, currentLanguage);
+    sessionStorage.setItem("atlas.pluginHub.sessionLanguage", currentLanguage);
   } catch {
     // Ignore storage failures in restricted browser contexts.
   }
   applyLanguage();
   renderPlugins(lastPlugins);
+}
+
+function openPluginSidebarDialog() {
+  renderSidebarPluginEntries(lastPlugins);
+  if (typeof sidebarDialog.showModal === "function") {
+    sidebarDialog.showModal();
+  } else {
+    sidebarDialog.setAttribute("open", "");
+  }
+}
+
+function closePluginSidebarDialog() {
+  sidebarDialog.close?.();
+  sidebarDialog.removeAttribute("open");
 }
 
 function readThemePreferenceFromLocation() {
@@ -144,6 +210,7 @@ function bindSurfaceLinks(preference) {
     try {
       const url = new URL(createAppUrl(link.getAttribute("href")), window.location.href);
       url.searchParams.set("theme", preference);
+      url.searchParams.set("language", currentLanguage);
       link.href = url.toString();
     } catch {
       // Keep the static link if URL construction is unavailable.
@@ -170,35 +237,66 @@ function createAppUrl(path) {
   }
 }
 
-function createPluginActionUrl(entryUrl) {
-  if (typeof entryUrl !== "string" || !entryUrl.trim()) {
+function normalizeAtlasAppUrl(value) {
+  if (typeof value !== "string" || !value.trim()) {
     return "";
   }
 
   try {
-    const url = new URL(entryUrl, window.location.href);
+    const url = new URL(value, window.location.href);
+    const routePrefixes = ["/plugin-assets/", "/editor", "/admin", "/hub"];
+    const routePrefix = routePrefixes.find(prefix => url.pathname.includes(prefix));
+    if (routePrefix) {
+      const routeIndex = url.pathname.indexOf(routePrefix);
+      const routePath = url.pathname.slice(routeIndex);
+      return createAppUrl(`${routePath}${url.search}`);
+    }
     if (url.origin === window.location.origin) {
-      return createAppUrl(`${url.pathname.replace(/^\/+/, "")}${url.search}${url.hash}`);
+      return url.toString();
     }
   } catch {
     // Relative URLs are normalized against the current ATLAS app path below.
   }
-  return createAppUrl(entryUrl);
+
+  return "";
 }
 
-function createPluginMediaUrl(mediaUrl) {
-  if (typeof mediaUrl !== "string" || !mediaUrl.trim()) {
-    return "";
+function createPluginActionUrl(entryUrl, fallbackPath = "") {
+  if (typeof entryUrl !== "string" || !entryUrl.trim()) {
+    return fallbackPath ? appendHubStateSearch(createAppUrl(fallbackPath)) : "";
   }
 
+  return appendHubStateSearch(normalizeAtlasAppUrl(entryUrl) || createAppUrl(entryUrl));
+}
+
+function createPluginLaunchUrl(plugin) {
+  if (plugin?.id === HomeAssistantCardEditorPluginId) {
+    return appendHubStateSearch(createAppUrl("editor"));
+  }
+  return createPluginActionUrl(plugin?.entryUrl, createKnownPluginEntryPath(plugin));
+}
+
+function createPluginMediaUrl(plugin) {
+  const mediaUrl = plugin?.iconUrl || plugin?.logoUrl || plugin?.previewUrl;
+  if (typeof mediaUrl !== "string" || !mediaUrl.trim()) {
+    return appendHubStateSearch(createKnownPluginAssetPath(plugin, "icon.svg"));
+  }
+
+  return appendHubStateSearch(normalizeAtlasAppUrl(mediaUrl) || createAppUrl(mediaUrl));
+}
+
+function appendHubStateSearch(value) {
+  if (!value) return "";
   try {
-    const url = new URL(mediaUrl, window.location.href);
-    if (url.origin === window.location.origin) {
-      return createAppUrl(`${url.pathname.replace(/^\/+/, "")}${url.search}${url.hash}`);
+    const url = new URL(value, window.location.href);
+    const theme = new URL(window.location.href).searchParams.get("theme");
+    if (theme) {
+      url.searchParams.set("theme", theme);
     }
+    url.searchParams.set("language", currentLanguage);
     return url.toString();
   } catch {
-    return createAppUrl(mediaUrl);
+    return value;
   }
 }
 
@@ -221,9 +319,9 @@ async function loadPlugins() {
 }
 
 function renderPlugins(plugins) {
-  const visiblePlugins = plugins.filter(plugin => plugin.status !== "planned" && plugin.entryUrl);
+  const visiblePlugins = plugins;
   lastPlugins = visiblePlugins;
-  const activePlugins = visiblePlugins.filter(plugin => plugin.status === "active" && plugin.entryUrl);
+  const activePlugins = visiblePlugins.filter(plugin => plugin.status === "active" && createPluginSidebarUrl(plugin));
   pluginSummary.textContent = createPluginSummaryText(visiblePlugins, activePlugins);
   pluginGrid.innerHTML = "";
   if (!visiblePlugins.length) {
@@ -246,8 +344,22 @@ function renderPlugins(plugins) {
     pluginGrid.append(empty);
     return;
   }
+  if (shouldOpenSingleActivePlugin(activePlugins)) {
+    window.location.replace(createPluginActionUrl(activePlugins[0].entryUrl));
+    return;
+  }
   for (const plugin of visiblePlugins) {
     pluginGrid.append(createPluginCard(plugin));
+  }
+}
+
+function shouldOpenSingleActivePlugin(activePlugins) {
+  if (activePlugins.length !== 1) return false;
+  try {
+    const url = new URL(window.location.href);
+    return url.searchParams.get("select") !== "1";
+  } catch {
+    return true;
   }
 }
 
@@ -267,7 +379,7 @@ function createPluginCard(plugin) {
   const titleRow = document.createElement("div");
   titleRow.className = "plugin-title-row";
 
-  const imageUrl = createPluginMediaUrl(plugin.iconUrl || plugin.logoUrl || plugin.previewUrl);
+  const imageUrl = createPluginMediaUrl(plugin);
   const pluginName = localizedPluginText(plugin, "name", plugin.id);
   let icon;
   if (imageUrl) {
@@ -301,20 +413,20 @@ function createPluginCard(plugin) {
   description.textContent = localizedPluginText(plugin, "description", plugin.id);
   body.append(description);
 
-  const capabilities = document.createElement("div");
-  capabilities.className = "capability-list";
-  for (const capability of plugin.capabilities ?? []) {
-    const tag = document.createElement("span");
-    tag.textContent = capability;
-    capabilities.append(tag);
-  }
-  body.append(capabilities);
+  body.append(createCapabilityDetails(plugin.capabilities ?? []));
 
   const action = document.createElement("a");
   action.className = "plugin-action";
-  action.textContent = plugin.entryUrl ? t("button.open") : t("button.planned");
-  if (plugin.entryUrl) {
-    action.href = createPluginActionUrl(plugin.entryUrl);
+  const sidebarActionUrl = createPluginLaunchUrl(plugin);
+  const launchable = plugin.status === "active" && sidebarActionUrl;
+  action.textContent = launchable
+    ? t("button.open")
+    : plugin.status === "planned"
+      ? t("button.planned")
+      : t("button.disabled");
+  if (launchable) {
+    body.append(createSidebarUrlDetails(sidebarActionUrl));
+    action.href = sidebarActionUrl;
   } else {
     action.href = "#";
     action.setAttribute("aria-disabled", "true");
@@ -326,6 +438,220 @@ function createPluginCard(plugin) {
   return card;
 }
 
+function createSidebarUrlDetails(sidebarActionUrl) {
+  const details = document.createElement("details");
+  details.className = "plugin-sidebar-url-details";
+  const summary = document.createElement("summary");
+  summary.textContent = t("label.sidebarUrlToggle");
+  const url = document.createElement("code");
+  url.className = "plugin-sidebar-url";
+  url.textContent = sidebarActionUrl;
+  details.append(summary, url);
+  return details;
+}
+
+function createCapabilityDetails(capabilities) {
+  const details = document.createElement("details");
+  details.className = "capability-details";
+  const summary = document.createElement("summary");
+  summary.textContent = t("label.capabilitiesToggle", { count: capabilities.length });
+  details.append(summary);
+
+  if (capabilities.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "capability-empty";
+    empty.textContent = t("label.noCapabilities");
+    details.append(empty);
+    return details;
+  }
+
+  const list = document.createElement("div");
+  list.className = "capability-list";
+  for (const capability of capabilities) {
+    const tag = document.createElement("span");
+    tag.textContent = capability;
+    list.append(tag);
+  }
+  details.append(list);
+  return details;
+}
+
+function renderSidebarPluginEntries(plugins) {
+  sidebarPluginList.replaceChildren();
+  const sortedPlugins = plugins
+    .slice()
+    .sort((left, right) => (left.order ?? 999) - (right.order ?? 999) || localizedPluginText(left, "name", left.id).localeCompare(localizedPluginText(right, "name", right.id)));
+
+  for (const plugin of sortedPlugins) {
+    sidebarPluginList.append(createSidebarPluginEntry(plugin));
+  }
+}
+
+function createSidebarPluginEntry(plugin) {
+  const card = document.createElement("article");
+  const body = document.createElement("div");
+  const title = document.createElement("div");
+  const meta = document.createElement("div");
+  const yamlLabel = document.createElement("span");
+  const yaml = document.createElement("pre");
+  const yamlCode = document.createElement("code");
+  const manualCopy = document.createElement("textarea");
+  const actions = document.createElement("div");
+  const copyUrlAction = document.createElement("button");
+  const copyYamlAction = document.createElement("button");
+  const name = localizedPluginText(plugin, "name", plugin.id);
+  const url = createPluginSidebarUrl(plugin);
+  const icon = createPluginSidebarIcon(plugin);
+  const panelId = createPanelIframeId(plugin, name);
+  const panelIframeYaml = url ? createPanelIframeYaml({ panelId, name, url, icon }) : "";
+
+  card.className = "sidebar-plugin-card";
+  title.className = "sidebar-plugin-title";
+  meta.className = "sidebar-plugin-meta";
+  yamlLabel.className = "sidebar-plugin-yaml-label";
+  yaml.className = "sidebar-plugin-yaml";
+  manualCopy.className = "sidebar-plugin-manual-copy";
+  manualCopy.readOnly = true;
+  manualCopy.hidden = true;
+  title.textContent = name;
+  meta.append(
+    createTextLine(`${translatePluginStatus(plugin.status)} · ${plugin.version}`),
+    createTextLine(url || t("message.sidebarPluginUnavailable")),
+    createTextLine(icon),
+  );
+  yamlLabel.textContent = t("label.sidebarYaml");
+  yamlCode.textContent = panelIframeYaml;
+  yaml.append(yamlCode);
+  actions.className = "sidebar-plugin-actions";
+  copyUrlAction.type = "button";
+  copyUrlAction.className = "plugin-action secondary";
+  copyUrlAction.textContent = t("button.copyUrl");
+  copyUrlAction.disabled = !url;
+  copyUrlAction.addEventListener("click", () => copySidebarPluginText({
+    name,
+    text: url,
+    messageKey: "message.sidebarPluginUrlCopied",
+    manualTarget: manualCopy,
+  }));
+  copyYamlAction.type = "button";
+  copyYamlAction.className = "plugin-action";
+  copyYamlAction.textContent = t("button.copyYaml");
+  copyYamlAction.disabled = !url;
+  copyYamlAction.addEventListener("click", () => copySidebarPluginText({
+    name,
+    text: panelIframeYaml,
+    messageKey: "message.sidebarPluginYamlCopied",
+    manualTarget: manualCopy,
+  }));
+  actions.append(copyUrlAction, copyYamlAction);
+
+  body.append(title, meta);
+  if (panelIframeYaml) {
+    body.append(yamlLabel, yaml, manualCopy);
+  }
+  card.append(body, actions);
+  return card;
+}
+
+function translatePluginStatus(status) {
+  const key = `status.${status}`;
+  const value = t(key);
+  return value === key ? status : value;
+}
+
+function createPluginSidebarUrl(plugin) {
+  if (plugin?.id === HomeAssistantCardEditorPluginId) {
+    return appendHubStateSearch(createAppUrl("editor"));
+  }
+  return createPluginActionUrl(plugin?.entryUrl, createKnownPluginEntryPath(plugin));
+}
+
+function createKnownPluginEntryPath(plugin) {
+  if (plugin?.id === FileStudioPluginId) {
+    return "/plugin-assets/file-studio/index.html";
+  }
+  if (plugin?.id === AutomationExporterPluginId) {
+    return "/plugin-assets/automation-exporter-editor/index.html";
+  }
+  return "";
+}
+
+function createKnownPluginAssetPath(plugin, assetName) {
+  if (plugin?.id === HomeAssistantCardEditorPluginId) {
+    return createAppUrl(`/plugin-assets/homeassistant-card-editor/${assetName}`);
+  }
+  if (plugin?.id === FileStudioPluginId) {
+    return createAppUrl(`/plugin-assets/file-studio/${assetName}`);
+  }
+  if (plugin?.id === AutomationExporterPluginId) {
+    return createAppUrl(`/plugin-assets/automation-exporter-editor/${assetName}`);
+  }
+  return "";
+}
+
+function createPluginSidebarIcon(plugin) {
+  if (plugin?.id === HomeAssistantCardEditorPluginId) return "mdi:view-dashboard-edit";
+  if (plugin?.id === FileStudioPluginId) return "mdi:file-document-edit";
+  return "mdi:puzzle";
+}
+
+function createTextLine(text) {
+  const line = document.createElement("span");
+  line.textContent = text;
+  return line;
+}
+
+async function copySidebarPluginText({ name, text, messageKey, manualTarget }) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      manualTarget?.setAttribute("hidden", "");
+      pluginSummary.textContent = t(messageKey, { name });
+      return;
+    }
+  } catch {
+    // Fall back to a visible, selected field below.
+  }
+  showManualCopyFallback({ name, text, manualTarget });
+}
+
+function showManualCopyFallback({ name, text, manualTarget }) {
+  if (!manualTarget) return;
+  manualTarget.hidden = false;
+  manualTarget.value = text;
+  manualTarget.focus();
+  manualTarget.select();
+  manualTarget.setSelectionRange(0, manualTarget.value.length);
+  pluginSummary.textContent = t("message.sidebarPluginCopyFallback", { name });
+}
+
+function createPanelIframeId(plugin, name) {
+  const source = plugin?.id || name || "atlas_plugin";
+  const suffix = String(source)
+    .toLowerCase()
+    .replace(/^atlas\.plugin\./, "atlas_")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+  return suffix || "atlas_plugin";
+}
+
+function createPanelIframeYaml({ panelId, name, url, icon }) {
+  return [
+    "panel_iframe:",
+    `  ${panelId}:`,
+    `    title: "${escapeYamlDoubleQuotedString(name)}"`,
+    `    url: "${escapeYamlDoubleQuotedString(url)}"`,
+    `    icon: "${escapeYamlDoubleQuotedString(icon)}"`,
+  ].join("\n");
+}
+
+function escapeYamlDoubleQuotedString(value) {
+  return String(value ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
 for (const button of languageButtons) {
   button.addEventListener("click", () => setLanguage(button.dataset.language));
 }
+
+openSidebarDialog.addEventListener("click", openPluginSidebarDialog);
+closeSidebarDialog.addEventListener("click", closePluginSidebarDialog);

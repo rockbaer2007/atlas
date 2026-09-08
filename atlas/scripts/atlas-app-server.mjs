@@ -19,6 +19,11 @@ const pluginRoot = resolve(root, "atlas-plugins");
 const fileStudioConfigRoot = resolve(process.env.ATLAS_FILE_STUDIO_CONFIG_ROOT ?? "/config");
 const fileStudioAddonsRoot = resolve(process.env.ATLAS_FILE_STUDIO_ADDONS_ROOT ?? "/addons");
 const fileStudioAllowAddons = process.env.ATLAS_FILE_STUDIO_ALLOW_ADDONS === "1";
+const fileStudioAllowWww = process.env.ATLAS_FILE_STUDIO_ALLOW_WWW === "1";
+const fileStudioAllowCustomComponents = process.env.ATLAS_FILE_STUDIO_ALLOW_CUSTOM_COMPONENTS === "1";
+const fileStudioAllowParentOfConfig = process.env.ATLAS_FILE_STUDIO_ALLOW_PARENT_OF_CONFIG === "1";
+const fileStudioHistoryRoot = resolve(process.env.ATLAS_FILE_STUDIO_HISTORY_ROOT ?? ".atlas-file-studio-history");
+const fileStudioTrashRoot = resolve(process.env.ATLAS_FILE_STUDIO_TRASH_ROOT ?? ".atlas-file-studio-trash");
 const adminConnectionCookieName = "atlas_admin_connection";
 const sharedPluginCatalogCookieName = "atlas_plugin_catalog";
 const startedAt = new Date().toISOString();
@@ -98,6 +103,16 @@ createServer((request, response) => {
     return;
   }
 
+  if (
+    routePath === "/api/admin-connection"
+    || routePath === "/api/admin-device"
+    || routePath === "/api/card-translation"
+    || routePath === "/api/homeassistant/lovelace-resources"
+  ) {
+    void proxyAdminApiRequest(request, response, requestUrl, routePath);
+    return;
+  }
+
   if (routePath === "/api/file-studio/tree") {
     void writeFileStudioTreeResponse(response, requestUrl, request.headers.cookie);
     return;
@@ -128,6 +143,26 @@ createServer((request, response) => {
     return;
   }
 
+  if (routePath === "/api/file-studio/diagnostics") {
+    void writeFileStudioDiagnosticsResponse(request, response, request.headers.cookie);
+    return;
+  }
+
+  if (routePath === "/api/file-studio/history") {
+    void writeFileStudioHistoryResponse(response, requestUrl, request.headers.cookie);
+    return;
+  }
+
+  if (routePath === "/api/file-studio/history/restore") {
+    void writeFileStudioHistoryRestoreResponse(request, response, request.headers.cookie);
+    return;
+  }
+
+  if (routePath === "/api/file-studio/history/compare") {
+    void writeFileStudioHistoryCompareResponse(request, response, request.headers.cookie);
+    return;
+  }
+
   if (routePath === "/api/file-studio/write") {
     void writeFileStudioWriteResponse(request, response, request.headers.cookie);
     return;
@@ -135,6 +170,11 @@ createServer((request, response) => {
 
   if (routePath === "/api/file-studio/create-file") {
     void writeFileStudioCreateFileResponse(request, response, request.headers.cookie);
+    return;
+  }
+
+  if (routePath === "/api/file-studio/upload") {
+    void writeFileStudioUploadResponse(request, response, request.headers.cookie);
     return;
   }
 
@@ -150,6 +190,16 @@ createServer((request, response) => {
 
   if (routePath === "/api/file-studio/delete") {
     void writeFileStudioDeleteResponse(request, response, request.headers.cookie);
+    return;
+  }
+
+  if (routePath === "/api/file-studio/trash") {
+    void writeFileStudioTrashResponse(response);
+    return;
+  }
+
+  if (routePath === "/api/file-studio/trash/restore") {
+    void writeFileStudioTrashRestoreResponse(request, response, request.headers.cookie);
     return;
   }
 
@@ -195,31 +245,44 @@ createServer((request, response) => {
     return;
   }
 
+  if (routePath.startsWith("/examples/admin-demo/")) {
+    serveStaticPath(response, routePath, resolve(root, "examples/admin-demo"));
+    return;
+  }
+
+  if (routePath.startsWith("/examples/status-demo/")) {
+    serveStaticPath(response, routePath, resolve(root, "examples/status-demo"));
+    return;
+  }
+
+  if (routePath.startsWith("/packages/")) {
+    serveStaticPath(response, routePath, resolve(root, "packages"));
+    return;
+  }
+
   if (routePath.startsWith("/plugin-assets/")) {
     servePluginAsset(response, routePath);
     return;
   }
 
   if (routePath === "/admin" || routePath === "/admin/") {
-    response.writeHead(302, { location: createPublicSurfaceUrl(requestUrl, adminPort) });
-    response.end();
+    serveStaticFile(response, resolve(root, "examples/admin-demo/index.html"));
     return;
   }
 
   if (routePath === "/editor" || routePath === "/editor/") {
-    response.writeHead(302, { location: createPublicSurfaceUrl(requestUrl, editorPort) });
-    response.end();
+    serveStaticFile(response, resolve(root, "examples/status-demo/index.html"));
     return;
   }
 
   writeJson(response, 404, {
     error: "not found",
     links: {
-      admin: createPublicSurfaceUrl(requestUrl, adminPort),
-      editor: createPublicSurfaceUrl(requestUrl, editorPort),
-      hub: new URL("/hub", requestUrl).toString(),
-      app: new URL("/app", requestUrl).toString(),
-      health: new URL("/health", requestUrl).toString(),
+      admin: createPublicAppRouteUrl(requestUrl, "/admin"),
+      editor: createPublicAppRouteUrl(requestUrl, "/editor"),
+      hub: createPublicAppRouteUrl(requestUrl, "/hub"),
+      app: createPublicAppRouteUrl(requestUrl, "/app"),
+      health: createPublicAppRouteUrl(requestUrl, "/health"),
     },
   });
 }).listen(appPort, host, () => {
@@ -231,6 +294,10 @@ createServer((request, response) => {
 
 function createRoutePath(pathname) {
   const knownPrefixes = [
+    "/api/admin-connection",
+    "/api/admin-device",
+    "/api/card-translation",
+    "/api/homeassistant/lovelace-resources",
     "/api/plugins",
     "/api/file-studio/tree",
     "/api/file-studio/file",
@@ -238,16 +305,26 @@ function createRoutePath(pathname) {
     "/api/file-studio/download",
     "/api/file-studio/archive",
     "/api/file-studio/validate",
+    "/api/file-studio/diagnostics",
+    "/api/file-studio/history",
+    "/api/file-studio/history/restore",
+    "/api/file-studio/history/compare",
     "/api/file-studio/write",
     "/api/file-studio/create-file",
+    "/api/file-studio/upload",
     "/api/file-studio/create-directory",
     "/api/file-studio/rename",
     "/api/file-studio/delete",
+    "/api/file-studio/trash",
+    "/api/file-studio/trash/restore",
     "/api/file-studio/copy",
     "/api/file-studio/move",
     "/api/file-studio/search",
     "/api/file-studio/extract",
     "/examples/plugin-hub/",
+    "/examples/admin-demo/",
+    "/examples/status-demo/",
+    "/packages/",
     "/plugin-assets/",
   ];
   for (const prefix of knownPrefixes) {
@@ -338,8 +415,8 @@ async function writeHealthResponse(response) {
 }
 
 async function writeAppResponse(response, requestUrl, cookieHeader) {
-  const publicAdminUrl = createPublicSurfaceUrl(requestUrl, adminPort);
-  const publicEditorUrl = createPublicSurfaceUrl(requestUrl, editorPort);
+  const publicAdminUrl = createPublicAppRouteUrl(requestUrl, "/admin");
+  const publicEditorUrl = createPublicAppRouteUrl(requestUrl, "/editor");
   const surfaces = {
     administration: {
       url: publicAdminUrl,
@@ -363,9 +440,9 @@ async function writeAppResponse(response, requestUrl, cookieHeader) {
     status: ready ? "ok" : "degraded",
     startedAt,
     urls: {
-      app: new URL("/", requestUrl).toString(),
-      hub: new URL("/hub", requestUrl).toString(),
-      health: new URL("/health", requestUrl).toString(),
+      app: createPublicAppRouteUrl(requestUrl, "/"),
+      hub: createPublicAppRouteUrl(requestUrl, "/hub"),
+      health: createPublicAppRouteUrl(requestUrl, "/health"),
       admin: publicAdminUrl,
       editor: publicEditorUrl,
     },
@@ -393,6 +470,35 @@ async function writePluginCatalogResponse(response, requestUrl, cookieHeader) {
     kind: "atlas.plugin.catalog",
     plugins: readPluginCatalog(requestUrl, cookieHeader),
   });
+}
+
+async function proxyAdminApiRequest(request, response, requestUrl, routePath) {
+  try {
+    const targetUrl = new URL(routePath, adminUrl);
+    targetUrl.search = requestUrl.search;
+    const body = await readRequestBody(request);
+    const headers = {};
+    if (request.headers["content-type"]) {
+      headers["content-type"] = request.headers["content-type"];
+    }
+
+    const adminResponse = await fetch(targetUrl, {
+      method: request.method,
+      headers,
+      body: body.length ? body : undefined,
+    });
+    const responseBody = await adminResponse.text();
+    response.writeHead(adminResponse.status, {
+      "content-type": adminResponse.headers.get("content-type") ?? "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    });
+    response.end(responseBody);
+  } catch (error) {
+    writeJson(response, 502, {
+      error: "admin api unavailable",
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
 }
 
 async function writeFileStudioTreeResponse(response, requestUrl, cookieHeader) {
@@ -621,6 +727,152 @@ async function writeFileStudioValidationResponse(request, response) {
   });
 }
 
+async function writeFileStudioDiagnosticsResponse(request, response, cookieHeader) {
+  const body = await readJsonRequestBody(request);
+  const access = createFileStudioAccessContext(cookieHeader);
+  const path = typeof body.path === "string" ? body.path : "";
+  const content = typeof body.content === "string" ? body.content : "";
+  const targetPath = path ? resolveFileStudioPath(path, access) : undefined;
+  const validation = validateFileStudioContent(content, path);
+
+  writeJson(response, 200, {
+    kind: "atlas.file-studio.diagnostics",
+    ok: true,
+    report: {
+      createdAt: new Date().toISOString(),
+      plugin: "atlas.plugin.file-studio",
+      selectedPath: path || undefined,
+      selectedRoot: path ? resolveFileStudioRootScope(path, access)?.displayPath : undefined,
+      fileExists: targetPath ? existsSync(targetPath) : false,
+      fileSize: targetPath && existsSync(targetPath) ? statSync(targetPath).size : undefined,
+      validation,
+      access: {
+        allowFreeRootAccess: false,
+        roots: createFileStudioRootSummaries(access),
+      },
+      secretsIncluded: false,
+      issueUrl: createFileStudioIssueUrl(path, validation),
+      note: "Debugbericht enthält keine Home-Assistant-Token, Provider-API-Keys oder Dateiinhalte.",
+    },
+  });
+}
+
+async function writeFileStudioHistoryResponse(response, requestUrl, cookieHeader) {
+  const access = createFileStudioAccessContext(cookieHeader);
+  const relativePath = requestUrl.searchParams.get("path") ?? "";
+  const targetPath = resolveFileStudioPath(relativePath, access);
+
+  if (!targetPath) {
+    writeJson(response, 403, {
+      kind: "atlas.file-studio.history",
+      ok: false,
+      error: "path outside configured root",
+    });
+    return;
+  }
+
+  writeJson(response, 200, {
+    kind: "atlas.file-studio.history",
+    ok: true,
+    path: createFileStudioDisplayPath(targetPath, access),
+    versions: readFileStudioHistoryEntries(targetPath),
+  });
+}
+
+async function writeFileStudioHistoryRestoreResponse(request, response, cookieHeader) {
+  const body = await readJsonRequestBody(request);
+  const access = createFileStudioAccessContext(cookieHeader);
+  const targetPath = resolveFileStudioPath(body.path, access);
+  const backupName = String(body.backupName ?? "").trim();
+
+  if (!targetPath) {
+    writeJson(response, 403, {
+      kind: "atlas.file-studio.history.restore",
+      ok: false,
+      error: "path outside configured root",
+    });
+    return;
+  }
+
+  if (!existsSync(targetPath) || !statSync(targetPath).isFile()) {
+    writeJson(response, 404, {
+      kind: "atlas.file-studio.history.restore",
+      ok: false,
+      error: "file not found",
+    });
+    return;
+  }
+
+  const backupPath = resolveFileStudioBackupPath(targetPath, backupName);
+  if (!backupPath || !existsSync(backupPath) || !statSync(backupPath).isFile()) {
+    writeJson(response, 404, {
+      kind: "atlas.file-studio.history.restore",
+      ok: false,
+      error: "backup not found",
+    });
+    return;
+  }
+
+  const previous = createFileStudioBackup(targetPath);
+  cpSync(backupPath, targetPath);
+  const stats = statSync(targetPath);
+  writeJson(response, 200, {
+    kind: "atlas.file-studio.history.restore",
+    ok: true,
+    path: createFileStudioDisplayPath(targetPath, access),
+    restoredFrom: backupName,
+    previous,
+    size: stats.size,
+    modifiedAt: stats.mtime.toISOString(),
+    reload: createFileStudioReloadHint(body.path),
+  });
+}
+
+async function writeFileStudioHistoryCompareResponse(request, response, cookieHeader) {
+  const body = await readJsonRequestBody(request);
+  const access = createFileStudioAccessContext(cookieHeader);
+  const targetPath = resolveFileStudioPath(body.path, access);
+  const backupName = String(body.backupName ?? "").trim();
+
+  if (!targetPath) {
+    writeJson(response, 403, {
+      kind: "atlas.file-studio.history.compare",
+      ok: false,
+      error: "path outside configured root",
+    });
+    return;
+  }
+
+  if (!existsSync(targetPath) || !statSync(targetPath).isFile()) {
+    writeJson(response, 404, {
+      kind: "atlas.file-studio.history.compare",
+      ok: false,
+      error: "file not found",
+    });
+    return;
+  }
+
+  const backupPath = resolveFileStudioBackupPath(targetPath, backupName);
+  if (!backupPath || !existsSync(backupPath) || !statSync(backupPath).isFile()) {
+    writeJson(response, 404, {
+      kind: "atlas.file-studio.history.compare",
+      ok: false,
+      error: "backup not found",
+    });
+    return;
+  }
+
+  const current = readFileSync(targetPath, "utf8");
+  const backup = readFileSync(backupPath, "utf8");
+  writeJson(response, 200, {
+    kind: "atlas.file-studio.history.compare",
+    ok: true,
+    path: createFileStudioDisplayPath(targetPath, access),
+    backupName,
+    diff: createFileStudioTextDiffSummary(backup, current),
+  });
+}
+
 function inspectZipArchive(targetPath) {
   const buffer = readFileSync(targetPath);
   const eocdOffset = findZipEndOfCentralDirectory(buffer);
@@ -633,14 +885,14 @@ function inspectZipArchive(targetPath) {
   const centralDirectoryOffset = buffer.readUInt32LE(eocdOffset + 16);
   const centralDirectoryEnd = centralDirectoryOffset + centralDirectorySize;
   if (centralDirectoryEnd > buffer.length) {
-    throw new Error("ZIP-Zentralverzeichnis ist unvollstaendig.");
+    throw new Error("ZIP-Zentralverzeichnis ist unvollständig.");
   }
 
   const entries = [];
   let offset = centralDirectoryOffset;
   while (offset + 46 <= centralDirectoryEnd && entries.length < Math.min(totalEntries, 500)) {
     if (buffer.readUInt32LE(offset) !== 0x02014b50) {
-      throw new Error("ZIP-Zentralverzeichnis enthaelt einen ungueltigen Eintrag.");
+      throw new Error("ZIP-Zentralverzeichnis enthält einen ungültigen Eintrag.");
     }
     const compressionMethod = buffer.readUInt16LE(offset + 10);
     const compressedSize = buffer.readUInt32LE(offset + 20);
@@ -651,7 +903,7 @@ function inspectZipArchive(targetPath) {
     const nameStart = offset + 46;
     const nameEnd = nameStart + nameLength;
     if (nameEnd > centralDirectoryEnd) {
-      throw new Error("ZIP-Eintragsname ist unvollstaendig.");
+      throw new Error("ZIP-Eintragsname ist unvollständig.");
     }
     const path = buffer.toString("utf8", nameStart, nameEnd);
     entries.push({
@@ -716,6 +968,7 @@ async function writeFileStudioWriteResponse(request, response, cookieHeader) {
     return;
   }
 
+  const backup = createFileStudioBackup(targetPath);
   writeFileSync(targetPath, content, "utf8");
   const stats = statSync(targetPath);
   writeJson(response, 200, {
@@ -724,7 +977,9 @@ async function writeFileStudioWriteResponse(request, response, cookieHeader) {
     path: createFileStudioDisplayPath(targetPath, access),
     size: stats.size,
     modifiedAt: stats.mtime.toISOString(),
+    backup,
     validation,
+    reload: createFileStudioReloadHint(body.path),
   });
 }
 
@@ -732,6 +987,53 @@ async function writeFileStudioCreateFileResponse(request, response, cookieHeader
   const body = await readJsonRequestBody(request);
   const result = createFileStudioPath(body.parentPath, body.name, "file", createFileStudioAccessContext(cookieHeader));
   writeJson(response, result.status, result.body);
+}
+
+async function writeFileStudioUploadResponse(request, response, cookieHeader) {
+  const body = await readJsonRequestBody(request);
+  const access = createFileStudioAccessContext(cookieHeader);
+  const parentPath = typeof body.parentPath === "string" && body.parentPath.trim() ? body.parentPath : "/config";
+  const parentDirectory = resolveFileStudioPath(parentPath, access);
+  const parentScope = resolveFileStudioRootScope(parentPath, access);
+  const name = String(body.name ?? "").trim();
+  const invalidReason = validateFileStudioName(name);
+
+  if (invalidReason) {
+    writeJson(response, 400, { kind: "atlas.file-studio.upload", ok: false, error: invalidReason });
+    return;
+  }
+
+  if (!parentDirectory || !parentScope || !existsSync(parentDirectory) || !statSync(parentDirectory).isDirectory()) {
+    writeJson(response, 404, { kind: "atlas.file-studio.upload", ok: false, error: "target directory not found" });
+    return;
+  }
+
+  const targetPath = resolve(parentDirectory, name);
+  if (!isInsideFileStudioRootScope(parentScope, targetPath)) {
+    writeJson(response, 403, { kind: "atlas.file-studio.upload", ok: false, error: "path outside configured root" });
+    return;
+  }
+
+  const exists = existsSync(targetPath);
+  if (exists && body.overwrite !== true) {
+    writeJson(response, 409, { kind: "atlas.file-studio.upload", ok: false, error: "target already exists" });
+    return;
+  }
+
+  if (exists && !statSync(targetPath).isFile()) {
+    writeJson(response, 409, { kind: "atlas.file-studio.upload", ok: false, error: "target already exists" });
+    return;
+  }
+
+  const contentBase64 = String(body.contentBase64 ?? "");
+  const buffer = Buffer.from(contentBase64, "base64");
+  const backup = exists ? createFileStudioBackup(targetPath) : undefined;
+  writeFileSync(targetPath, buffer);
+  writeJson(response, 200, {
+    ...createFileStudioOperationResult("upload", targetPath, access),
+    backup,
+    replaced: exists,
+  });
 }
 
 async function writeFileStudioCreateDirectoryResponse(request, response, cookieHeader) {
@@ -789,12 +1091,55 @@ async function writeFileStudioDeleteResponse(request, response, cookieHeader) {
     return;
   }
 
-  rmSync(targetPath, { recursive: true, force: false });
+  const trash = moveFileStudioPathToTrash(targetPath, normalizeFileStudioDisplayInput(body.path));
   writeJson(response, 200, {
     kind: "atlas.file-studio.delete",
     ok: true,
     path: normalizeFileStudioDisplayInput(body.path),
+    trash,
   });
+}
+
+async function writeFileStudioTrashResponse(response) {
+  writeJson(response, 200, {
+    kind: "atlas.file-studio.trash",
+    ok: true,
+    entries: readFileStudioTrashEntries(),
+  });
+}
+
+async function writeFileStudioTrashRestoreResponse(request, response, cookieHeader) {
+  const body = await readJsonRequestBody(request);
+  const access = createFileStudioAccessContext(cookieHeader);
+  const entry = readFileStudioTrashEntry(String(body.id ?? ""));
+  if (!entry) {
+    writeJson(response, 404, { kind: "atlas.file-studio.trash.restore", ok: false, error: "trash entry not found" });
+    return;
+  }
+
+  const targetPath = resolveFileStudioPath(entry.originalPath, access);
+  if (!targetPath) {
+    writeJson(response, 403, { kind: "atlas.file-studio.trash.restore", ok: false, error: "path outside configured root" });
+    return;
+  }
+  if (existsSync(targetPath) && body.overwrite !== true) {
+    writeJson(response, 409, { kind: "atlas.file-studio.trash.restore", ok: false, error: "target already exists" });
+    return;
+  }
+
+  const sourcePath = resolve(fileStudioTrashRoot, entry.id, "content");
+  if (!existsSync(sourcePath)) {
+    writeJson(response, 404, { kind: "atlas.file-studio.trash.restore", ok: false, error: "trash content not found" });
+    return;
+  }
+  if (existsSync(targetPath)) {
+    createFileStudioBackup(targetPath);
+    rmSync(targetPath, { recursive: true, force: false });
+  }
+  mkdirSync(dirname(targetPath), { recursive: true });
+  cpSync(sourcePath, targetPath, { recursive: true });
+  rmSync(resolve(fileStudioTrashRoot, entry.id), { recursive: true, force: true });
+  writeJson(response, 200, createFileStudioOperationResult("trash.restore", targetPath, access));
 }
 
 async function writeFileStudioCopyMoveResponse(request, response, cookieHeader, mode) {
@@ -850,6 +1195,8 @@ async function writeFileStudioSearchResponse(response, requestUrl, cookieHeader)
   const query = String(requestUrl.searchParams.get("q") ?? "").trim().toLowerCase();
   const rootPath = requestUrl.searchParams.get("path") ?? "/config";
   const includeHidden = requestUrl.searchParams.get("hidden") === "1";
+  const typeFilter = String(requestUrl.searchParams.get("type") ?? "all").toLowerCase();
+  const includeContent = requestUrl.searchParams.get("content") !== "0";
   const rootDirectory = resolveFileStudioPath(rootPath, access);
 
   if (!query) {
@@ -863,7 +1210,7 @@ async function writeFileStudioSearchResponse(response, requestUrl, cookieHeader)
   }
 
   const results = [];
-  searchFileStudioTree(rootDirectory, access, query, includeHidden, results);
+  searchFileStudioTree(rootDirectory, access, query, includeHidden, results, { typeFilter, includeContent });
   writeJson(response, 200, {
     kind: "atlas.file-studio.search",
     ok: true,
@@ -942,7 +1289,7 @@ function createFileStudioOperationResult(operation, targetPath, access) {
   };
 }
 
-function searchFileStudioTree(directoryPath, access, query, includeHidden, results, depth = 0) {
+function searchFileStudioTree(directoryPath, access, query, includeHidden, results, options = {}, depth = 0) {
   if (results.length >= 200 || depth > 8) {
     return;
   }
@@ -968,13 +1315,15 @@ function searchFileStudioTree(directoryPath, access, query, includeHidden, resul
     }
     const type = entry.isDirectory() ? "directory" : entry.isFile() ? "file" : "other";
     if (type === "other") continue;
-    const nameMatch = entry.name.toLowerCase().includes(query);
-    let contentMatch = false;
-    if (type === "file" && isSearchableFile(entryPath, stats)) {
+    const extension = type === "file" ? extname(entry.name).replace(".", "").toLowerCase() : undefined;
+    const matchesType = matchesFileStudioSearchType(type, extension, options.typeFilter);
+    const nameMatch = matchesType && entry.name.toLowerCase().includes(query);
+    let contentMatch;
+    if (matchesType && options.includeContent !== false && type === "file" && isSearchableFile(entryPath, stats)) {
       try {
-        contentMatch = readFileSync(entryPath, "utf8").toLowerCase().includes(query);
+        contentMatch = findFileStudioContentMatch(readFileSync(entryPath, "utf8"), query);
       } catch {
-        contentMatch = false;
+        contentMatch = undefined;
       }
     }
     if (nameMatch || contentMatch) {
@@ -982,16 +1331,43 @@ function searchFileStudioTree(directoryPath, access, query, includeHidden, resul
         name: entry.name,
         path: displayPath,
         type,
-        extension: type === "file" ? extname(entry.name).replace(".", "").toLowerCase() : undefined,
+        extension,
         size: type === "file" ? stats.size : undefined,
         modifiedAt: stats.mtime.toISOString(),
         match: nameMatch ? "name" : "content",
+        line: contentMatch?.line,
+        preview: contentMatch?.preview,
       });
     }
     if (entry.isDirectory()) {
-      searchFileStudioTree(entryPath, access, query, includeHidden, results, depth + 1);
+      searchFileStudioTree(entryPath, access, query, includeHidden, results, options, depth + 1);
     }
   }
+}
+
+function matchesFileStudioSearchType(type, extension, filter = "all") {
+  if (!filter || filter === "all") return true;
+  if (filter === "file") return type === "file";
+  if (filter === "directory") return type === "directory";
+  if (filter === "yaml") return type === "file" && ["yaml", "yml"].includes(extension);
+  if (filter === "image") return type === "file" && ["png", "jpg", "jpeg", "svg", "gif", "webp", "bmp", "ico"].includes(extension);
+  if (filter === "archive") return type === "file" && ["zip", "gz", "tar"].includes(extension);
+  return true;
+}
+
+function findFileStudioContentMatch(content, query) {
+  const lines = content.split(/\r?\n/);
+  for (const [index, line] of lines.entries()) {
+    const matchIndex = line.toLowerCase().indexOf(query);
+    if (matchIndex < 0) continue;
+    const start = Math.max(0, matchIndex - 40);
+    const end = Math.min(line.length, matchIndex + query.length + 80);
+    return {
+      line: index + 1,
+      preview: `${start > 0 ? "..." : ""}${line.slice(start, end).trim()}${end < line.length ? "..." : ""}`,
+    };
+  }
+  return undefined;
 }
 
 function isSearchableFile(filePath, stats) {
@@ -1000,6 +1376,219 @@ function isSearchableFile(filePath, stats) {
   }
   const extension = extname(filePath).toLowerCase();
   return [".yaml", ".yml", ".json", ".js", ".mjs", ".ts", ".md", ".txt", ".log", ".css", ".html"].includes(extension);
+}
+
+function createFileStudioBackup(targetPath) {
+  if (!existsSync(targetPath) || !statSync(targetPath).isFile()) {
+    return undefined;
+  }
+  const historyDirectory = createFileStudioHistoryDirectoryPath(targetPath);
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  const backupName = `${timestamp}-${basename(targetPath)}.bak`;
+  const backupPath = resolve(historyDirectory, backupName);
+  mkdirSync(historyDirectory, { recursive: true });
+  cpSync(targetPath, backupPath, { errorOnExist: true });
+  return {
+    name: backupName,
+    path: relative(root, backupPath).replace(/\\/g, "/"),
+    createdAt: new Date().toISOString(),
+  };
+}
+
+function moveFileStudioPathToTrash(targetPath, originalPath) {
+  const stats = statSync(targetPath);
+  const id = `${new Date().toISOString().replace(/[:.]/g, "-")}-${basename(targetPath).replace(/[^A-Za-z0-9_.-]/g, "_")}`;
+  const trashDirectory = resolve(fileStudioTrashRoot, id);
+  const contentPath = resolve(trashDirectory, "content");
+  mkdirSync(trashDirectory, { recursive: true });
+  cpSync(targetPath, contentPath, { recursive: true });
+  rmSync(targetPath, { recursive: true, force: false });
+  const entry = {
+    id,
+    originalPath,
+    name: basename(targetPath),
+    type: stats.isDirectory() ? "directory" : "file",
+    size: stats.isFile() ? stats.size : undefined,
+    deletedAt: new Date().toISOString(),
+  };
+  writeFileSync(resolve(trashDirectory, "entry.json"), JSON.stringify(entry, null, 2), "utf8");
+  return entry;
+}
+
+function readFileStudioTrashEntries() {
+  if (!existsSync(fileStudioTrashRoot) || !statSync(fileStudioTrashRoot).isDirectory()) {
+    return [];
+  }
+  return readdirSync(fileStudioTrashRoot, { withFileTypes: true })
+    .filter(entry => entry.isDirectory())
+    .map(entry => readFileStudioTrashEntry(entry.name))
+    .filter(Boolean)
+    .sort((left, right) => right.deletedAt.localeCompare(left.deletedAt))
+    .slice(0, 50);
+}
+
+function readFileStudioTrashEntry(id) {
+  if (!id || id.includes("/") || id.includes("\\") || id.includes("..")) {
+    return undefined;
+  }
+  const entryPath = resolve(fileStudioTrashRoot, id, "entry.json");
+  if (!isInsideDirectory(fileStudioTrashRoot, entryPath) || !existsSync(entryPath)) {
+    return undefined;
+  }
+  try {
+    return JSON.parse(readFileSync(entryPath, "utf8"));
+  } catch {
+    return undefined;
+  }
+}
+
+function readFileStudioHistoryEntries(targetPath) {
+  const historyDirectory = createFileStudioHistoryDirectoryPath(targetPath);
+  if (!existsSync(historyDirectory) || !statSync(historyDirectory).isDirectory()) {
+    return [];
+  }
+  return readdirSync(historyDirectory, { withFileTypes: true })
+    .filter(entry => entry.isFile())
+    .map(entry => {
+      const backupPath = resolve(historyDirectory, entry.name);
+      const stats = statSync(backupPath);
+      const createdAt = parseFileStudioBackupCreatedAt(entry.name) ?? stats.mtime.toISOString();
+      return {
+        name: entry.name,
+        size: stats.size,
+        createdAt,
+      };
+    })
+    .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+    .slice(0, 20);
+}
+
+function resolveFileStudioBackupPath(targetPath, backupName) {
+  if (!backupName || backupName.includes("/") || backupName.includes("\\") || backupName.includes("..")) {
+    return undefined;
+  }
+  const historyDirectory = createFileStudioHistoryDirectoryPath(targetPath);
+  const backupPath = resolve(historyDirectory, backupName);
+  return isInsideDirectory(historyDirectory, backupPath) ? backupPath : undefined;
+}
+
+function createFileStudioHistoryDirectoryPath(targetPath) {
+  const relativeTarget = relative(root, targetPath).replace(/[:\\/]+/g, "_").replace(/^_+/, "");
+  return resolve(root, fileStudioHistoryRoot, relativeTarget || "file");
+}
+
+function isInsideDirectory(directoryPath, targetPath) {
+  const relativeTargetPath = relative(directoryPath, targetPath);
+  return relativeTargetPath === "" || (!relativeTargetPath.startsWith("..") && !isAbsolute(relativeTargetPath));
+}
+
+function parseFileStudioBackupCreatedAt(name) {
+  const match = String(name).match(/^(\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z)-/);
+  if (!match) {
+    return undefined;
+  }
+  return match[1].replace(
+    /^(\d{4}-\d{2}-\d{2}T)(\d{2})-(\d{2})-(\d{2})-(\d{3}Z)$/,
+    "$1$2:$3:$4.$5",
+  );
+}
+
+function createFileStudioTextDiffSummary(previousContent, currentContent) {
+  const previousLines = String(previousContent ?? "").split(/\r?\n/);
+  const currentLines = String(currentContent ?? "").split(/\r?\n/);
+  const maxLines = Math.max(previousLines.length, currentLines.length);
+  const changes = [];
+  let added = 0;
+  let removed = 0;
+  let changed = 0;
+
+  for (let index = 0; index < maxLines; index += 1) {
+    const before = previousLines[index];
+    const after = currentLines[index];
+    if (before === after) continue;
+    if (before === undefined) {
+      added += 1;
+    } else if (after === undefined) {
+      removed += 1;
+    } else {
+      changed += 1;
+    }
+    if (changes.length < 40) {
+      changes.push({
+        line: index + 1,
+        before: before === undefined ? "" : trimFileStudioDiffLine(before),
+        after: after === undefined ? "" : trimFileStudioDiffLine(after),
+      });
+    }
+  }
+
+  return {
+    equal: added === 0 && removed === 0 && changed === 0,
+    added,
+    removed,
+    changed,
+    total: added + removed + changed,
+    truncated: added + removed + changed > changes.length,
+    changes,
+  };
+}
+
+function trimFileStudioDiffLine(line) {
+  const value = String(line ?? "");
+  return value.length > 180 ? `${value.slice(0, 177)}...` : value;
+}
+
+function createFileStudioReloadHint(filename) {
+  const displayPath = normalizeFileStudioDisplayInput(filename);
+  const name = basename(displayPath).toLowerCase();
+  if (name === "configuration.yaml") {
+    return {
+      level: "restart",
+      message: "Home Assistant Konfiguration prüfen; für configuration.yaml ist meistens ein Neustart sinnvoll.",
+    };
+  }
+  if (name === "automations.yaml") {
+    return {
+      level: "reload",
+      message: "Nach dem Speichern Automationen neu laden oder Home Assistant neu starten.",
+    };
+  }
+  if (name === "scripts.yaml") {
+    return {
+      level: "reload",
+      message: "Nach dem Speichern Skripte neu laden oder Home Assistant neu starten.",
+    };
+  }
+  if (displayPath.includes("/packages/") && [".yaml", ".yml"].includes(extname(displayPath).toLowerCase())) {
+    return {
+      level: "restart",
+      message: "Package-Datei geändert; Home Assistant Konfiguration prüfen und meist neu starten.",
+    };
+  }
+  return {
+    level: "none",
+    message: "Keine besondere Home-Assistant-Reload-Aktion erkannt.",
+  };
+}
+
+function createFileStudioIssueUrl(path, validation) {
+  const title = encodeURIComponent(`File Studio Problem${path ? `: ${path}` : ""}`);
+  const body = encodeURIComponent([
+    "## Beschreibung",
+    "",
+    "Bitte kurz beschreiben, was im ATLAS File Studio passiert ist.",
+    "",
+    "## Diagnose",
+    "",
+    "```json",
+    JSON.stringify({
+      path: path || undefined,
+      validation,
+      secretsIncluded: false,
+    }, null, 2),
+    "```",
+  ].join("\n"));
+  return `https://github.com/rockbaer2007/atlas/issues/new?title=${title}&body=${body}`;
 }
 
 function extractZipArchive(sourcePath, targetDirectory, targetScope) {
@@ -1014,7 +1603,7 @@ function extractZipArchive(sourcePath, targetDirectory, targetScope) {
   const centralDirectoryOffset = buffer.readUInt32LE(eocdOffset + 16);
   const centralDirectoryEnd = centralDirectoryOffset + centralDirectorySize;
   if (centralDirectoryEnd > buffer.length) {
-    throw new Error("ZIP-Zentralverzeichnis ist unvollstaendig.");
+    throw new Error("ZIP-Zentralverzeichnis ist unvollständig.");
   }
 
   mkdirSync(targetDirectory, { recursive: true });
@@ -1022,7 +1611,7 @@ function extractZipArchive(sourcePath, targetDirectory, targetScope) {
   let offset = centralDirectoryOffset;
   while (offset + 46 <= centralDirectoryEnd && extracted < Math.min(totalEntries, 500)) {
     if (buffer.readUInt32LE(offset) !== 0x02014b50) {
-      throw new Error("ZIP-Zentralverzeichnis enthaelt einen ungueltigen Eintrag.");
+      throw new Error("ZIP-Zentralverzeichnis enthält einen ungültigen Eintrag.");
     }
     const compressionMethod = buffer.readUInt16LE(offset + 10);
     const compressedSize = buffer.readUInt32LE(offset + 20);
@@ -1034,7 +1623,7 @@ function extractZipArchive(sourcePath, targetDirectory, targetScope) {
     const nameStart = offset + 46;
     const nameEnd = nameStart + nameLength;
     if (nameEnd > centralDirectoryEnd) {
-      throw new Error("ZIP-Eintragsname ist unvollstaendig.");
+      throw new Error("ZIP-Eintragsname ist unvollständig.");
     }
     const archivePath = buffer.toString("utf8", nameStart, nameEnd);
     extractZipEntry(buffer, archivePath, localHeaderOffset, compressedSize, uncompressedSize, compressionMethod, targetDirectory, targetScope);
@@ -1055,7 +1644,7 @@ function extractZipEntry(buffer, archivePath, localHeaderOffset, compressedSize,
 
   const targetPath = resolve(targetDirectory, normalizedArchivePath);
   if (!isInsideFileStudioDirectory(targetDirectory, targetPath) || !isInsideFileStudioRootScope(targetScope, targetPath)) {
-    throw new Error(`ZIP-Eintrag liegt ausserhalb des Zielordners: ${archivePath}`);
+    throw new Error(`ZIP-Eintrag liegt außerhalb des Zielordners: ${archivePath}`);
   }
 
   if (archivePath.endsWith("/")) {
@@ -1064,14 +1653,14 @@ function extractZipEntry(buffer, archivePath, localHeaderOffset, compressedSize,
   }
 
   if (buffer.readUInt32LE(localHeaderOffset) !== 0x04034b50) {
-    throw new Error(`ZIP-Lokalkopf ungueltig: ${archivePath}`);
+    throw new Error(`ZIP-Lokalkopf ungültig: ${archivePath}`);
   }
   const localNameLength = buffer.readUInt16LE(localHeaderOffset + 26);
   const localExtraLength = buffer.readUInt16LE(localHeaderOffset + 28);
   const dataStart = localHeaderOffset + 30 + localNameLength + localExtraLength;
   const dataEnd = dataStart + compressedSize;
   if (dataEnd > buffer.length) {
-    throw new Error(`ZIP-Daten unvollstaendig: ${archivePath}`);
+    throw new Error(`ZIP-Daten unvollständig: ${archivePath}`);
   }
 
   const compressed = buffer.subarray(dataStart, dataEnd);
@@ -1134,6 +1723,15 @@ function writeEmptyResponse(response, statusCode) {
   response.end();
 }
 
+function readRequestBody(request) {
+  return new Promise((resolveBody, rejectBody) => {
+    const chunks = [];
+    request.on("data", chunk => chunks.push(chunk));
+    request.on("end", () => resolveBody(Buffer.concat(chunks)));
+    request.on("error", rejectBody);
+  });
+}
+
 function clampNumber(value, minimum, maximum) {
   if (!Number.isFinite(value)) {
     return minimum;
@@ -1147,27 +1745,58 @@ function createPublicSurfaceUrl(requestUrl, port) {
   return url.toString();
 }
 
+function createPublicAppRouteUrl(requestUrl, pathname) {
+  const url = new URL(requestUrl);
+  const routePath = createRoutePath(url.pathname);
+  const routeIndex = url.pathname.lastIndexOf(routePath);
+  const basePath = routeIndex >= 0 ? url.pathname.slice(0, routeIndex) : "";
+  url.pathname = `${basePath}/${String(pathname).replace(/^\/+/, "")}`.replace(/\/{2,}/g, "/");
+  url.search = "";
+  url.hash = "";
+  return url.toString();
+}
+
 function createFileStudioAccessContext(cookieHeader = "") {
+  const cookieAccess = readFileStudioAccessFromCookie(cookieHeader);
   return {
     allowAddons: isHomeAssistantAppDistribution()
       ? fileStudioAllowAddons
-      : fileStudioAllowAddons || readFileStudioAccessFromCookie(cookieHeader).allowAddonsPath,
+      : fileStudioAllowAddons || cookieAccess.allowAddonsPath,
+    allowWww: isHomeAssistantAppDistribution()
+      ? fileStudioAllowWww
+      : fileStudioAllowWww || cookieAccess.allowWwwPath,
+    allowCustomComponents: isHomeAssistantAppDistribution()
+      ? fileStudioAllowCustomComponents
+      : fileStudioAllowCustomComponents || cookieAccess.allowCustomComponentsPath,
+    allowParentOfConfig: isHomeAssistantAppDistribution()
+      ? fileStudioAllowParentOfConfig
+      : fileStudioAllowParentOfConfig || cookieAccess.allowParentOfConfigPath,
   };
 }
 
 function readFileStudioAccessFromCookie(cookieHeader) {
   const encodedSettings = readCookie(cookieHeader, adminConnectionCookieName);
   if (!encodedSettings) {
-    return { allowAddonsPath: false };
+    return normalizeFileStudioAccessSettings();
   }
   try {
     const settings = JSON.parse(decodeURIComponent(encodedSettings));
-    return {
-      allowAddonsPath: settings?.fileStudioAccess?.allowAddonsPath === true,
-    };
+    return normalizeFileStudioAccessSettings(settings?.fileStudioAccess);
   } catch {
-    return { allowAddonsPath: false };
+    return normalizeFileStudioAccessSettings();
   }
+}
+
+function normalizeFileStudioAccessSettings(settings = {}) {
+  const allowedPaths = settings && typeof settings.allowedPaths === "object" && !Array.isArray(settings.allowedPaths)
+    ? settings.allowedPaths
+    : {};
+  return {
+    allowAddonsPath: settings?.allowAddonsPath === true || allowedPaths.addons === true,
+    allowWwwPath: settings?.allowWwwPath === true || allowedPaths.www === true,
+    allowCustomComponentsPath: settings?.allowCustomComponentsPath === true || allowedPaths.customComponents === true,
+    allowParentOfConfigPath: settings?.allowParentOfConfigPath === true || allowedPaths.parentOfConfig === true,
+  };
 }
 
 function isHomeAssistantAppDistribution() {
@@ -1186,6 +1815,24 @@ function createFileStudioRootScopes(access = createFileStudioAccessContext()) {
       source: "default",
     },
     {
+      id: "homeassistant-www",
+      label: "Home Assistant /config/www",
+      displayPath: "/config/www",
+      physicalPath: resolve(fileStudioConfigRoot, "www"),
+      enabled: access.allowWww,
+      readonly: false,
+      source: "approval",
+    },
+    {
+      id: "homeassistant-custom-components",
+      label: "Home Assistant /config/custom_components",
+      displayPath: "/config/custom_components",
+      physicalPath: resolve(fileStudioConfigRoot, "custom_components"),
+      enabled: access.allowCustomComponents,
+      readonly: false,
+      source: "approval",
+    },
+    {
       id: "homeassistant-addons",
       label: "Home Assistant /addons",
       displayPath: "/addons",
@@ -1193,6 +1840,15 @@ function createFileStudioRootScopes(access = createFileStudioAccessContext()) {
       enabled: access.allowAddons,
       readonly: false,
       source: "approval",
+    },
+    {
+      id: "homeassistant-parent-of-config",
+      label: "Parent of /config",
+      displayPath: "/parent-of-config",
+      physicalPath: dirname(fileStudioConfigRoot),
+      enabled: access.allowParentOfConfig,
+      readonly: false,
+      source: "admin",
     },
   ];
 }
@@ -1236,12 +1892,25 @@ function resolveFileStudioPath(value, access) {
   }
 
   const displayPath = normalizeFileStudioDisplayInput(value);
+  if (!isFileStudioDisplayPathAllowed(displayPath || scope.displayPath, access)) {
+    return undefined;
+  }
   const relativeInput = displayPath === scope.displayPath
     ? ""
     : displayPath.slice(scope.displayPath.length).replace(/^\/+/, "");
   const targetPath = resolve(scope.physicalPath, normalize(relativeInput));
 
   return isInsideFileStudioRootScope(scope, targetPath) ? targetPath : undefined;
+}
+
+function isFileStudioDisplayPathAllowed(displayPath, access) {
+  const normalized = normalizeFileStudioDisplayInput(displayPath);
+  if (!normalized) return true;
+  if ((normalized === "/config/www" || normalized.startsWith("/config/www/")) && !access.allowWww) return false;
+  if ((normalized === "/config/custom_components" || normalized.startsWith("/config/custom_components/")) && !access.allowCustomComponents) return false;
+  if ((normalized === "/addons" || normalized.startsWith("/addons/")) && !access.allowAddons) return false;
+  if ((normalized === "/parent-of-config" || normalized.startsWith("/parent-of-config/")) && !access.allowParentOfConfig) return false;
+  return true;
 }
 
 function createFileStudioDisplayPath(targetPath, access) {
@@ -1388,11 +2057,135 @@ function validateFileStudioContent(content, filename) {
     };
   }
 
+  const warnings = [];
+  const duplicateKey = findDuplicateYamlKey(lines);
+  if (duplicateKey) {
+    warnings.push(`Möglicher doppelter YAML-Key "${duplicateKey.key}" in Zeile ${duplicateKey.line}.`);
+  }
+  const includeLine = lines.findIndex(line => /!\s*include(?!(_dir_|$|\s))/i.test(line));
+  if (includeLine >= 0) {
+    warnings.push(`Include in Zeile ${includeLine + 1} prüfen: Home Assistant erwartet z. B. !include, !include_dir_merge_list oder !include_dir_named.`);
+  }
+  const displayPath = normalizeFileStudioDisplayInput(filename);
+  const baseName = basename(displayPath).toLowerCase();
+  if (["configuration.yaml", "automations.yaml", "scripts.yaml"].includes(baseName) && !content.trim()) {
+    warnings.push(`${baseName} ist leer; Home Assistant kann dadurch Konfiguration verlieren oder Reloads ohne Wirkung ausführen.`);
+  }
+  warnings.push(...findHomeAssistantYamlWarnings(lines, baseName, displayPath));
+  const reload = createFileStudioReloadHint(filename);
+  const message = warnings.length
+    ? `YAML-Basisprüfung bestanden, ${warnings.length} Hinweis(e). ${reload.message}`
+    : `YAML-Basisprüfung bestanden. ${reload.message}`;
   return {
     ok: true,
     blocking: false,
-    message: "YAML-Basisprüfung bestanden.",
+    message,
+    warnings,
+    reload,
   };
+}
+
+function findHomeAssistantYamlWarnings(lines, baseName, displayPath) {
+  const warnings = [];
+  const meaningfulLines = lines
+    .map((line, index) => ({ line, index }))
+    .filter(entry => entry.line.trim() && !entry.line.trimStart().startsWith("#"));
+  const oddIndent = meaningfulLines.find(entry => {
+    const indent = entry.line.match(/^\s*/)?.[0].length ?? 0;
+    return indent % 2 !== 0;
+  });
+  if (oddIndent) {
+    warnings.push(`Zeile ${oddIndent.index + 1} nutzt eine ungerade Einrückung; Home-Assistant-YAML ist meist mit 2 Leerzeichen lesbarer.`);
+  }
+  if (baseName === "automations.yaml" && meaningfulLines.length && !meaningfulLines[0].line.trimStart().startsWith("-")) {
+    warnings.push("automations.yaml beginnt normalerweise mit einer Liste von Automationen (`- id:` oder `- alias:`).");
+  }
+  if (baseName === "scripts.yaml" && meaningfulLines.some(entry => entry.line.match(/^-\s+/))) {
+    warnings.push("scripts.yaml ist normalerweise eine Zuordnung aus Script-ID zu Script-Definition, keine oberste Liste.");
+  }
+  if (baseName === "configuration.yaml") {
+    const rootKeys = new Set(meaningfulLines
+      .map(entry => entry.line.match(/^([A-Za-z0-9_.-]+):(?:\s|$)/)?.[1])
+      .filter(Boolean));
+    const commonRootKeys = new Set([
+      "automation", "binary_sensor", "climate", "cover", "default_config", "frontend", "group", "homeassistant",
+      "input_boolean", "input_datetime", "input_number", "input_select", "input_text", "light", "logger", "lovelace",
+      "mqtt", "notify", "scene", "script", "sensor", "switch", "template", "timer", "zone",
+    ]);
+    if (!rootKeys.has("default_config") && !rootKeys.has("homeassistant")) {
+      warnings.push("configuration.yaml enthält weder `default_config:` noch `homeassistant:`; bitte prüfen, ob das beabsichtigt ist.");
+    }
+    if (rootKeys.has("automation") && !meaningfulLines.some(entry => entry.line.includes("!include"))) {
+      warnings.push("Automationen direkt in configuration.yaml erkannt; oft ist `automation: !include automations.yaml` übersichtlicher.");
+    }
+    const unusualRootKey = [...rootKeys].find(key => !commonRootKeys.has(key));
+    if (unusualRootKey) {
+      warnings.push(`Root-Key \`${unusualRootKey}:\` ist kein typischer Home-Assistant-Top-Level-Key; Schreibweise prüfen.`);
+    }
+  }
+  if (baseName === "automations.yaml") {
+    warnings.push(...findAutomationYamlWarnings(meaningfulLines));
+  }
+  if (baseName === "scripts.yaml") {
+    warnings.push(...findScriptYamlWarnings(meaningfulLines));
+  }
+  const secretLine = meaningfulLines.find(entry => /(?:token|password|api[_-]?key|secret)\s*:\s*['"]?[A-Za-z0-9_.=-]{12,}/i.test(entry.line));
+  if (secretLine) {
+    warnings.push(`Zeile ${secretLine.index + 1} sieht nach einem direkt eingetragenen Secret aus; besser \`!secret\` verwenden.`);
+  }
+  if (displayPath.includes("/packages/")) {
+    const hasRootMapping = meaningfulLines.some(entry => /^[A-Za-z0-9_.-]+:\s*/.test(entry.line));
+    if (!hasRootMapping) {
+      warnings.push("Package-Dateien enthalten normalerweise Root-Keys wie `sensor:`, `automation:` oder `template:`.");
+    }
+  }
+  return warnings;
+}
+
+function findAutomationYamlWarnings(meaningfulLines) {
+  const warnings = [];
+  const automationStarts = meaningfulLines.filter(entry => /^-\s*(id|alias)?:?/.test(entry.line.trimStart()));
+  if (automationStarts.length > 0) {
+    const hasAlias = meaningfulLines.some(entry => /^\s*alias:\s*\S+/.test(entry.line));
+    const hasTrigger = meaningfulLines.some(entry => /^\s*(trigger|triggers):\s*/.test(entry.line));
+    const hasAction = meaningfulLines.some(entry => /^\s*(action|actions):\s*/.test(entry.line));
+    if (!hasAlias) warnings.push("Mindestens eine Automation scheint keinen `alias:` zu haben.");
+    if (!hasTrigger) warnings.push("Keine `trigger:`/`triggers:`-Definition in automations.yaml erkannt.");
+    if (!hasAction) warnings.push("Keine `action:`/`actions:`-Definition in automations.yaml erkannt.");
+  }
+  return warnings;
+}
+
+function findScriptYamlWarnings(meaningfulLines) {
+  const warnings = [];
+  const rootScript = meaningfulLines.find(entry => /^[A-Za-z0-9_]+:\s*$/.test(entry.line));
+  if (rootScript) {
+    const hasSequence = meaningfulLines.some(entry => /^\s+sequence:\s*/.test(entry.line));
+    if (!hasSequence) warnings.push("scripts.yaml enthält Script-Keys, aber keine `sequence:`-Definition erkannt.");
+  }
+  const serviceLine = meaningfulLines.find(entry => /^\s+service:\s+\S+/.test(entry.line));
+  if (serviceLine && !/^\s+service:\s+[A-Za-z0-9_]+\.[A-Za-z0-9_]+/.test(serviceLine.line)) {
+    warnings.push(`Service in Zeile ${serviceLine.index + 1} sollte meist das Format \`domain.service\` nutzen.`);
+  }
+  return warnings;
+}
+
+function findDuplicateYamlKey(lines) {
+  const keysByIndent = new Map();
+  for (const [index, line] of lines.entries()) {
+    if (!line.trim() || line.trimStart().startsWith("#")) continue;
+    const match = line.match(/^(\s*)([A-Za-z0-9_.-]+):(?:\s|$)/);
+    if (!match) continue;
+    const indent = match[1].length;
+    const key = match[2];
+    const bucket = keysByIndent.get(indent) ?? new Set();
+    if (bucket.has(key)) {
+      return { key, line: index + 1 };
+    }
+    bucket.add(key);
+    keysByIndent.set(indent, bucket);
+  }
+  return undefined;
 }
 
 function readFileStudioTree(directoryPath, remainingDepth, displayPath, access, includeHidden = false) {
@@ -1434,6 +2227,12 @@ function readFileStudioTreeEntry(parentDirectory, parentDisplayPath, entry, rema
     return undefined;
   }
   const displayPath = `${parentDisplayPath.replace(/\/$/, "")}/${entry.name}`.replace(/\\/g, "/");
+  if (parentDisplayPath === "/config" && entry.isDirectory() && ["www", "custom_components"].includes(entry.name)) {
+    return undefined;
+  }
+  if (!isFileStudioDisplayPathAllowed(displayPath, access)) {
+    return undefined;
+  }
   const entryStats = statSync(entryPath);
 
   if (entry.isDirectory()) {
@@ -1526,10 +2325,12 @@ function readPluginManifest(directoryName, requestUrl) {
     const id = typeof manifest.id === "string" && manifest.id.trim()
       ? manifest.id.trim()
       : directoryName;
-    const entryUrl = createPluginEntryUrl(manifest.entry, requestUrl);
+    const fallbackEntryUrl = createLocalPluginEntryUrl(directoryName, requestUrl);
+    const entryUrl = createPluginEntryUrl(manifest.entry, requestUrl, fallbackEntryUrl);
 
     return {
       id,
+      slug: directoryName,
       name: typeof manifest.name === "string" ? manifest.name : id,
       nameI18n: normalizeLocalizedPluginText(manifest.nameI18n),
       version: typeof manifest.version === "string" ? manifest.version : "0.0.0",
@@ -1586,9 +2387,11 @@ function normalizeSharedPlugin(plugin, requestUrl) {
   if (!id) {
     return undefined;
   }
+  const slug = createPluginSlug(plugin.slug || plugin.directory || plugin.assetDirectory || id);
 
   return {
     id,
+    slug,
     name: typeof plugin.name === "string" && plugin.name.trim() ? plugin.name.trim() : id,
     nameI18n: normalizeLocalizedPluginText(plugin.nameI18n),
     version: typeof plugin.version === "string" ? plugin.version : "0.0.0",
@@ -1602,7 +2405,11 @@ function normalizeSharedPlugin(plugin, requestUrl) {
     iconUrl: typeof plugin.iconUrl === "string" ? plugin.iconUrl : "",
     logoUrl: typeof plugin.logoUrl === "string" ? plugin.logoUrl : "",
     previewUrl: typeof plugin.previewUrl === "string" ? plugin.previewUrl : "",
-    entryUrl: createPluginEntryUrl(plugin.entry, requestUrl),
+    entryUrl: createPluginEntryUrl(
+      plugin.entry,
+      requestUrl,
+      createSharedPluginEntryUrl(plugin, slug, requestUrl),
+    ),
   };
 }
 
@@ -1618,24 +2425,68 @@ function readCookie(cookieHeader, name) {
   return cookie ? cookie.slice(prefix.length) : "";
 }
 
-function createPluginEntryUrl(entry, requestUrl) {
+function createPluginEntryUrl(entry, requestUrl, fallbackEntryUrl = "") {
   if (entry === "admin") {
-    return createPublicSurfaceUrl(requestUrl, adminPort);
+    return createPublicAppRouteUrl(requestUrl, "/admin");
   }
   if (entry === "editor") {
-    return createPublicSurfaceUrl(requestUrl, editorPort);
+    return createPublicAppRouteUrl(requestUrl, "/editor");
   }
   if (typeof entry === "string" && entry.trim()) {
+    if (entry.trim().startsWith("/")) {
+      return createPublicAppRouteUrl(requestUrl, entry.trim());
+    }
     return new URL(entry, requestUrl).toString();
   }
-  return "";
+  return fallbackEntryUrl;
+}
+
+function createPluginSlug(value, fallback = "plugin") {
+  const slug = String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/^atlas\.plugin\./, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug || fallback;
+}
+
+function createLocalPluginEntryUrl(directoryName, requestUrl) {
+  return hasLocalPluginIndex(directoryName)
+    ? createPublicAppRouteUrl(requestUrl, `/plugin-assets/${encodeURIComponent(directoryName)}/index.html`)
+    : "";
+}
+
+function createSharedPluginEntryUrl(plugin, slug, requestUrl) {
+  const directoryCandidates = [
+    plugin.directory,
+    plugin.assetDirectory,
+    plugin.slug,
+    slug,
+  ]
+    .filter(value => typeof value === "string" && value.trim())
+    .map(value => value.trim());
+  const directoryName = directoryCandidates.find(candidate => hasLocalPluginIndex(candidate));
+  return directoryName ? createLocalPluginEntryUrl(directoryName, requestUrl) : "";
+}
+
+function hasLocalPluginIndex(directoryName) {
+  if (typeof directoryName !== "string" || !directoryName.trim()) {
+    return false;
+  }
+  const pluginDirectory = resolve(pluginRoot, directoryName.trim());
+  const indexPath = resolve(pluginDirectory, "index.html");
+  return pluginDirectory.startsWith(pluginRoot)
+    && indexPath.startsWith(pluginDirectory)
+    && existsSync(indexPath)
+    && !statSync(indexPath).isDirectory();
 }
 
 function createPluginAssetUrl(directoryName, assetPath, requestUrl) {
   if (typeof assetPath !== "string" || !assetPath.trim()) {
     return "";
   }
-  return new URL(`/plugin-assets/${encodeURIComponent(directoryName)}/${assetPath}`, requestUrl).toString();
+  return createPublicAppRouteUrl(requestUrl, `/plugin-assets/${encodeURIComponent(directoryName)}/${assetPath}`);
 }
 
 function servePluginAsset(response, pathname) {
@@ -1655,14 +2506,41 @@ function serveStaticPath(response, pathname, baseDirectory = root) {
 }
 
 function serveStaticFile(response, filePath, baseDirectory = root) {
-  if (!filePath.startsWith(baseDirectory) || !existsSync(filePath) || statSync(filePath).isDirectory()) {
+  const resolvedFilePath = resolveBrowserModuleFilePath(filePath, baseDirectory);
+  if (!resolvedFilePath) {
     writeEmptyResponse(response, 404);
     return;
   }
 
   response.writeHead(200, {
-    "content-type": mimeTypes[extname(filePath)] ?? "application/octet-stream",
+    "content-type": mimeTypes[extname(resolvedFilePath)] ?? "application/octet-stream",
     "cache-control": "no-store",
   });
-  createReadStream(filePath).pipe(response);
+  createReadStream(resolvedFilePath).pipe(response);
+}
+
+function resolveBrowserModuleFilePath(filePath, baseDirectory) {
+  if (!filePath.startsWith(baseDirectory)) {
+    return "";
+  }
+  if (existsSync(filePath) && !statSync(filePath).isDirectory()) {
+    return filePath;
+  }
+  if (extname(filePath)) {
+    return "";
+  }
+  const javascriptFilePath = `${filePath}.js`;
+  if (
+    javascriptFilePath.startsWith(baseDirectory)
+    && existsSync(javascriptFilePath)
+    && !statSync(javascriptFilePath).isDirectory()
+  ) {
+    return javascriptFilePath;
+  }
+  const indexFilePath = resolve(filePath, "index.js");
+  return indexFilePath.startsWith(baseDirectory)
+    && existsSync(indexFilePath)
+    && !statSync(indexFilePath).isDirectory()
+    ? indexFilePath
+    : "";
 }

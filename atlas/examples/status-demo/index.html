@@ -87,6 +87,21 @@
         color: var(--atlas-text);
       }
 
+      .editor-loading-notice {
+        margin: -8px 0 16px;
+        padding: 10px 12px;
+        border: 1px solid #dc2626;
+        border-radius: 6px;
+        background: #fee2e2;
+        color: #991b1b;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .editor-loading-notice[hidden] {
+        display: none;
+      }
+
       .language-toggle,
       .theme-toggle {
         display: inline-flex;
@@ -292,6 +307,49 @@
         grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 0.8fr);
       }
 
+      .card-export-layout,
+      .card-import-entity-layout {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        align-items: stretch;
+      }
+
+      .card-export-column,
+      .entity-picker-column,
+      .card-export-language-panel {
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+        align-content: start;
+        min-height: 100%;
+        padding: 10px;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+      }
+
+      .card-export-field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-export-actions-column .connection-actions.uniform-actions,
+      .import-debug-column .connection-actions.uniform-actions,
+      .entity-filter-column .connection-actions.uniform-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+        align-items: stretch;
+      }
+
+      .card-export-actions-column .connection-actions.uniform-actions button,
+      .card-export-actions-column .connection-actions.uniform-actions .import-button,
+      .import-debug-column .connection-actions.uniform-actions button,
+      .import-debug-column .connection-actions.uniform-actions .import-button,
+      .entity-filter-column .connection-actions.uniform-actions button {
+        flex: 0 1 auto;
+        width: 100%;
+      }
+
       .connection-config .field-pair[hidden] {
         display: none;
       }
@@ -348,10 +406,6 @@
       .card-export-language-panel {
         display: grid;
         gap: 6px;
-        border: 1px solid var(--atlas-border);
-        border-radius: 6px;
-        background: var(--atlas-panel-soft);
-        padding: 10px;
       }
 
       .card-export-language-panel legend {
@@ -362,7 +416,7 @@
 
       .card-export-language-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
         gap: 6px;
       }
 
@@ -812,7 +866,7 @@
       .resource-hint-field {
         display: grid;
         gap: 6px;
-        margin: 8px 0 0;
+        margin: 0;
         padding: 10px 12px;
         border: 1px solid #cbd5e1;
         border-radius: 6px;
@@ -901,6 +955,41 @@
         color: #172033;
         font-size: 13px;
         font-weight: 700;
+      }
+
+      .card-import-entity-layout .temporary-resource-debug-toggle {
+        margin: 0;
+      }
+
+      .automatic-card-type-mapping {
+        display: grid;
+        gap: 4px;
+        margin: 2px 0 0;
+        color: #b91c1c;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .automatic-card-type-mapping label {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        cursor: pointer;
+      }
+
+      .automatic-card-type-mapping input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        accent-color: #dc2626;
+      }
+
+      .automatic-card-type-mapping small {
+        max-width: 780px;
+        color: #b91c1c;
+        font-size: 12px;
+        line-height: 1.35;
       }
 
       #temporary-ha-card-resource-list {
@@ -1148,8 +1237,34 @@
 
       .expert-editor-controls {
         display: grid;
-        grid-template-columns: repeat(4, minmax(96px, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 8px;
+      }
+
+      .expert-output-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 14px;
+      }
+
+      .expert-output-grid {
+        display: grid;
+        grid-template-columns: minmax(420px, 1.1fr) minmax(320px, 0.8fr) minmax(420px, 1fr);
+        gap: 12px;
+        align-items: start;
+        margin-top: 8px;
+      }
+
+      .expert-output-column {
+        min-width: 0;
+      }
+
+      .expert-output-column.ha-card-preview {
+        margin: 0;
+      }
+
+      .expert-output-column.ha-card-preview pre {
+        min-height: 188px;
       }
 
       .editor-mode-toggle {
@@ -1190,8 +1305,57 @@
         padding-bottom: 10px;
       }
 
+      .expert-grid-frame {
+        display: grid;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .expert-grid-top-controls {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(88px, 128px)) minmax(132px, 192px);
+        gap: 8px;
+        align-items: end;
+        justify-content: start;
+      }
+
+      .expert-grid-axis-control {
+        display: grid;
+        grid-template-columns: auto minmax(52px, 1fr) auto;
+        gap: 6px;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 6px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: #ffffff;
+        color: #536079;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .expert-grid-axis-control label {
+        color: #172033;
+        font-weight: 800;
+      }
+
+      .expert-grid-axis-control input[type="range"] {
+        width: 100%;
+        accent-color: #0f766e;
+      }
+
+      .expert-grid-axis-control output {
+        color: #0f766e;
+        font-weight: 800;
+      }
+
+      .expert-grid-body {
+        display: block;
+        min-width: 0;
+      }
+
       .expert-editor-controls .wide {
-        grid-column: 1 / -1;
+        grid-column: span 2;
       }
 
       .expert-editor-controls .span-2 {
@@ -1255,9 +1419,25 @@
         white-space: nowrap;
       }
 
+      .expert-output-grid .expert-editor-actions {
+        margin-top: 8px;
+      }
+
       @media (max-width: 720px) {
+        .expert-output-grid {
+          grid-template-columns: 1fr;
+        }
+
         .expert-editor-controls {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .expert-grid-top-controls {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .expert-grid-axis-control {
+          grid-template-columns: 1fr;
         }
 
         .expert-editor-controls .span-2 {
@@ -1379,6 +1559,26 @@
         font-size: 12px;
       }
 
+      .palette-map-button {
+        width: 100%;
+        min-height: 28px;
+        border: 1px solid #f59e0b;
+        border-radius: 4px;
+        background: #f59e0b;
+        color: #111827;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .palette-map-button:hover,
+      .palette-map-button:focus-visible {
+        border-color: #d97706;
+        background: #fbbf24;
+        outline: none;
+      }
+
       .expert-template-card:hover,
       .expert-template-card:focus-visible {
         border-color: #0f766e;
@@ -1408,7 +1608,8 @@
         overflow-wrap: anywhere;
       }
 
-      .expert-template-card .favorite-toggle {
+      .expert-template-card .favorite-toggle,
+      .expert-template-card .hidden-toggle {
         display: flex;
         align-items: center;
         gap: 6px;
@@ -1417,11 +1618,28 @@
         font-size: 12px;
       }
 
-      .expert-template-card .favorite-toggle input {
+      .expert-template-card .favorite-toggle input,
+      .expert-template-card .hidden-toggle input {
         width: 14px;
         height: 14px;
         margin: 0;
+      }
+
+      .expert-template-card .favorite-toggle input {
         accent-color: #0f766e;
+      }
+
+      .expert-template-card .hidden-toggle {
+        color: #b91c1c;
+      }
+
+      .expert-template-card .hidden-toggle input {
+        accent-color: #dc2626;
+      }
+
+      .expert-template-card.hidden-palette-card {
+        border-color: #fecaca;
+        background: #fff1f2;
       }
 
       .expert-template-card .palette-category {
@@ -1452,11 +1670,14 @@
       }
 
       .expert-editor-dropzone {
-        --expert-editor-base-width: 640px;
-        --expert-editor-extra-width: 0px;
-        --expert-editor-extra-height: 0px;
+        --expert-editor-cell-size: 52px;
+        --expert-editor-grid-gap: 4px;
+        --expert-editor-columns: 12;
+        --expert-editor-rows: 12;
+        --expert-editor-surface-width: 668px;
+        --expert-editor-surface-height: 668px;
         position: relative;
-        width: calc(var(--expert-editor-base-width) + var(--expert-editor-extra-width));
+        width: calc(var(--expert-editor-surface-width) + 28px);
         max-width: none;
         padding: 14px;
         border: 1px dashed #0f766e;
@@ -1464,56 +1685,42 @@
         background: #f8fffd;
         color: #115e59;
         box-sizing: border-box;
-        min-height: calc(448px + var(--expert-editor-extra-height));
+        min-height: calc(var(--expert-editor-surface-height) + 28px);
         text-align: center;
       }
 
       .expert-surface-grid {
         display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        grid-template-rows: repeat(12, minmax(32px, 1fr));
-        gap: 4px;
-        min-height: calc(420px + var(--expert-editor-extra-height));
-        background:
-          linear-gradient(to right, rgba(15, 118, 110, 0.16) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(15, 118, 110, 0.16) 1px, transparent 1px);
-        background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+        grid-template-columns: repeat(var(--expert-editor-columns), var(--expert-editor-cell-size));
+        grid-template-rows: repeat(var(--expert-editor-rows), var(--expert-editor-cell-size));
+        gap: var(--expert-editor-grid-gap);
+        width: var(--expert-editor-surface-width);
+        height: var(--expert-editor-surface-height);
+        background: #f8fffd;
       }
 
-      .expert-editor-surface-resize-handle {
-        position: absolute;
-        right: -8px;
-        bottom: -8px;
-        z-index: 4;
-        width: 28px;
-        height: 28px;
-        padding: 0;
-        border: 2px solid #f0645c;
-        border-radius: 6px;
-        background:
-          linear-gradient(135deg, transparent 0 46%, #f0645c 47% 53%, transparent 54%),
-          linear-gradient(135deg, transparent 0 64%, #f0645c 65% 71%, transparent 72%),
-          #ffffff;
-        box-shadow: 0 6px 14px rgba(23, 32, 51, 0.16);
-        cursor: nwse-resize;
-        touch-action: none;
-      }
-
-      .expert-editor-surface-resize-handle:focus-visible {
-        outline: 3px solid rgba(15, 118, 110, 0.35);
-        outline-offset: 3px;
+      .expert-surface-cell {
+        min-width: 0;
+        min-height: 0;
+        border: 1px solid rgba(15, 118, 110, 0.16);
+        background: rgba(15, 118, 110, 0.025);
+        box-sizing: border-box;
+        pointer-events: none;
       }
 
       .expert-surface-grid p {
         grid-column: 1 / -1;
+        grid-row: 1 / -1;
         place-self: center;
         margin: 0;
+        z-index: 2;
       }
 
       .expert-surface-field {
         display: grid;
         place-items: center;
         position: relative;
+        z-index: 1;
         min-height: 54px;
         padding: 8px;
         border: 1px solid #0f766e;
@@ -1768,6 +1975,7 @@
 
       .expert-tab-preview.horizontal {
         grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+        align-items: start;
       }
 
       .expert-tab-preview.drag-over {
@@ -1794,6 +2002,32 @@
       .expert-tab-preview-card.selected {
         border-color: #2563eb;
         box-shadow: inset 0 0 0 1px #2563eb;
+      }
+
+      .expert-tab-preview-card.drag-over {
+        border-color: #2563eb;
+        background: #eff6ff;
+      }
+
+      .expert-tab-preview-card.nested-container-card {
+        border-style: dashed;
+        background: #eef6ff;
+      }
+
+      .expert-tab-preview-children {
+        display: grid;
+        gap: 4px;
+        min-width: 0;
+        align-items: start;
+        padding: 4px;
+        border: 1px solid #bfdbfe;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .expert-tab-preview-children.horizontal {
+        grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+        align-items: start;
       }
 
       .expert-tab-preview-card-actions {
@@ -2479,8 +2713,10 @@
       }
 
       .card-entity-overview {
-        margin-top: 12px;
+        margin-top: 0;
+        max-height: min(360px, 46vh);
         overflow-x: auto;
+        overflow-y: auto;
       }
 
       .atlas-entity-card {
@@ -2533,6 +2769,27 @@
       .selected-entities-panel summary:focus-visible {
         outline: 2px solid #0f766e;
         outline-offset: 2px;
+      }
+
+      .entity-picker-panel .field-pair {
+        min-width: 0;
+      }
+
+      @media (max-width: 1180px) {
+        .card-export-layout,
+        .card-import-entity-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .card-export-actions-column .connection-actions.uniform-actions,
+        .import-debug-column .connection-actions.uniform-actions,
+        .entity-filter-column .connection-actions.uniform-actions {
+          grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        }
+
+        .card-entity-overview {
+          max-height: none;
+        }
       }
 
       #stack-selection-summary {
@@ -2677,7 +2934,9 @@
       }
 
       :root[data-theme="dark"] .connection-config.compact-panel,
+      :root[data-theme="dark"] .card-export-column,
       :root[data-theme="dark"] .card-export-language-panel,
+      :root[data-theme="dark"] .entity-picker-column,
       :root[data-theme="dark"] .diagnostics-panel,
       :root[data-theme="dark"] .selected-entities-panel,
       :root[data-theme="dark"] .entity-picker-panel,
@@ -2735,6 +2994,11 @@
         border-color: #ef4444;
         background: #3a151a;
         color: #fecaca;
+      }
+
+      :root[data-theme="dark"] .automatic-card-type-mapping,
+      :root[data-theme="dark"] .automatic-card-type-mapping small {
+        color: #fca5a5;
       }
 
       :root[data-theme="dark"] .connection-config.compact-panel[data-connection-state="failed"] summary,
@@ -2870,11 +3134,27 @@
         color: var(--atlas-muted);
       }
 
+      :root[data-theme="dark"] .expert-grid-axis-control {
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel);
+        color: #b9cbd1;
+      }
+
+      :root[data-theme="dark"] .expert-grid-axis-control label {
+        color: #dbe8ea;
+      }
+
+      :root[data-theme="dark"] .expert-grid-axis-control output {
+        color: #7ee6c9;
+      }
+
       :root[data-theme="dark"] .expert-surface-grid {
-        background:
-          linear-gradient(to right, rgba(45, 212, 191, 0.18) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(45, 212, 191, 0.18) 1px, transparent 1px);
-        background-size: calc(100% / 12) 100%, 100% calc(100% / 12);
+        background: var(--atlas-panel);
+      }
+
+      :root[data-theme="dark"] .expert-surface-cell {
+        border-color: rgba(45, 212, 191, 0.18);
+        background: rgba(45, 212, 191, 0.04);
       }
 
       :root[data-theme="dark"] .expert-template-card:hover,
@@ -2910,6 +3190,21 @@
         border: 1px solid #4f8f87;
         background-color: #123c37;
         accent-color: #7ee6c9;
+      }
+
+      :root[data-theme="dark"] .expert-template-card .hidden-toggle {
+        color: #fca5a5;
+      }
+
+      :root[data-theme="dark"] .expert-template-card .hidden-toggle input {
+        border: 1px solid #991b1b;
+        background-color: #351b1d;
+        accent-color: #ef4444;
+      }
+
+      :root[data-theme="dark"] .expert-template-card.hidden-palette-card {
+        border-color: #991b1b;
+        background: #351b1d;
       }
 
       :root[data-theme="dark"] .expert-template-sizing select,
@@ -3015,6 +3310,27 @@
         color: #ddd6fe;
       }
 
+      :root[data-theme="dark"] .editor-loading-notice {
+        border-color: #f87171;
+        background: #3b0d0d;
+        color: #fecaca;
+      }
+
+      :root[data-theme="dark"] .expert-tab-preview-card.nested-container-card {
+        background: #122436;
+        border-color: #3b82f6;
+      }
+
+      :root[data-theme="dark"] .expert-tab-preview-card.drag-over {
+        border-color: #60a5fa;
+        background: #172f49;
+      }
+
+      :root[data-theme="dark"] .expert-tab-preview-children {
+        border-color: #1d4ed8;
+        background: rgba(15, 23, 42, 0.72);
+      }
+
       :root[data-theme="dark"] .atlas-status {
         border-color: color-mix(in srgb, var(--atlas-accent) 45%, var(--atlas-border));
         background: var(--atlas-panel);
@@ -3058,13 +3374,13 @@
     <script type="importmap">
       {
         "imports": {
-          "@atlas/core": "/packages/core/dist/index.js",
-          "@atlas/foundation": "/packages/foundation/dist/index.js",
-          "@atlas/kernel": "/packages/kernel/dist/index.js",
-          "@atlas/renderer": "/packages/renderer/dist/index.js",
-          "@atlas/runtime": "/packages/runtime/dist/index.js",
-          "@atlas/theme": "/packages/theme/dist/index.js",
-          "@atlas/homeassistant": "/packages/homeassistant/dist/index.js"
+          "@atlas/core": "./packages/core/dist/index.js",
+          "@atlas/foundation": "./packages/foundation/dist/index.js",
+          "@atlas/kernel": "./packages/kernel/dist/index.js",
+          "@atlas/renderer": "./packages/renderer/dist/index.js",
+          "@atlas/runtime": "./packages/runtime/dist/index.js",
+          "@atlas/theme": "./packages/theme/dist/index.js",
+          "@atlas/homeassistant": "./packages/homeassistant/dist/index.js"
         }
       }
     </script>
@@ -3074,7 +3390,7 @@
       <div class="app-header">
         <div>
           <h1 data-i18n="page.title">ATLAS Home Assistant Card Editor</h1>
-          <p data-i18n="page.subtitle">Build Simple or Expert Home Assistant cards from live or local entities.</p>
+          <p data-i18n="page.subtitle">Build Expert Home Assistant cards from live or local entities.</p>
         </div>
         <div class="header-actions">
           <button id="open-problem-report" class="problem-report-button" type="button" data-i18n="button.reportProblem">Report problem</button>
@@ -3089,6 +3405,7 @@
           </div>
         </div>
       </div>
+      <div id="editor-loading-notice" class="editor-loading-notice" role="status" aria-live="polite" data-i18n="message.editorLoading">Please wait, the editor is loading. This can take 5-10 seconds. The notice stays visible briefly so the editor can finish initializing.</div>
       <div class="editor-navigation-actions" aria-label="ATLAS navigation" data-i18n-aria-label="aria.atlasNavigation">
         <a class="editor-nav-button" href="admin" data-open-admin data-i18n="link.openAdmin">Open Atlas Administration</a>
         <a class="editor-nav-button" href="/hub" data-open-hub data-i18n="link.openHub">Open Plugin Hub</a>
@@ -3116,156 +3433,168 @@
         </div>
       </details>
       <div class="connection-config">
-        <div class="field-grid three-column">
-          <div id="panel-group-control" class="field-pair">
-            <label for="home-assistant-group" data-i18n="label.panelGroup">Panel group</label>
-            <select id="home-assistant-group">
-              <option value="overview" data-i18n="group.overview">Overview</option>
-              <option value="energy" data-i18n="group.energy">Energy</option>
-              <option value="safety" data-i18n="group.safety">Safety</option>
-              <option value="custom" data-i18n="group.custom">Custom</option>
-            </select>
-          </div>
-          <div id="group-name-control" class="field-pair">
-            <label for="home-assistant-group-name" data-i18n="label.groupName">Group name</label>
-            <input id="home-assistant-group-name" type="text" autocomplete="off">
-          </div>
-          <div id="card-target-control" class="field-pair">
-            <label for="ha-card-target" data-i18n="label.cardTarget">Card target</label>
-            <select id="ha-card-target"></select>
-          </div>
-          <div id="card-layout-control" class="field-pair">
-            <label for="ha-card-layout" data-i18n="label.cardLayout">Card layout</label>
-            <select id="ha-card-layout">
-              <option value="single" data-i18n="layout.single">Simple</option>
-              <option value="horizontal-stack" data-i18n="layout.horizontal">Horizontal stack</option>
-              <option value="vertical-stack" data-i18n="layout.vertical">Vertical stack</option>
-            </select>
-          </div>
-          <div class="field-pair">
-            <label for="ha-card-format" data-i18n="label.cardFormat">Card format</label>
-            <select id="ha-card-format">
-              <option value="json">JSON</option>
-              <option value="yaml" selected>YAML</option>
-            </select>
-          </div>
-          <div id="card-style-export-control" class="field-pair" hidden>
-            <label for="ha-card-style-export" data-i18n="label.cardStyleExport">Style export</label>
-            <select id="ha-card-style-export">
-              <option value="card-mod">card-mod</option>
-              <option value="uix-style">uix:</option>
-            </select>
-          </div>
-          <div class="field-pair">
-            <label for="ha-card-script-filename" data-i18n="label.scriptFilename">HACS script filename</label>
-            <input id="ha-card-script-filename" type="text" autocomplete="off" spellcheck="false" placeholder="energy-kitchen.js" data-i18n-placeholder="placeholder.scriptFilename">
-          </div>
-        </div>
-        <fieldset class="card-export-language-panel">
-          <legend data-i18n="label.cardExportLanguages">Card export languages</legend>
-          <div class="card-export-language-grid">
-            <label><input type="checkbox" data-card-export-language="en" checked disabled> EN English</label>
-            <label><input type="checkbox" data-card-export-language="de" checked> DE Deutsch</label>
-            <label><input type="checkbox" data-card-export-language="fr"> FR Français</label>
-            <label><input type="checkbox" data-card-export-language="es"> ES Español</label>
-            <label><input type="checkbox" data-card-export-language="it"> IT Italiano</label>
-            <label><input type="checkbox" data-card-export-language="nl"> NL Nederlands</label>
-            <label><input type="checkbox" data-card-export-language="sv"> SV Svenska</label>
-            <label><input type="checkbox" data-card-export-language="no"> NO Norsk</label>
-            <label><input type="checkbox" data-card-export-language="da"> DA Dansk</label>
-            <label><input type="checkbox" data-card-export-language="cs"> CS Česky</label>
-            <label><input type="checkbox" data-card-export-language="ru"> RU русский</label>
-            <label><input type="checkbox" data-card-export-language="pl"> PL Polski</label>
-            <label><input type="checkbox" data-card-export-language="pt"> PT Português</label>
-            <label><input type="checkbox" data-card-export-language="fi"> FI Suomi</label>
-          </div>
-          <div class="card-export-translation-controls">
-            <output id="card-translation-status" class="card-translation-module-status" aria-live="polite"></output>
-            <label for="card-auto-translate">
-              <input id="card-auto-translate" type="checkbox">
-              <span data-i18n="label.autoTranslateCardLanguages">Run automatic translation on export</span>
-            </label>
-            <progress id="card-translation-progress" class="card-export-translation-progress" max="100" value="0" hidden></progress>
-          </div>
-          <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
-        </fieldset>
-        <div class="connection-actions uniform-actions action-row">
-          <button id="save-home-assistant-group" class="action-group" type="button" data-i18n="button.saveGroup">Save group</button>
-          <button id="delete-home-assistant-group" class="action-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
-          <button id="duplicate-home-assistant-group" class="action-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
-        </div>
-        <div class="connection-actions uniform-actions action-row">
-          <button id="export-home-assistant-config" class="action-export" type="button" data-i18n="button.export">Export</button>
-          <button id="export-ha-card-config" class="action-export" type="button" data-i18n="button.exportHaCard">Export HA card</button>
-          <button id="export-ha-card-package" class="action-export" type="button" data-i18n="button.exportCardPackage">Export card package</button>
-          <button id="export-ha-card-script" class="action-export" type="button" data-i18n="button.exportCardScript">Export card script</button>
-          <button id="export-ha-card-bundle" class="action-export" type="button" data-i18n="button.exportCardBundle">Export HACS bundle</button>
-          <button id="copy-ha-card-config" class="action-export" type="button" data-i18n="button.copyHaCard">Copy HA card</button>
-        </div>
-        <div class="connection-actions uniform-actions action-row">
-          <button id="copy-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
-          <button id="check-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.checkResources">Check resources</button>
-        </div>
-        <div class="resource-hint-field">
-          <strong data-i18n="heading.resourceHint">Resource hint</strong>
-          <output id="ha-card-dependency" aria-live="polite"></output>
-        </div>
-        <label class="temporary-resource-debug-toggle">
-          <input id="toggle-temporary-resource-debug" type="checkbox">
-          <span data-i18n="label.showTemporaryResourceDebug">Show resource debug</span>
-        </label>
-        <details id="temporary-resource-debug" class="temporary-resource-debug" hidden>
-          <summary data-i18n="heading.temporaryResourceDebug">Temporary HA card resource check</summary>
-          <output id="temporary-ha-card-resource-list" aria-live="polite"></output>
-        </details>
-        <div class="connection-actions uniform-actions action-row">
-          <label class="import-button action-import" for="import-home-assistant-config" data-i18n="button.import">Import</label>
-          <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
-          <label class="import-button action-import" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
-          <input id="import-ha-card-config" type="file" accept="application/json,application/zip,.json,.yaml,.yml,.zip" hidden>
-          <button id="open-ha-card-paste-import" class="action-import" type="button" data-i18n="button.pasteHaCard">Paste YAML</button>
-        </div>
-        <output id="ha-card-import-review" aria-live="polite"></output>
-        <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
-        <details id="simple-entity-controls" class="entity-picker-panel" open>
-          <summary data-i18n="heading.entitySelection">Entities for the card</summary>
-          <div class="field-grid two-column">
-            <div class="field-pair">
-              <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
-              <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
-            </div>
-            <div class="field-pair">
-              <label for="home-assistant-entity-domain" data-i18n="label.entityType">Entity type</label>
-              <select id="home-assistant-entity-domain"></select>
-            </div>
-          </div>
-          <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts" data-i18n-aria-label="aria.entityTypeShortcuts"></div>
-          <div class="field-grid two-column">
-            <div class="field-pair">
-              <label for="home-assistant-entity-search" data-i18n="label.entitySearch">Entity search</label>
-              <div class="entity-search-control">
-                <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID" data-i18n-placeholder="placeholder.entitySearch">
-                <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" data-i18n-aria-label="aria.clearEntitySearch" data-i18n-title="aria.clearEntitySearch" disabled>&times;</button>
+        <div class="card-export-layout">
+          <section class="card-export-column card-export-settings">
+            <div class="field-grid card-export-field-grid">
+              <div id="panel-group-control" class="field-pair">
+                <label for="home-assistant-group" data-i18n="label.panelGroup">Panel group</label>
+                <select id="home-assistant-group">
+                  <option value="overview" data-i18n="group.overview">Overview</option>
+                  <option value="energy" data-i18n="group.energy">Energy</option>
+                  <option value="safety" data-i18n="group.safety">Safety</option>
+                  <option value="custom" data-i18n="group.custom">Custom</option>
+                </select>
+              </div>
+              <div id="group-name-control" class="field-pair">
+                <label for="home-assistant-group-name" data-i18n="label.groupName">Group name</label>
+                <input id="home-assistant-group-name" type="text" autocomplete="off">
+              </div>
+              <div id="card-target-control" class="field-pair">
+                <label for="ha-card-target" data-i18n="label.cardTarget">Card target</label>
+                <select id="ha-card-target"></select>
+              </div>
+              <div id="card-layout-control" class="field-pair">
+                <label for="ha-card-layout" data-i18n="label.cardLayout">Card layout</label>
+                <select id="ha-card-layout">
+                  <option value="single" data-i18n="layout.single">Simple</option>
+                  <option value="horizontal-stack" data-i18n="layout.horizontal">Horizontal stack</option>
+                  <option value="vertical-stack" data-i18n="layout.vertical">Vertical stack</option>
+                </select>
+              </div>
+              <div class="field-pair">
+                <label for="ha-card-format" data-i18n="label.cardFormat">Card format</label>
+                <select id="ha-card-format">
+                  <option value="json">JSON</option>
+                  <option value="yaml" selected>YAML</option>
+                </select>
+              </div>
+              <div id="card-style-export-control" class="field-pair" hidden>
+                <label for="ha-card-style-export" data-i18n="label.cardStyleExport">Style export</label>
+                <select id="ha-card-style-export">
+                  <option value="card-mod">card-mod</option>
+                  <option value="uix-style">uix:</option>
+                </select>
+              </div>
+              <div class="field-pair">
+                <label for="ha-card-script-filename" data-i18n="label.scriptFilename">HACS script filename</label>
+                <input id="ha-card-script-filename" type="text" autocomplete="off" spellcheck="false" placeholder="energy-kitchen.js" data-i18n-placeholder="placeholder.scriptFilename">
               </div>
             </div>
-            <div class="field-pair">
-              <label for="home-assistant-entity-picker" data-i18n="label.entityPicker">Entity picker</label>
-              <select id="home-assistant-entity-picker"></select>
+          </section>
+          <fieldset class="card-export-language-panel">
+            <legend data-i18n="label.cardExportLanguages">Card export languages</legend>
+            <div class="card-export-language-grid">
+              <label><input type="checkbox" data-card-export-language="en" checked disabled> EN English</label>
+              <label><input type="checkbox" data-card-export-language="de" checked> DE Deutsch</label>
+              <label><input type="checkbox" data-card-export-language="fr"> FR Français</label>
+              <label><input type="checkbox" data-card-export-language="es"> ES Español</label>
+              <label><input type="checkbox" data-card-export-language="it"> IT Italiano</label>
+              <label><input type="checkbox" data-card-export-language="nl"> NL Nederlands</label>
+              <label><input type="checkbox" data-card-export-language="sv"> SV Svenska</label>
+              <label><input type="checkbox" data-card-export-language="no"> NO Norsk</label>
+              <label><input type="checkbox" data-card-export-language="da"> DA Dansk</label>
+              <label><input type="checkbox" data-card-export-language="cs"> CS Česky</label>
+              <label><input type="checkbox" data-card-export-language="ru"> RU русский</label>
+              <label><input type="checkbox" data-card-export-language="pl"> PL Polski</label>
+              <label><input type="checkbox" data-card-export-language="pt"> PT Português</label>
+              <label><input type="checkbox" data-card-export-language="fi"> FI Suomi</label>
             </div>
-          </div>
-          <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
-          <div class="connection-actions uniform-actions">
-            <button id="add-home-assistant-entity" type="button" data-i18n="button.addEntity">Add entity</button>
-            <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
-          </div>
-          <output id="selected-entity" aria-live="polite"></output>
-          <div id="card-entity-overview" class="card-entity-overview" aria-live="polite"></div>
-        </details>
-        <div class="editor-mode-toggle" role="group" aria-label="Card editor mode" data-i18n-aria-label="aria.cardEditorMode">
-          <button type="button" data-editor-mode="simple" aria-pressed="true" data-i18n="button.simpleMode">Simple</button>
-          <button type="button" data-editor-mode="expert" aria-pressed="false" data-i18n="button.expertMode">Expert</button>
+            <div class="card-export-translation-controls">
+              <output id="card-translation-status" class="card-translation-module-status" aria-live="polite"></output>
+              <label for="card-auto-translate">
+                <input id="card-auto-translate" type="checkbox">
+                <span data-i18n="label.autoTranslateCardLanguages">Run automatic translation on export</span>
+              </label>
+              <progress id="card-translation-progress" class="card-export-translation-progress" max="100" value="0" hidden></progress>
+            </div>
+            <p class="card-export-language-hint" data-i18n="message.cardExportLanguageHint">EN is the required fallback. Additional languages are exported as English fallback files for now. Please review and translate the corresponding language files before publishing. Automatic translation later requires an internet connection.</p>
+          </fieldset>
+          <section class="card-export-column card-export-actions-column">
+            <div class="connection-actions uniform-actions action-row">
+              <button id="save-home-assistant-group" class="action-group" type="button" data-i18n="button.saveGroup">Save group</button>
+              <button id="delete-home-assistant-group" class="action-group" type="button" data-i18n="button.deleteGroup">Delete group</button>
+              <button id="duplicate-home-assistant-group" class="action-group" type="button" data-i18n="button.duplicateGroup">Duplicate group</button>
+            </div>
+            <div class="connection-actions uniform-actions action-row">
+              <button id="export-home-assistant-config" class="action-export" type="button" data-i18n="button.export">Export</button>
+              <button id="export-ha-card-config" class="action-export" type="button" data-i18n="button.exportHaCard">Export HA card</button>
+              <button id="export-ha-card-package" class="action-export" type="button" data-i18n="button.exportCardPackage">Export card package</button>
+              <button id="export-ha-card-script" class="action-export" type="button" data-i18n="button.exportCardScript">Export card script</button>
+              <button id="export-ha-card-bundle" class="action-export" type="button" data-i18n="button.exportCardBundle">Export HACS bundle</button>
+              <button id="copy-ha-card-config" class="action-export" type="button" data-i18n="button.copyHaCard">Copy HA card</button>
+            </div>
+            <div class="connection-actions uniform-actions action-row">
+              <button id="copy-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.copyResources">Copy resources</button>
+              <button id="check-ha-card-resources" class="action-resource" type="button" disabled data-i18n="button.checkResources">Check resources</button>
+            </div>
+            <div class="resource-hint-field">
+              <strong data-i18n="heading.resourceHint">Resource hint</strong>
+              <output id="ha-card-dependency" aria-live="polite"></output>
+            </div>
+          </section>
         </div>
-        <div id="simple-card-section" class="ha-card-preview">
+        <section id="simple-entity-controls" class="entity-picker-panel">
+          <div class="card-import-entity-layout">
+            <section class="entity-picker-column import-debug-column">
+              <label class="temporary-resource-debug-toggle">
+                <input id="toggle-temporary-resource-debug" type="checkbox">
+                <span data-i18n="label.showTemporaryResourceDebug">Show resource debug</span>
+              </label>
+              <details id="temporary-resource-debug" class="temporary-resource-debug" hidden>
+                <summary data-i18n="heading.temporaryResourceDebug">Temporary HA card resource check</summary>
+                <output id="temporary-ha-card-resource-list" aria-live="polite"></output>
+              </details>
+              <div class="connection-actions uniform-actions action-row">
+                <label class="import-button action-import" for="import-home-assistant-config" data-i18n="button.import">Import</label>
+                <input id="import-home-assistant-config" type="file" accept="application/json" hidden>
+                <label class="import-button action-import" for="import-ha-card-config" data-i18n="button.importHaCard">Import HA card</label>
+                <input id="import-ha-card-config" type="file" accept="application/json,application/zip,.json,.yaml,.yml,.zip" hidden>
+                <button id="open-ha-card-paste-import" class="action-import" type="button" data-i18n="button.pasteHaCard">Paste YAML</button>
+              </div>
+              <div class="automatic-card-type-mapping">
+                <label for="toggle-automatic-card-type-mapping">
+                  <input id="toggle-automatic-card-type-mapping" type="checkbox">
+                  <span data-i18n="label.automaticCardTypeMapping">Automatic card type mapping</span>
+                </label>
+                <small data-i18n="text.automaticCardTypeMappingWarning">Safety notice: only use this option if you know what you are doing. ATLAS will try to map unknown registered resources automatically to a custom:* card type.</small>
+              </div>
+              <output id="ha-card-import-review" aria-live="polite"></output>
+              <pre id="ha-card-style-review" class="ha-card-style-review" hidden></pre>
+            </section>
+            <section class="entity-picker-column entity-filter-column">
+              <div class="field-pair">
+                <label for="home-assistant-entity" data-i18n="label.entityIds">Entity IDs</label>
+                <input id="home-assistant-entity" type="text" value="binary_sensor.atlas_status, sensor.atlas_temperature" autocomplete="off" spellcheck="false">
+              </div>
+              <div id="home-assistant-entity-domain-shortcuts" class="entity-domain-shortcuts" aria-label="Entity type shortcuts" data-i18n-aria-label="aria.entityTypeShortcuts"></div>
+              <div class="field-pair">
+                <label for="home-assistant-entity-search" data-i18n="label.entitySearch">Entity search</label>
+                <div class="entity-search-control">
+                  <input id="home-assistant-entity-search" type="search" autocomplete="off" spellcheck="false" placeholder="Filter by name or entity ID" data-i18n-placeholder="placeholder.entitySearch">
+                  <button id="clear-home-assistant-entity-search" type="button" aria-label="Clear entity search" title="Clear entity search" data-i18n-aria-label="aria.clearEntitySearch" data-i18n-title="aria.clearEntitySearch" disabled>&times;</button>
+                </div>
+              </div>
+              <output id="home-assistant-entity-picker-status" class="entity-picker-status" aria-live="polite"></output>
+              <div class="connection-actions uniform-actions">
+                <button id="add-home-assistant-entity" type="button" data-i18n="button.addEntity">Add entity</button>
+                <button id="refresh-home-assistant-entities" type="button" data-i18n="button.refreshEntities">Refresh entities</button>
+              </div>
+              <output id="selected-entity" aria-live="polite"></output>
+            </section>
+            <section class="entity-picker-column entity-selection-column">
+              <div class="field-pair">
+                <label for="home-assistant-entity-domain" data-i18n="label.entityType">Entity type</label>
+                <select id="home-assistant-entity-domain"></select>
+              </div>
+              <div class="field-pair">
+                <label for="home-assistant-entity-picker" data-i18n="label.entityPicker">Entity picker</label>
+                <select id="home-assistant-entity-picker"></select>
+              </div>
+              <div id="card-entity-overview" class="card-entity-overview" aria-live="polite"></div>
+            </section>
+          </div>
+        </section>
+        <div id="simple-card-section" class="ha-card-preview" hidden>
           <div class="preview-heading-row">
             <label for="ha-card-visual-preview" data-i18n="label.haCardPreview">HA card preview</label>
             <button id="reset-simple-preview" class="preview-reset-button" type="button" data-i18n="button.resetPreview">Reset preview</button>
@@ -3274,7 +3603,7 @@
           <label for="ha-card-preview" data-i18n="label.haCardCode">HA card code</label>
           <pre id="ha-card-preview" aria-live="polite"></pre>
         </div>
-        <div id="expert-editor-section" hidden>
+        <div id="expert-editor-section">
           <h2 class="entity-section-title" data-i18n="heading.expertEditor">Expert editor preview</h2>
           <div class="expert-editor-workbench">
           <aside class="expert-editor-sidebar" aria-label="Available Home Assistant cards" data-i18n-aria-label="aria.availableCards">
@@ -3295,70 +3624,99 @@
           </aside>
           <section class="expert-editor-surface" aria-label="Expert editor surface" data-i18n-aria-label="aria.expertSurface">
             <aside id="expert-selected-card-details" class="expert-selected-card-details" aria-live="polite"></aside>
-            <div class="expert-editor-canvas-row">
-              <div id="expert-editor-dropzone" class="expert-editor-dropzone"></div>
-            </div>
-            <div class="expert-editor-controls">
-              <div class="field-pair span-2">
-                <label for="expert-card-name" data-i18n="label.expertCardName">Expert card name</label>
-                <input id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card" data-i18n-placeholder="placeholder.expertCardName">
-              </div>
-              <div class="field-pair">
-                <label for="expert-template" data-i18n="label.template">Template</label>
-                <select id="expert-template"></select>
-              </div>
-              <div class="field-pair">
-                <label for="expert-target" data-i18n="label.cardFamily">Card family</label>
-                <select id="expert-target"></select>
-              </div>
-              <div id="expert-bubble-type-control" class="field-pair span-2" hidden>
-                <label for="expert-bubble-button-type" data-i18n="label.bubbleButtonType">Bubble button type</label>
-                <select id="expert-bubble-button-type"></select>
-              </div>
-              <label class="wide" for="expert-title" data-i18n="label.title">Title</label>
-              <div class="expert-title-row wide">
-                <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty" data-i18n-placeholder="placeholder.expertTitle">
-                <button id="apply-expert-title" type="button" data-i18n="button.applyTitle">Apply title</button>
-                <button id="use-entity-name-as-title" type="button" data-i18n="button.useEntityName">Use entity name</button>
-              </div>
-              <div class="field-pair span-2">
-                <label for="expert-entity" data-i18n="label.entity">Entity</label>
-                <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty" data-i18n-placeholder="placeholder.expertEntity">
-              </div>
-              <div class="expert-number-controls span-2">
-                <div class="field-pair">
-                  <label for="expert-column" data-i18n="label.column">Column</label>
-                  <input id="expert-column" type="number" min="0" max="99" value="0">
+            <div class="expert-grid-frame">
+              <div class="expert-grid-top-controls">
+                <div class="expert-grid-axis-control expert-grid-columns-control">
+                  <label for="expert-grid-columns" data-i18n="label.gridColumns">X</label>
+                  <input id="expert-grid-columns" type="range" min="0" max="5" value="0">
+                  <output id="expert-grid-columns-output" for="expert-grid-columns">0</output>
                 </div>
-                <div class="field-pair">
-                  <label for="expert-row" data-i18n="label.row">Row</label>
-                  <input id="expert-row" type="number" min="0" max="99" value="0">
+                <div class="expert-grid-axis-control expert-grid-rows-control">
+                  <label for="expert-grid-rows" data-i18n="label.gridRows">Y</label>
+                  <input id="expert-grid-rows" type="range" min="0" max="5" value="0">
+                  <output id="expert-grid-rows-output" for="expert-grid-rows">0</output>
                 </div>
-                <div class="field-pair">
-                  <label for="expert-width" data-i18n="label.width">Width</label>
-                  <input id="expert-width" type="number" min="1" max="99" value="3">
+                <div class="expert-grid-axis-control expert-grid-zoom-control">
+                  <label for="expert-grid-zoom" data-i18n="label.gridZoom">Zoom</label>
+                  <input id="expert-grid-zoom" type="range" min="75" max="150" step="5" value="100">
+                  <output id="expert-grid-zoom-output" for="expert-grid-zoom">100%</output>
                 </div>
-                <div class="field-pair">
-                  <label for="expert-height" data-i18n="label.height">Height</label>
-                  <input id="expert-height" type="number" min="1" max="99" value="2">
+              </div>
+              <div class="expert-grid-body">
+                <div class="expert-editor-canvas-row">
+                  <div id="expert-editor-dropzone" class="expert-editor-dropzone"></div>
                 </div>
               </div>
             </div>
-            <div class="connection-actions expert-editor-actions">
-              <button id="add-expert-field" type="button" data-i18n="button.addTemplate">Add template</button>
-              <button id="edit-expert-field" type="button" data-i18n="button.editSelected">Edit selected</button>
-              <button id="arrange-expert-fields" type="button" data-i18n="button.autoArrange">Auto arrange</button>
-              <button id="reset-expert-surface-size" type="button" data-i18n="button.resetSize">Reset size</button>
-              <button id="clear-expert-fields" type="button" data-i18n="button.clearPreview">Clear preview</button>
+            <div class="expert-output-toolbar">
+              <button id="reset-expert-preview" class="preview-reset-button" type="button" data-i18n="button.resetPreview">Reset preview</button>
             </div>
-            <output id="expert-editor-summary" aria-live="polite"></output>
-            <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
-            <div class="ha-card-preview">
-              <div class="preview-heading-row">
+            <div class="expert-output-grid">
+              <div class="expert-output-column">
+                <div class="expert-editor-controls">
+                  <div class="field-pair">
+                    <label for="expert-card-name" data-i18n="label.expertCardName">Expert card name</label>
+                    <input id="expert-card-name" type="text" autocomplete="off" spellcheck="false" placeholder="ATLAS Expert card" data-i18n-placeholder="placeholder.expertCardName">
+                  </div>
+                  <div class="field-pair">
+                    <label for="expert-template" data-i18n="label.template">Template</label>
+                    <select id="expert-template"></select>
+                  </div>
+                  <div class="field-pair">
+                    <label for="expert-target" data-i18n="label.cardFamily">Card family</label>
+                    <select id="expert-target"></select>
+                  </div>
+                  <div id="expert-bubble-type-control" class="field-pair" hidden>
+                    <label for="expert-bubble-button-type" data-i18n="label.bubbleButtonType">Bubble button type</label>
+                    <select id="expert-bubble-button-type"></select>
+                  </div>
+                  <div class="field-pair span-2">
+                    <label for="expert-title" data-i18n="label.title">Title</label>
+                    <div class="expert-title-row">
+                      <input id="expert-title" type="text" autocomplete="off" spellcheck="false" placeholder="Use template title when empty" data-i18n-placeholder="placeholder.expertTitle">
+                      <button id="apply-expert-title" type="button" data-i18n="button.applyTitle">Apply title</button>
+                      <button id="use-entity-name-as-title" type="button" data-i18n="button.useEntityName">Use entity name</button>
+                    </div>
+                  </div>
+                  <div class="field-pair">
+                    <label for="expert-entity" data-i18n="label.entity">Entity</label>
+                    <input id="expert-entity" type="text" autocomplete="off" spellcheck="false" placeholder="Use current entity when empty" data-i18n-placeholder="placeholder.expertEntity">
+                  </div>
+                  <div class="expert-number-controls span-2">
+                    <div class="field-pair">
+                      <label for="expert-column" data-i18n="label.column">Column</label>
+                      <input id="expert-column" type="number" min="0" max="99" value="0">
+                    </div>
+                    <div class="field-pair">
+                      <label for="expert-row" data-i18n="label.row">Row</label>
+                      <input id="expert-row" type="number" min="0" max="99" value="0">
+                    </div>
+                    <div class="field-pair">
+                      <label for="expert-width" data-i18n="label.width">Width</label>
+                      <input id="expert-width" type="number" min="1" max="99" value="3">
+                    </div>
+                    <div class="field-pair">
+                      <label for="expert-height" data-i18n="label.height">Height</label>
+                      <input id="expert-height" type="number" min="1" max="99" value="2">
+                    </div>
+                  </div>
+                </div>
+                <div class="connection-actions expert-editor-actions">
+                  <button id="add-expert-field" type="button" data-i18n="button.addTemplate">Add template</button>
+                  <button id="edit-expert-field" type="button" data-i18n="button.editSelected">Edit selected</button>
+                  <button id="arrange-expert-fields" type="button" data-i18n="button.autoArrange">Auto arrange</button>
+                  <button id="reset-expert-surface-size" type="button" data-i18n="button.resetSize">Reset size</button>
+                  <button id="clear-expert-fields" type="button" data-i18n="button.clearPreview">Clear preview</button>
+                </div>
+              </div>
+              <div class="expert-output-column">
+                <output id="expert-editor-summary" aria-live="polite"></output>
+                <div id="expert-field-list" class="expert-field-list" aria-live="polite"></div>
+              </div>
+              <div class="expert-output-column ha-card-preview">
                 <label for="expert-editor-preview" data-i18n="label.expertHaCardCode">Expert HA card code</label>
-                <button id="reset-expert-preview" class="preview-reset-button" type="button" data-i18n="button.resetPreview">Reset preview</button>
+                <pre id="expert-editor-preview" aria-live="polite"></pre>
               </div>
-              <pre id="expert-editor-preview" aria-live="polite"></pre>
             </div>
           </section>
           </div>
@@ -3526,6 +3884,6 @@
       </details>
       <div id="status-message" role="status"></div>
     </main>
-    <script type="module" src="/examples/status-demo/app.js"></script>
+    <script src="examples/status-demo/app.bundle.js"></script>
   </body>
 </html>

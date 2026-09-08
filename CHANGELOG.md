@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.168` removes Automation Exporter /
+  Editor write-back controls, creates a timestamped safety backup when reading
+  `/config/automations.yaml`, and exports both an `export-version` with `id`
+  and a `bereinigte-import-version` without `id`.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.16` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.167` hides the red `Hidden` checkbox
   while a Card Editor palette entry is selected as a favorite, avoiding
   conflicting palette states.

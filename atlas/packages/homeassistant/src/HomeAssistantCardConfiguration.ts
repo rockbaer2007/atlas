@@ -120,7 +120,13 @@ export interface HomeAssistantTabbedCardV2Configuration {
   };
   readonly columns?: "full";
   readonly rows?: "auto";
+  readonly grid_options?: HomeAssistantCardGridOptions;
   readonly tabs: readonly HomeAssistantTabbedCardV2Tab[];
+}
+
+export interface HomeAssistantCardGridOptions {
+  readonly columns?: "full" | number;
+  readonly rows?: "auto" | number;
 }
 
 export interface HomeAssistantGridCardConfiguration {
@@ -146,6 +152,7 @@ export interface HomeAssistantStackCardConfiguration {
   readonly type: "horizontal-stack" | "vertical-stack";
   readonly columns?: "full" | number;
   readonly rows?: "auto";
+  readonly grid_options?: HomeAssistantCardGridOptions;
   readonly cards: readonly HomeAssistantCardConfiguration[];
 }
 
@@ -947,13 +954,15 @@ function normalizeHomeAssistantCardConfiguration(
 
   if ((card.type === "horizontal-stack" || card.type === "vertical-stack") && Array.isArray(card.cards)) {
     const normalizedCards = card.cards.map(candidate => normalizeHomeAssistantCardConfiguration(candidate).card);
+    const columns = normalizeHomeAssistantCardColumns(card);
+    const rows = normalizeHomeAssistantCardRows(card);
     if (normalizedCards.length === 0) {
       throw new Error("Home Assistant stack card has no supported cards.");
     }
     const normalizedCard = {
       type: card.type,
-      ...(card.columns === "full" || typeof card.columns === "number" ? { columns: card.columns } : {}),
-      ...(card.rows === "auto" ? { rows: "auto" as const } : {}),
+      ...(columns === "full" || typeof columns === "number" ? { columns } : {}),
+      ...(rows === "auto" ? { rows } : {}),
       cards: normalizedCards,
     } satisfies HomeAssistantStackCardConfiguration;
     return {
@@ -1040,6 +1049,8 @@ function normalizeHomeAssistantCardConfiguration(
   }
 
   if (card.type === "custom:tabbed-card-v2" && Array.isArray(card.tabs)) {
+    const columns = normalizeHomeAssistantCardColumns(card);
+    const rows = normalizeHomeAssistantCardRows(card);
     const tabs = card.tabs
       .filter(isRecord)
       .map((tab, index) => {
@@ -1070,8 +1081,8 @@ function normalizeHomeAssistantCardConfiguration(
             ? Math.max(0, Math.floor(card.options.defaultTabIndex))
             : 0,
         },
-        ...(card.columns === "full" || (isRecord(card.options) && card.options.fullWidth === true) ? { columns: "full" as const } : {}),
-        ...(card.rows === "auto" || (isRecord(card.options) && card.options.autoHeight === true) ? { rows: "auto" as const } : {}),
+        ...(columns === "full" ? { columns } : {}),
+        ...(rows === "auto" ? { rows } : {}),
         tabs,
       },
       target: "tabbed-card-v2",
@@ -1176,6 +1187,25 @@ function normalizeHomeAssistantCardConfiguration(
   throw new Error("Unsupported Home Assistant card.");
 }
 
+function normalizeHomeAssistantCardColumns(card: Record<string, unknown>): "full" | number | undefined {
+  const gridOptions = isRecord(card.grid_options) ? card.grid_options : undefined;
+  const directColumns = card.columns;
+  const gridColumns = gridOptions?.columns;
+  if (directColumns === "full" || gridColumns === "full" || (isRecord(card.options) && card.options.fullWidth === true)) {
+    return "full";
+  }
+  if (typeof directColumns === "number") return directColumns;
+  if (typeof gridColumns === "number") return gridColumns;
+  return undefined;
+}
+
+function normalizeHomeAssistantCardRows(card: Record<string, unknown>): "auto" | undefined {
+  const gridOptions = isRecord(card.grid_options) ? card.grid_options : undefined;
+  return card.rows === "auto" || gridOptions?.rows === "auto" || (isRecord(card.options) && card.options.autoHeight === true)
+    ? "auto"
+    : undefined;
+}
+
 function serializeHomeAssistantEntitiesCardYaml(card: HomeAssistantEntitiesCardConfiguration): string {
   const lines = [
     "type: entities",
@@ -1230,8 +1260,7 @@ function serializeHomeAssistantTabbedCardV2Yaml(card: HomeAssistantTabbedCardV2C
     "options:",
     `  defaultTabIndex: ${serializeYamlScalar(card.options.defaultTabIndex)}`,
   ];
-  if (card.columns === "full") lines.push("columns: full");
-  if (card.rows === "auto") lines.push("rows: auto");
+  appendHomeAssistantGridOptionsYaml(lines, card);
   lines.push("tabs:");
   for (const tab of card.tabs) {
     lines.push("  - attributes:");
@@ -1244,6 +1273,18 @@ function serializeHomeAssistantTabbedCardV2Yaml(card: HomeAssistantTabbedCardV2C
     });
   }
   return lines.join("\n");
+}
+
+function appendHomeAssistantGridOptionsYaml(
+  lines: string[],
+  card: { readonly columns?: "full" | number; readonly rows?: "auto"; readonly grid_options?: HomeAssistantCardGridOptions },
+): void {
+  const columns = card.grid_options?.columns ?? card.columns;
+  const rows = card.grid_options?.rows ?? card.rows;
+  if (columns === undefined && rows === undefined) return;
+  lines.push("grid_options:");
+  if (columns !== undefined) lines.push(`  columns: ${serializeYamlScalar(columns)}`);
+  if (rows !== undefined) lines.push(`  rows: ${serializeYamlScalar(rows)}`);
 }
 
 function serializeHomeAssistantCoreCardYaml(
@@ -1284,8 +1325,7 @@ function serializeHomeAssistantStackCardYaml(card: HomeAssistantStackCardConfigu
   const lines = [
     `type: ${card.type}`,
   ];
-  if (card.columns !== undefined) lines.push(`columns: ${serializeYamlScalar(card.columns)}`);
-  if (card.rows === "auto") lines.push("rows: auto");
+  appendHomeAssistantGridOptionsYaml(lines, card);
   lines.push("cards:");
   for (const child of card.cards) {
     const childLines = serializeHomeAssistantEntitiesCardConfiguration(child, "yaml").split("\n");
