@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.175` keeps Automation Exporter /
+  Editor duplicate ID and alias items as red conflicts only, while the hints
+  filter still includes conflict rows.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.22` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.174` adds Automation Exporter /
   Editor grouping and filtering by domain, area and device.
 - ATLAS Automation Exporter / Editor now identifies as `0.1.21` for repository
