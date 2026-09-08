@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.170` applies Automation Exporter /
+  Editor time-trigger quoting at the final file-write step, including list item
+  lines such as `- at: 07:00:00`.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.18` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.169` keeps Automation Exporter /
   Editor time triggers as quoted `HH:MM:SS` strings and repairs numeric
   second-based `at:` values during export.
