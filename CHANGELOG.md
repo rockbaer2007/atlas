@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.154` preserves
+  `grid_options.columns: full` during Home Assistant card import normalization,
+  so Tabbed Card V2 fills the Expert Card Editor surface width.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.53` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.153` applies imported
   `grid_options.columns: full` and `grid_options.rows: auto` to Tabbed Card V2
   and root stack fields in the Expert Card Editor surface.
