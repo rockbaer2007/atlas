@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.171` lets File Studio open deep linked
+  files directly even when the file is deeper than the initially loaded tree.
+- ATLAS File Studio now identifies as `0.1.39` for repository update detection.
 - Home Assistant App/Add-on package `0.1.170` applies Automation Exporter /
   Editor time-trigger quoting at the final file-write step, including list item
   lines such as `- at: 07:00:00`.
