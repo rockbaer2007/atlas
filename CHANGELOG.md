@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.172` removes completed Automation
+  Exporter / Editor roadmap entries and leaves conflict pre-marking as the next
+  visible step.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.19` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.171` lets File Studio open deep linked
   files directly even when the file is deeper than the initially loaded tree.
 - ATLAS File Studio now identifies as `0.1.39` for repository update detection.
