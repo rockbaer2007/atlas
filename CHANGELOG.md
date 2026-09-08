@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.152` shows nested imported stack
+  containers and cards inside the Expert Card Editor surface.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.51` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.151` accepts hand-written Tabbed Card
   V2 YAML with nested stack cards and opens the imported structure in Expert
   mode.
