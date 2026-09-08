@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.167` hides the red `Hidden` checkbox
+  while a Card Editor palette entry is selected as a favorite, avoiding
+  conflicting palette states.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.66` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.166` adds an opt-in automatic
   custom-card type mapping switch with a red safety warning under the Card
   Editor import tools.
