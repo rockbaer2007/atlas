@@ -1,7 +1,7 @@
 {
   "framework": {
     "name": "Atlas",
-    "version": "0.2.0-alpha.60",
+    "version": "0.2.0-alpha.61",
     "channel": "alpha"
   },
   "architecture": {

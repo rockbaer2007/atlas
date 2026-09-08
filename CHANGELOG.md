@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.162` keeps empty nested Expert Card
+  Editor stacks in exported YAML and preserves stack layout when cards are
+  moved out of containers.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.61` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.161` routes new cards into the
   selected nested Expert Card Editor stack and exports stack layout hints as
   Home Assistant `grid_options`.
