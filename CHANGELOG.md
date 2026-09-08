@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.165` lets users hide unwanted scanned
+  or mapped Expert palette cards with a red checkbox, keeps them available in
+  the full list for recovery, and keeps the Card Editor loading notice visible
+  long enough for slower browser starts.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.64` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.164` lets the Card Editor map
   registered but unknown Lovelace resources to local `custom:*` card types and
   use them as draggable Expert palette cards.
