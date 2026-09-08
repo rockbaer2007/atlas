@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.158` keeps newly inserted Expert Card
+  Editor stack containers empty instead of filling them from the previous stack
+  entity selection.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.57` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.157` fixes inserting additional
   horizontal and vertical stacks into Expert Card Editor containers and keeps
   those nested stacks in the exported YAML.
