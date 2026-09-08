@@ -8,6 +8,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.177` lets repository-installed plugins
+  override bundled plugins with the same ID when the repository version is
+  newer.
 - Home Assistant App/Add-on package `0.1.176` keeps the Automation Exporter /
   Editor from splitting one automation into multiple rows at root-level trigger
   or action fragments.
