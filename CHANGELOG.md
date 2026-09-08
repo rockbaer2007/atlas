@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.164` lets the Card Editor map
+  registered but unknown Lovelace resources to local `custom:*` card types and
+  use them as draggable Expert palette cards.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.63` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.163` starts the Card Editor directly
   in Expert mode and removes the visible Simple mode switch and entity-section
   heading while keeping import tools available.
