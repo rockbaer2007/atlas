@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.151` accepts hand-written Tabbed Card
+  V2 YAML with nested stack cards and opens the imported structure in Expert
+  mode.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.50` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.147` keeps Automation Exporter /
   Editor selections empty after loading or uploading automation YAML.
 - ATLAS Automation Exporter / Editor now identifies as `0.1.15` for repository
