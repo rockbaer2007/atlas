@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.161` routes new cards into the
+  selected nested Expert Card Editor stack and exports stack layout hints as
+  Home Assistant `grid_options`.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.60` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.160` lets nested Expert Card Editor
   stack preview cards act as drop targets and gives inserted stack entries their
   own numbered stack titles.
