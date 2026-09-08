@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.169` keeps Automation Exporter /
+  Editor time triggers as quoted `HH:MM:SS` strings and repairs numeric
+  second-based `at:` values during export.
+- ATLAS Automation Exporter / Editor now identifies as `0.1.17` for repository
+  update detection.
 - Home Assistant App/Add-on package `0.1.168` removes Automation Exporter /
   Editor write-back controls, creates a timestamped safety backup when reading
   `/config/automations.yaml`, and exports both an `export-version` with `id`
