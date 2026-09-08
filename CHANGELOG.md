@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.163` starts the Card Editor directly
+  in Expert mode and removes the visible Simple mode switch and entity-section
+  heading while keeping import tools available.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.62` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.162` keeps empty nested Expert Card
   Editor stacks in exported YAML and preserves stack layout when cards are
   moved out of containers.
