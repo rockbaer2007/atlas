@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.159` keeps direct children of
+  horizontal Expert Card Editor stack previews in fixed side-by-side columns.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.58` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.158` keeps newly inserted Expert Card
   Editor stack containers empty instead of filling them from the previous stack
   entity selection.
