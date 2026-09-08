@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.166` adds an opt-in automatic
+  custom-card type mapping switch with a red safety warning under the Card
+  Editor import tools.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.65` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.165` lets users hide unwanted scanned
   or mapped Expert palette cards with a red checkbox, keeps them available in
   the full list for recovery, and keeps the Card Editor loading notice visible
