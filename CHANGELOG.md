@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.155` renders imported stack containers
+  as pure containers without synthetic entity placeholders and keeps nested
+  horizontal preview columns aligned to the top.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.54` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.154` preserves
   `grid_options.columns: full` during Home Assistant card import normalization,
   so Tabbed Card V2 fills the Expert Card Editor surface width.
