@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.183` keeps imported root `styles`
+  attached to Expert editor fields while rebuilding Tabbed Card V2 and stack
+  cards, so the HA card code preview and export keep those styles.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.72` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.182` preserves root `styles` during
   Card Editor import and YAML export for normalized Home Assistant cards such
   as Bubble, Entity and stack cards.
