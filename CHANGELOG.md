@@ -8,6 +8,53 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.193` moves the Expert Card Editor
+  selected-card information, controls and generated HA card code above the
+  editor grid in three equal columns, moves X/Y/Zoom into the controls column
+  and keeps the code preview scrollable.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.82` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.192` shows entity domain shortcuts as
+  a compact clickable grid with `All` first and all other domains sorted
+  alphabetically.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.81` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.191` aligns the Expert Card Editor
+  output layout with a compact selected-card information column, centered
+  controls and a right-side code preview.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.80` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.190` compacts the selected-card detail
+  panel so style and contained-card details use smaller scroll areas.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.79` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.189` hides the `Hidden` toggle
+  entirely while a palette card is selected as a favorite and normalizes stored
+  palette visibility states.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.78` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.188` localizes unsupported card import
+  status messages for the German UI.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.77` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.187` accepts exported ATLAS card
+  payloads again when importing HA card YAML.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.76` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.186` synchronizes Home Assistant
+  entities from the local cached catalog to reduce repeated Home Assistant reads
+  during editor startup.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.75` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.185` lazy-renders large entity lists so
+  the Card Editor becomes interactive faster with large Home Assistant
+  installations.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.74` for
+  repository update detection.
+- Home Assistant App/Add-on package `0.1.184` preserves raw imported card
+  styles in the Expert preview and exported YAML.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.73` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.183` keeps imported root `styles`
   attached to Expert editor fields while rebuilding Tabbed Card V2 and stack
   cards, so the HA card code preview and export keep those styles.
