@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.180` adds a regression check for
+  Tabbed Card V2 exports with nested `vertical-stack-in-card` and Mushroom
+  children so browser bundles can be verified against the corrected YAML level
+  handling.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.69` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.179` fixes Expert Card Editor YAML
   export indentation for nested custom card lists and writes imported
   template/style blocks as YAML block scalars.
