@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.202` hides the Expert Card Editor
+  palette hidden-checkbox immediately when a card is marked as favorite.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.91` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.201` makes the Expert Card Editor title
   controls two-column so longer German labels fit without squeezing.
 - ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.90` for
