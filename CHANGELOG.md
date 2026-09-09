@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.194` puts the Card Editor entity
+  domain shortcut grid into its own groupbox-style panel with visually
+  consistent shortcut columns and button heights.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.83` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.193` moves the Expert Card Editor
   selected-card information, controls and generated HA card code above the
   editor grid in three equal columns, moves X/Y/Zoom into the controls column
