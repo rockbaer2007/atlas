@@ -8,6 +8,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.181` preserves Tabbed Card V2 root
+  `styles` during Card Editor import and Expert YAML export.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.70` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.180` adds a regression check for
   Tabbed Card V2 exports with nested `vertical-stack-in-card` and Mushroom
   children so browser bundles can be verified against the corrected YAML level
