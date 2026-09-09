@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.195` adds groupbox-style panels around
+  the Expert Card Editor controls and card palette.
+- The Expert Card Editor card palette action buttons now fill the palette width
+  consistently.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.84` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.194` puts the Card Editor entity
   domain shortcut grid into its own groupbox-style panel with visually
   consistent shortcut columns and button heights.
