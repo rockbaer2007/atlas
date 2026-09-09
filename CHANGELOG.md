@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.197` gives the Expert Card Editor card
+  palette more vertical room and prevents mapped card entries from overlapping
+  in the narrow sidebar.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.86` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.196` makes the Expert Card Editor
   palette panel taller and slightly wider so card entries have more room.
 - ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.85` for
