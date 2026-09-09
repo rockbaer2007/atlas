@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.178` rebuilds the Card Editor Expert
+  export from the current editor plan after importing YAML and preserves
+  imported raw custom cards inside Tabbed Card V2 and stack entries.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.67` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.177` lets repository-installed plugins
   override bundled plugins with the same ID when the repository version is
   newer.
