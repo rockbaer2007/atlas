@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.179` fixes Expert Card Editor YAML
+  export indentation for nested custom card lists and writes imported
+  template/style blocks as YAML block scalars.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.68` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.178` rebuilds the Card Editor Expert
   export from the current editor plan after importing YAML and preserves
   imported raw custom cards inside Tabbed Card V2 and stack entries.
