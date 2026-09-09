@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant App/Add-on package `0.1.199` widens the Card Editor palette
+  sidebar again and restores a two-column palette card layout so mapped HACS
+  cards no longer overlap or appear squeezed.
+- ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.88` for
+  repository update detection.
 - Home Assistant App/Add-on package `0.1.198` removes the extra Card Editor
   palette groupbox so the card list can use the sidebar height without the
   wrapping panel constraining entries.
