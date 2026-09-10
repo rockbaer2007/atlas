@@ -310,7 +310,7 @@ const translations = {
     "button.addEntity": "Add entity",
     "button.save": "Save",
     "button.cancel": "Cancel",
-    "button.refreshEntities": "Refresh entities",
+    "button.refreshEntities": "Synchronize entities",
     "button.saveFavorites": "Save favorites",
     "button.showAllCards": "Show all cards",
     "button.showFavorites": "Show favorites",
@@ -493,9 +493,9 @@ const translations = {
     "message.loadedEntities": "Loaded {count} entities from Home Assistant.",
     "message.loadedEntitiesWithChanges": "Loaded {count} entities from Home Assistant. Cache: +{added}, -{removed}.",
     "message.entitySyncIdle": "Entities: no Home Assistant catalog loaded yet.",
-    "message.entitySyncCached": "Entities: cache ready · {count} entries.",
-    "message.entitySyncing": "Entities: synchronizing with Home Assistant...",
-    "message.entitySyncDone": "Entities: done · {count} loaded · +{added} / -{removed}.",
+    "message.entitySyncCached": "Entities: local cache ready · {count} entries.",
+    "message.entitySyncing": "Entity synchronization with Home Assistant is running...",
+    "message.entitySyncDone": "Scan complete · {count} entities · +{added} new · -{removed} removed.",
     "message.entitySyncFailed": "Entities: failed · {reason}",
     "message.entityListFailed": "Entity list failed: {reason}",
     "message.loadedResources": "Loaded {count} Lovelace resources from Home Assistant. {total} palette entries detected, including {hacs} /hacsfiles resources.",
@@ -538,8 +538,10 @@ const translations = {
     "message.unnamedConfiguration": "Unnamed configuration",
     "message.configurationImported": "Configuration imported: {groups} groups and {entities} entities.",
     "message.importConfigurationFailed": "Import failed: invalid configuration.",
+    "message.importCanContinue": "Import can continue: ATLAS recognized a supported Home Assistant card artifact.",
     "message.importPaused": "Import paused: review the compatibility details before mapping this artifact.",
     "message.importRejected": "Import rejected: unsupported Home Assistant card artifact.",
+    "message.importRejectedSafePath": "Import rejected: ATLAS cannot identify a safe import path.",
     "message.haCardImported": "{type} {format} imported: {title} with {entities} entities.",
     "message.importHaCardFailed": "Import failed: invalid Home Assistant entities card JSON or YAML.",
     "message.pasteImportEmpty": "Paste YAML or JSON before importing.",
@@ -787,7 +789,7 @@ const translations = {
     "button.addEntity": "Entität hinzufügen",
     "button.save": "Speichern",
     "button.cancel": "Abbrechen",
-    "button.refreshEntities": "Entitäten aktualisieren",
+    "button.refreshEntities": "Entitäten synchronisieren",
     "button.saveFavorites": "Favoriten speichern",
     "button.showAllCards": "Alle Cards anzeigen",
     "button.showFavorites": "Favoriten anzeigen",
@@ -970,9 +972,9 @@ const translations = {
     "message.loadedEntities": "{count} Entitäten aus Home Assistant geladen.",
     "message.loadedEntitiesWithChanges": "{count} Entitäten aus Home Assistant geladen. Cache: +{added}, -{removed}.",
     "message.entitySyncIdle": "Entitäten: noch kein Home-Assistant-Katalog geladen.",
-    "message.entitySyncCached": "Entitäten: Cache bereit · {count} Einträge.",
-    "message.entitySyncing": "Entitäten: synchronisiere mit Home Assistant...",
-    "message.entitySyncDone": "Entitäten: fertig · {count} geladen · +{added} / -{removed}.",
+    "message.entitySyncCached": "Entitäten: lokaler Cache bereit · {count} Einträge.",
+    "message.entitySyncing": "Entitätensynchronisation mit Home Assistant läuft...",
+    "message.entitySyncDone": "Scan abgeschlossen · {count} Entitäten · +{added} neu · -{removed} entfernt.",
     "message.entitySyncFailed": "Entitäten: Fehler · {reason}",
     "message.entityListFailed": "Entitätsliste fehlgeschlagen: {reason}",
     "message.loadedResources": "{count} Lovelace-Ressourcen aus Home Assistant geladen. {total} Palette-Einträge erkannt, davon {hacs} /hacsfiles-Ressourcen.",
@@ -1015,8 +1017,10 @@ const translations = {
     "message.unnamedConfiguration": "Unbenannte Konfiguration",
     "message.configurationImported": "Konfiguration importiert: {groups} Gruppen und {entities} Entitäten.",
     "message.importConfigurationFailed": "Import fehlgeschlagen: ungültige Konfiguration.",
+    "message.importCanContinue": "Import möglich: ATLAS hat ein unterstütztes Home-Assistant-Card-Artefakt erkannt.",
     "message.importPaused": "Import pausiert: Prüfe die Kompatibilitätsdetails, bevor dieses Artefakt gemappt wird.",
     "message.importRejected": "Import abgelehnt: nicht unterstütztes Home-Assistant-Card-Artefakt.",
+    "message.importRejectedSafePath": "Import abgelehnt: ATLAS kann keinen sicheren Importpfad erkennen.",
     "message.haCardImported": "{type} {format} importiert: {title} mit {entities} Entitäten.",
     "message.importHaCardFailed": "Import fehlgeschlagen: ungültige Home-Assistant-Entities-Card als JSON oder YAML.",
     "message.pasteImportEmpty": "Füge zuerst YAML oder JSON ein.",
@@ -1530,6 +1534,7 @@ let cachedEntityPickerCatalog = [];
 let cachedEntityPickerDomains = [];
 let cachedEntityPickerSignature = "";
 let entityPickerRenderTimer;
+let entityPickerOptionsExpanded = false;
 let entityTableSort = { key: "type", direction: "asc" };
 let entityCatalogSyncStatus = { state: "idle", count: 0, added: 0, removed: 0, reason: "" };
 const stackSelectedEntityIds = new Set();
@@ -1598,6 +1603,7 @@ try {
       }
     }
   }
+  normalizeExpertPaletteVisibilityState();
   if (Array.isArray(savedConfiguration?.expertCustomCardMappings)) {
     for (const entry of savedConfiguration.expertCustomCardMappings) {
       const resourceUrl = normalizeLovelaceResourceUrl(entry?.resourceUrl);
@@ -2194,7 +2200,7 @@ function renderConnectionLifecycle(lifecycle) {
       scheduleReconnect();
     }
   }
-  refreshHomeAssistantEntities.disabled = lifecycle.state !== "connected";
+  refreshHomeAssistantEntities.disabled = lifecycle.state !== "connected" || entityCatalogSyncStatus.state === "syncing";
   renderConnectionPanelState();
 }
 
@@ -2226,6 +2232,7 @@ function scheduleReconnect() {
 
 function persistConfiguration() {
   try {
+    normalizeExpertPaletteVisibilityState();
     localStorage.setItem(configurationStorageKey, JSON.stringify({
       themePreference: currentThemePreference,
       url: homeAssistantUrl.value,
@@ -2401,6 +2408,9 @@ function renderEntityCatalogSyncStatus() {
   if (!entitySyncState) return;
   const status = entityCatalogSyncStatus;
   entitySyncState.dataset.syncState = status.state;
+  if (refreshHomeAssistantEntities) {
+    refreshHomeAssistantEntities.disabled = status.state === "syncing" || connectionLifecycleState !== "connected";
+  }
   if (status.state === "cached") {
     entitySyncState.textContent = t("message.entitySyncCached", { count: status.count ?? 0 });
   } else if (status.state === "syncing") {
@@ -2445,6 +2455,12 @@ function replaceLiveEntitySnapshots(entities) {
 function scheduleEntityPickerOptionsRender(delay = 140) {
   window.clearTimeout(entityPickerRenderTimer);
   entityPickerRenderTimer = window.setTimeout(renderEntityPickerOptions, delay);
+}
+
+function expandEntityPickerOptions() {
+  if (entityPickerOptionsExpanded) return;
+  entityPickerOptionsExpanded = true;
+  renderEntityPickerOptions();
 }
 
 function renderEntityDomainOptions() {
@@ -2583,7 +2599,13 @@ function renderEntityPickerOptions() {
   const entityIds = entityEntries.map(entry => entry.entityId);
 
   homeAssistantEntityPicker.replaceChildren();
-  for (const entry of entityEntries) {
+  const visibleEntries = entityPickerOptionsExpanded
+    ? entityEntries
+    : entityEntries.filter(entry => entry.entityId === selected || trackedEntityIds().includes(entry.entityId)).slice(0, 25);
+  if (!entityPickerOptionsExpanded && visibleEntries.length === 0 && entityEntries[0]) {
+    visibleEntries.push(entityEntries[0]);
+  }
+  for (const entry of visibleEntries) {
     const option = document.createElement("option");
     option.value = entry.entityId;
     option.textContent = entry.label !== entry.entityId
@@ -2591,7 +2613,8 @@ function renderEntityPickerOptions() {
       : entry.entityId;
     homeAssistantEntityPicker.append(option);
   }
-  homeAssistantEntityPicker.value = entityIds.includes(selected) ? selected : entityIds[0] ?? "";
+  const visibleEntityIds = visibleEntries.map(entry => entry.entityId);
+  homeAssistantEntityPicker.value = visibleEntityIds.includes(selected) ? selected : visibleEntityIds[0] ?? "";
   addHomeAssistantEntity.disabled = !homeAssistantEntityPicker.value;
   homeAssistantEntityPicker.disabled = entityIds.length === 0;
   const domainLabel = selectedDomain === "all" ? t("message.allTypes") : selectedDomain;
@@ -2634,7 +2657,7 @@ function refreshLiveEntityStates() {
     });
   }
   statusMessage.textContent = entityResult?.accepted
-    ? t("message.entityListRequested", { requestId: entityResult.requestId })
+    ? t("message.entitySyncing")
     : entityResult?.reason ?? t("message.connectBeforeRefreshingEntities");
   checkLiveLovelaceResources({ appendStatus: true });
 }
@@ -3352,6 +3375,7 @@ function createImportedTabbedCardExpertField(card) {
   const tabs = Array.isArray(card.tabs) ? card.tabs : [];
   const columns = getImportedCardColumns(card);
   const rows = getImportedCardRows(card);
+  const rawCard = cloneImportedCard(card);
   const entries = tabs.map((tab, index) => {
     const attributes = tab?.attributes && typeof tab.attributes === "object" ? tab.attributes : {};
     const tabCard = tab?.card && typeof tab.card === "object" ? tab.card : undefined;
@@ -3366,6 +3390,7 @@ function createImportedTabbedCardExpertField(card) {
     id: getSimplePreviewCardTitle(card) || "Tabbed Card V2",
     target: "tabbed-card-v2",
     templateId: "tabbed-card-v2",
+    ...(rawCard ? { rawCard } : {}),
     entityId: "",
     layout: "vertical-stack",
     entries,
@@ -3382,6 +3407,7 @@ function createImportedTabbedCardExpertField(card) {
 function createImportedStackExpertField(card) {
   const columns = getImportedCardColumns(card);
   const rows = getImportedCardRows(card);
+  const rawCard = cloneImportedCard(card);
   const entries = Array.isArray(card.cards)
     ? card.cards.map((child, index) => createImportedContainerEntryFromCard(child, index))
     : [];
@@ -3389,6 +3415,7 @@ function createImportedStackExpertField(card) {
     id: getSimplePreviewCardTitle(card) || (card.type === "horizontal-stack" ? "Horizontal stack" : "Vertical stack"),
     target: getImportedCardTarget(card),
     templateId: card.type === "horizontal-stack" ? "horizontal-stack" : "vertical-stack",
+    ...(rawCard ? { rawCard } : {}),
     entityId: entries.find(entry => entry.entityId)?.entityId ?? "",
     layout: card.type,
     entries,
@@ -3524,10 +3551,11 @@ function getImportedEntityStyleBlocks(entityId) {
 }
 
 function getEntryStyleBlocks(entry) {
-  if (Array.isArray(entry?.styleBlocks) && entry.styleBlocks.length) {
-    return entry.styleBlocks;
-  }
-  return getImportedEntityStyleBlocks(entry?.entityId);
+  return dedupeStyleBlocks([
+    ...getRawCardStyleBlocks(entry?.rawCard),
+    ...(Array.isArray(entry?.styleBlocks) ? entry.styleBlocks : []),
+    ...getImportedEntityStyleBlocks(entry?.entityId),
+  ]);
 }
 
 function renderHaCardDependency(card) {
@@ -3657,17 +3685,35 @@ function renderHaCardImportDecision(text) {
   haCardImportReview.dataset.action = decision.action;
 
   if (decision.action === "import") {
-    haCardImportReview.textContent = decision.message;
+    haCardImportReview.textContent = formatHaCardImportDecisionMessage(decision);
     return decision;
   }
 
   if (decision.action === "review") {
-    haCardImportReview.textContent = formatHomeAssistantCardArtifactReviewLines(text).join("\n");
+    haCardImportReview.textContent = formatHaCardImportReviewText(text);
     return decision;
   }
 
-  haCardImportReview.textContent = `${decision.message} ${decision.inspection.reason}`;
+  haCardImportReview.textContent = formatHaCardImportDecisionMessage(decision);
   return decision;
+}
+
+function formatHaCardImportDecisionMessage(decision) {
+  if (decision.action === "import") {
+    return t("message.importCanContinue");
+  }
+  if (decision.action === "review") {
+    return t("message.importPaused");
+  }
+  return t("message.importRejectedSafePath");
+}
+
+function formatHaCardImportReviewText(text) {
+  const lines = formatHomeAssistantCardArtifactReviewLines(text);
+  return [
+    t("message.importPaused"),
+    ...lines.slice(1),
+  ].join("\n");
 }
 
 function formatHacsBundlePackageReadReview(packageRead) {
@@ -3763,14 +3809,15 @@ function expertPaletteCardMatchesSearch(card, template, query) {
 }
 
 function renderExpertTemplatePalette() {
+  normalizeExpertPaletteVisibilityState();
   expertTemplatePalette.replaceChildren();
   const baseCards = expertPaletteFavoriteIds.size && !expertPaletteShowAllCards
-    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id) && !expertPaletteHiddenIds.has(card.id))
+    ? expertPaletteCards.filter(card => expertPaletteFavoriteIds.has(card.id))
     : expertPaletteCards;
   const visibleCards = baseCards.filter(card => {
     const template = cardEditorTemplates.find(candidate => candidate.id === card.templateId);
     if (!template) return false;
-    if (!expertPaletteShowAllCards && expertPaletteHiddenIds.has(card.id)) return false;
+    if (!expertPaletteShowAllCards && isExpertPaletteCardHidden(card.id)) return false;
     return expertPaletteCardMatchesSearch(card, template, expertPaletteSearchQuery.trim());
   });
   saveExpertPaletteFavorites.disabled = !isExpertPaletteFavoriteDraftDirty();
@@ -3791,9 +3838,11 @@ function renderExpertTemplatePalette() {
     const cardCategory = translatePaletteCategory(card.category);
     const item = document.createElement("article");
     item.className = "expert-template-card";
+    const isFavoriteCard = expertPaletteDraftFavoriteIds.has(card.id);
+    const isHiddenCard = isExpertPaletteCardHidden(card.id);
     item.classList.toggle("selected", isExpertPaletteCardSelected(card));
     item.classList.toggle("disabled", card.disabled === true);
-    item.classList.toggle("hidden-palette-card", expertPaletteHiddenIds.has(card.id));
+    item.classList.toggle("hidden-palette-card", isHiddenCard);
     item.draggable = card.disabled !== true;
     item.tabIndex = 0;
     item.setAttribute("role", "button");
@@ -3831,22 +3880,31 @@ function renderExpertTemplatePalette() {
     favorite.className = "favorite-toggle";
     const favoriteCheckbox = document.createElement("input");
     favoriteCheckbox.type = "checkbox";
-    favoriteCheckbox.checked = expertPaletteDraftFavoriteIds.has(card.id);
+    favoriteCheckbox.checked = isFavoriteCard;
     favorite.append(favoriteCheckbox, t("text.favorite"));
     main.append(favorite);
+    const hiddenToggle = document.createElement("label");
+    hiddenToggle.className = "hidden-toggle";
+    const hiddenCheckbox = document.createElement("input");
+    hiddenCheckbox.type = "checkbox";
+    hiddenCheckbox.checked = isHiddenCard;
+    hiddenToggle.append(hiddenCheckbox, t("text.hiddenCard"));
+    main.append(hiddenToggle);
+    const syncHiddenToggleForFavorite = () => {
+      const favoriteSelected = favoriteCheckbox.checked;
+      hiddenToggle.hidden = favoriteSelected;
+      hiddenCheckbox.disabled = favoriteSelected;
+      if (favoriteSelected) {
+        hiddenCheckbox.checked = false;
+      }
+    };
+    syncHiddenToggleForFavorite();
     favorite.addEventListener("click", event => event.stopPropagation());
     favoriteCheckbox.addEventListener("change", event => {
       event.stopPropagation();
+      syncHiddenToggleForFavorite();
       setExpertPaletteFavoriteDraft(card.id, favoriteCheckbox.checked);
     });
-    const hiddenToggle = document.createElement("label");
-    hiddenToggle.className = "hidden-toggle";
-    hiddenToggle.hidden = favoriteCheckbox.checked;
-    const hiddenCheckbox = document.createElement("input");
-    hiddenCheckbox.type = "checkbox";
-    hiddenCheckbox.checked = expertPaletteHiddenIds.has(card.id);
-    hiddenToggle.append(hiddenCheckbox, t("text.hiddenCard"));
-    main.append(hiddenToggle);
     hiddenToggle.addEventListener("click", event => event.stopPropagation());
     hiddenCheckbox.addEventListener("change", event => {
       event.stopPropagation();
@@ -3911,6 +3969,19 @@ function isExpertPaletteFavoriteDraftDirty() {
     if (!expertPaletteFavoriteIds.has(cardId)) return true;
   }
   return false;
+}
+
+function normalizeExpertPaletteVisibilityState() {
+  for (const cardId of expertPaletteFavoriteIds) {
+    expertPaletteHiddenIds.delete(cardId);
+  }
+  for (const cardId of expertPaletteDraftFavoriteIds) {
+    expertPaletteHiddenIds.delete(cardId);
+  }
+}
+
+function isExpertPaletteCardHidden(cardId) {
+  return !expertPaletteDraftFavoriteIds.has(cardId) && expertPaletteHiddenIds.has(cardId);
 }
 
 function isExpertTemplateSizingDirty() {
@@ -5956,16 +6027,14 @@ function handleExpertEditorSurfaceDrop(event) {
 
 function getExpertFieldStyleBlocks(field) {
   const blocks = [];
+  blocks.push(...getRawCardStyleBlocks(field.rawCard));
   if (field.entityId) {
     blocks.push(...getImportedEntityStyleBlocks(field.entityId));
   }
-  for (const entry of field.entries ?? []) {
+  forEachExpertEntry(field.entries ?? [], entry => {
     blocks.push(...getEntryStyleBlocks(entry));
-    for (const card of entry.cards ?? []) {
-      blocks.push(...getEntryStyleBlocks(card));
-    }
-  }
-  return blocks;
+  });
+  return dedupeStyleBlocks(blocks);
 }
 
 function selectedExpertDetailContext() {
@@ -6906,30 +6975,19 @@ function appendImportedStylesToExpertYaml(text) {
 
 function expertEditorHasEntryStyleBlocks() {
   return expertEditorFields.some(field =>
-    (field.entries ?? []).some(entry =>
-      getEntryStyleBlocks(entry).length || (entry.cards ?? []).some(card => getEntryStyleBlocks(card).length),
-    ),
+    getExpertFieldStyleBlocks(field).length > 0,
   );
 }
 
 function getExpertEditorEntityStyleBlocks(entityId) {
   const blocks = [];
   for (const field of expertEditorFields) {
-    for (const entry of field.entries ?? []) {
+    forEachExpertEntry(field.entries ?? [], entry => {
       if (entry.entityId === entityId) blocks.push(...getEntryStyleBlocks(entry));
-      for (const card of entry.cards ?? []) {
-        if (card.entityId === entityId) blocks.push(...getEntryStyleBlocks(card));
-      }
-    }
+    });
   }
   blocks.push(...getImportedEntityStyleBlocks(entityId));
-  const seen = new Set();
-  return blocks.filter(block => {
-    const key = `${block.key}:${block.code}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  return dedupeStyleBlocks(blocks);
 }
 
 function yamlEntityBlockHasStyle(lines, entityLineIndex, entityIndentSize) {
@@ -6962,6 +7020,45 @@ function indentImportedStyleBlock(code, indent) {
     .split(/\r?\n/)
     .map(line => `${indent}${line}`)
     .join("\n");
+}
+
+function getRawCardStyleBlocks(rawCard) {
+  if (!rawCard || typeof rawCard !== "object") return [];
+  try {
+    const yaml = serializeHomeAssistantEntitiesCardConfiguration(rawCard, "yaml");
+    const inspection = inspectHomeAssistantCardStyleBlocks(yaml);
+    return [
+      ...inspection.globalStyles,
+      ...inspection.cardStyles,
+      ...inspection.layoutOptions,
+    ];
+  } catch {
+    return Object.entries(rawCard)
+      .filter(([key]) => ["styles", "style", "card_mod", "uix", "uix_style"].includes(key))
+      .map(([key, value]) => ({
+        scope: "global",
+        label: rawCard.type || "Card style",
+        key,
+        code: `${key}: ${typeof value === "string" ? value : JSON.stringify(value, null, 2)}`,
+      }));
+  }
+}
+
+function dedupeStyleBlocks(blocks) {
+  const seen = new Set();
+  return blocks.filter(block => {
+    const key = `${block.scope}:${block.label}:${block.key}:${block.code}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function forEachExpertEntry(entries, visitor) {
+  for (const entry of entries ?? []) {
+    visitor(entry);
+    forEachExpertEntry(entry.cards ?? [], visitor);
+  }
 }
 
 function addExpertEditorField() {
@@ -7862,6 +7959,27 @@ function renderEntityList() {
   entityList.replaceChildren();
   reconcileStackEntitySelection();
   renderCardEntityOverview();
+  if (selectedEntitiesPanel && !selectedEntitiesPanel.open) {
+    const entityIds = trackedEntityIds();
+    if (entityIds.length === 0) {
+      renderEntitySummaryText(groupSummary, emptyEntitySelectionMessage);
+      renderEntitySummaryText(groupIssues, "");
+      renderEntitySummaryText(selectedEntity, emptyEntitySelectionMessage);
+      renderStackSelectionSummary();
+      renderHaCardPreview();
+      renderEmptyStatusPreview();
+      return;
+    }
+    renderEntitySummaryText(groupSummary, t("message.entitiesFound", {
+      count: entityIds.length,
+      entityLabel: entityIds.length === 1 ? t("message.entitySingular") : t("message.entityPlural"),
+      domain: t("message.allTypes"),
+    }));
+    renderEntitySummaryText(groupIssues, "");
+    renderStackSelectionSummary();
+    renderHaCardPreview();
+    return;
+  }
   const selectedEntityIds = trackedEntityIds();
   const selectedEntitySet = new Set(selectedEntityIds);
   const useLiveCatalogList = activeTransport !== transport && entitySnapshots.size > 0;
@@ -8239,7 +8357,7 @@ function bindSelectedEntity(nextTransport) {
         setEntityCatalogSyncStatus({ state: "done", ...changes });
         renderEntityPickerOptions();
         renderEntityList();
-        statusMessage.textContent = t("message.loadedEntitiesWithChanges", changes);
+        statusMessage.textContent = t("message.entitySyncDone", changes);
         return;
       }
       setEntityCatalogSyncStatus({
@@ -8421,6 +8539,7 @@ homeAssistantEntity.addEventListener("input", () => {
   renderHaCardPreview();
 });
 homeAssistantEntityDomain.addEventListener("change", () => {
+  entityPickerOptionsExpanded = true;
   persistConfiguration();
   renderEntityPickerOptions();
 });
@@ -8428,10 +8547,12 @@ homeAssistantEntityDomainShortcuts.addEventListener("click", event => {
   const button = event.target.closest("[data-entity-domain]");
   if (!button) return;
   homeAssistantEntityDomain.value = button.dataset.entityDomain;
+  entityPickerOptionsExpanded = true;
   persistConfiguration();
   renderEntityPickerOptions();
 });
 homeAssistantEntitySearch.addEventListener("input", () => {
+  entityPickerOptionsExpanded = true;
   persistConfiguration();
   scheduleEntityPickerOptionsRender();
 });
@@ -8442,6 +8563,8 @@ clearHomeAssistantEntitySearch.addEventListener("click", () => {
   homeAssistantEntitySearch.focus();
 });
 addHomeAssistantEntity.addEventListener("click", addSelectedEntityFromPicker);
+homeAssistantEntityPicker.addEventListener("focus", expandEntityPickerOptions);
+homeAssistantEntityPicker.addEventListener("pointerdown", expandEntityPickerOptions);
 homeAssistantEntityPicker.addEventListener("change", addSelectedEntityFromPicker);
 refreshHomeAssistantEntities.addEventListener("click", refreshLiveEntityStates);
 checkHaCardResources.addEventListener("click", () => checkLiveLovelaceResources());
@@ -8474,6 +8597,11 @@ expertCardName.addEventListener("input", () => {
   renderExpertEditorPreview();
 });
 diagnosticsPanel.addEventListener("toggle", persistConfiguration);
+selectedEntitiesPanel?.addEventListener("toggle", () => {
+  if (selectedEntitiesPanel.open) {
+    renderEntityList();
+  }
+});
 haCardTarget.addEventListener("change", () => {
   clearImportedSimplePreviewState();
   syncCardLayoutState();
@@ -8621,6 +8749,7 @@ duplicateHomeAssistantGroup.addEventListener("click", () => {
   statusMessage.textContent = t("message.groupCreated", { title });
 });
 exportHomeAssistantConfig.addEventListener("click", () => {
+  normalizeExpertPaletteVisibilityState();
   const payload = JSON.stringify({
     version: 1,
     name: homeAssistantGroup.value === "custom" ? "ATLAS custom panel" : homeAssistantGroup.value,
@@ -8899,6 +9028,7 @@ importHomeAssistantConfig.addEventListener("change", async () => {
         }
       }
     }
+    normalizeExpertPaletteVisibilityState();
     expertCustomCardMappings.clear();
     if (Array.isArray(pendingImport.expertCustomCardMappings)) {
       for (const entry of pendingImport.expertCustomCardMappings) {
@@ -9016,9 +9146,12 @@ haCardPasteImportText.addEventListener("input", () => {
 function updateHaCardPasteImportText(text) {
   haCardPasteImportText.value = text;
   renderHaCardStyleInspection(text);
-  haCardPasteImportStatus.textContent = text.trim()
-    ? renderHaCardImportDecision(text).message
-    : t("message.pasteImportEmpty");
+  if (text.trim()) {
+    const decision = renderHaCardImportDecision(text);
+    haCardPasteImportStatus.textContent = formatHaCardImportDecisionMessage(decision);
+  } else {
+    haCardPasteImportStatus.textContent = t("message.pasteImportEmpty");
+  }
   haCardPasteImportText.focus();
 }
 applyHaCardPasteImport.addEventListener("click", () => {
