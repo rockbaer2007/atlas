@@ -107,6 +107,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Bubble fields should expose Bubble button type choices such as state, switch, slider, and name.
 - The palette should include Core and Community card entries.
 - Palette favorites can be saved, reset, and shown/hidden.
+- When a palette card is marked as favorite, the hidden option must be disabled
+  and hidden from the UI for that card.
 - Scanned Home Assistant/HACS resources can appear in the palette when connected.
 - Duplicate palette entries should be avoided.
 - Unsupported or scan-only resources should be visible as information but not treated as safely draggable until mapped.
