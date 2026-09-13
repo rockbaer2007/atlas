@@ -159,7 +159,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 ## Roadmap Notes To Preserve
 
-- Planned Dashboard Area Card (recorded at the user's request; implementation not yet requested): a repeating grid of areas, each with an individually configurable background color, title and icon and space for multiple cards. Card width 2 means 1 area per row, 4 means 2, 6 means 3, and 8 means 4; additional areas continue on subsequent rows. Consider responsive mobile wrapping and an editing interface for moving cards within and between areas.
+- Planned Dashboard Area Card (recorded at the user's request; implementation not yet requested): a repeating grid of areas, each with an individually configurable background color, border color, title and icon and space for multiple cards. Card width 2 means 1 area per row, 4 means 2, 6 means 3, and 8 means 4; additional areas continue on subsequent rows. Consider responsive mobile wrapping and an editing interface for moving cards within and between areas.
 
 - Next Atlas Card Editor priority: build an opt-in debug reporting channel before starting unrelated new Atlas editor work. Remind the user if they switch to another Atlas topic first. The planned preview path is a `Problem melden` flow with debug-data preview, GitHub issue link, and no Home Assistant tokens, provider API keys, or other secrets attached.
 - Future direction includes HACS-installable custom card packages.
