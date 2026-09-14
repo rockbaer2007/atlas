@@ -215,8 +215,6 @@ const stackCardColumns = document.querySelector("#stack-card-columns");
 const stackCardColumnsOutput = document.querySelector("#stack-card-columns-output");
 const applyStackCardSettings = document.querySelector("#apply-stack-card-settings");
 const stackCardSettingsStatus = document.querySelector("#stack-card-settings-status");
-
-const settingsTabButtons = Array.from(document.querySelectorAll("[data-settings-tab-target]"));
 const entityList = document.querySelector("#atlas-entity-list");
 const stackSelectionSummary = document.querySelector("#stack-selection-summary");
 const groupSummary = document.querySelector("#group-summary");
@@ -277,15 +275,6 @@ const translations = {
     "label.tabbedCardFullWidth": "Full width",
     "label.tabbedCardAutoHeight": "Automatic height",
     "label.stackCardColumns": "Card width",
-    "settingsTab.general": "General",
-    "message.stackAdvancedSettingsPlanned": "Advanced stack options will appear here.",
-    "message.advancedSettingsPlanned": "Advanced menu and submenu options will appear here.",
-    "message.mobileSettingsPlanned": "Mobile menu options such as icon-only mode will appear here.",
-    "settingsTab.advanced": "Advanced",
-    "settingsTab.layout": "Layout",
-    "settingsTab.mobile": "Mobile",
-    "settingsTab.design": "Design",
-    "settingsTab.pages": "Pages",
     "label.column": "Column",
     "label.row": "Row",
     "label.width": "Width",
@@ -765,15 +754,6 @@ const translations = {
     "label.tabbedCardFullWidth": "Volle Breite",
     "label.tabbedCardAutoHeight": "Automatische Höhe",
     "label.stackCardColumns": "Card-Breite",
-    "settingsTab.general": "Allgemein",
-    "settingsTab.pages": "Seiten",
-    "settingsTab.design": "Design",
-    "settingsTab.mobile": "Mobil",
-    "settingsTab.layout": "Layout",
-    "settingsTab.advanced": "Erweitert",
-    "message.mobileSettingsPlanned": "Mobile Menüoptionen wie Nur-Icon-Modus erscheinen hier.",
-    "message.advancedSettingsPlanned": "Erweiterte Menü- und Submenü-Optionen erscheinen hier.",
-    "message.stackAdvancedSettingsPlanned": "Erweiterte Stack-Optionen erscheinen hier.",
     "label.column": "Spalte",
     "label.row": "Zeile",
     "label.width": "Breite",
@@ -4894,26 +4874,6 @@ function moveExpertFieldIntoTabbedCard(fieldIndex, tabbedFieldIndex) {
   return true;
 }
 
-function activateSettingsTab(button) {
-  const targetId = button?.dataset?.settingsTabTarget;
-  if (!targetId) return;
-  const dialog = button.closest(".tabbed-card-dialog");
-  if (!dialog) return;
-  for (const tabButton of dialog.querySelectorAll("[data-settings-tab-target]")) {
-    const isActive = tabButton === button;
-    tabButton.classList.toggle("active", isActive);
-    tabButton.setAttribute("aria-selected", String(isActive));
-  }
-  for (const panel of dialog.querySelectorAll(".settings-tab-panel")) {
-    panel.hidden = panel.id !== targetId;
-  }
-}
-
-function resetSettingsTabs(dialog) {
-  const firstTab = dialog?.querySelector?.("[data-settings-tab-target]");
-  if (firstTab) activateSettingsTab(firstTab);
-}
-
 function openTabbedCardSettings() {
   const field = selectedTabbedCardField();
   if (!field) {
@@ -4921,7 +4881,6 @@ function openTabbedCardSettings() {
     return;
   }
   tabbedCardSettingsBackdrop.hidden = false;
-  resetSettingsTabs(tabbedCardSettingsBackdrop);
   renderTabbedCardSettings();
   statusMessage.textContent = t("message.tabbedCardSettingsOpened", { field: field.id });
 }
@@ -4933,7 +4892,6 @@ function openStackCardSettings() {
     return;
   }
   stackCardSettingsBackdrop.hidden = false;
-  resetSettingsTabs(stackCardSettingsBackdrop);
   renderStackCardSettings();
   statusMessage.textContent = t("message.stackCardSettingsOpened", { field: field.id });
 }
@@ -8737,7 +8695,6 @@ stackCardAutoHeight.addEventListener("change", applyStackCardContainerOptions);
 stackCardColumns.addEventListener("input", renderStackCardColumnsOutput);
 stackCardColumns.addEventListener("change", applyStackCardContainerOptions);
 applyStackCardSettings.addEventListener("click", applyStackCardContainerOptions);
-settingsTabButtons.forEach(button => button.addEventListener("click", () => activateSettingsTab(button)));
 window.addEventListener("resize", applyExpertEditorSurfaceSize);
 resetSimplePreview.addEventListener("click", resetSimplePreviewState);
 resetExpertPreview.addEventListener("click", resetExpertPreviewState);
