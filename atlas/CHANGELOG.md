@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.205
+
+- Split dashboard card settings into tabs so growing options stay organized.
+- Add prepared sections for mobile menu and advanced submenu settings.
+- Bump the Home Assistant Card Editor package to `0.2.0-alpha.94`.
+
 ## 0.1.204
 
 - Keep the Expert Card Editor palette hidden-toggle visually hidden while a card

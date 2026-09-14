@@ -2217,6 +2217,40 @@
         font-size: 18px;
       }
 
+      .settings-tab-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px 0;
+      }
+
+      .settings-tab-button {
+        min-height: 34px;
+        padding: 7px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        background: #f8fafc;
+        color: #536079;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .settings-tab-button.active {
+        border-color: #2563eb;
+        background: #2563eb;
+        color: #ffffff;
+        box-shadow: 0 8px 22px rgba(37, 99, 235, 0.22);
+      }
+
+      .settings-tab-button:focus-visible {
+        outline: 3px solid rgba(37, 99, 235, 0.22);
+        outline-offset: 2px;
+      }
+
+      .settings-tab-panel[hidden] {
+        display: none !important;
+      }
+
       .tabbed-card-dialog-body {
         display: grid;
         grid-template-columns: minmax(220px, 0.75fr) minmax(280px, 1fr);
@@ -2226,6 +2260,21 @@
 
       .tabbed-card-dialog-body.single-column {
         grid-template-columns: 1fr;
+      }
+
+      .settings-tab-panel.single-column {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-placeholder {
+        margin: 0;
+        padding: 12px;
+        border: 1px dashed #cbd5e1;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #536079;
+        font-size: 13px;
+        line-height: 1.45;
       }
 
       .dialog-hint {
@@ -3180,9 +3229,22 @@
       :root[data-theme="dark"] .overview-entity-domain-filters label,
       :root[data-theme="dark"] .overview-entity-picker-results button,
       :root[data-theme="dark"] .tabbed-card-tab-row,
+      :root[data-theme="dark"] .settings-placeholder,
       :root[data-theme="dark"] .expert-selected-card-details {
         border-color: var(--atlas-border-soft);
         background: var(--atlas-panel-soft);
+        color: var(--atlas-text);
+      }
+
+      :root[data-theme="dark"] .settings-tab-button {
+        border-color: var(--atlas-border-soft);
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-muted);
+      }
+
+      :root[data-theme="dark"] .settings-tab-button.active {
+        border-color: var(--atlas-link);
+        background: rgba(56, 189, 248, 0.16);
         color: var(--atlas-text);
       }
 
@@ -3839,7 +3901,13 @@
               <h2 id="tabbed-card-settings-title" data-i18n="heading.tabbedCardSettings">Tabbed Card V2 settings</h2>
               <button id="close-tabbed-card-settings" type="button" class="icon-button" data-i18n-aria-label="aria.closeTabbedCardSettings" data-i18n-title="aria.closeTabbedCardSettings" aria-label="Close Tabbed Card V2 settings" title="Close Tabbed Card V2 settings">&times;</button>
             </header>
-            <div class="tabbed-card-dialog-body">
+            <nav class="settings-tab-list" role="tablist" aria-label="Tabbed Card V2 settings sections">
+              <button class="settings-tab-button active" type="button" role="tab" aria-selected="true" aria-controls="tabbed-card-pages" data-settings-tab-target="tabbed-card-pages" data-i18n="settingsTab.pages">Pages</button>
+              <button class="settings-tab-button" type="button" role="tab" aria-selected="false" aria-controls="tabbed-card-design" data-settings-tab-target="tabbed-card-design" data-i18n="settingsTab.design">Design</button>
+              <button class="settings-tab-button" type="button" role="tab" aria-selected="false" aria-controls="tabbed-card-mobile" data-settings-tab-target="tabbed-card-mobile" data-i18n="settingsTab.mobile">Mobile</button>
+              <button class="settings-tab-button" type="button" role="tab" aria-selected="false" aria-controls="tabbed-card-advanced" data-settings-tab-target="tabbed-card-advanced" data-i18n="settingsTab.advanced">Advanced</button>
+            </nav>
+            <div id="tabbed-card-pages" class="tabbed-card-dialog-body settings-tab-panel" role="tabpanel">
               <div class="tabbed-card-tab-list">
                 <strong data-i18n="heading.tabs">Tabs</strong>
                 <div id="tabbed-card-tab-list" class="tabbed-card-tab-list-items"></div>
@@ -3860,20 +3928,30 @@
                     <label for="tabbed-card-tab-icon" data-i18n="label.tabIcon">Tab icon</label>
                     <input id="tabbed-card-tab-icon" type="text" autocomplete="off" spellcheck="false" placeholder="mdi:tab">
                   </div>
-                  <label class="checkbox-row">
-                    <input id="tabbed-card-full-width" type="checkbox">
-                    <span data-i18n="label.tabbedCardFullWidth">Full width</span>
-                  </label>
-                  <label class="checkbox-row">
-                    <input id="tabbed-card-auto-height" type="checkbox">
-                    <span data-i18n="label.tabbedCardAutoHeight">Automatic height</span>
-                  </label>
                 </div>
                 <div class="connection-actions">
                   <button id="apply-tabbed-card-tab" type="button" data-i18n="button.applyTab">Apply tab</button>
                 </div>
                 <output id="tabbed-card-settings-status" aria-live="polite"></output>
               </div>
+            </div>
+            <div id="tabbed-card-design" class="tabbed-card-dialog-body single-column settings-tab-panel" role="tabpanel" hidden>
+              <div class="field-grid two-column">
+                <label class="checkbox-row">
+                  <input id="tabbed-card-full-width" type="checkbox">
+                  <span data-i18n="label.tabbedCardFullWidth">Full width</span>
+                </label>
+                <label class="checkbox-row">
+                  <input id="tabbed-card-auto-height" type="checkbox">
+                  <span data-i18n="label.tabbedCardAutoHeight">Automatic height</span>
+                </label>
+              </div>
+            </div>
+            <div id="tabbed-card-mobile" class="tabbed-card-dialog-body single-column settings-tab-panel" role="tabpanel" hidden>
+              <p class="settings-placeholder" data-i18n="message.mobileSettingsPlanned">Mobile menu options such as icon-only mode will appear here.</p>
+            </div>
+            <div id="tabbed-card-advanced" class="tabbed-card-dialog-body single-column settings-tab-panel" role="tabpanel" hidden>
+              <p class="settings-placeholder" data-i18n="message.advancedSettingsPlanned">Advanced menu and submenu options will appear here.</p>
             </div>
           </section>
         </div>
@@ -3883,7 +3961,12 @@
               <h2 id="stack-card-settings-title" data-i18n="heading.stackCardSettings">Stack settings</h2>
               <button id="close-stack-card-settings" type="button" class="icon-button" data-i18n-aria-label="aria.closeStackCardSettings" data-i18n-title="aria.closeStackCardSettings" aria-label="Close stack settings" title="Close stack settings">&times;</button>
             </header>
-            <div class="tabbed-card-dialog-body single-column">
+            <nav class="settings-tab-list" role="tablist" aria-label="Stack settings sections">
+              <button class="settings-tab-button active" type="button" role="tab" aria-selected="true" aria-controls="stack-card-general" data-settings-tab-target="stack-card-general" data-i18n="settingsTab.general">General</button>
+              <button class="settings-tab-button" type="button" role="tab" aria-selected="false" aria-controls="stack-card-layout" data-settings-tab-target="stack-card-layout" data-i18n="settingsTab.layout">Layout</button>
+              <button class="settings-tab-button" type="button" role="tab" aria-selected="false" aria-controls="stack-card-advanced" data-settings-tab-target="stack-card-advanced" data-i18n="settingsTab.advanced">Advanced</button>
+            </nav>
+            <div id="stack-card-general" class="tabbed-card-dialog-body single-column settings-tab-panel" role="tabpanel">
               <div class="field-grid two-column">
                 <label class="checkbox-row">
                   <input id="stack-card-full-width" type="checkbox">
@@ -3893,6 +3976,10 @@
                   <input id="stack-card-auto-height" type="checkbox">
                   <span data-i18n="label.tabbedCardAutoHeight">Automatic height</span>
                 </label>
+              </div>
+            </div>
+            <div id="stack-card-layout" class="tabbed-card-dialog-body single-column settings-tab-panel" role="tabpanel" hidden>
+              <div class="field-grid two-column">
                 <div class="field-pair span-2">
                   <label for="stack-card-columns" data-i18n="label.stackCardColumns">Card width</label>
                   <div class="range-row">
@@ -3905,6 +3992,9 @@
                 <button id="apply-stack-card-settings" type="button" data-i18n="button.applyStackSettings">Apply settings</button>
               </div>
               <output id="stack-card-settings-status" aria-live="polite"></output>
+            </div>
+            <div id="stack-card-advanced" class="tabbed-card-dialog-body single-column settings-tab-panel" role="tabpanel" hidden>
+              <p class="settings-placeholder" data-i18n="message.stackAdvancedSettingsPlanned">Advanced stack options will appear here.</p>
             </div>
           </section>
         </div>
