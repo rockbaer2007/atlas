@@ -5,8 +5,10 @@
 The optional [ATLAS Terminal plugin](https://github.com/rockbaer2007/atlas-terminal-plugin)
 provides an ANSI-colored browser terminal with adjustable font size, optional
 server-configured SSH, and selectable Oh My Posh themes for local Bash sessions.
-It loads Meslo LGM Nerd Font Mono from Home Assistant `/local/fonts/` (or `/local/`)
-so clients do not need a local font installation. The terminal is disabled by default. See
+It loads `MesloLGMNerdFontMono-Regular.ttf` and
+`MesloLGMNerdFontMono-Bold.ttf` from Home Assistant `/local/fonts/` (or `/local/`),
+so clients do not need a local font installation. Place them in `/config/www/fonts/`
+or directly in `/config/www/`. The terminal is disabled by default. See
 [`atlas-plugins/terminal/README.md`](atlas-plugins/terminal/README.md) for setup
 and security requirements.
 
