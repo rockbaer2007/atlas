@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant Add-on `0.1.209` grants the local Terminal session the
+  Supervisor `manager` role, fixing `ha core check` failures caused by
+  insufficient permissions.
+- ATLAS framework and Home Assistant package now identify as `0.2.0-alpha.77`.
+
 - ATLAS Terminal is now registered in the Administration plugin manager and can
   be opened from the Administration sidebar-plugin dialog.
 - Home Assistant App/Add-on package `0.1.208` includes the Terminal plugin in
