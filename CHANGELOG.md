@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- ATLAS Terminal now has a German/English toolbar link back to the Plugin Hub.
+- The standalone ATLAS Terminal plugin is updated to `0.1.2`.
+- Home Assistant App/Add-on package `0.1.210` includes the Hub navigation link.
+- ATLAS framework and Home Assistant package now identify as `0.2.0-alpha.78`.
+
 - Home Assistant Add-on `0.1.209` grants the local Terminal session the
   Supervisor `manager` role, fixing `ha core check` failures caused by
   insufficient permissions.

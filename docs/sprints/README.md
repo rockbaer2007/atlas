@@ -12,6 +12,7 @@ quality validation and the delivered results.
 - [G2.5.9235 - Home Assistant CLI in Terminal](Sprint-G2.5.9235.md)
 - [G2.5.9236 - Register Terminal in Plugin Administration](Sprint-G2.5.9236.md)
 - [G2.5.9237 - Grant Supervisor CLI Permissions](Sprint-G2.5.9237.md)
+- [G2.5.9238 - Add Terminal Hub Navigation](Sprint-G2.5.9238.md)
 
 ---
 
