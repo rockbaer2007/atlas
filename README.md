@@ -2,10 +2,13 @@
 
 ## ATLAS Terminal plugin
 
-The optional ATLAS Terminal plugin provides a browser terminal with ANSI colors,
-an adjustable 11–26 px font size and an optional server-configured SSH profile.
-It is disabled by default. See [`atlas-plugins/terminal/README.md`](atlas-plugins/terminal/README.md)
-for configuration and security requirements.
+The optional [ATLAS Terminal plugin](https://github.com/rockbaer2007/atlas-terminal-plugin)
+provides an ANSI-colored browser terminal with adjustable font size, optional
+server-configured SSH, and selectable Oh My Posh themes for local Bash sessions.
+It prefers Meslo LGM Nerd Font Mono when installed on the computer running the
+browser. The terminal is disabled by default. See
+[`atlas-plugins/terminal/README.md`](atlas-plugins/terminal/README.md) for setup
+and security requirements.
 
 ATLAS is a modular TypeScript framework focused on stable architecture,
 explicit contracts and long-term maintainability.
@@ -17,7 +20,7 @@ Current focus:
 ATLAS now ships a combined app runtime for Home Assistant-oriented workflows:
 Administration, Plugin Hub, the Home Assistant Card Editor, ATLAS File Studio
 and ATLAS Automation Exporter / Editor. The current Home Assistant App/Add-on
-package is `0.1.129`.
+package is `0.1.213`.
 
 The Plugin Hub opens one active plugin directly, shows a selection when several
 plugins are active and keeps capability plus sidebar URL details collapsed by
