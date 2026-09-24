@@ -9,8 +9,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 ### Added
 
 - ATLAS Terminal can select Oh My Posh themes from the UGSo fork for local Bash sessions.
+- ATLAS Terminal prefers Meslo LGM Nerd Font Mono when installed on the browser computer, enabling Oh My Posh glyphs in the web terminal.
 - The Home Assistant add-on image includes a pinned Oh My Posh binary and Bash for themed terminal sessions.
-- Standalone ATLAS Terminal plugin is updated to `0.1.3`.
+- Standalone ATLAS Terminal plugin is updated to `0.1.4`.
 - Home Assistant App/Add-on package is updated to `0.1.211` and ATLAS framework to `0.2.0-alpha.79`.
 - ATLAS Terminal now has a German/English toolbar link back to the Plugin Hub.
 - The standalone ATLAS Terminal plugin is updated to `0.1.2`.
