@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Home Assistant Add-on terminal images now include the official `ha` CLI;
+  local terminal sessions receive the Supervisor token for commands such as
+  `ha core check`. SSH sessions do not receive this token.
+- ATLAS framework and Home Assistant package now identify as `0.2.0-alpha.75`.
+- Home Assistant App/Add-on package `0.1.207` enables the Supervisor API for
+  the opt-in terminal.
 - ATLAS Terminal remembers the access token locally in the browser and allows
   users to forget it; it is sent only when connecting.
 - ATLAS framework and Home Assistant package now identify as `0.2.0-alpha.74`.

@@ -9,6 +9,7 @@ quality validation and the delivered results.
 
 - [G2.5.9233 - Authenticated Terminal Plugin](Sprint-G2.5.9233.md)
 - [G2.5.9234 - Remember Terminal Access Token](Sprint-G2.5.9234.md)
+- [G2.5.9235 - Home Assistant CLI in Terminal](Sprint-G2.5.9235.md)
 
 ---
 
