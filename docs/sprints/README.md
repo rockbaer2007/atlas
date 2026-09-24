@@ -7,6 +7,8 @@ This directory contains the complete development history of the ATLAS Framework.
 Each sprint documents the goals, architectural decisions, implementation work,
 quality validation and the delivered results.
 
+- [G2.5.9233 - Authenticated Terminal Plugin](Sprint-G2.5.9233.md)
+
 ---
 
 ## Sprint Timeline

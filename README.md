@@ -1,5 +1,12 @@
 # ATLAS Framework
 
+## ATLAS Terminal plugin
+
+The optional ATLAS Terminal plugin provides a browser terminal with ANSI colors,
+an adjustable 11–26 px font size and an optional server-configured SSH profile.
+It is disabled by default. See [`atlas-plugins/terminal/README.md`](atlas-plugins/terminal/README.md)
+for configuration and security requirements.
+
 ATLAS is a modular TypeScript framework focused on stable architecture,
 explicit contracts and long-term maintainability.
 

@@ -8,6 +8,12 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- ATLAS Terminal plugin adds an authenticated local PTY and optional
+  server-configured Home Assistant SSH session with ANSI colors and adjustable
+  font size; shell access remains disabled unless explicitly enabled.
+- Home Assistant App/Add-on package `0.1.205` adds the Terminal plugin and
+  opt-in access settings.
+- ATLAS framework and Home Assistant package now identify as `0.2.0-alpha.73`.
 - Home Assistant App/Add-on package `0.1.204` keeps the Expert Card Editor
   palette hidden-toggle visually hidden while a card is marked as favorite.
 - ATLAS Home Assistant Card Editor now identifies as `0.2.0-alpha.93` for
