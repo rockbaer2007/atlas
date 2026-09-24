@@ -5,8 +5,8 @@
 The optional [ATLAS Terminal plugin](https://github.com/rockbaer2007/atlas-terminal-plugin)
 provides an ANSI-colored browser terminal with adjustable font size, optional
 server-configured SSH, and selectable Oh My Posh themes for local Bash sessions.
-It prefers Meslo LGM Nerd Font Mono when installed on the computer running the
-browser. The terminal is disabled by default. See
+It loads Meslo LGM Nerd Font Mono from Home Assistant `/local/fonts/` (or `/local/`)
+so clients do not need a local font installation. The terminal is disabled by default. See
 [`atlas-plugins/terminal/README.md`](atlas-plugins/terminal/README.md) for setup
 and security requirements.
 
@@ -20,7 +20,7 @@ Current focus:
 ATLAS now ships a combined app runtime for Home Assistant-oriented workflows:
 Administration, Plugin Hub, the Home Assistant Card Editor, ATLAS File Studio
 and ATLAS Automation Exporter / Editor. The current Home Assistant App/Add-on
-package is `0.1.213`.
+package is `0.1.214`.
 
 The Plugin Hub opens one active plugin directly, shows a selection when several
 plugins are active and keeps capability plus sidebar URL details collapsed by
