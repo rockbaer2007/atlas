@@ -18,6 +18,9 @@ RUN pnpm build
 
 FROM node:22-alpine AS runtime
 
+ARG TARGETARCH
+ARG OH_MY_POSH_VERSION=31.3.0
+
 WORKDIR /app
 
 ENV NODE_ENV=production \
@@ -28,7 +31,20 @@ ENV NODE_ENV=production \
     ATLAS_DEMO_PORT=4174 \
     ATLAS_DISTRIBUTION_TARGET=standalone-docker-preview
 
-RUN apk add --no-cache openssh-client
+RUN apk add --no-cache openssh-client curl bash \
+  && case "${TARGETARCH:-amd64}" in amd64) OMP_ARCH=amd64 ;; arm64) OMP_ARCH=arm64 ;; arm) OMP_ARCH=arm ;; *) echo "Unsupported Oh My Posh architecture: ${TARGETARCH}" >&2; exit 1 ;; esac \
+  && curl --fail --location --silent --show-error \
+    "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v${OH_MY_POSH_VERSION}/checksums.txt" \
+    --output /tmp/oh-my-posh-checksums.txt \
+  && curl --fail --location --silent --show-error \
+    "https://github.com/JanDeDobbeleer/oh-my-posh/releases/download/v${OH_MY_POSH_VERSION}/posh-linux-${OMP_ARCH}" \
+    --output /usr/local/bin/oh-my-posh \
+  && chmod 0755 /usr/local/bin/oh-my-posh \
+  && OMP_SHA="$(awk -v file="posh-linux-${OMP_ARCH}" '$2 == file { print $1 }' /tmp/oh-my-posh-checksums.txt)" \
+  && test -n "${OMP_SHA}" \
+  && printf '%s  %s\n' "${OMP_SHA}" /usr/local/bin/oh-my-posh | sha256sum -c - \
+  && rm /tmp/oh-my-posh-checksums.txt \
+  && apk del curl
 
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/scripts ./scripts
