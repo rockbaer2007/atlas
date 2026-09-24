@@ -8,6 +8,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Update the ATLAS Terminal entry in Administration to version `0.1.4` and list its Oh My Posh theme support.
 - ATLAS Terminal can select Oh My Posh themes from the UGSo fork for local Bash sessions.
 - ATLAS Terminal prefers Meslo LGM Nerd Font Mono when installed on the browser computer, enabling Oh My Posh glyphs in the web terminal.
 - The Home Assistant add-on image includes a pinned Oh My Posh binary and Bash for themed terminal sessions.
