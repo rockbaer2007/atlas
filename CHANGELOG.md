@@ -8,6 +8,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Prevent the default Atlas shell prompt from overriding Oh My Posh in themed terminal sessions, keeping the cursor at the end of the prompt.
 - ATLAS Terminal loads regular and bold Meslo LGM Nerd Font Mono files from Home Assistant `/local/fonts/` or `/local/`.
 - Update the ATLAS Terminal plugin to `0.1.5` and the Home Assistant App/Add-on to `0.1.214`.
 - Update the ATLAS Terminal entry in Administration to version `0.1.4` and list its Oh My Posh theme support.
