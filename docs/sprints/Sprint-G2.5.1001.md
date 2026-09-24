@@ -1,32 +1,18 @@
-# Sprint G2.5.1001 - Renderer Mount Reporting Consumer Diagnostics Policy Future DOM Boundary Review
+# Sprint G2.5.1001 - Home Assistant Terminal Welcome Banner
 
 Goal:
 
-Evaluate summarized Renderer mount report consumer diagnostics through simple policy gates.
+Show the familiar Home Assistant welcome and system information when opening the local ATLAS terminal.
 
 Implementation:
 
-* Added a stable Renderer mount report consumer diagnostic policy contract.
-* Added policy evaluation derived from aggregation summaries.
-* Added stable policy diagnostic codes for failed consumers and exceeded issue limits.
-* Kept policy evaluations independent from DOM elements, Theme bindings, Home Assistant fields and platform metadata.
-* Updated the package root, public API contract tests, README, changelog and sprint indexes.
-
-Public API:
-
-* `RendererMountReportConsumerDiagnosticPolicy`
-* `RendererMountReportConsumerDiagnosticPolicyCodes`
-* `RendererMountReportConsumerDiagnosticPolicyEvaluation`
-* `evaluateRendererMountReportConsumerDiagnosticPolicy`
+* Print the welcome banner once when the local interactive Bash session starts.
+* Display system information through the available `ha info` command.
+* Keep SSH terminal sessions unchanged and initialize Oh My Posh after the welcome output.
 
 Validation:
 
-* `pnpm --filter @atlas/renderer check`
-* `pnpm --filter @atlas/renderer test`
-* `pnpm check`
+* `node --check scripts/atlas-app-server.mjs`
+* `git diff --check`
 * `pnpm build`
-* `pnpm test`
-
-Status:
-
-Completed.
+* `pnpm ha:app:prepare`
