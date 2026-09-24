@@ -1,32 +1,17 @@
-# Sprint G2.5.1002 - Renderer Mount Reporting Consumer Diagnostics Policy Future Theme Boundary Review
+# Sprint G2.5.1002 - Use Native Home Assistant Terminal Banner
 
 Goal:
 
-Evaluate summarized Renderer mount report consumer diagnostics through simple policy gates.
+Match the Home Assistant terminal startup output, including network addresses, versions, and URLs.
 
 Implementation:
 
-* Added a stable Renderer mount report consumer diagnostic policy contract.
-* Added policy evaluation derived from aggregation summaries.
-* Added stable policy diagnostic codes for failed consumers and exceeded issue limits.
-* Kept policy evaluations independent from DOM elements, Theme bindings, Home Assistant fields and platform metadata.
-* Updated the package root, public API contract tests, README, changelog and sprint indexes.
-
-Public API:
-
-* `RendererMountReportConsumerDiagnosticPolicy`
-* `RendererMountReportConsumerDiagnosticPolicyCodes`
-* `RendererMountReportConsumerDiagnosticPolicyEvaluation`
-* `evaluateRendererMountReportConsumerDiagnosticPolicy`
+* Use the Home Assistant CLI's native `ha banner --no-wait` command instead of a hand-built banner.
+* Keep the banner limited to local terminal sessions and initialize Oh My Posh afterward.
 
 Validation:
 
-* `pnpm --filter @atlas/renderer check`
-* `pnpm --filter @atlas/renderer test`
-* `pnpm check`
+* `node --check scripts/atlas-app-server.mjs`
+* `git diff --check`
 * `pnpm build`
-* `pnpm test`
-
-Status:
-
-Completed.
+* `pnpm ha:app:prepare`

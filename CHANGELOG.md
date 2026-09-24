@@ -8,7 +8,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
-- Show a one-time Home Assistant welcome banner and CLI system information when opening the local terminal.
+- Use Home Assistant's native `ha banner --no-wait` command when opening the local terminal, including IP addresses, OS/Core versions, and URLs.
 - Prevent the default Atlas shell prompt from overriding Oh My Posh in themed terminal sessions, keeping the cursor at the end of the prompt.
 - ATLAS Terminal loads regular and bold Meslo LGM Nerd Font Mono files from Home Assistant `/local/fonts/` or `/local/`.
 - Update the ATLAS Terminal plugin to `0.1.5` and the Home Assistant App/Add-on to `0.1.214`.
