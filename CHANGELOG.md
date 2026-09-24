@@ -8,6 +8,11 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- ATLAS Terminal remembers the access token locally in the browser and allows
+  users to forget it; it is sent only when connecting.
+- ATLAS framework and Home Assistant package now identify as `0.2.0-alpha.74`.
+- Home Assistant App/Add-on package `0.1.206` includes persistent local token
+  entry for the Terminal plugin.
 - ATLAS Terminal plugin adds an authenticated local PTY and optional
   server-configured Home Assistant SSH session with ANSI colors and adjustable
   font size; shell access remains disabled unless explicitly enabled.
