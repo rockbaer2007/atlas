@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Show the 64 MiB upload limit and direct oversized files to the Samba add-on without attempting upload.
 - Upload File Studio files as binary data up to 64 MiB, avoiding JSON body limits.
 - Snapshot selected upload files before opening dialogs so browser permissions remain valid.
 - Keep File Studio confirmation prompts above archive previews.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.222
+
+- Show the 64 MiB upload limit and direct oversized files to the Samba add-on without attempting upload.
+
 ## 0.1.221
 
 - Upload File Studio files as binary data up to 64 MiB, avoiding JSON body limits.
