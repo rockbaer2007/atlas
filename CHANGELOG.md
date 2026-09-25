@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Snapshot selected upload files before opening dialogs so browser permissions remain valid.
 - Keep File Studio confirmation prompts above archive previews.
 
 ### Added
