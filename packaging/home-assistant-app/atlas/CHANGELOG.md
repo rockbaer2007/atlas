@@ -1,36 +1,88 @@
 # Changelog
 
-## 0.1.224
+## 0.1.231
+
+- Add a bilingual Administration plugin generator that creates a starter install package and repository catalog file.
+
+## 0.1.230
 
 - Refresh the File Studio tree after upload without automatically opening the uploaded file or archive.
 
-## 0.1.223
+## 0.1.229
 
 - Save File Studio uploads to the currently selected folder, including after an upload conflict prompt.
 
-## 0.1.222
+## 0.1.228
 
 - Show the 64 MiB upload limit and direct oversized files to the Samba add-on without attempting upload.
 
-## 0.1.221
+## 0.1.227
 
 - Upload File Studio files as binary data up to 64 MiB, avoiding JSON body limits.
 
-## 0.1.220
+## 0.1.226
 
 - Snapshot selected upload files before opening dialogs so browser permissions remain valid.
 
-## 0.1.219
+## 0.1.225
 
 - Keep File Studio confirmation prompts above archive previews.
 
-## 0.1.218
+## 0.1.224
 
 - Add safe TAR, TAR.GZ and TGZ archive preview and extraction to File Studio.
 
-## 0.1.217
+## 0.1.223
 
 - Add safe extraction of individual files from ZIP archives in File Studio.
+
+## 0.1.222
+
+- Restyle the File Studio access note with regular, smaller text and distinct colors for each path.
+
+## 0.1.221
+
+- Start local terminal sessions at the filesystem root (`/`) instead of `/app`.
+
+## 0.1.220
+
+- Reopen terminal token settings after disconnecting or when a terminal session ends.
+- Bump the standalone ATLAS Terminal plugin to `0.1.7`.
+
+## 0.1.219
+
+- Collapse the terminal access-token panel by default when the browser already has a saved token.
+- Bump the standalone ATLAS Terminal plugin to `0.1.6`.
+
+## 0.1.218
+
+- Install optional Alpine packages from the add-on `packages` option so commands such as `mc` are available in the local terminal.
+
+## 0.1.217
+
+- Use the native `ha banner --no-wait` command to show IP addresses, OS/Core versions, and URLs when opening the local terminal.
+
+## 0.1.216
+
+- Show a Home Assistant welcome banner and system information when opening the local terminal.
+
+## 0.1.215
+
+- Fix the Oh My Posh terminal prompt so the cursor stays after the rendered prompt.
+
+## 0.1.214
+
+- Load Meslo LGM Nerd Font Mono from Home Assistant `/local/` for the ATLAS web terminal.
+- Bump the standalone ATLAS Terminal plugin to `0.1.5`.
+
+## 0.1.213
+
+- Update the Administration overview entry for ATLAS Terminal to version `0.1.4`, including Oh My Posh theme support.
+
+## 0.1.212
+
+- Prefer Meslo LGM Nerd Font Mono in the browser terminal when installed on the client computer.
+- Bump the standalone ATLAS Terminal plugin to `0.1.4`.
 
 ## 0.1.211
 
