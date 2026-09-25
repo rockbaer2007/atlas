@@ -1,6 +1,6 @@
 # ATLAS Plugin Repository Format
 
-Status: Draft for the first public demo repository.
+Status: Version 1 is implemented in the public demo repository and the official plugin template.
 
 An ATLAS plugin repository is a static HTTP-accessible catalog. The first
 Administration implementation loads a `repository.json`, shows installable
@@ -101,13 +101,29 @@ The package URL points to an ATLAS runtime plugin install package:
 The first Administration implementation stores the descriptor and package files
 locally. It does not execute plugin code from repository packages yet.
 
-## Demo Repository Path
+## Live Repositories
 
-The planned public demo repository is `atlas-plugin-repository-demo`. It should
-contain:
+The public demo repository is `atlas-plugin-repository-demo` and is used to test
+repository installation, updates and removal:
+
+`https://github.com/rockbaer2007/atlas-plugin-repository-demo`
+
+The official starter repository, marked as a GitHub template, is available at:
+
+`https://github.com/rockbaer2007/atlas-plugin-template`
+
+It contains a working example plugin, the catalog and manifest, function-ready
+artwork placeholders, a package builder, validation and a GitHub Actions check.
+Run `npm run build` after editing the plugin manifest to regenerate the package
+and synchronize catalog metadata; run `npm run check` to validate the result.
+
+The demo catalog currently uses this general shape:
 
 ```text
 repository.json
+install.html
+assets/
+  atlas-repository-button.svg
 plugins/
   simple-file-editor/
     atlas-plugin.json
@@ -118,10 +134,6 @@ plugins/
     README.md
 README.md
 ```
-
-This demo repository is the future seed for an official ATLAS plugin template
-and a later generator that creates new plugin folders with the expected
-metadata and assets.
 
 ## Plugin Asset Convention
 
