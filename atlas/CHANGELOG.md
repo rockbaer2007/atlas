@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.213
+
+- Collapse the access-token panel by default when the browser already has a saved token.
+- Bump the standalone ATLAS Terminal plugin to `0.1.6`.
+
+## 0.1.212
+
+- Install optional Alpine packages from the add-on `packages` option so commands such as `mc` are available in the local terminal.
+
 ## 0.1.211
 
 - Add Oh My Posh theme selection for local Bash terminal sessions.
