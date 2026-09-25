@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Include manually imported plugin packages in the Plugin Hub catalog and show a clear state if no launch page is available.
 - Add a bilingual Administration plugin generator for starter install packages and repository catalog files.
 - Refresh the File Studio tree after upload without automatically opening the uploaded file or archive.
 - Save File Studio uploads to the currently selected folder, including after an upload conflict prompt.
