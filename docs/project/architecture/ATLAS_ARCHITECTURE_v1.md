@@ -133,17 +133,11 @@ Home Assistant Provider
 ### Phase G7
 Developer Tools
 
-### Plugin Repository Template Path
+### Plugin Repository Path
 
 - Keep the public `atlas-plugin-repository-demo` as the test source for ATLAS
   repository installation, updates and removal:
   `https://github.com/rockbaer2007/atlas-plugin-repository-demo`.
-- Use that demo repository as the reference layout for future plugin authors:
-  `repository.json`, plugin package, manifest, icon, logo, preview image,
-  README and compatibility metadata.
-- Provide the official reusable starter as the GitHub template repository
-  `https://github.com/rockbaer2007/atlas-plugin-template`. It includes a
-  working example plugin, package builder, validation script and CI workflow.
 - Give every plugin its own function-specific icon and logo with a consistent
   ATLAS overlay, and show those assets in Administration, Plugin Hub and
   repository previews.
@@ -151,7 +145,7 @@ Developer Tools
   users can enter the provided `custom:*` card types, Atlas stores the mapping
   locally, and later versions may export or share reviewed mappings.
 - Add a later interactive generator that creates a new ATLAS plugin from the
-  template with the correct folder structure and metadata.
+  published template with the correct folder structure and metadata.
 
 ### Late Hub Expansion: External Home Assistant Surfaces
 
