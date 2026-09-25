@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.217
+
+- Add safe extraction of individual files from ZIP archives in File Studio.
+
 ## 0.1.211
 
 - Add a dropdown of themes from the UGSo Oh My Posh fork for local terminal sessions.

@@ -195,12 +195,13 @@ additional envelope-only contract expansion.
   * ATLAS/Card-Editor-aligned design instead of copied upstream visuals
   * file tree and editor surface for Home Assistant configuration files
   * syntax highlighting and YAML validation for Home Assistant config editing
-  * archive roadmap after ZIP preview: read and extract `.rar` including RAR5
-    where a freely usable extraction backend is available, `.tar`,
-    `.tar.gz`, `.tgz`, `.gz` and `.gzip`
-  * archive extraction should start with safe content inspection and targeted
-    single-file extraction before offering guarded full extraction
-  * upload/download and later Git diff, commit, branch and push support
+  * delivered: single/multiple upload, drag-and-drop upload, download, and
+    conflict handling to replace, rename or cancel
+  * delivered: ZIP content preview and guarded full extraction
+  * next: safely extract a selected file from a ZIP after inspecting its entry
+  * later: read and extract `.rar` including RAR5 where a freely usable backend
+    is available, `.tar`, `.tar.gz`, `.tgz`, `.gz` and `.gzip`
+  * later: Git diff, commit, branch and push support
   * safe default start in `/config`
   * controlled "one level up" / extended-area button for inspecting approved paths behind `/config`
   * no unrestricted root file manager by default
