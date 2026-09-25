@@ -351,7 +351,7 @@ terminalWebSockets.on("connection", (webSocket, request) => {
       name: "xterm-256color",
       cols: clampTerminalDimension(requestUrl.searchParams.get("cols"), 120),
       rows: clampTerminalDimension(requestUrl.searchParams.get("rows"), 30),
-      cwd: process.cwd(),
+      cwd: useSsh ? process.cwd() : "/",
       env: createTerminalEnvironment(useSsh),
     });
   } catch (error) {

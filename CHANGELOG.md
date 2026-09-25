@@ -8,6 +8,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- Start local terminal sessions at the filesystem root (`/`) instead of `/app`.
 - Use Home Assistant's native `ha banner --no-wait` command when opening the local terminal, including IP addresses, OS/Core versions, and URLs.
 - Prevent the default Atlas shell prompt from overriding Oh My Posh in themed terminal sessions, keeping the cursor at the end of the prompt.
 - ATLAS Terminal loads regular and bold Meslo LGM Nerd Font Mono files from Home Assistant `/local/fonts/` or `/local/`.
