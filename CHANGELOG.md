@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep File Studio confirmation prompts above archive previews.
+
 ### Added
 
 - File Studio can preview and safely extract `.tar`, `.tar.gz` and `.tgz` archives, including selected files.
