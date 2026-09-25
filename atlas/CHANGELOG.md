@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.218
+
+- Add safe TAR, TAR.GZ and TGZ archive preview and extraction to File Studio.
+
 ## 0.1.217
 
 - Add safe extraction of individual files from ZIP archives in File Studio.

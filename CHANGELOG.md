@@ -8,6 +8,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ### Added
 
+- File Studio can preview and safely extract `.tar`, `.tar.gz` and `.tgz` archives, including selected files.
 - File Studio can safely extract one selected file from a ZIP archive.
 - Restyle the File Studio access note with regular, smaller text and distinct colors for each path.
 - Start local terminal sessions at the filesystem root (`/`) instead of `/app`.

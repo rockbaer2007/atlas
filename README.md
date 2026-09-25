@@ -27,8 +27,8 @@ package is `0.1.217`.
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,
 `/addons` and `/parent-of-config` are easy to distinguish.
-It can preview ZIP contents, extract the full archive safely, or extract an
-individual selected file without unpacking the rest.
+It can preview ZIP, TAR, TAR.GZ and TGZ archives, extract supported content
+safely, or extract one selected file without unpacking the rest.
 
 The Plugin Hub opens one active plugin directly, shows a selection when several
 plugins are active and keeps capability plus sidebar URL details collapsed by

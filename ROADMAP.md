@@ -197,10 +197,8 @@ additional envelope-only contract expansion.
   * syntax highlighting and YAML validation for Home Assistant config editing
   * delivered: single/multiple upload, drag-and-drop upload, download, and
     conflict handling to replace, rename or cancel
-  * delivered: ZIP content preview and guarded full extraction
-  * next: safely extract a selected file from a ZIP after inspecting its entry
-  * later: read and extract `.rar` including RAR5 where a freely usable backend
-    is available, `.tar`, `.tar.gz`, `.tgz`, `.gz` and `.gzip`
+  * delivered: ZIP, TAR, TAR.GZ and TGZ content preview, selected-file extraction and guarded full extraction
+  * next, optional: read and extract `.rar` including RAR5 if a freely usable backend is available
   * later: Git diff, commit, branch and push support
   * safe default start in `/config`
   * controlled "one level up" / extended-area button for inspecting approved paths behind `/config`
