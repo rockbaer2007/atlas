@@ -22,7 +22,7 @@ Current focus:
 ATLAS now ships a combined app runtime for Home Assistant-oriented workflows:
 Administration, Plugin Hub, the Home Assistant Card Editor, ATLAS File Studio
 and ATLAS Automation Exporter / Editor. The current Home Assistant App/Add-on
-package is `0.1.217`.
+package is `0.1.236`.
 
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,
@@ -35,6 +35,18 @@ plugins are active and keeps capability plus sidebar URL details collapsed by
 default. Card Editor, Administration and plugin asset URLs can run through the
 ATLAS app route so Home Assistant Ingress and remote browsers do not have to
 reach the separate local development ports directly.
+
+### Home Assistant sidebar links for plugins
+
+Starting with App/Add-on `0.1.236`, the sidebar helper generates a stable
+plugin launch URL on port `4176`, for example
+`http://<ATLAS_HOST>:4176/launch/atlas.plugin.file-studio`. If you already added
+a plugin to the Home Assistant sidebar, reopen the sidebar dialog in ATLAS,
+copy the newly offered **URL**, and replace the old `url` in that plugin's
+`panel_iframe` configuration. Alternatively, copy and replace the complete
+YAML block. Restart Home Assistant to reload the sidebar configuration. The
+Home Assistant sidebar path itself does not change; the app's port `4176` must
+be reachable by the browser displaying Home Assistant.
 
 ATLAS Automation Exporter / Editor is available as a GitHub-installable plugin
 at version `0.1.5`. It can analyze `/config/automations.yaml` or uploaded YAML,
