@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Refresh the Terminal plugin icon with the ATLAS overlay badge.
 - Add automatic tabs for installed plugins, switch to a selected plugin on install, and remove oversized preview images from manager repository listings.
 - Stack the Plugin Manager and access policy, reduce the manager panel's stretched height, and give runtime links more space with regular-weight URLs.
 - Remove stale plugin staging directories when uninstalling a plugin, and keep the Plugin Manager launcher button compact in tall grid rows.
