@@ -22,6 +22,7 @@ const adminUrl = `http://${healthHost}:${adminPort}/`;
 const editorUrl = `http://${healthHost}:${editorPort}/`;
 const bundledPluginRoot = resolve(root, "atlas-plugins");
 const persistentPluginRoot = resolve(process.env.ATLAS_PLUGIN_DATA_ROOT ?? join(homedir(), ".atlas", "plugins"));
+const removedPluginSlugsPath = resolve(persistentPluginRoot, ".removed-plugins.json");
 const pluginRoots = [...new Set([persistentPluginRoot, bundledPluginRoot])];
 const fileStudioConfigRoot = resolve(process.env.ATLAS_FILE_STUDIO_CONFIG_ROOT ?? "/config");
 const fileStudioAddonsRoot = resolve(process.env.ATLAS_FILE_STUDIO_ADDONS_ROOT ?? "/addons");
@@ -119,6 +120,16 @@ const server = createServer((request, response) => {
 
   if (routePath === "/api/plugins") {
     void writePluginCatalogResponse(response, requestUrl, request.headers.cookie);
+    return;
+  }
+
+  if (routePath === "/api/plugins/install") {
+    void writePluginInstallResponse(request, response);
+    return;
+  }
+
+  if (routePath === "/api/plugins/uninstall") {
+    void writePluginUninstallResponse(request, response);
     return;
   }
 
@@ -454,6 +465,21 @@ function isSameOriginRequest(request) {
   if (typeof origin !== "string" || typeof hostHeader !== "string") return false;
   try {
     return new URL(origin).host.toLowerCase() === hostHeader.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
+function isTrustedAtlasOrigin(request) {
+  if (isSameOriginRequest(request)) return true;
+  const origin = request.headers.origin;
+  const hostHeader = request.headers.host;
+  if (typeof origin !== "string" || typeof hostHeader !== "string") return false;
+  try {
+    const originUrl = new URL(origin);
+    const requestHost = new URL(`http://${hostHeader}`);
+    return originUrl.hostname.toLowerCase() === requestHost.hostname.toLowerCase()
+      && [adminPort, editorPort].includes(Number(originUrl.port));
   } catch {
     return false;
   }
@@ -2484,7 +2510,7 @@ function isInsideFileStudioRootScope(scope, targetPath) {
   return relativeTargetPath === "" || (!relativeTargetPath.startsWith("..") && !isAbsolute(relativeTargetPath));
 }
 
-async function readJsonRequestBody(request) {
+async function readJsonRequestBody(request, maximumBytes = 2_000_000) {
   if (request.method !== "POST") {
     return {};
   }
@@ -2492,7 +2518,7 @@ async function readJsonRequestBody(request) {
   let body = "";
   for await (const chunk of request) {
     body += chunk;
-    if (body.length > 2_000_000) {
+    if (body.length > maximumBytes) {
       throw new Error("request body too large");
     }
   }
@@ -2847,13 +2873,14 @@ function sortFileStudioTreeEntries(left, right) {
 }
 
 function readPluginCatalog(requestUrl, cookieHeader = "") {
+  const removedPluginSlugs = readRemovedPluginSlugs();
   const pluginDirectoryNames = [...new Set(pluginRoots.flatMap(pluginRoot =>
     existsSync(pluginRoot)
       ? readdirSync(pluginRoot, { withFileTypes: true })
         .filter(entry => entry.isDirectory())
         .map(entry => entry.name)
       : [],
-  ))];
+  ))].filter(directoryName => !removedPluginSlugs.has(directoryName));
   const localPlugins = pluginDirectoryNames
     .map(directoryName => readPluginManifest(directoryName, requestUrl))
     .filter(Boolean);
@@ -2959,6 +2986,190 @@ function readPluginManifest(directoryName, requestUrl) {
     };
   } catch {
     return undefined;
+  }
+}
+
+async function writePluginInstallResponse(request, response) {
+  let stagingDirectory = "";
+  let backupDirectory = "";
+  try {
+    if (!isTrustedAtlasOrigin(request)) {
+      writeJson(response, 403, { error: "plugin management requests must come from an Atlas web surface" });
+      return;
+    }
+    const body = await readJsonRequestBody(request, 24_000_000);
+    const installPackage = body?.installPackage;
+    const plugin = installPackage?.plugin;
+    const files = installPackage?.files;
+    if (
+      request.method !== "POST"
+      || installPackage?.kind !== "atlas.runtime.plugin.install-package"
+      || !plugin || typeof plugin !== "object" || Array.isArray(plugin)
+      || typeof plugin.id !== "string" || !/^atlas\.plugin\.[a-z0-9]+(?:[.-][a-z0-9]+)*$/.test(plugin.id)
+      || typeof plugin.name !== "string" || !plugin.name.trim()
+      || typeof plugin.version !== "string" || !plugin.version.trim()
+      || !Array.isArray(files) || files.length < 1 || files.length > 300
+    ) {
+      writeJson(response, 400, { error: "invalid plugin install package" });
+      return;
+    }
+
+    const slug = createPluginSlug(plugin.id.split(".").at(-1));
+    if (!slug || plugin.id === "atlas.plugin.homeassistant-card-editor") {
+      writeJson(response, 403, { error: "plugin cannot be installed or replaced" });
+      return;
+    }
+
+    const normalizedFiles = [];
+    let totalBytes = 0;
+    for (const file of files) {
+      if (
+        !file || typeof file !== "object" || Array.isArray(file)
+        || typeof file.path !== "string" || !file.path.trim()
+        || file.path.includes("\\") || file.path.startsWith("/")
+        || file.path.split("/").some(segment => !segment || segment === "." || segment === "..")
+        || !/^[A-Za-z0-9._/-]+$/.test(file.path)
+        || typeof file.content !== "string"
+      ) {
+        writeJson(response, 400, { error: "invalid plugin file entry" });
+        return;
+      }
+      let content;
+      if (file.contentEncoding === "base64") {
+        if (!/^[A-Za-z0-9+/]*={0,2}$/.test(file.content)) {
+          writeJson(response, 400, { error: "invalid base64 plugin asset" });
+          return;
+        }
+        content = Buffer.from(file.content, "base64");
+      } else {
+        content = Buffer.from(file.content, "utf8");
+      }
+      totalBytes += content.length;
+      if (totalBytes > 20_000_000) {
+        writeJson(response, 413, { error: "plugin package exceeds the 20 MB limit" });
+        return;
+      }
+      normalizedFiles.push({ path: file.path, content });
+    }
+
+    const manifestFile = normalizedFiles.find(file => file.path === "atlas-plugin.json");
+    if (!manifestFile) {
+      writeJson(response, 400, { error: "plugin manifest is missing" });
+      return;
+    }
+    let manifest;
+    try {
+      manifest = JSON.parse(manifestFile.content.toString("utf8"));
+    } catch {
+      writeJson(response, 400, { error: "plugin manifest is invalid" });
+      return;
+    }
+    if (manifest?.id !== plugin.id || manifest?.version !== plugin.version) {
+      writeJson(response, 400, { error: "plugin id does not match its manifest" });
+      return;
+    }
+
+    mkdirSync(persistentPluginRoot, { recursive: true });
+    stagingDirectory = mkdtempSync(join(persistentPluginRoot, `.install-${slug}-`));
+    for (const file of normalizedFiles) {
+      const filePath = resolve(stagingDirectory, file.path);
+      if (!isPathWithinDirectory(stagingDirectory, filePath)) {
+        throw new Error("plugin file path is outside its package");
+      }
+      mkdirSync(dirname(filePath), { recursive: true });
+      writeFileSync(filePath, file.content, { flag: "wx" });
+    }
+
+    const destination = resolve(persistentPluginRoot, slug);
+    if (existsSync(destination)) {
+      const existingManifestPath = resolve(destination, "atlas-plugin.json");
+      if (!existsSync(existingManifestPath) || JSON.parse(readFileSync(existingManifestPath, "utf8")).id !== plugin.id) {
+        rmSync(stagingDirectory, { recursive: true, force: true });
+        stagingDirectory = "";
+        writeJson(response, 409, { error: "another plugin already uses this plugin folder" });
+        return;
+      }
+      backupDirectory = join(persistentPluginRoot, `.previous-${slug}-${Date.now()}`);
+      renameSync(destination, backupDirectory);
+    }
+    try {
+      renameSync(stagingDirectory, destination);
+      stagingDirectory = "";
+    } catch (error) {
+      if (backupDirectory && existsSync(backupDirectory)) renameSync(backupDirectory, destination);
+      backupDirectory = "";
+      throw error;
+    }
+    if (backupDirectory) {
+      rmSync(backupDirectory, { recursive: true, force: true });
+      backupDirectory = "";
+    }
+    const removedPluginSlugs = readRemovedPluginSlugs();
+    removedPluginSlugs.delete(slug);
+    writeFileSync(removedPluginSlugsPath, JSON.stringify([...removedPluginSlugs].sort(), null, 2));
+    writeJson(response, 200, { ok: true, pluginId: plugin.id, slug, version: plugin.version });
+  } catch (error) {
+    if (stagingDirectory && existsSync(stagingDirectory)) rmSync(stagingDirectory, { recursive: true, force: true });
+    if (backupDirectory && existsSync(backupDirectory)) rmSync(backupDirectory, { recursive: true, force: true });
+    writeJson(response, 400, { error: error instanceof Error ? error.message : "plugin installation failed" });
+  }
+}
+
+async function writePluginUninstallResponse(request, response) {
+  try {
+    if (!isTrustedAtlasOrigin(request)) {
+      writeJson(response, 403, { error: "plugin management requests must come from an Atlas web surface" });
+      return;
+    }
+    const body = await readJsonRequestBody(request);
+    const pluginId = typeof body?.pluginId === "string" ? body.pluginId.trim() : "";
+    if (request.method !== "POST" || !/^atlas\.plugin\.[a-z0-9]+(?:[.-][a-z0-9]+)*$/.test(pluginId)) {
+      writeJson(response, 400, { error: "invalid plugin id" });
+      return;
+    }
+    if (pluginId === "atlas.plugin.homeassistant-card-editor") {
+      writeJson(response, 403, { error: "the reference plugin cannot be uninstalled" });
+      return;
+    }
+    const slug = createPluginSlug(pluginId.split(".").at(-1));
+    const directory = resolve(persistentPluginRoot, slug);
+    const bundledDirectory = resolve(bundledPluginRoot, slug);
+    const persistentManifestPath = resolve(directory, "atlas-plugin.json");
+    const manifestPath = existsSync(directory)
+      ? persistentManifestPath
+      : resolve(bundledDirectory, "atlas-plugin.json");
+    if (!isPathWithinDirectory(persistentPluginRoot, directory)) {
+      writeJson(response, 409, { error: "plugin installation could not be verified" });
+      return;
+    }
+    if (existsSync(manifestPath)) {
+      if (JSON.parse(readFileSync(manifestPath, "utf8")).id !== pluginId) {
+        writeJson(response, 409, { error: "plugin installation could not be verified" });
+        return;
+      }
+    } else if (existsSync(directory)) {
+      writeJson(response, 409, { error: "plugin installation could not be verified" });
+      return;
+    }
+    if (existsSync(directory)) rmSync(directory, { recursive: true, force: true });
+    const removedPluginSlugs = readRemovedPluginSlugs();
+    removedPluginSlugs.add(slug);
+    mkdirSync(persistentPluginRoot, { recursive: true });
+    writeFileSync(removedPluginSlugsPath, JSON.stringify([...removedPluginSlugs].sort(), null, 2));
+    writeJson(response, 200, { ok: true, pluginId });
+  } catch (error) {
+    writeJson(response, 400, { error: error instanceof Error ? error.message : "plugin removal failed" });
+  }
+}
+
+function readRemovedPluginSlugs() {
+  try {
+    const values = JSON.parse(readFileSync(removedPluginSlugsPath, "utf8"));
+    return new Set(Array.isArray(values)
+      ? values.filter(value => typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value))
+      : []);
+  } catch {
+    return new Set();
   }
 }
 

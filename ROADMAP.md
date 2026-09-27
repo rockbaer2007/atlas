@@ -218,9 +218,11 @@ additional envelope-only contract expansion.
   * package download and install from repository metadata
   * update checks through the same repository source
   * local ZIP import as the developer/offline fallback
-  * current limitation: repository packages are still stored in browser Administration state; installation into persistent server storage is not wired yet
-* Remaining: install and update repository plugins in persistent server storage, independent of the ATLAS application image
-* Remaining: remove bundled copies of plugins that are maintained in separate repositories after migration and update behavior is verified
+  * repository packages are installed and updated in persistent server storage, independent of the ATLAS application image
+  * uninstall markers persist so removed bundled plugins do not reappear after an image update
+  * the dedicated Plugin Manager provides install, activate, deactivate and uninstall actions; the Card Editor is protected as the reference plugin
+* Packaged Docker images now include only the Home Assistant Card Editor reference plugin; other plugins are supplied through their independent repositories
+* Remaining: verify upgrade migration for already-installed plugins and test independent repository installation on a real Home Assistant App/Add-on host
 
 ### Success Criteria
 

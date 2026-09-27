@@ -6,8 +6,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
-- Discover optional plugins from persistent storage before bundled fallbacks so later repository installs can survive Atlas image updates.
-- Restrict plugin asset and fallback-module paths to the selected plugin directory.
+- Add a dedicated Plugin Manager for installation, activation, updates and removal.
+- Install and update repository packages in persistent server storage, and remember removed plugin folders across Atlas updates.
+- Ship only the Home Assistant Card Editor as the built-in reference plugin; install the other plugins independently.
+- Give ATLAS Terminal a branded icon.
 - Keep Plugin Hub status badges compact when a plugin has no icon.
 - Include manually imported plugin packages in the Plugin Hub catalog and show a clear state if no launch page is available.
 - Add a bilingual Administration plugin generator for starter install packages and repository catalog files.

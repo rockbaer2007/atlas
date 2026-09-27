@@ -98,11 +98,15 @@ The package URL points to an ATLAS runtime plugin install package:
 }
 ```
 
-The Administration repository flow currently stores the descriptor and package
-files in browser state. ATLAS now discovers plugin folders in a persistent
-server-side directory before checking bundled folders, but repository installs
-are not yet written to that directory. Bundled copies remain as a fallback until
-the persistent installer and migration are complete.
+Administration writes repository packages to a persistent server-side plugin
+directory. Installs and updates replace the plugin directory atomically, while
+uninstall markers keep removed bundled plugins hidden across application image
+updates. Persistent plugin folders take precedence over bundled fallback folders.
+The Home Assistant Card Editor is protected as the built-in reference plugin;
+other plugins can be installed, activated, deactivated and removed in the Plugin
+Manager. Docker images include only the Card Editor reference plugin; separately
+maintained plugin assets are installed and updated independently through their
+repositories.
 
 ## Live Repositories
 
