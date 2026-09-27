@@ -15,7 +15,7 @@ test("accepts same-origin and local Atlas surfaces", () => {
 
 test("accepts Home Assistant Ingress when forwarded origin matches", () => {
   assert.equal(isTrustedAtlasOrigin({
-    socket: { remoteAddress: "::ffff:172.30.32.2" },
+    socket: { remoteAddress: "::ffff:172.30.32.1" },
     headers: {
       origin: "http://192.168.178.197:8123",
       host: "172.30.32.1:4176",
@@ -36,10 +36,14 @@ test("rejects forged, malformed, or mismatched ingress metadata", () => {
     "x-forwarded-host": "attacker.example",
     "x-forwarded-proto": "http",
   };
-  const socket = { remoteAddress: "172.30.32.2" };
+  const socket = { remoteAddress: "172.30.32.1" };
   assert.equal(isTrustedAtlasOrigin({ socket, headers }, ports), false);
   assert.equal(isTrustedAtlasOrigin({ socket, headers: { ...headers, "x-hass-source": "external" } }, ports), false);
   assert.equal(isTrustedAtlasOrigin({ socket, headers: { ...headers, "x-ingress-path": "/elsewhere" } }, ports), false);
+  assert.equal(isTrustedAtlasOrigin({ socket: { remoteAddress: "172.30.32.2" }, headers: {
+    ...headers,
+    "x-forwarded-host": "192.168.178.197:8123",
+  } }, ports), false);
   assert.equal(isTrustedAtlasOrigin({ socket: { remoteAddress: "192.168.178.20" }, headers: {
     ...headers,
     "x-forwarded-host": "192.168.178.197:8123",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.244
+
+- Accept the Home Assistant Core ingress proxy address when installing plugins.
+
 ## 0.1.243
 
 - Fix plugin package installs through Home Assistant Ingress by validating the

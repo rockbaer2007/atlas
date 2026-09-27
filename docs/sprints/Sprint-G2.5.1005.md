@@ -30,3 +30,21 @@ Validation:
 Status:
 
 Completed.
+# Sprint G2.5.1005 - Correct Home Assistant Ingress source address
+
+Goal:
+
+Allow external repository plugins to install through the actual Home Assistant Core Ingress proxy.
+
+Implementation:
+
+* Trust the Home Assistant Core bridge address (172.30.32.1) instead of the Supervisor address.
+* Add a regression test proving the Supervisor address is rejected.
+* Bump the Home Assistant app package to 0.1.244.
+
+Validation:
+
+* `node --test scripts/atlas-request-origin.test.mjs`
+* `pnpm build`
+* `pnpm ha:app:prepare`
+* `git diff --check`
