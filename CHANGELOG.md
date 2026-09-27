@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Normalize published `atlas.plugin.package` repository packages so external plugins install alongside Runtime-envelope packages.
 - Keep repository plugin install progress and errors visible inside the Plugin Manager dialog; clarify its inherited Administration language.
 - Accept Home Assistant Core's actual ingress proxy address for repository plugin installation.
 - Allow requests from Home Assistant's Ingress proxy to install repository plugins, and show the server's installation error when a package cannot be saved.

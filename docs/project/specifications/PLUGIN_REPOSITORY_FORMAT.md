@@ -76,7 +76,12 @@ descriptor source.
 
 ## Install Package
 
-The package URL points to an ATLAS runtime plugin install package:
+The package URL can point to either the Runtime install-package envelope
+(`atlas.runtime.plugin.install-package`) or the published ATLAS plugin package
+envelope (`atlas.plugin.package`, with `atlas.type: plugin-package` and
+`atlas.schemaVersion: 1`). Administration normalizes both formats before
+installing. In the published envelope, file `mediaType` is optional and is
+inferred from the filename when omitted. For example, the Runtime form is:
 
 ```json
 {
