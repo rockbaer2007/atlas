@@ -18,6 +18,10 @@ und Card Editor sind zusätzlich über App-Routen erreichbar, damit Hub- und
 Seitenleisten-Links auch über Home Assistant Ingress und von anderen Rechnern
 funktionieren.
 
+Administration bietet eine begonnene französische Vorschau für Kopfzeile und
+Verbindungseinstellungen. Noch nicht übersetzte Texte werden auf Englisch
+angezeigt und im Hinweis als ausstehend gekennzeichnet.
+
 ## Add-on-Verbindungsoptionen
 
 Die Add-on-Konfiguration kann die Home-Assistant-URL, einen Long-Lived Access
@@ -87,6 +91,10 @@ sidebar dialog can copy either a plain plugin URL or a ready-to-use
 `panel_iframe` block. Administration and Card Editor are also available through
 app routes so Hub and sidebar links work through Home Assistant Ingress and from
 other client devices.
+
+Administration includes an in-progress French preview for its header and
+connection settings. Untranslated text falls back to English and is identified
+by an on-screen notice.
 
 ## Add-on connection options
 

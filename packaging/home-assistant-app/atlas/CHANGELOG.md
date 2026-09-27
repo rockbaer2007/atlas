@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.258
+
+- Add a French Administration preview with an explicit English-fallback notice.
+
 ## 0.1.255
 
 - Redact Home Assistant Ingress tokens from debug-report URLs and embedded text.

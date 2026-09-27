@@ -18,7 +18,7 @@ The roadmap is a living document and may evolve as the project matures.
 
 Current Release:
 
-**0.2.0-alpha.1**
+**0.2.0-alpha.80**
 
 Current Focus:
 
@@ -82,7 +82,7 @@ additional envelope-only contract expansion.
 
 ## 0.4 – Rendering
 
-**Status:** 📅 Planned
+**Status:** 🚧 In Progress
 
 ### Objectives
 
@@ -91,6 +91,7 @@ additional envelope-only contract expansion.
 * Virtual component model
 * Layout integration
 * Performance optimizations
+* Delivered: the status demo sends live Home Assistant entity updates through the Renderer and Theme surfaces into a browser DOM target.
 
 ### Success Criteria
 
@@ -222,7 +223,6 @@ additional envelope-only contract expansion.
   * uninstall markers persist so removed bundled plugins do not reappear after an image update
   * the dedicated Plugin Manager provides install, activate, deactivate and uninstall actions; the Card Editor is protected as the reference plugin
 * Packaged Docker images now include only the Home Assistant Card Editor reference plugin; other plugins are supplied through their independent repositories
-* Remaining: verify upgrade migration for already-installed plugins and test independent repository installation on a real Home Assistant App/Add-on host
 
 ### Success Criteria
 
@@ -265,9 +265,9 @@ additional envelope-only contract expansion.
 * Keep `en` as the required fallback language whenever a translation key is missing
 * Delivered: extend ATLAS documentation from German/English to French
 * Delivered: keep language navigation consistent across DE, EN and FR in the documentation site
-* Remaining: extend ATLAS UI language support from German/English to French
-* Remaining: store the ATLAS default language in Administration settings and apply it across Administration, Plugin Hub and plugin surfaces
-* Remaining: mark generated or placeholder French UI content clearly until reviewed
+* Delivered: Administration stores the selected French locale and passes it to plugin routes; a notice explains English fallback for untranslated strings.
+* In progress: translate and review the remaining Administration, Plugin Hub and plugin UI in small sections.
+* Remaining: apply one saved default language consistently across Administration, Plugin Hub and plugin surfaces.
 
 ### Success Criteria
 

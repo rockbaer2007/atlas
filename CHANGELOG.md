@@ -6,6 +6,9 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Add an explicitly labeled French Administration preview with persisted locale selection and English fallback for untranslated strings.
+- Exercise live Home Assistant entity updates through the themed Renderer surface binding and its disposal path.
+- Remove real-host external-plugin installation verification from the roadmap backlog as requested.
 - Activate `@atlas/devtools` with a read-only summary API for Foundation diagnostic reports.
 - Replace Foundation, Kernel and event no-op placeholder tests with contract coverage.
 - Highlight the selected Plugin Manager tab with an orange border.
