@@ -22,7 +22,7 @@ Current Release:
 
 Current Focus:
 
-**Post-G2.5 Stabilization**
+**Product-facing implementation after G2.5**
 
 The G2.5 sprint ledger is complete. The next roadmap movement should focus on
 concrete renderer usage and product-facing integration scenarios rather than
@@ -177,20 +177,20 @@ additional envelope-only contract expansion.
 
 ## 0.7 – Plugin Ecosystem
 
-**Status:** 📅 Planned
+**Status:** 🚧 In Progress
 
 ### Objectives
 
 * Plugin runtime
 * Plugin discovery
 * Manifest-backed plugin folders with required `atlas-plugin.json`, icon and preview assets
-* ATLAS Plugin Hub start behavior:
+* Delivered: ATLAS Plugin Hub start behavior:
   * 0 active plugins: show empty hub with Administration hint
   * 1 active plugin: open the plugin directly from ATLAS start
   * 2+ active plugins: show the visual plugin selection hub
   * planned or disabled plugins: visible in Hub/Admin but excluded from auto-start
-* Home Assistant Card Editor reference plugin using Runtime plugin contracts and Plugin Catalog discovery
-* ATLAS File Studio as second reference plugin:
+* Delivered: Home Assistant Card Editor reference plugin using Runtime plugin contracts and Plugin Catalog discovery
+* Delivered: ATLAS File Studio as second reference plugin:
   * functionally inspired by the Home Assistant File editor
   * ATLAS/Card-Editor-aligned design instead of copied upstream visuals
   * file tree and editor surface for Home Assistant configuration files
@@ -207,9 +207,9 @@ additional envelope-only contract expansion.
 * Extension API
 * Provider ecosystem
 * Third-party integrations
-* Dedicated plugin documentation for authoring, lifecycle, extension APIs, examples, and publishing guidance
-* Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation
-* HACS-like ATLAS plugin repository flow:
+* Delivered: dedicated plugin documentation for authoring, lifecycle, extension APIs, examples, and publishing guidance
+* Delivered: Atlas Administration web surface for plugin management, plugin creation, import/export, and installable package generation
+* Partially delivered: HACS-like ATLAS plugin repository flow:
   * Custom repository list in Administration, similar to the Home Assistant/HACS repository dialog
   * Atlas-branded add-repository dialog with URL/type entry, repository preview and final confirmation
   * Repository URL entry with type selection for plugin, card, integration, tool and theme sources
@@ -218,6 +218,8 @@ additional envelope-only contract expansion.
   * package download and install from repository metadata
   * update checks through the same repository source
   * local ZIP import as the developer/offline fallback
+  * current limitation: repository packages are stored locally and listed in the Hub, but package-provided executable code is not yet activated by the runtime
+* Remaining: runtime-managed loading and lifecycle activation for repository-installed plugin code, with explicit validation and trust boundaries
 
 ### Success Criteria
 
@@ -231,14 +233,14 @@ additional envelope-only contract expansion.
 
 ## 0.8 – Developer Experience
 
-**Status:** 📅 Planned
+**Status:** 🚧 In Progress
 
 ### Objectives
 
 * CLI
 * Project templates
-* Code generators
-* Documentation generator
+* Delivered: Administration plugin generator for install packages and repository catalog entries
+* Remaining: broader code generators and documentation generator
 * `html-vitepress-konverter`: planned helper program that imports HTML pages
   with optional CSS, extracts the documentation content, copies referenced
   assets, and writes VitePress-ready Markdown/frontmatter output.
@@ -253,17 +255,16 @@ additional envelope-only contract expansion.
 
 ## 0.9 – Internationalization
 
-**Status:** 📅 Planned
+**Status:** 🚧 In Progress
 
 ### Objectives
 
-* Store the ATLAS default language in Administration settings
-* Apply the saved language across Administration, Plugin Hub and plugin surfaces
 * Keep `en` as the required fallback language whenever a translation key is missing
-* Extend ATLAS UI language support from German/English to French
-* Extend ATLAS documentation from German/English to French
-* Keep language navigation consistent across DE, EN and FR
-* Mark generated or placeholder French content clearly until reviewed
+* Delivered: extend ATLAS documentation from German/English to French
+* Delivered: keep language navigation consistent across DE, EN and FR in the documentation site
+* Remaining: extend ATLAS UI language support from German/English to French
+* Remaining: store the ATLAS default language in Administration settings and apply it across Administration, Plugin Hub and plugin surfaces
+* Remaining: mark generated or placeholder French UI content clearly until reviewed
 
 ### Success Criteria
 
