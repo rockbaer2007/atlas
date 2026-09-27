@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Highlight the selected Plugin Manager tab with an orange border.
 - Open a concise GitHub issue form for debug reports and keep the full reviewed report available through the Copy report button, avoiding oversized issue URLs.
 - Refresh the Terminal plugin icon with the ATLAS overlay badge.
 - Add automatic tabs for installed plugins, switch to a selected plugin on install, and remove oversized preview images from manager repository listings.
