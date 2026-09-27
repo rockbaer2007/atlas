@@ -18,7 +18,7 @@ The roadmap is a living document and may evolve as the project matures.
 
 Current Release:
 
-**0.2.0-alpha.84**
+**0.2.0-alpha.85**
 
 Current Focus:
 
