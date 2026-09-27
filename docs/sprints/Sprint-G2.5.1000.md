@@ -1,26 +1,29 @@
-# Sprint G2.5.1000 - Activate read-only Devtools diagnostic summaries
+# Sprint G2.5.1000 - Shared interface language preference
 
 Goal:
 
-Replace the empty Devtools package root with its first narrow, read-only public
-contract for summarizing Foundation diagnostic reports.
+Make the saved Administration language the shared default for Plugin Hub and
+keep explicit language URL parameters authoritative.
 
 Implementation:
 
-* Add `summarizeDiagnostics` with unavailable, healthy and issues states.
-* Include report totals, issue totals and severity counts without mutating reports.
-* Depend on Foundation only; keep interactive panels and workspace mutation deferred.
-* Remove obsolete empty-package activation-gate scaffolding and update package readiness docs.
-* Bump `@atlas/devtools` to `0.2.0-alpha.39`.
+* Persist DE/EN/FR selection from both Administration and Plugin Hub in local
+  storage and a non-sensitive first-party cookie, allowing the preference to
+  cross the separate app ports.
+* Read that preference before the legacy per-surface preference on direct page
+  loads; migrate an existing Administration preference when no shared value is
+  present.
+* Preserve URL language overrides for plugin routes and shareable links.
+* Bump the framework to `0.2.0-alpha.82` and Home Assistant App to `0.1.260`.
 
 Validation:
 
-* `pnpm --filter @atlas/devtools test`
-* `pnpm --filter @atlas/devtools check`
-* `pnpm --filter @atlas/devtools build`
-* `pnpm install --lockfile-only`
-* `git diff --check`
+* JavaScript syntax checks for Administration and Plugin Hub.
+* Production build, package tests, and Home Assistant App preparation.
+* Browser check that a language selected in either surface becomes the default
+  in the other surface, while `?language=...` still overrides it.
+* `git diff --check`.
 
 Status:
 
-Completed.
+In progress.

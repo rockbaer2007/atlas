@@ -18,7 +18,7 @@ The roadmap is a living document and may evolve as the project matures.
 
 Current Release:
 
-**0.2.0-alpha.81**
+**0.2.0-alpha.82**
 
 Current Focus:
 
@@ -269,7 +269,8 @@ additional envelope-only contract expansion.
 * Delivered: all existing Administration translation keys have German, English and French entries; Administration stores and passes the selected locale to plugin routes.
 * Delivered: Plugin Hub has French translations for its interface, restores the session choice and documents fallback to each plugin's available text.
 * In progress: translate and review the remaining plugin UI in small sections; external plugins may provide their own locale coverage.
-* Remaining: apply one saved default language consistently across Administration, Plugin Hub and plugin surfaces.
+* Delivered: Administration and Plugin Hub share a saved DE/EN/FR language preference while route-specific language overrides remain supported.
+* Remaining: apply the saved default language to built-in and external plugin surfaces that declare locale support.
 
 ### Success Criteria
 
