@@ -1,32 +1,19 @@
-# Sprint G2.5.1004 - Renderer Mount Reporting Consumer Diagnostics Policy Future Platform Boundary Review
+# Sprint G2.5.1004 - Fix external plugin installation through Ingress
 
 Goal:
 
-Evaluate summarized Renderer mount report consumer diagnostics through simple policy gates.
+Allow plugins from separate repositories to install in the Home Assistant add-on.
 
 Implementation:
 
-* Added a stable Renderer mount report consumer diagnostic policy contract.
-* Added policy evaluation derived from aggregation summaries.
-* Added stable policy diagnostic codes for failed consumers and exceeded issue limits.
-* Kept policy evaluations independent from DOM elements, Theme bindings, Home Assistant fields and platform metadata.
-* Updated the package root, public API contract tests, README, changelog and sprint indexes.
-
-Public API:
-
-* `RendererMountReportConsumerDiagnosticPolicy`
-* `RendererMountReportConsumerDiagnosticPolicyCodes`
-* `RendererMountReportConsumerDiagnosticPolicyEvaluation`
-* `evaluateRendererMountReportConsumerDiagnosticPolicy`
+* Validate Home Assistant Ingress forwarded origins using trusted Ingress headers and source address.
+* Show the server's plugin-installation error in the Plugin Manager.
+* Add regression tests and bump the Home Assistant app package to 0.1.243.
 
 Validation:
 
-* `pnpm --filter @atlas/renderer check`
-* `pnpm --filter @atlas/renderer test`
-* `pnpm check`
-* `pnpm build`
+* `node --test scripts/atlas-request-origin.test.mjs`
 * `pnpm test`
-
-Status:
-
-Completed.
+* `pnpm build`
+* `pnpm ha:app:prepare`
+* `git diff --check`
