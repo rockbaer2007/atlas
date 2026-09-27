@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep the current Runtime package parser in the Home Assistant Add-on build context and deduplicate identical paths again on the server before staging.
 - Deduplicate identical plugin package file paths before staging installation, with a clear error for conflicting duplicates.
 - Normalize published `atlas.plugin.package` repository packages so external plugins install alongside Runtime-envelope packages.
 - Keep repository plugin install progress and errors visible inside the Plugin Manager dialog; clarify its inherited Administration language.
