@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Preserve the Home Assistant Ingress base path when generating app surface links, preventing `/editor` redirects from escaping Ingress and returning a Home Assistant 404.
 - Ask whether plugin-specific browser settings should be kept or deleted during uninstall.
 - Keep the Plugin Manager launch button compact and wrap its label cleanly onto two lines.
 - Add a dedicated Plugin Manager for installation, activation, updates and removal.
