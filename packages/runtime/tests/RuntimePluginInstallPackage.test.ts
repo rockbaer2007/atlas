@@ -167,6 +167,22 @@ describe("RuntimePluginInstallPackage", () => {
     }]);
   });
 
+  it("deduplicates identical file paths and rejects conflicting duplicates", () => {
+    const readme = { path: "README.md", mediaType: "text/markdown", content: "# Plugin" };
+    const parsed = parseRuntimePluginInstallPackage({
+      kind: "atlas.runtime.plugin.install-package",
+      plugin,
+      files: [readme, { ...readme }],
+    });
+
+    expect(parsed.files).toEqual([readme]);
+    expect(() => parseRuntimePluginInstallPackage({
+      kind: "atlas.runtime.plugin.install-package",
+      plugin,
+      files: [readme, { ...readme, content: "# Different plugin" }],
+    })).toThrow("Runtime plugin package contains conflicting duplicate file paths: README.md.");
+  });
+
   it("rejects invalid install packages", () => {
     expect(() => parseRuntimePluginInstallPackage("{")).toThrow(
       "Runtime plugin install package JSON is invalid.",

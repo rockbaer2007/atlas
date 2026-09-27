@@ -184,18 +184,33 @@ function readInstallPackageFiles(value: unknown): readonly RuntimePluginInstallP
     throw new Error("Runtime plugin install package files must be an array.");
   }
 
-  return value.map(file => {
+  const files = new Map<string, RuntimePluginInstallPackageFile>();
+  for (const file of value) {
     if (!isRecord(file)) {
       throw new Error("Runtime plugin install package file is invalid.");
     }
 
-    return {
+    const parsedFile: RuntimePluginInstallPackageFile = {
       path: readRequiredString(file.path, "Runtime plugin package file path is required."),
       mediaType: readRequiredString(file.mediaType, "Runtime plugin package file media type is required."),
       content: readRequiredString(file.content, "Runtime plugin package file content is required."),
       ...(readOptionalContentEncoding(file.contentEncoding) ? { contentEncoding: "base64" as const } : {}),
     };
-  });
+    const existing = files.get(parsedFile.path);
+    if (existing) {
+      if (
+        existing.mediaType !== parsedFile.mediaType
+        || existing.content !== parsedFile.content
+        || existing.contentEncoding !== parsedFile.contentEncoding
+      ) {
+        throw new Error(`Runtime plugin package contains conflicting duplicate file paths: ${parsedFile.path}.`);
+      }
+      continue;
+    }
+    files.set(parsedFile.path, parsedFile);
+  }
+
+  return [...files.values()];
 }
 
 function readOptionalContentEncoding(value: unknown): "base64" | undefined {
