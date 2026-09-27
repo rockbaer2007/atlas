@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep DE/EN/FR language buttons in one row and give the French Plugin Manager launch button enough height for its longer label.
 - Share the saved DE/EN/FR language preference between Administration and Plugin Hub across app ports, while keeping per-URL language overrides.
 - Complete French entries for all current Administration and Plugin Hub translation keys, persist the locale, and explain plugin-text fallback.
 - Exercise live Home Assistant entity updates through the themed Renderer surface binding, and announce rendered status accessibly while escaping dynamic HTML.

@@ -1,18 +1,22 @@
-# Sprint G2.5.1001 - Home Assistant Terminal Welcome Banner
+# Sprint G2.5.1001 - Compact localization controls
 
 Goal:
 
-Show the familiar Home Assistant welcome and system information when opening the local ATLAS terminal.
+Keep the Plugin Hub language selector on one row and make the Administration
+Plugin Manager launch control fit its longer French label.
 
 Implementation:
 
-* Print the welcome banner once when the local interactive Bash session starts.
-* Display system information through the available `ha info` command.
-* Keep SSH terminal sessions unchanged and initialize Oh My Posh after the welcome output.
+* Keep DE, EN and FR buttons on a single non-wrapping row.
+* Increase the Plugin Manager launch button height only for French.
+* Bump the framework to `0.2.0-alpha.83` and Home Assistant App to `0.1.261`.
 
 Validation:
 
-* `node --check scripts/atlas-app-server.mjs`
-* `git diff --check`
-* `pnpm build`
-* `pnpm ha:app:prepare`
+* JavaScript syntax check and production build.
+* Home Assistant App preparation.
+* `git diff --check`.
+
+Status:
+
+In progress.
