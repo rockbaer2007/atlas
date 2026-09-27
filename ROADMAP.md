@@ -218,8 +218,9 @@ additional envelope-only contract expansion.
   * package download and install from repository metadata
   * update checks through the same repository source
   * local ZIP import as the developer/offline fallback
-  * current limitation: repository packages are stored locally and listed in the Hub, but package-provided executable code is not yet activated by the runtime
-* Remaining: runtime-managed loading and lifecycle activation for repository-installed plugin code, with explicit validation and trust boundaries
+  * current limitation: repository packages are still stored in browser Administration state; installation into persistent server storage is not wired yet
+* Remaining: install and update repository plugins in persistent server storage, independent of the ATLAS application image
+* Remaining: remove bundled copies of plugins that are maintained in separate repositories after migration and update behavior is verified
 
 ### Success Criteria
 

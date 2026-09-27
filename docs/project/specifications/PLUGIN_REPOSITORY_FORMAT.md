@@ -98,8 +98,11 @@ The package URL points to an ATLAS runtime plugin install package:
 }
 ```
 
-The first Administration implementation stores the descriptor and package files
-locally. It does not execute plugin code from repository packages yet.
+The Administration repository flow currently stores the descriptor and package
+files in browser state. ATLAS now discovers plugin folders in a persistent
+server-side directory before checking bundled folders, but repository installs
+are not yet written to that directory. Bundled copies remain as a fallback until
+the persistent installer and migration are complete.
 
 ## Live Repositories
 

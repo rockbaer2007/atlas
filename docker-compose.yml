@@ -10,6 +10,7 @@ services:
       ATLAS_ADMIN_PORT: 4175
       ATLAS_DEMO_PORT: 4174
       ATLAS_DISTRIBUTION_TARGET: standalone-docker-preview
+      ATLAS_PLUGIN_DATA_ROOT: /data/atlas-plugins
       ATLAS_INSTANCE_ID: ${ATLAS_INSTANCE_ID:-atlas-local}
       ATLAS_TERMINAL_ENABLED: ${ATLAS_TERMINAL_ENABLED:-0}
       ATLAS_TERMINAL_TOKEN: ${ATLAS_TERMINAL_TOKEN:-}
@@ -23,3 +24,8 @@ services:
       - "4175:4175"
       - "4174:4174"
     restart: unless-stopped
+    volumes:
+      - atlas-plugin-data:/data/atlas-plugins
+
+volumes:
+  atlas-plugin-data:

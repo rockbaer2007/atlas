@@ -6,7 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
-- Keep repository-installed plugin packages inactive until runtime execution and trust controls are implemented.
+- Discover optional plugins from persistent storage before bundled fallbacks so later repository installs can survive Atlas image updates.
+- Restrict plugin asset and fallback-module paths to the selected plugin directory.
 - Keep Plugin Hub status badges compact when a plugin has no icon.
 - Include manually imported plugin packages in the Plugin Hub catalog and show a clear state if no launch page is available.
 - Add a bilingual Administration plugin generator for starter install packages and repository catalog files.

@@ -22,7 +22,7 @@ Current focus:
 ATLAS now ships a combined app runtime for Home Assistant-oriented workflows:
 Administration, Plugin Hub, the Home Assistant Card Editor, ATLAS File Studio
 and ATLAS Automation Exporter / Editor. The current Home Assistant App/Add-on
-package is `0.1.236`.
+package is `0.1.238`.
 
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,
