@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep the Plugin Manager launch button compact and wrap its label cleanly onto two lines.
 - Add a dedicated Plugin Manager for installation, activation, updates and removal.
 - Install and update repository packages in persistent server storage, and remember removed plugin folders across Atlas updates.
 - Ship only the Home Assistant Card Editor as the built-in reference plugin; install the other plugins independently.
