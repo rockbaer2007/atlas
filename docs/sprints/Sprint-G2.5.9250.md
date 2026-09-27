@@ -1,4 +1,4 @@
-# Sprint G2.5.1002 - French plugin interfaces
+# Sprint G2.5.9250 - French plugin interfaces
 
 Goal:
 
