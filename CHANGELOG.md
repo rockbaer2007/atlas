@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep repository plugin install progress and errors visible inside the Plugin Manager dialog; clarify its inherited Administration language.
 - Accept Home Assistant Core's actual ingress proxy address for repository plugin installation.
 - Allow requests from Home Assistant's Ingress proxy to install repository plugins, and show the server's installation error when a package cannot be saved.
 - Preserve the Home Assistant Ingress base path when generating app surface links, preventing `/editor` redirects from escaping Ingress and returning a Home Assistant 404.

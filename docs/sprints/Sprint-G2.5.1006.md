@@ -1,32 +1,19 @@
-# Sprint G2.5.1006 - Renderer Mount Reporting Consumer Diagnostics Policy Success Stability Review
+# Sprint G2.5.1006 - Surface Plugin Manager install status
 
 Goal:
 
-Evaluate summarized Renderer mount report consumer diagnostics through simple policy gates.
+Make external plugin installation failures visible while the Plugin Manager dialog is open.
 
 Implementation:
 
-* Added a stable Renderer mount report consumer diagnostic policy contract.
-* Added policy evaluation derived from aggregation summaries.
-* Added stable policy diagnostic codes for failed consumers and exceeded issue limits.
-* Kept policy evaluations independent from DOM elements, Theme bindings, Home Assistant fields and platform metadata.
-* Updated the package root, public API contract tests, README, changelog and sprint indexes.
-
-Public API:
-
-* `RendererMountReportConsumerDiagnosticPolicy`
-* `RendererMountReportConsumerDiagnosticPolicyCodes`
-* `RendererMountReportConsumerDiagnosticPolicyEvaluation`
-* `evaluateRendererMountReportConsumerDiagnosticPolicy`
+* Show install progress, success and detailed failures in the Plugin Manager itself.
+* Show detailed uninstall failures there as well.
+* Clarify that the Plugin Manager uses the Administration language selection.
+* Bump the Home Assistant app package to 0.1.245.
 
 Validation:
 
-* `pnpm --filter @atlas/renderer check`
-* `pnpm --filter @atlas/renderer test`
-* `pnpm check`
+* `node --check examples/admin-demo/app.js`
 * `pnpm build`
-* `pnpm test`
-
-Status:
-
-Completed.
+* `pnpm ha:app:prepare`
+* `git diff --check`
