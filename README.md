@@ -23,7 +23,7 @@ ATLAS ships Administration, Plugin Hub and the Home Assistant Card Editor as its
 built-in reference plugin. File Studio, Terminal, Automation Exporter / Editor
 and other independently maintained plugins are installed and updated through
 their own repositories. The current Home Assistant App/Add-on package is
-`0.1.263`.
+`0.1.264`.
 
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,
@@ -53,7 +53,7 @@ Home Assistant sidebar path itself does not change; the app's port `4176` must
 be reachable by the browser displaying Home Assistant.
 
 ATLAS Automation Exporter / Editor is available as a GitHub-installable plugin
-at version `0.1.24`. It can analyze `/config/automations.yaml` or uploaded YAML,
+at version `0.1.25`. It can analyze `/config/automations.yaml` or uploaded YAML,
 show highlighted automation details, detect modern `action:` service calls and
 export selected automations with timestamped filenames.
 
