@@ -17,7 +17,7 @@ not a future package layout.
 | `@atlas/renderer` | Active | Root exports for the Renderer host context, output, target and pipeline boundaries. |
 | `@atlas/theme` | Active | Public theme tokens and renderer-facing CSS variable helpers. |
 | `@atlas/homeassistant` | Active | Themed status-panel contract and renderer-backed mounting. |
-| `@atlas/devtools` | Planned | Empty entry point; no public API yet. |
+| `@atlas/devtools` | Active | Read-only diagnostic report summaries; depends on Foundation only. |
 
 All active workspace package manifests publish from `dist`. TypeScript source
 under `src` is authoritative; generated output is excluded from version
@@ -44,20 +44,11 @@ depend on higher-level workspace packages.
 
 ---
 
-# Placeholder Boundaries
+# Deferred Package Work
 
-The planned workspace packages intentionally export `export {}` only. This
-reserves their package names and build locations without creating an API that
-would need to be supported prematurely.
-
-No implementation should be added to a placeholder package until its owning
-architecture phase defines its public contracts, dependencies and tests.
-
-The current integration readiness candidate order is:
-
-1. `@atlas/theme`
-2. `@atlas/homeassistant`
-3. `@atlas/devtools`
+Future developer tooling such as interactive diagnostics panels, workspace
+mutation helpers and development-server controls needs separate public
+contracts before implementation.
 
 Integration packages may depend on `@atlas/core` only after activation. Lower
 layers must not depend on integration packages.

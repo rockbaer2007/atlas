@@ -58,7 +58,9 @@
     },
     {
       "package": "devtools",
-      "allowed": []
+      "allowed": [
+        "foundation"
+      ]
     }
   ]
 }

@@ -76,7 +76,11 @@ importers:
         specifier: workspace:*
         version: link:../runtime
 
-  packages/devtools: {}
+  packages/devtools:
+    dependencies:
+      '@atlas/foundation':
+        specifier: workspace:*
+        version: link:../foundation
 
   packages/file-studio:
     dependencies:
