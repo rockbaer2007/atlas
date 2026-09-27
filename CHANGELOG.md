@@ -6,6 +6,10 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Add French UI support to ATLAS Terminal and the main File Studio controls.
+- Update the independent Terminal plugin to `0.1.7` and File Studio to `0.1.40` with French catalog metadata.
+- Bump the framework to `0.2.0-alpha.84` and Home Assistant App to `0.1.262`.
+
 - Keep DE/EN/FR language buttons in one row and give the French Plugin Manager launch button enough height for its longer label.
 - Share the saved DE/EN/FR language preference between Administration and Plugin Hub across app ports, while keeping per-URL language overrides.
 - Complete French entries for all current Administration and Plugin Hub translation keys, persist the locale, and explain plugin-text fallback.
