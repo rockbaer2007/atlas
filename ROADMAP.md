@@ -18,7 +18,7 @@ The roadmap is a living document and may evolve as the project matures.
 
 Current Release:
 
-**0.2.0-alpha.80**
+**0.2.0-alpha.81**
 
 Current Focus:
 
@@ -92,6 +92,7 @@ additional envelope-only contract expansion.
 * Layout integration
 * Performance optimizations
 * Delivered: the status demo sends live Home Assistant entity updates through the Renderer and Theme surfaces into a browser DOM target.
+* Delivered: status markup announces changes through an accessible polite live region and escapes dynamic entity text before rendering.
 
 ### Success Criteria
 
@@ -265,8 +266,9 @@ additional envelope-only contract expansion.
 * Keep `en` as the required fallback language whenever a translation key is missing
 * Delivered: extend ATLAS documentation from German/English to French
 * Delivered: keep language navigation consistent across DE, EN and FR in the documentation site
-* Delivered: Administration stores the selected French locale and passes it to plugin routes; a notice explains English fallback for untranslated strings.
-* In progress: translate and review the remaining Administration, Plugin Hub and plugin UI in small sections.
+* Delivered: all existing Administration translation keys have German, English and French entries; Administration stores and passes the selected locale to plugin routes.
+* Delivered: Plugin Hub has French translations for its interface, restores the session choice and documents fallback to each plugin's available text.
+* In progress: translate and review the remaining plugin UI in small sections; external plugins may provide their own locale coverage.
 * Remaining: apply one saved default language consistently across Administration, Plugin Hub and plugin surfaces.
 
 ### Success Criteria
