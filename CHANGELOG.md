@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep repository-installed plugin packages inactive until runtime execution and trust controls are implemented.
 - Keep Plugin Hub status badges compact when a plugin has no icon.
 - Include manually imported plugin packages in the Plugin Hub catalog and show a clear state if no launch page is available.
 - Add a bilingual Administration plugin generator for starter install packages and repository catalog files.
