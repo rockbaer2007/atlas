@@ -8,7 +8,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 - Add full French UI support to the Automation Exporter / Editor and its plugin catalog metadata.
 - Fall back to bundled plugin assets when a persistent plugin folder is missing a requested file, preventing broken File Studio toolbar icons.
-- Bump the framework to `0.2.0-alpha.86`, Home Assistant App to `0.1.264` and Automation Exporter / Editor to `0.1.25`.
+- Replace File Studio toolbar PNGs with local SVGs and preserve binary external-plugin assets through Base64 packaging.
+- Bump the framework to `0.2.0-alpha.86`, Home Assistant App to `0.1.265`, Automation Exporter / Editor to `0.1.25` and File Studio to `0.1.41`.
 - Apply the shared saved language preference when opening the Card Editor and Automation Exporter; preserve URL overrides and fall back to English for unsupported French UI.
 - Extend generated plugin packages with a localized README covering metadata, capabilities, included files, installation, publishing and development; allow downloading that documentation separately.
 - Bump the framework to `0.2.0-alpha.85`, Home Assistant App to `0.1.263` and Automation Exporter / Editor to `0.1.24`.
