@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.269
+
+- Add theme-aware YAML colors for comments, strings, numbers and Home Assistant states; highlight SQL keywords in YAML block scalars and template delimiters.
+
 ## 0.1.267
 
 - Fix a missing CodeMirror highlight-style import that prevented File Studio from loading.
