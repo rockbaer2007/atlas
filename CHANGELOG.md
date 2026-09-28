@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Highlight `states`, `float`, `map` and `round` within template expressions in File Studio.
 - Apply YAML comment, number and string colors directly so they remain visible with both CodeMirror themes.
 - Add theme-aware YAML colors for comments, strings, numbers and Home Assistant states; highlight SQL keywords in YAML block scalars and template delimiters.
 - Add full French UI support to the Automation Exporter / Editor and its plugin catalog metadata.
