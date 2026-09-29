@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Standardize every ATLAS navigation button that returns to the Plugin Hub to the label `Plugin Hub`.
+- Bump the Home Assistant App to `0.1.277` for the Plugin Hub navigation label update.
 - Fetch GitHub plugin repositories through ref-qualified raw URLs so catalog updates are not hidden by stale branch URL caches.
 - Bump the Home Assistant App to `0.1.276` for the GitHub repository update-check fix.
 - Move Plugin Manager update checks beside package import and plugin creation, show available versions in installed-plugin tabs, and allow updates directly from each plugin tab.

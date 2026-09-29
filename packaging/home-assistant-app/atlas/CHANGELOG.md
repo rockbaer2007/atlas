@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.277
+
+- Standardize ATLAS navigation buttons that open the Plugin Hub as `Plugin Hub` in every UI language.
+
 ## 0.1.274
 
 - Move plugin update checks into the Plugin Manager action row and show direct per-plugin update actions in installed-plugin tabs.
