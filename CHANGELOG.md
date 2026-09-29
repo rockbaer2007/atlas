@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Move Plugin Manager update checks beside package import and plugin creation, show available versions in installed-plugin tabs, and allow updates directly from each plugin tab.
+- Bump the Home Assistant App to `0.1.274` for the Plugin Manager update workflow.
 - Bump File Studio to `0.1.48` to match its published plugin metadata and the Home Assistant App to `0.1.273`.
 - Keep the Administration runtime and release-readiness groups independently collapsible, and align File Studio's runtime package version with its published plugin version so updates compare correctly.
 - Highlight Jinja control keywords (`if`, `elif`, `else`, `endif`), `set`, and logical operators (`and`, `or`, `not`) with theme-aware colors in File Studio.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.274
+
+- Move plugin update checks into the Plugin Manager action row and show direct per-plugin update actions in installed-plugin tabs.
+
 ## 0.1.273
 
 - Keep Administration runtime and release-readiness groups independently collapsible, and align File Studio's runtime package version with its published plugin version.
