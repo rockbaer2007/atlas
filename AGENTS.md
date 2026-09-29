@@ -6,6 +6,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 - Primary repo: `C:\Users\rockb\source\repos\atlas`.
 - Documentation repo: `C:\Users\rockb\source\repos\ugso-opensource-docs`.
+- The Home Assistant Card Editor is the only plugin integrated with ATLAS and serves as its reference plugin. Other plugins, such as File Studio and Terminal, are external plugins maintained in separate repositories.
 - Current Atlas focus: Home Assistant card editor, Simple/Expert workflows, HACS-oriented export/import, and bilingual documentation.
 - The Atlas Home Assistant Card Editor demo standard port is fixed to `4174`; serve it at `http://127.0.0.1:4174/`.
 - The Atlas Administration demo standard port is fixed to `4175`; serve it at `http://127.0.0.1:4175/`.
