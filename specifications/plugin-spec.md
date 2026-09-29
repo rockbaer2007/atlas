@@ -86,6 +86,15 @@ tables, plugin metadata presentation and documentation navigation should be
 expanded from German/English to German/English/French while keeping matching
 structure across languages.
 
+## Plugin Header Navigation
+
+Plugin surfaces with a language selector place their navigation controls
+together in the upper-right header: a plain `Plugin Hub` link followed by the
+supported language buttons (`DE`, `EN`, `FR`). The link has no arrow glyph and
+is not translated. Reuse the ATLAS header spacing, segmented language control,
+panel background, border, typography and theme colors. Offer only locales that
+the plugin fully supports; do not add a nonfunctional language button.
+
 ## Reference Plugin: ATLAS File Studio
 
 ATLAS File Studio is planned as the second official reference plugin. It should
