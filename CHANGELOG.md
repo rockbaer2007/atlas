@@ -7,7 +7,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 ## [Unreleased]
 
 - Fetch GitHub plugin repositories through ref-qualified raw URLs so catalog updates are not hidden by stale branch URL caches.
-- Bump the Home Assistant App to `0.1.275` for the GitHub repository update-check fix.
+- Bump the Home Assistant App to `0.1.276` for the GitHub repository update-check fix.
 - Move Plugin Manager update checks beside package import and plugin creation, show available versions in installed-plugin tabs, and allow updates directly from each plugin tab.
 - Bump the Home Assistant App to `0.1.274` for the Plugin Manager update workflow.
 - Bump File Studio to `0.1.48` to match its published plugin metadata and the Home Assistant App to `0.1.273`.
