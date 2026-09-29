@@ -122,7 +122,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - HACS script filenames should be user-defined and normalized, for example `energy-kitchen.js`.
 - Card packages should include safe demo entities and a clear hint to replace them with real Home Assistant entities.
 - Card package and HACS bundle exports should ask for Card languages separately from the Atlas UI language.
-- Atlas UI and docs stay German/English for now; exported Cards may include broader European language files plus Russian (`ru`).
+- Atlas Administration and the documentation are maintained in German and English, with French added where fully translated. The Card Editor supports German, English and French; plugins should expose only complete locales. Exported Cards may include broader European language files plus Russian (`ru`).
 - `en` is the required Card language fallback. Additional Card language files may be generated as English fallbacks and must include a note that they need translation/review before publishing.
 - Automatic translation for additional Card languages is a future option and must clearly warn that it requires an internet connection when enabled.
 - Atlas Administration should own the Card translation module choice, starting with `none`, `chatgpt`, `gemini`, `deepl-free`, `deepl-pro` and `custom-ai`.
@@ -155,7 +155,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - After every five Atlas commits/pushes, review and update the open-source documentation in `ugso-opensource-docs` if needed.
 - When behavior changes in Atlas, update both languages if the public docs mention that behavior.
 - Keep German and English layouts consistent.
-- Language navigation uses DE/EN and later FR with flag icons where configured in the docs site.
+- Language navigation uses DE/EN/FR wherever the surface fully supports those locales; documentation navigation follows its configured locales.
 - Do not generate built docs manually unless the docs build process does so.
 
 ## Roadmap Notes To Preserve

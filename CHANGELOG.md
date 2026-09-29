@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Add a complete French Card Editor interface, persist the FR selection across ATLAS surfaces, and release the Card Editor as `0.2.0-alpha.94`.
+- Bump the Home Assistant App to `0.1.279` for the French Card Editor language.
 - Standardize plugin headers with a plain `Plugin Hub` button beside language controls in the upper-right and align their theme colors and button styling.
 - Bump the Home Assistant App to `0.1.278` for consistent plugin navigation and header styling.
 - Standardize every ATLAS navigation button that returns to the Plugin Hub to the label `Plugin Hub`.

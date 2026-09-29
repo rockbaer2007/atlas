@@ -81,10 +81,10 @@ documentation routing. If a German (`de`) or French (`fr`) translation key is
 missing, the surface must fall back to English rather than showing an empty or
 broken label.
 
-French (`fr`) is planned as the third core ATLAS language. UI translation
-tables, plugin metadata presentation and documentation navigation should be
-expanded from German/English to German/English/French while keeping matching
-structure across languages.
+French (`fr`) is the third core ATLAS language. The Card Editor now supports
+German, English and French, including its saved language preference and plugin
+metadata. Other surfaces may expose French only when their translations are
+complete; keep the translation keys and structure aligned across locales.
 
 ## Plugin Header Navigation
 
