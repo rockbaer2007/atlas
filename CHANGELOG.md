@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Forward short-lived File Studio to Icon Studio handoff tokens through the plugin launch route.
+- Bump the Home Assistant App to `0.1.280` for direct File Studio / Icon Studio file handoff.
 - Add a complete French Card Editor interface, persist the FR selection across ATLAS surfaces, and release the Card Editor as `0.2.0-alpha.94`.
 - Bump the Home Assistant App to `0.1.279` for the French Card Editor language.
 - Standardize plugin headers with a plain `Plugin Hub` button beside language controls in the upper-right and align their theme colors and button styling.
