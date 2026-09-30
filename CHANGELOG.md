@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Resolve nested File Studio roots such as `/config/www` before `/config`, fixing community icon scans and reads from approved subdirectories.
+- Bump the Home Assistant App to `0.1.284` for precise File Studio root selection.
 - Remove the `ATLAS` prefix from Plugin Manager tabs and detect repository updates for plugins previously imported from package files.
 - Bump the Home Assistant App to `0.1.283` for Plugin Manager tab and external update detection fixes.
 - Keep large external plugin package contents on the ATLAS server instead of duplicating them in browser storage; compact legacy imported plugin records on load.
