@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Remove the `ATLAS` prefix from Plugin Manager tabs and detect repository updates for plugins previously imported from package files.
+- Bump the Home Assistant App to `0.1.283` for Plugin Manager tab and external update detection fixes.
 - Keep large external plugin package contents on the ATLAS server instead of duplicating them in browser storage; compact legacy imported plugin records on load.
 - Bump the Home Assistant App to `0.1.282` for the imported-plugin storage quota fix.
 - Show external plugin update progress and errors beside the action that started them; disable the button while the package is being fetched and installed.
