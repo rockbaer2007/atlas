@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Keep large external plugin package contents on the ATLAS server instead of duplicating them in browser storage; compact legacy imported plugin records on load.
+- Bump the Home Assistant App to `0.1.282` for the imported-plugin storage quota fix.
 - Show external plugin update progress and errors beside the action that started them; disable the button while the package is being fetched and installed.
 - Forward short-lived File Studio to Icon Studio handoff tokens through the plugin launch route.
 - Bump the Home Assistant App to `0.1.280` for direct File Studio / Icon Studio file handoff.
