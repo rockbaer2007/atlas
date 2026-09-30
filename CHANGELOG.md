@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- Show external plugin update progress and errors beside the action that started them; disable the button while the package is being fetched and installed.
 - Forward short-lived File Studio to Icon Studio handoff tokens through the plugin launch route.
 - Bump the Home Assistant App to `0.1.280` for direct File Studio / Icon Studio file handoff.
 - Add a complete French Card Editor interface, persist the FR selection across ATLAS surfaces, and release the Card Editor as `0.2.0-alpha.94`.
