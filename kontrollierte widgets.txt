@@ -4,3 +4,4 @@ sichtbarkeit alle		ok
 number		ok
 string (unescaped)		ok
 string img src		ok
+TimesValue		ok
