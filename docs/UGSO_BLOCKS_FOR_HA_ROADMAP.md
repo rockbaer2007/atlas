@@ -4,6 +4,8 @@ Stand: 9. Oktober 2026. Status: Lokaler Prototyp 0.1.0 implementiert; weitere Ph
 
 ## Erster Prototyp
 
+Seit Version 0.1.1 liegt der maßgebliche Code unter `blocks_for_ha/` im gemeinsamen Repository [ugso-ha-mqtt-addons](https://github.com/rockbaer2007/ugso-ha-mqtt-addons/tree/master/blocks_for_ha), neben HA Grafik Visual Studio. Das ursprüngliche separate Repository bleibt als Sicherung des ersten Prototyps erhalten. Entwicklung und Updates erfolgen im gemeinsamen Repository.
+
 Das eigenständige Projekt `ugso-blocks-for-ha` enthält Version 0.1.0 mit einfachen Auslöser-, Bedingungs- und Aktionsblöcken, YAML-Vorschau, Kopieren, Speichern auf den Rechner und Öffnen unterstützter YAML-Dateien als Blocks. Drei Beispiele, Projektdateien und lokale Browsersicherung sind vorhanden. Die Oberfläche verwendet „Blocks“; die Originalbibliothek wird als „Built with Blockly“ genannt und mit Lizenztexten ausgeliefert. Generator-, Import- und Browserprüfungen sind vorhanden; die Ausführung in einer realen HA-Installation steht noch aus.
 
 HA-Verbindung und Entitäts-/Aktionsauswahl folgen separat. Dafür soll die backendseitige Supervisor-/Token-Verbindung von UGSo Visual Studio als Vorlage dienen. Die direkte Verbindung ist noch nicht implementiert. Blockpakete und Katalog bleiben geplante Ausbauschritte; Scripts und umfassender YAML-Import sind ebenfalls noch offen.
