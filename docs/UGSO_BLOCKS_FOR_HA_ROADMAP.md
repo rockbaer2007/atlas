@@ -1,6 +1,12 @@
 # UGSo Blocks for HA Roadmap
 
-Stand: 9. Oktober 2026. Status: Planung, noch keine Implementierung.
+Stand: 9. Oktober 2026. Status: Lokaler Prototyp 0.1.0 implementiert; weitere Phasen geplant.
+
+## Erster Prototyp
+
+Das eigenständige Projekt `ugso-blocks-for-ha` enthält Version 0.1.0 mit einfachen Auslöser-, Bedingungs- und Aktionsblöcken, YAML-Vorschau, Kopieren, Speichern auf den Rechner und Öffnen unterstützter YAML-Dateien als Blocks. Drei Beispiele, Projektdateien und lokale Browsersicherung sind vorhanden. Die Oberfläche verwendet „Blocks“; die Originalbibliothek wird als „Built with Blockly“ genannt und mit Lizenztexten ausgeliefert. Generator-, Import- und Browserprüfungen sind vorhanden; die Ausführung in einer realen HA-Installation steht noch aus.
+
+HA-Verbindung und Entitäts-/Aktionsauswahl folgen separat. Dafür soll die backendseitige Supervisor-/Token-Verbindung von UGSo Visual Studio als Vorlage dienen. Die direkte Verbindung ist noch nicht implementiert. Blockpakete und Katalog bleiben geplante Ausbauschritte; Scripts und umfassender YAML-Import sind ebenfalls noch offen.
 
 UGSo Blocks for HA wird ein eigenständiger visueller Editor für native Home-Assistant-Automationen und Scripts. Blockly übernimmt die Blockoberfläche; Home Assistant führt die exportierten Regeln aus. Der Editor muss während der Ausführung nicht geöffnet sein. Zunächst entsteht ein privater Prototyp, anschließend ist eine öffentliche Veröffentlichung vorgesehen. Eine spätere ATLAS-Anbindung ist optional und macht das Projekt nicht zu einem bereits integrierten Plugin.
 
