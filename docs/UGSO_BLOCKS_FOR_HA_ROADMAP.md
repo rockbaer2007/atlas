@@ -122,15 +122,57 @@ Blockly speichert Arbeitsbereiche, übersetzt jedoch bestehendes HA-YAML nicht s
 - P2: Verweis auf die native HA-Trace-Ansicht; spätere direkte Trace-Anzeige nur über geprüfte APIs.
 - P2: Problembericht mit Vorschau und ohne Zugangsdaten; Fehler am verursachenden Block markieren.
 
+## Blockpakete als Plugins und Katalog
+
+Entscheidung: UGSo Blocks for HA erhält einen stabilen Grundeditor und installierbare Blockpakete als Plugins. Auslöser, Bedingungen, Ablaufsteuerung, Variablen, Projektverwaltung und YAML-Export bleiben im Grundeditor. Integrations- und App-spezifische Blöcke werden über Pakete ergänzt. Eine HA-App kann solche Blöcke nur nutzen, wenn sie eine passende HA-Aktion oder eine ausdrücklich unterstützte Schnittstelle bereitstellt.
+
+### Paketformat und Ausführung
+
+- P1: Erweiterbares Blockregister und stabile, namensraumgebundene Paket- und Block-IDs bereits im Grundmodell vorsehen.
+- P2: Versioniertes Manifest mit Autor, Lizenz, Paketversion, Blockschema-Version, benötigter Editor-Version und unterstützten HA-Versionen.
+- P2: Deklarative Blockdefinitionen mit Feldern, Anschlussarten, Farben, Übersetzungen, Hilfetexten und Beispielen.
+- P2: Zuordnung zu nativen HA-Aktionen durch einen vom Grundeditor geprüften Generator. Pakete dürfen keine beliebigen JavaScript-Generatoren, Installationsscripts oder ausführbaren Erweiterungen mitbringen.
+- P2: Benötigte Integrationen, Aktionen und Fähigkeiten im Manifest deklarieren und gegen die angeschlossene HA-Installation prüfen.
+- P2: Zugangsdaten bleiben in der zuständigen Integration oder im Backend; Pakete, Blockprojekte und YAML-Exporte enthalten keine Tokens oder Anbieter-Schlüssel.
+
+### Geplante Integrationspakete
+
+| Paketbereich | Beispielblöcke | Voraussetzung |
+| --- | --- | --- |
+| Sprachausgabe | Text vorlesen, Sprache/Stimme und Ziel-Lautsprecher auswählen | Passende TTS- und Wiedergabeaktionen in HA |
+| Messenger | WhatsApp-, Telegram- oder Signal-Nachricht senden | Installierte Integration beziehungsweise geeigneter Anbieter; kein eingebauter Versanddienst |
+| Benachrichtigung | Nachricht mit Titel, Empfänger und integrationsabhängigen Zusatzdaten | Verfügbare Notify- oder Companion-App-Aktion |
+| Energie und Geräte | Komfortblöcke für konkrete Wechselrichter, Heizungen oder andere Geräte | Zugehörige Integration und unterstützte Aktionen |
+| Weitere Apps | App-spezifische Funktionen als verständliche Blockly-Blöcke | Dokumentierte, ausdrücklich unterstützte Anbindung |
+
+Die Blockoberfläche vereinfacht vorhandene Aktionen; sie installiert nicht automatisch den erforderlichen Dienst. Bei fehlender Integration bleiben Blöcke mit ihren Einstellungen erhalten und zeigen den konkreten Grund an. Export wird verhindert, wenn eine erforderliche Zuordnung fehlt oder nicht unterstützt wird. Offline ist Export bei gültiger Zuordnung mit Hinweis auf ungeprüfte Integrationsverfügbarkeit möglich.
+
+### Katalog und Paketverwaltung
+
+- P2: Bestehenden UGSo-Katalog um einen getrennten Pakettyp **Blockly-Blockpaket** erweitern. Grafik-Widgets und Tools bleiben eigene Pakettypen; Blockpakete sind nicht automatisch mit deren Laufzeit kompatibel.
+- P2: Paketdetails mit Funktionsliste, Voraussetzungen, Version, Lizenz, Beispielen und Prüfsumme anzeigen.
+- P2: Kataloginstallation und lokalen Paketimport unterstützen; Pakete vor Installation anhand von Schema, Inhalt und Prüfsumme prüfen.
+- P2: Installierte Pakete auflisten; kompatible Updates, Änderungsübersicht, Deinstallation und Wiederherstellung anbieten.
+- P2: Veröffentlichungsprüfung und Pakettests vor Freigabe; eine Prüfsumme bestätigt Dateiintegrität und ersetzt keine Inhaltsprüfung.
+- P2: Keine Aktionen beim Installieren oder Öffnen eines Pakets ausführen. Ein Nachrichtenblock versendet erst durch die später in HA ausgeführte Automation.
+
+### Gespeicherte Projekte und Updates
+
+- P1: Paket-ID, Paketversion, Block-ID und Schema-Version im Projekt erhalten.
+- P2: Fehlende Plugins durch Platzhalter darstellen, die Felder und Verbindungen verlustfrei behalten. Abhängige Exporte bleiben bis zur Auflösung gesperrt.
+- P2: Updates mit kompatiblen Definitionen oder deklarativen, vom Editor unterstützten Migrationen durchführen; vor Migration das Projekt sichern.
+- P2: Vor Deinstallation anzeigen, welche Projekte betroffen sind. Blöcke niemals stillschweigend löschen oder in andere Aktionen umdeuten.
+- P2: Tests für Paketimport, inkompatible Versionen, fehlende Integrationen, Updates und Wiederherstellung ergänzen.
+
 ## Umsetzungsphasen und Abnahmekriterien
 
 | Phase | Ergebnis | Abnahme |
 | --- | --- | --- |
 | 1 | Lokaler Blockly-Prototyp mit P1-Grundblöcken | Drei Referenzautomationen erzeugen gültiges YAML; HA führt sie nach manueller Übernahme korrekt aus. |
-| 2 | Projektverwaltung, Scripts und Prüfung | Projekte lassen sich verlustfrei speichern/laden; unvollständige Blöcke verhindern den Export. |
+| 2 | Projektverwaltung, Scripts, Prüfung und Blockregister | Projekte lassen sich verlustfrei speichern/laden; Paketreferenzen bleiben erhalten; unvollständige Blöcke verhindern den Export. |
 | 3 | HA-App, Entitäts- und Aktionsauswahl | Oberfläche per Ingress erreichbar; Projekte überleben Neustarts; keine Tokens in Exporten. |
-| 4 | P2-Abläufe und begrenzter YAML-Import | Unterstützte Strukturen behalten ihre Bedeutung; unbekannte Inhalte bleiben erhalten. |
-| 5 | Öffentliche erste Version | Unterstützte HA-Versionen dokumentiert; Lizenzen, Beispiele, Sicherungs- und Fehlerabläufe geprüft. |
+| 4 | P2-Abläufe, begrenzter YAML-Import und deklarative Blockpakete | Unterstützte Strukturen behalten ihre Bedeutung; unbekannte Inhalte bleiben erhalten; lokale Pakete werden geprüft und fehlende Plugins verlustfrei dargestellt. |
+| 5 | Öffentliche erste Version mit Kataloganbindung | Unterstützte HA-Versionen dokumentiert; Paketinstallation, Updates, Lizenzen, Beispiele, Sicherungs- und Fehlerabläufe geprüft. |
 | 6 | P3-Erweiterungen | Blueprint-, Geräte- und Diagnosefunktionen schrittweise ergänzen. |
 
 ## Dateizugriff und Grenzen
