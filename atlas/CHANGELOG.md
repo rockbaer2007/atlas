@@ -1,63 +1,305 @@
 # Changelog
 
-## 0.1.224
+## 0.1.285
+
+- Generate both repository packages from the same canonical configuration and runtime sources; verify versions and file contents before publishing.
+- Preserve existing option names, defaults, plugin storage paths and the packaged reference-plugin selection.
+- Exclude local dependency and build directories from generated source packages.
+
+## 0.1.284
+
+- Resolve nested File Studio roots such as `/config/www` before the broader `/config` root so file-tree paths and reads point to the same files.
+
+## 0.1.283
+
+- Remove the ATLAS prefix from Plugin Manager tabs.
+- Detect repository updates for plugins previously imported from package files.
+
+## 0.1.282
+
+- Store only plugin metadata in browser storage; keep package files on the ATLAS server.
+- Remove legacy embedded package files and image data from saved plugin descriptors.
+
+## 0.1.281
+
+- Show per-plugin update progress and failures directly beside the update button.
+- Disable update buttons while a package is being fetched and installed.
+
+## 0.1.280
+
+- Support secure one-time handoff parameters when launching ATLAS Icon Studio from File Studio.
+
+## 0.1.279
+
+- Add a complete French Home Assistant Card Editor interface and support saving and restoring the FR language choice.
+
+## 0.1.278
+
+- Place Plugin Hub and language controls together in the upper-right header across plugin surfaces and align the shared styling with ATLAS.
+
+## 0.1.277
+
+- Standardize ATLAS navigation buttons that open the Plugin Hub as `Plugin Hub` in every UI language.
+
+## 0.1.274
+
+- Move plugin update checks into the Plugin Manager action row and show direct per-plugin update actions in installed-plugin tabs.
+
+## 0.1.273
+
+- Keep Administration runtime and release-readiness groups independently collapsible, and align File Studio's runtime package version with its published plugin version.
+- Bump File Studio to `0.1.48` so the Runtime plugin version matches its published plugin metadata.
+- Highlight Jinja control keywords (`if`, `elif`, `else`, `endif`), `set`, and logical operators (`and`, `or`, `not`) with theme-aware colors in File Studio.
+
+## 0.1.272
+
+## 0.1.271
+
+- Highlight `states`, `float`, `map` and `round` inside Home Assistant template expressions.
+
+## 0.1.270
+
+- Ensure YAML comments, numeric literals and strings use the configured light/dark colors even when the editor theme provides its own syntax styles.
+
+## 0.1.269
+
+- Add theme-aware YAML colors for comments, strings, numbers and Home Assistant states; highlight SQL keywords in YAML block scalars and template delimiters.
+
+## 0.1.267
+
+- Fix a missing CodeMirror highlight-style import that prevented File Studio from loading.
+
+## 0.1.266
+
+- Improve File Studio syntax colors for YAML comments, numbers and strings inside templates in light and dark themes.
+- Update bundled File Studio metadata to `0.1.42`.
+
+## 0.1.265
+
+- Replace File Studio toolbar PNGs with local SVG symbols.
+- Preserve binary files in external plugin install packages using Base64 encoding.
+- Update bundled File Studio metadata to `0.1.41`.
+
+## 0.1.264
+
+- Add French UI support to the Automation Exporter / Editor.
+- Serve missing plugin files from the bundled plugin when a persistent copy is incomplete, restoring File Studio toolbar icons.
+- Update the bundled Automation Exporter / Editor to `0.1.25`.
+
+## 0.1.263
+
+- Apply the shared saved language preference to the Card Editor and Automation Exporter, preserving direct URL language overrides.
+- Extend the Plugin Generator with a localized README in generated packages and a separate documentation download.
+- Update the bundled Automation Exporter / Editor to `0.1.24`.
+
+## 0.1.262
+
+- Add French interface support to ATLAS Terminal and File Studio controls.
+
+## 0.1.261
+
+- Keep Plugin Hub language buttons in one row and make the Plugin Manager launch button taller in French for its longer label.
+
+## 0.1.260
+
+- Share the saved DE/EN/FR language preference between Administration and Plugin Hub across app ports, while keeping per-URL language overrides.
+
+## 0.1.259
+
+- Complete French translations for Administration and Plugin Hub, with a note when plugin-provided text has no French version.
+
+## 0.1.258
+
+- Add a French Administration preview with an explicit English-fallback notice.
+
+## 0.1.255
+
+- Redact Home Assistant Ingress tokens from debug-report URLs and embedded text.
+
+## 0.1.254
+
+- Put installed plugins in individual tabs and collapse repository and update details by default.
+
+## 0.1.253
+
+- Fix the ATLAS repository logo path when Administration is opened through Home Assistant ingress.
+
+## 0.1.252
+
+- Refresh the Terminal plugin icon with the ATLAS overlay badge.
+
+## 0.1.251
+
+- Add automatic tabs for installed plugins, switch to a selected plugin on install, and remove oversized preview images from manager repository listings.
+
+## 0.1.250
+
+- Stack the Plugin Manager and access policy, reduce the manager panel's stretched height, and give runtime links more space with regular-weight URLs.
+
+## 0.1.249
+
+- Remove stale plugin staging folders when uninstalling a plugin.
+- Keep the Plugin Manager launcher button compact in tall grid rows.
+
+## 0.1.248
+
+- Keep the current Runtime package parser in the Home Assistant Add-on build context and deduplicate identical paths again on the server before staging.
+
+## 0.1.247
+
+- Deduplicate identical file paths in plugin install packages to prevent staging collisions.
+
+## 0.1.246
+
+- Install published `atlas.plugin.package` packages from external plugin repositories.
+
+## 0.1.245
+
+- Show repository plugin install progress and errors inside the Plugin Manager.
+- Clarify that the Plugin Manager follows Administration's selected language.
+
+## 0.1.244
+
+- Accept the Home Assistant Core ingress proxy address when installing plugins.
+
+## 0.1.243
+
+- Fix plugin package installs through Home Assistant Ingress by validating the
+  forwarded Home Assistant origin.
+- Show the server's install error in the Plugin Manager instead of hiding it.
+
+## 0.1.242
+
+- Keep generated surface links inside Home Assistant Ingress so the app entry does not escape to a Home Assistant 404 route.
+
+## 0.1.241
+
+- Ask whether plugin-specific browser settings should be kept or deleted during uninstall.
+
+## 0.1.240
+
+- Keep the Plugin Manager launch button compact with a two-line label.
+
+## 0.1.239
+
+- Add a dedicated Plugin Manager with persistent install, update and uninstall support; ship only the Card Editor as the built-in reference plugin and add ATLAS Terminal branding.
+
+## 0.1.238
+
+- Discover optional plugins from persistent storage while preserving independent activation state; keep persistent assets within their own plugin directory.
+
+## 0.1.237
+
+- Keep repository-installed plugin packages inactive until runtime execution and trust controls are implemented.
+
+## 0.1.236
+
+- Generate stable Home Assistant sidebar URLs that launch active plugins directly; recopy the URL from the sidebar dialog for existing entries.
+
+## 0.1.235
+
+- Allow plugin packages to use custom color PNG icons while retaining MDI icon search.
+
+## 0.1.234
+
+- Add an offline MDI icon search and click-to-select picker to the plugin generator.
+
+## 0.1.233
+
+- Keep Plugin Hub status badges compact when a plugin has no icon.
+
+## 0.1.232
+
+- Show locally imported plugin packages in the Plugin Hub and indicate when no launch page is available.
+
+## 0.1.231
+
+- Add a bilingual Administration plugin generator that creates a starter install package and repository catalog file.
+
+## 0.1.230
 
 - Refresh the File Studio tree after upload without automatically opening the uploaded file or archive.
 
-## 0.1.223
+## 0.1.229
 
 - Save File Studio uploads to the currently selected folder, including after an upload conflict prompt.
 
-## 0.1.222
+## 0.1.228
 
 - Show the 64 MiB upload limit and direct oversized files to the Samba add-on without attempting upload.
 
-## 0.1.221
+## 0.1.227
 
 - Upload File Studio files as binary data up to 64 MiB, avoiding JSON body limits.
 
-## 0.1.220
+## 0.1.226
 
 - Snapshot selected upload files before opening dialogs so browser permissions remain valid.
 
-## 0.1.219
+## 0.1.225
 
 - Keep File Studio confirmation prompts above archive previews.
 
-## 0.1.218
+## 0.1.224
 
 - Add safe TAR, TAR.GZ and TGZ archive preview and extraction to File Studio.
 
-## 0.1.217
+## 0.1.223
 
 - Add safe extraction of individual files from ZIP archives in File Studio.
 
-## 0.1.216
+## 0.1.222
 
 - Restyle the File Studio access note with regular, smaller text and distinct colors for each path.
 
-## 0.1.215
+## 0.1.221
 
 - Start local terminal sessions at the filesystem root (`/`) instead of `/app`.
 
-## 0.1.214
+## 0.1.220
 
 - Reopen terminal token settings after disconnecting or when a terminal session ends.
 - Bump the standalone ATLAS Terminal plugin to `0.1.7`.
 
-## 0.1.213
+## 0.1.219
 
-- Collapse the access-token panel by default when the browser already has a saved token.
+- Collapse the terminal access-token panel by default when the browser already has a saved token.
 - Bump the standalone ATLAS Terminal plugin to `0.1.6`.
 
-## 0.1.212
+## 0.1.218
 
 - Install optional Alpine packages from the add-on `packages` option so commands such as `mc` are available in the local terminal.
 
+## 0.1.217
+
+- Use the native `ha banner --no-wait` command to show IP addresses, OS/Core versions, and URLs when opening the local terminal.
+
+## 0.1.216
+
+- Show a Home Assistant welcome banner and system information when opening the local terminal.
+
+## 0.1.215
+
+- Fix the Oh My Posh terminal prompt so the cursor stays after the rendered prompt.
+
+## 0.1.214
+
+- Load Meslo LGM Nerd Font Mono from Home Assistant `/local/` for the ATLAS web terminal.
+- Bump the standalone ATLAS Terminal plugin to `0.1.5`.
+
+## 0.1.213
+
+- Update the Administration overview entry for ATLAS Terminal to version `0.1.4`, including Oh My Posh theme support.
+
+## 0.1.212
+
+- Prefer Meslo LGM Nerd Font Mono in the browser terminal when installed on the client computer.
+- Bump the standalone ATLAS Terminal plugin to `0.1.4`.
+
 ## 0.1.211
 
-- Add Oh My Posh theme selection for local Bash terminal sessions.
-- Include the pinned Oh My Posh binary in the Home Assistant App image.
+- Add a dropdown of themes from the UGSo Oh My Posh fork for local terminal sessions.
+- Include the pinned Oh My Posh binary and Bash in the Home Assistant App image.
 - Bump the ATLAS framework to `0.2.0-alpha.79`.
 
 ## 0.1.210

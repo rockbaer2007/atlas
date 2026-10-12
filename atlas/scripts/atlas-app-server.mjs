@@ -1,13 +1,14 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { timingSafeEqual } from "node:crypto";
-import { cpSync, createReadStream, existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, createReadStream, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
-import { homedir } from "node:os";
-import { basename, dirname, extname, isAbsolute, normalize, relative, resolve } from "node:path";
+import { homedir, tmpdir } from "node:os";
+import { basename, dirname, extname, isAbsolute, join, normalize, relative, resolve, sep } from "node:path";
 import { inflateRawSync } from "node:zlib";
 import * as tar from "tar";
 import * as pty from "node-pty";
 import { WebSocketServer } from "ws";
+import { isTrustedAtlasOrigin as isTrustedAtlasRequestOrigin } from "./atlas-request-origin.mjs";
 
 const root = resolve(import.meta.dirname, "..");
 const packageJson = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
@@ -20,7 +21,10 @@ const editorPort = Number(process.env.ATLAS_DEMO_PORT ?? "4174");
 const distributionTarget = process.env.ATLAS_DISTRIBUTION_TARGET ?? "standalone-docker-preview";
 const adminUrl = `http://${healthHost}:${adminPort}/`;
 const editorUrl = `http://${healthHost}:${editorPort}/`;
-const pluginRoot = resolve(root, "atlas-plugins");
+const bundledPluginRoot = resolve(root, "atlas-plugins");
+const persistentPluginRoot = resolve(process.env.ATLAS_PLUGIN_DATA_ROOT ?? join(homedir(), ".atlas", "plugins"));
+const removedPluginSlugsPath = resolve(persistentPluginRoot, ".removed-plugins.json");
+const pluginRoots = [...new Set([persistentPluginRoot, bundledPluginRoot])];
 const fileStudioConfigRoot = resolve(process.env.ATLAS_FILE_STUDIO_CONFIG_ROOT ?? "/config");
 const fileStudioAddonsRoot = resolve(process.env.ATLAS_FILE_STUDIO_ADDONS_ROOT ?? "/addons");
 const fileStudioAllowAddons = process.env.ATLAS_FILE_STUDIO_ALLOW_ADDONS === "1";
@@ -98,6 +102,7 @@ await startSurface({
 
 const server = createServer((request, response) => {
   const requestUrl = new URL(request.url ?? "/", `http://${request.headers.host ?? `${host}:${appPort}`}`);
+  requestUrl.ingressPath = request.headers["x-ingress-path"];
   const routePath = createRoutePath(requestUrl.pathname);
 
   if (request.method === "OPTIONS") {
@@ -120,11 +125,33 @@ const server = createServer((request, response) => {
     return;
   }
 
+  if (routePath === "/api/plugins/install") {
+    void writePluginInstallResponse(request, response);
+    return;
+  }
+
+  if (routePath === "/api/plugins/uninstall") {
+    void writePluginUninstallResponse(request, response);
+    return;
+  }
+
+  if (routePath === "/api/plugins/settings-bridge") {
+    writePluginSettingsBridgeResponse(request, response);
+    return;
+  }
+
+  if (routePath.startsWith("/launch/")) {
+    writePluginLaunchResponse(response, requestUrl, routePath);
+    return;
+  }
+
   if (routePath === "/plugin-assets/terminal/config") {
     writeJson(response, 200, {
       enabled: terminalEnabled && isValidTerminalToken(terminalAccessToken),
       sshAvailable: terminalEnabled && isValidTerminalToken(terminalAccessToken)
         && isValidSshProfile(),
+      ohMyPoshAvailable: terminalEnabled && isValidTerminalToken(terminalAccessToken)
+        && isCommandAvailable("oh-my-posh") && isCommandAvailable("bash"),
     });
     return;
   }
@@ -348,6 +375,13 @@ server.on("upgrade", (request, socket, head) => {
 terminalWebSockets.on("connection", (webSocket, request) => {
   const requestUrl = new URL(request.url ?? "/", `http://${request.headers.host ?? `${host}:${appPort}`}`);
   const useSsh = requestUrl.searchParams.get("target") === "ssh";
+  const requestedTheme = requestUrl.searchParams.get("theme") ?? "";
+  const theme = /^[a-zA-Z0-9._-]{1,100}$/.test(requestedTheme) ? requestedTheme : "";
+  if (requestedTheme && (!theme || useSsh || !isCommandAvailable("oh-my-posh") || !isCommandAvailable("bash"))) {
+    webSocket.send(JSON.stringify({ type: "error", message: "Das ausgewählte Theme ist für dieses Terminalziel nicht verfügbar." }));
+    webSocket.close(1008, "Theme unavailable");
+    return;
+  }
   if (useSsh && !isValidSshProfile()) {
     webSocket.send(JSON.stringify({ type: "error", message: "SSH-Profil ist serverseitig nicht vollständig konfiguriert." }));
     webSocket.close(1008, "SSH profile unavailable");
@@ -355,16 +389,18 @@ terminalWebSockets.on("connection", (webSocket, request) => {
   }
 
   let terminalProcess;
+  let shell;
   try {
-    const shell = createTerminalCommand(useSsh);
+    shell = createTerminalCommand(useSsh, theme);
     terminalProcess = pty.spawn(shell.command, shell.args, {
       name: "xterm-256color",
       cols: clampTerminalDimension(requestUrl.searchParams.get("cols"), 120),
       rows: clampTerminalDimension(requestUrl.searchParams.get("rows"), 30),
       cwd: useSsh ? process.cwd() : "/",
-      env: createTerminalEnvironment(useSsh),
+      env: createTerminalEnvironment(useSsh, Boolean(theme)),
     });
   } catch (error) {
+    shell?.cleanup?.();
     webSocket.send(JSON.stringify({ type: "error", message: `Terminal konnte nicht gestartet werden: ${error.message}` }));
     webSocket.close(1011, "Terminal spawn failed");
     return;
@@ -377,6 +413,7 @@ terminalWebSockets.on("connection", (webSocket, request) => {
   });
   let terminalCloseTimer;
   terminalProcess.onExit(({ exitCode }) => {
+    shell?.cleanup?.();
     if (terminalCloseTimer) clearTimeout(terminalCloseTimer);
     if (webSocket.readyState === webSocket.OPEN) {
       webSocket.send(JSON.stringify({ type: "exit", code: exitCode }));
@@ -440,6 +477,10 @@ function isSameOriginRequest(request) {
   }
 }
 
+function isTrustedAtlasOrigin(request) {
+  return isTrustedAtlasRequestOrigin(request, { adminPort, editorPort });
+}
+
 function rejectTerminalUpgrade(socket, code) {
   socket.write(`HTTP/1.1 ${code === 4403 ? "403 Forbidden" : "401 Unauthorized"}\r\nConnection: close\r\nSec-WebSocket-Version: 13\r\n\r\n`);
   socket.destroy();
@@ -464,8 +505,24 @@ function isExistingFile(pathname) {
   }
 }
 
-function createTerminalCommand(useSsh) {
+function createTerminalCommand(useSsh, theme = "") {
   if (!useSsh) {
+    const bashCommand = process.env.ATLAS_TERMINAL_BASH || (isCommandAvailable("bash") ? "bash" : "");
+    if (theme || bashCommand) {
+      const directory = mkdtempSync(join(tmpdir(), "atlas-terminal-"));
+      const startupFile = join(directory, "bashrc");
+      const configUrl = `https://raw.githubusercontent.com/rockbaer2007/oh-my-posh/main/themes/${theme}.omp.json`;
+      const startupLines = [
+        "if command -v ha >/dev/null 2>&1; then ha banner --no-wait || true; fi",
+      ];
+      if (theme) startupLines.push(`eval "$(oh-my-posh init bash --config '${configUrl}')"`);
+      writeFileSync(startupFile, `${startupLines.join("\n")}\n`, { mode: 0o600 });
+      return {
+        command: bashCommand || "bash",
+        args: ["--noprofile", "--rcfile", startupFile, "-i"],
+        cleanup: () => rmSync(directory, { recursive: true, force: true }),
+      };
+    }
     const command = process.platform === "win32"
       ? (process.env.ATLAS_TERMINAL_SHELL || process.env.COMSPEC || "powershell.exe")
       : (process.env.ATLAS_TERMINAL_SHELL || process.env.SHELL || "/bin/sh");
@@ -487,7 +544,16 @@ function createTerminalCommand(useSsh) {
   return { command: "ssh", args };
 }
 
-function createTerminalEnvironment(useSsh) {
+function isCommandAvailable(command) {
+  try {
+    const result = spawnSync(command, ["--version"], { stdio: "ignore", timeout: 1500 });
+    return !result.error && result.status === 0;
+  } catch {
+    return false;
+  }
+}
+
+function createTerminalEnvironment(useSsh, useOhMyPosh = false) {
   const env = { ...process.env, TERM: "xterm-256color" };
   for (const key of Object.keys(env)) {
     if (key === "SUPERVISOR_TOKEN" && !useSsh) continue;
@@ -495,7 +561,7 @@ function createTerminalEnvironment(useSsh) {
       delete env[key];
     }
   }
-  if (process.platform !== "win32" && !terminalSshHost) {
+  if (process.platform !== "win32" && !terminalSshHost && !useOhMyPosh) {
     env.PS1 = "\\[\\e[38;5;39m\\] atlas \\w \\[\\e[38;5;82m\\]❯\\[\\e[0m\\] ";
   }
   return env;
@@ -520,6 +586,7 @@ function createRoutePath(pathname) {
     "/api/card-translation",
     "/api/homeassistant/lovelace-resources",
     "/api/plugins",
+    "/launch/",
     "/api/file-studio/tree",
     "/api/file-studio/file",
     "/api/file-studio/asset",
@@ -1196,6 +1263,7 @@ function isTarRegularFile(type) {
 async function extractTarArchive(sourcePath, targetDirectory, targetScope) {
   const archive = await inspectTarArchive(sourcePath);
   if (archive.truncated) throw new Error(`TAR archive has more than ${maxFileStudioArchiveEntries} entries`);
+
   const stagingDirectory = mkdtempSync(join(dirname(targetDirectory), ".atlas-tar-extract-"));
   let acceptedEntries = 0;
   let skippedEntries = 0;
@@ -1246,6 +1314,7 @@ async function readTarArchiveEntry(sourcePath, requestedEntryPath) {
   const matches = archive.entries.filter(entry => entry.path === normalizedRequest && entry.type === "file" && entry.safe);
   if (matches.length !== 1) throw new Error(matches.length ? "TAR entry path is ambiguous" : "TAR file entry was not found");
   if (matches[0].size > maxFileStudioArchiveEntryBytes) throw new Error("TAR entry exceeds the 64 MiB extraction limit");
+
   const stagingDirectory = mkdtempSync(join(tmpdir(), "atlas-tar-entry-"));
   try {
     await tar.extract({
@@ -1669,14 +1738,20 @@ async function writeFileStudioExtractEntryResponse(request, response, cookieHead
   const invalidEntryPath = validateZipArchiveEntryPath(entryPath);
 
   if (invalidReason || invalidEntryPath) {
-    writeJson(response, 400, { kind: "atlas.file-studio.extract-entry", ok: false, error: invalidReason ?? invalidEntryPath });
+    writeJson(response, 400, {
+      kind: "atlas.file-studio.extract-entry",
+      ok: false,
+      error: invalidReason ?? invalidEntryPath,
+    });
     return;
   }
+
   const archiveType = sourcePath ? getFileStudioArchiveType(sourcePath) : undefined;
   if (!sourcePath || !existsSync(sourcePath) || !statSync(sourcePath).isFile() || !archiveType) {
     writeJson(response, 404, { kind: "atlas.file-studio.extract-entry", ok: false, error: "supported archive not found" });
     return;
   }
+
   if (!targetParent || !targetScope || !existsSync(targetParent) || !statSync(targetParent).isDirectory()) {
     writeJson(response, 404, { kind: "atlas.file-studio.extract-entry", ok: false, error: "target directory not found" });
     return;
@@ -1699,14 +1774,22 @@ async function writeFileStudioExtractEntryResponse(request, response, cookieHead
     writeFileSync(targetFilePath, content, { flag: "wx" });
     writeJson(response, 200, createFileStudioOperationResult("extract-entry", targetFilePath, access));
   } catch (error) {
-    writeJson(response, 422, { kind: "atlas.file-studio.extract-entry", ok: false, error: error instanceof Error ? error.message : "ZIP entry could not be extracted" });
+    writeJson(response, 422, {
+      kind: "atlas.file-studio.extract-entry",
+      ok: false,
+      error: error instanceof Error ? error.message : "ZIP entry could not be extracted",
+    });
   }
 }
 
 function validateZipArchiveEntryPath(value) {
   const path = String(value ?? "");
-  if (!path || path.length > 2_048 || path.startsWith("/") || /^[a-zA-Z]:/.test(path)) return "ZIP entry path is invalid";
-  if (path.includes("\\") || path.split("/").some(part => part === ".." || part === "")) return "ZIP entry path is unsafe";
+  if (!path || path.length > 2_048 || path.startsWith("/") || /^[a-zA-Z]:/.test(path)) {
+    return "ZIP entry path is invalid";
+  }
+  if (path.includes("\\") || path.split("/").some(part => part === ".." || part === "")) {
+    return "ZIP entry path is unsafe";
+  }
   return undefined;
 }
 
@@ -1737,12 +1820,16 @@ function readZipArchiveEntry(sourcePath, requestedEntryPath) {
     if (entryPath === requestedEntryPath) {
       if (entryPath.endsWith("/")) throw new Error("ZIP entry is a directory");
       if (uncompressedSize > maxFileStudioArchiveEntryBytes) throw new Error("ZIP entry exceeds the 64 MiB extraction limit");
-      if (localHeaderOffset + 30 > buffer.length || buffer.readUInt32LE(localHeaderOffset) !== 0x04034b50) throw new Error("ZIP local header is invalid");
+      if (localHeaderOffset + 30 > buffer.length || buffer.readUInt32LE(localHeaderOffset) !== 0x04034b50) {
+        throw new Error("ZIP local header is invalid");
+      }
       const localNameLength = buffer.readUInt16LE(localHeaderOffset + 26);
       const localExtraLength = buffer.readUInt16LE(localHeaderOffset + 28);
       const localNameStart = localHeaderOffset + 30;
       const localNameEnd = localNameStart + localNameLength;
-      if (localNameEnd > buffer.length || buffer.toString("utf8", localNameStart, localNameEnd) !== entryPath) throw new Error("ZIP entry name does not match its local header");
+      if (localNameEnd > buffer.length || buffer.toString("utf8", localNameStart, localNameEnd) !== entryPath) {
+        throw new Error("ZIP entry name does not match its local header");
+      }
       const dataStart = localNameEnd + localExtraLength;
       const dataEnd = dataStart + compressedSize;
       if (dataEnd > buffer.length) throw new Error("ZIP entry data is incomplete");
@@ -2235,6 +2322,13 @@ function createPublicSurfaceUrl(requestUrl, port) {
 
 function createPublicAppRouteUrl(requestUrl, pathname) {
   const url = new URL(requestUrl);
+  const ingressBasePath = getHomeAssistantIngressBasePath(requestUrl);
+  if (ingressBasePath) {
+    url.pathname = `${ingressBasePath}/${String(pathname).replace(/^\/+/, "")}`.replace(/\/{2,}/g, "/");
+    url.search = "";
+    url.hash = "";
+    return url.toString();
+  }
   const routePath = createRoutePath(url.pathname);
   const routeIndex = url.pathname.lastIndexOf(routePath);
   const basePath = routeIndex >= 0 ? url.pathname.slice(0, routeIndex) : "";
@@ -2242,6 +2336,16 @@ function createPublicAppRouteUrl(requestUrl, pathname) {
   url.search = "";
   url.hash = "";
   return url.toString();
+}
+
+function getHomeAssistantIngressBasePath(requestUrl) {
+  if (typeof requestUrl.ingressPath !== "string" || !requestUrl.ingressPath.trim()) return "";
+  try {
+    const pathname = new URL(requestUrl.ingressPath, requestUrl.origin).pathname.replace(/\/+$/, "");
+    return /^\/api\/hassio_ingress\/[^/]+$/.test(pathname) ? pathname : "";
+  } catch {
+    return "";
+  }
 }
 
 function createFileStudioAccessContext(cookieHeader = "") {
@@ -2369,16 +2473,8 @@ function resolveFileStudioRootScope(value, access) {
   if (!displayPath) {
     return enabledFileStudioRootScopes(access)[0];
   }
-  let matchedScope;
-  for (const scope of enabledFileStudioRootScopes(access)) {
-    if (
-      (displayPath === scope.displayPath || displayPath.startsWith(`${scope.displayPath}/`))
-      && (!matchedScope || scope.displayPath.length > matchedScope.displayPath.length)
-    ) {
-      matchedScope = scope;
-    }
-  }
-  return matchedScope;
+  return enabledFileStudioRootScopes(access)
+    .find(scope => displayPath === scope.displayPath || displayPath.startsWith(`${scope.displayPath}/`));
 }
 
 function resolveFileStudioPath(value, access) {
@@ -2427,7 +2523,7 @@ function isInsideFileStudioRootScope(scope, targetPath) {
   return relativeTargetPath === "" || (!relativeTargetPath.startsWith("..") && !isAbsolute(relativeTargetPath));
 }
 
-async function readJsonRequestBody(request) {
+async function readJsonRequestBody(request, maximumBytes = 2_000_000) {
   if (request.method !== "POST") {
     return {};
   }
@@ -2435,7 +2531,7 @@ async function readJsonRequestBody(request) {
   let body = "";
   for await (const chunk of request) {
     body += chunk;
-    if (body.length > 2_000_000) {
+    if (body.length > maximumBytes) {
       throw new Error("request body too large");
     }
   }
@@ -2790,12 +2886,17 @@ function sortFileStudioTreeEntries(left, right) {
 }
 
 function readPluginCatalog(requestUrl, cookieHeader = "") {
-  const localPlugins = existsSync(pluginRoot)
-    ? readdirSync(pluginRoot, { withFileTypes: true })
-      .filter(entry => entry.isDirectory())
-      .map(entry => readPluginManifest(entry.name, requestUrl))
-      .filter(Boolean)
-    : [];
+  const removedPluginSlugs = readRemovedPluginSlugs();
+  const pluginDirectoryNames = [...new Set(pluginRoots.flatMap(pluginRoot =>
+    existsSync(pluginRoot)
+      ? readdirSync(pluginRoot, { withFileTypes: true })
+        .filter(entry => entry.isDirectory())
+        .map(entry => entry.name)
+      : [],
+  ))].filter(directoryName => !removedPluginSlugs.has(directoryName));
+  const localPlugins = pluginDirectoryNames
+    .map(directoryName => readPluginManifest(directoryName, requestUrl))
+    .filter(Boolean);
   const sharedPlugins = readSharedPluginCatalog(cookieHeader, requestUrl);
   const pluginsById = new Map(localPlugins.map(plugin => [plugin.id, plugin]));
 
@@ -2823,9 +2924,56 @@ function readLaunchablePluginCatalog(requestUrl, cookieHeader = "") {
   );
 }
 
+function writePluginLaunchResponse(response, requestUrl, routePath) {
+  let requestedId;
+  try {
+    requestedId = decodeURIComponent(routePath.slice("/launch/".length)).trim();
+  } catch {
+    response.writeHead(400, { "cache-control": "no-store", "content-type": "text/plain; charset=utf-8" });
+    response.end("Invalid plugin identifier.");
+    return;
+  }
+
+  if (!requestedId || requestedId.includes("/")) {
+    response.writeHead(400, { "cache-control": "no-store", "content-type": "text/plain; charset=utf-8" });
+    response.end("Invalid plugin identifier.");
+    return;
+  }
+
+  const plugin = readLaunchablePluginCatalog(requestUrl)
+    .find(candidate => candidate.id === requestedId || candidate.slug === requestedId);
+  if (!plugin) {
+    response.writeHead(404, { "cache-control": "no-store", "content-type": "text/plain; charset=utf-8" });
+    response.end("Plugin not found or not active.");
+    return;
+  }
+
+  const destination = new URL(plugin.entryUrl);
+  for (const key of ["theme", "language"]) {
+    const value = requestUrl.searchParams.get(key);
+    if (value) destination.searchParams.set(key, value);
+  }
+  if (requestedId === "atlas.plugin.icon-studio") {
+    const transfer = requestUrl.searchParams.get("transfer");
+    if (/^[a-f0-9]{32}$/i.test(transfer ?? "")) {
+      destination.searchParams.set("transfer", transfer);
+    }
+  }
+
+  response.writeHead(302, {
+    "cache-control": "no-store",
+    location: destination.toString(),
+  });
+  response.end();
+}
+
 function readPluginManifest(directoryName, requestUrl) {
-  const manifestPath = resolve(pluginRoot, directoryName, "atlas-plugin.json");
-  if (!manifestPath.startsWith(pluginRoot) || !existsSync(manifestPath)) {
+  const pluginDirectory = resolvePluginDirectory(directoryName);
+  if (!pluginDirectory) {
+    return undefined;
+  }
+  const manifestPath = resolve(pluginDirectory, "atlas-plugin.json");
+  if (!manifestPath.startsWith(pluginDirectory) || !existsSync(manifestPath)) {
     return undefined;
   }
 
@@ -2857,6 +3005,247 @@ function readPluginManifest(directoryName, requestUrl) {
     };
   } catch {
     return undefined;
+  }
+}
+
+async function writePluginInstallResponse(request, response) {
+  let stagingDirectory = "";
+  let backupDirectory = "";
+  try {
+    if (!isTrustedAtlasOrigin(request)) {
+      writeJson(response, 403, { error: "plugin management requests must come from an Atlas web surface" });
+      return;
+    }
+    const body = await readJsonRequestBody(request, 24_000_000);
+    const installPackage = body?.installPackage;
+    const plugin = installPackage?.plugin;
+    const files = installPackage?.files;
+    if (
+      request.method !== "POST"
+      || installPackage?.kind !== "atlas.runtime.plugin.install-package"
+      || !plugin || typeof plugin !== "object" || Array.isArray(plugin)
+      || typeof plugin.id !== "string" || !/^atlas\.plugin\.[a-z0-9]+(?:[.-][a-z0-9]+)*$/.test(plugin.id)
+      || typeof plugin.name !== "string" || !plugin.name.trim()
+      || typeof plugin.version !== "string" || !plugin.version.trim()
+      || !Array.isArray(files) || files.length < 1 || files.length > 300
+    ) {
+      writeJson(response, 400, { error: "invalid plugin install package" });
+      return;
+    }
+
+    const slug = createPluginSlug(plugin.id.split(".").at(-1));
+    if (!slug || plugin.id === "atlas.plugin.homeassistant-card-editor") {
+      writeJson(response, 403, { error: "plugin cannot be installed or replaced" });
+      return;
+    }
+
+    const normalizedFiles = [];
+    const filesByPath = new Map();
+    let totalBytes = 0;
+    for (const file of files) {
+      if (
+        !file || typeof file !== "object" || Array.isArray(file)
+        || typeof file.path !== "string" || !file.path.trim()
+        || file.path.includes("\\") || file.path.startsWith("/")
+        || file.path.split("/").some(segment => !segment || segment === "." || segment === "..")
+        || !/^[A-Za-z0-9._/-]+$/.test(file.path)
+        || typeof file.content !== "string"
+      ) {
+        writeJson(response, 400, { error: "invalid plugin file entry" });
+        return;
+      }
+      let content;
+      if (file.contentEncoding === "base64") {
+        if (!/^[A-Za-z0-9+/]*={0,2}$/.test(file.content)) {
+          writeJson(response, 400, { error: "invalid base64 plugin asset" });
+          return;
+        }
+        content = Buffer.from(file.content, "base64");
+      } else {
+        content = Buffer.from(file.content, "utf8");
+      }
+      const existingFile = filesByPath.get(file.path);
+      if (existingFile) {
+        if (!existingFile.equals(content)) {
+          writeJson(response, 400, { error: `plugin package contains conflicting duplicate file paths: ${file.path}` });
+          return;
+        }
+        continue;
+      }
+      totalBytes += content.length;
+      if (totalBytes > 20_000_000) {
+        writeJson(response, 413, { error: "plugin package exceeds the 20 MB limit" });
+        return;
+      }
+      filesByPath.set(file.path, content);
+      normalizedFiles.push({ path: file.path, content });
+    }
+
+    const manifestFile = normalizedFiles.find(file => file.path === "atlas-plugin.json");
+    if (!manifestFile) {
+      writeJson(response, 400, { error: "plugin manifest is missing" });
+      return;
+    }
+    let manifest;
+    try {
+      manifest = JSON.parse(manifestFile.content.toString("utf8"));
+    } catch {
+      writeJson(response, 400, { error: "plugin manifest is invalid" });
+      return;
+    }
+    if (manifest?.id !== plugin.id || manifest?.version !== plugin.version) {
+      writeJson(response, 400, { error: "plugin id does not match its manifest" });
+      return;
+    }
+
+    mkdirSync(persistentPluginRoot, { recursive: true });
+    stagingDirectory = mkdtempSync(join(persistentPluginRoot, `.install-${slug}-`));
+    for (const file of normalizedFiles) {
+      const filePath = resolve(stagingDirectory, file.path);
+      if (!isPathWithinDirectory(stagingDirectory, filePath)) {
+        throw new Error("plugin file path is outside its package");
+      }
+      mkdirSync(dirname(filePath), { recursive: true });
+      writeFileSync(filePath, file.content, { flag: "wx" });
+    }
+
+    const destination = resolve(persistentPluginRoot, slug);
+    if (existsSync(destination)) {
+      const existingManifestPath = resolve(destination, "atlas-plugin.json");
+      if (!existsSync(existingManifestPath) || JSON.parse(readFileSync(existingManifestPath, "utf8")).id !== plugin.id) {
+        rmSync(stagingDirectory, { recursive: true, force: true });
+        stagingDirectory = "";
+        writeJson(response, 409, { error: "another plugin already uses this plugin folder" });
+        return;
+      }
+      backupDirectory = join(persistentPluginRoot, `.previous-${slug}-${Date.now()}`);
+      renameSync(destination, backupDirectory);
+    }
+    try {
+      renameSync(stagingDirectory, destination);
+      stagingDirectory = "";
+    } catch (error) {
+      if (backupDirectory && existsSync(backupDirectory)) renameSync(backupDirectory, destination);
+      backupDirectory = "";
+      throw error;
+    }
+    if (backupDirectory) {
+      rmSync(backupDirectory, { recursive: true, force: true });
+      backupDirectory = "";
+    }
+    const removedPluginSlugs = readRemovedPluginSlugs();
+    removedPluginSlugs.delete(slug);
+    writeFileSync(removedPluginSlugsPath, JSON.stringify([...removedPluginSlugs].sort(), null, 2));
+    writeJson(response, 200, { ok: true, pluginId: plugin.id, slug, version: plugin.version });
+  } catch (error) {
+    if (stagingDirectory && existsSync(stagingDirectory)) rmSync(stagingDirectory, { recursive: true, force: true });
+    if (backupDirectory && existsSync(backupDirectory)) rmSync(backupDirectory, { recursive: true, force: true });
+    writeJson(response, 400, { error: error instanceof Error ? error.message : "plugin installation failed" });
+  }
+}
+
+async function writePluginUninstallResponse(request, response) {
+  try {
+    if (!isTrustedAtlasOrigin(request)) {
+      writeJson(response, 403, { error: "plugin management requests must come from an Atlas web surface" });
+      return;
+    }
+    const body = await readJsonRequestBody(request);
+    const pluginId = typeof body?.pluginId === "string" ? body.pluginId.trim() : "";
+    if (request.method !== "POST" || !/^atlas\.plugin\.[a-z0-9]+(?:[.-][a-z0-9]+)*$/.test(pluginId)) {
+      writeJson(response, 400, { error: "invalid plugin id" });
+      return;
+    }
+    if (pluginId === "atlas.plugin.homeassistant-card-editor") {
+      writeJson(response, 403, { error: "the reference plugin cannot be uninstalled" });
+      return;
+    }
+    const slug = createPluginSlug(pluginId.split(".").at(-1));
+    const directory = resolve(persistentPluginRoot, slug);
+    const bundledDirectory = resolve(bundledPluginRoot, slug);
+    const persistentManifestPath = resolve(directory, "atlas-plugin.json");
+    const manifestPath = existsSync(directory)
+      ? persistentManifestPath
+      : resolve(bundledDirectory, "atlas-plugin.json");
+    if (!isPathWithinDirectory(persistentPluginRoot, directory)) {
+      writeJson(response, 409, { error: "plugin installation could not be verified" });
+      return;
+    }
+    if (existsSync(manifestPath)) {
+      if (JSON.parse(readFileSync(manifestPath, "utf8")).id !== pluginId) {
+        writeJson(response, 409, { error: "plugin installation could not be verified" });
+        return;
+      }
+    } else if (existsSync(directory)) {
+      writeJson(response, 409, { error: "plugin installation could not be verified" });
+      return;
+    }
+    if (existsSync(persistentPluginRoot)) {
+      const stagingPrefix = `.install-${slug}-`;
+      for (const entry of readdirSync(persistentPluginRoot, { withFileTypes: true })) {
+        if (entry.isDirectory() && entry.name.startsWith(stagingPrefix)) {
+          rmSync(resolve(persistentPluginRoot, entry.name), { recursive: true, force: true });
+        }
+      }
+    }
+    if (existsSync(directory)) rmSync(directory, { recursive: true, force: true });
+    const removedPluginSlugs = readRemovedPluginSlugs();
+    removedPluginSlugs.add(slug);
+    mkdirSync(persistentPluginRoot, { recursive: true });
+    writeFileSync(removedPluginSlugsPath, JSON.stringify([...removedPluginSlugs].sort(), null, 2));
+    writeJson(response, 200, { ok: true, pluginId });
+  } catch (error) {
+    writeJson(response, 400, { error: error instanceof Error ? error.message : "plugin removal failed" });
+  }
+}
+
+function writePluginSettingsBridgeResponse(request, response) {
+  if (request.method !== "GET") {
+    writeJson(response, 405, { error: "method not allowed" });
+    return;
+  }
+  const allowedPorts = JSON.stringify([adminPort, editorPort, appPort]);
+  const html = `<!doctype html><meta charset="utf-8"><script>
+    const allowedPorts = new Set(${allowedPorts}.map(String));
+    window.addEventListener("message", event => {
+      if (event.source !== parent || typeof event.data?.pluginId !== "string") return;
+      let trusted = false;
+      try {
+        const origin = new URL(event.origin);
+        trusted = origin.hostname.toLowerCase() === location.hostname.toLowerCase()
+          && origin.protocol === location.protocol
+          && (origin.origin === location.origin || allowedPorts.has(origin.port));
+      } catch {}
+      if (!trusted || event.data.type !== "atlas.clear-plugin-settings") return;
+      const match = /^atlas\\.plugin\\.([a-z0-9]+(?:[.-][a-z0-9]+)*)$/.exec(event.data.pluginId);
+      if (!match) return;
+      const slug = match[1].split(".").at(-1).toLowerCase().replace(/[^a-z0-9-]/g, "-");
+      const prefixes = [\`atlas.\${slug}.\`, \`atlas.plugin.\${slug}.\`];
+      try {
+        for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+          const key = localStorage.key(index);
+          if (key && prefixes.some(prefix => key.startsWith(prefix))) localStorage.removeItem(key);
+        }
+      } catch {}
+      parent.postMessage({ type: "atlas.plugin-settings-cleared", pluginId: event.data.pluginId }, event.origin);
+    });
+  </script>`;
+  response.writeHead(200, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "no-store",
+    "x-content-type-options": "nosniff",
+  });
+  response.end(html);
+}
+
+function readRemovedPluginSlugs() {
+  try {
+    const values = JSON.parse(readFileSync(removedPluginSlugsPath, "utf8"));
+    return new Set(Array.isArray(values)
+      ? values.filter(value => typeof value === "string" && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value))
+      : []);
+  } catch {
+    return new Set();
   }
 }
 
@@ -2983,12 +3372,39 @@ function hasLocalPluginIndex(directoryName) {
   if (typeof directoryName !== "string" || !directoryName.trim()) {
     return false;
   }
-  const pluginDirectory = resolve(pluginRoot, directoryName.trim());
+  const pluginDirectory = resolvePluginDirectory(directoryName.trim());
+  if (!pluginDirectory) {
+    return false;
+  }
   const indexPath = resolve(pluginDirectory, "index.html");
-  return pluginDirectory.startsWith(pluginRoot)
-    && indexPath.startsWith(pluginDirectory)
+  return indexPath.startsWith(pluginDirectory)
     && existsSync(indexPath)
     && !statSync(indexPath).isDirectory();
+}
+
+function resolvePluginDirectory(directoryName) {
+  if (
+    typeof directoryName !== "string"
+    || !directoryName.trim()
+    || directoryName.includes("/")
+    || directoryName.includes("\\")
+    || directoryName === "."
+    || directoryName === ".."
+  ) {
+    return "";
+  }
+
+  for (const pluginRoot of pluginRoots) {
+    const pluginDirectory = resolve(pluginRoot, directoryName);
+    if (
+      pluginDirectory.startsWith(`${pluginRoot}${process.platform === "win32" ? "\\" : "/"}`)
+      && existsSync(pluginDirectory)
+      && statSync(pluginDirectory).isDirectory()
+    ) {
+      return pluginDirectory;
+    }
+  }
+  return "";
 }
 
 function createPluginAssetUrl(directoryName, assetPath, requestUrl) {
@@ -3006,8 +3422,25 @@ function servePluginAsset(response, pathname) {
     writeEmptyResponse(response, 404);
     return;
   }
-  const pluginDirectory = resolve(pluginRoot, directoryName);
-  serveStaticFile(response, resolve(pluginDirectory, normalize(assetPath)), pluginDirectory);
+  for (const pluginRoot of pluginRoots) {
+    const pluginDirectory = resolve(pluginRoot, directoryName);
+    if (
+      !isPathWithinDirectory(pluginRoot, pluginDirectory)
+      || !existsSync(pluginDirectory)
+      || !statSync(pluginDirectory).isDirectory()
+    ) {
+      continue;
+    }
+    const assetFile = resolveBrowserModuleFilePath(
+      resolve(pluginDirectory, normalize(assetPath)),
+      pluginDirectory,
+    );
+    if (assetFile) {
+      serveStaticFile(response, assetFile, pluginDirectory);
+      return;
+    }
+  }
+  writeEmptyResponse(response, 404);
 }
 
 function serveStaticPath(response, pathname, baseDirectory = root) {
@@ -3029,7 +3462,7 @@ function serveStaticFile(response, filePath, baseDirectory = root) {
 }
 
 function resolveBrowserModuleFilePath(filePath, baseDirectory) {
-  if (!filePath.startsWith(baseDirectory)) {
+  if (!isPathWithinDirectory(baseDirectory, filePath)) {
     return "";
   }
   if (existsSync(filePath) && !statSync(filePath).isDirectory()) {
@@ -3040,16 +3473,22 @@ function resolveBrowserModuleFilePath(filePath, baseDirectory) {
   }
   const javascriptFilePath = `${filePath}.js`;
   if (
-    javascriptFilePath.startsWith(baseDirectory)
+    isPathWithinDirectory(baseDirectory, javascriptFilePath)
     && existsSync(javascriptFilePath)
     && !statSync(javascriptFilePath).isDirectory()
   ) {
     return javascriptFilePath;
   }
   const indexFilePath = resolve(filePath, "index.js");
-  return indexFilePath.startsWith(baseDirectory)
+  return isPathWithinDirectory(baseDirectory, indexFilePath)
     && existsSync(indexFilePath)
     && !statSync(indexFilePath).isDirectory()
     ? indexFilePath
     : "";
+}
+
+function isPathWithinDirectory(directoryPath, filePath) {
+  const relativePath = relative(directoryPath, filePath);
+  return relativePath === ""
+    || (!isAbsolute(relativePath) && relativePath !== ".." && !relativePath.startsWith(`..${sep}`));
 }

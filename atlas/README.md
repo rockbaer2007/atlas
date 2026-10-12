@@ -18,6 +18,10 @@ und Card Editor sind zusätzlich über App-Routen erreichbar, damit Hub- und
 Seitenleisten-Links auch über Home Assistant Ingress und von anderen Rechnern
 funktionieren.
 
+Administration bietet eine begonnene französische Vorschau für Kopfzeile und
+Verbindungseinstellungen. Noch nicht übersetzte Texte werden auf Englisch
+angezeigt und im Hinweis als ausstehend gekennzeichnet.
+
 ## Add-on-Verbindungsoptionen
 
 Die Add-on-Konfiguration kann die Home-Assistant-URL, einen Long-Lived Access
@@ -88,6 +92,12 @@ sidebar dialog can copy either a plain plugin URL or a ready-to-use
 app routes so Hub and sidebar links work through Home Assistant Ingress and from
 other client devices.
 
+Administration and Plugin Hub include French translations for all current
+interface message keys and share the saved DE/EN/FR language preference across
+the Administration and app ports.
+Plugin-provided names and descriptions may use another available language when
+no French version is provided.
+
 ## Add-on connection options
 
 The Add-on configuration can provide the Home Assistant URL, a long-lived access
@@ -125,10 +135,16 @@ terminal access as administrative access to the Home Assistant Supervisor. The
 `SUPERVISOR_TOKEN` is passed only to local shell sessions, never configured SSH
 targets.
 
+## French interface
+
+Administration and Plugin Hub now share the saved DE/EN/FR language preference
+across app ports.
+Plugin screens may still use English when the plugin does not provide French text.
+
 ## Update note
 
 Home Assistant may show two versions during Add-on updates: `old` is the
 installed version, `target` is the new version from this repository. After this
-ATLAS update, `target` should be at least `0.1.211`. If Home Assistant still
+ATLAS update, `target` should be at least `0.1.262`. If Home Assistant still
 shows an older target version, reload the repository information in the Add-on
 Store and then restart the ATLAS Add-on.

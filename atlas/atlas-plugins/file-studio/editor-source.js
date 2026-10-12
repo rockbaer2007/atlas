@@ -3,7 +3,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { json } from "@codemirror/lang-json";
 import { markdown } from "@codemirror/lang-markdown";
 import { yaml } from "@codemirror/lang-yaml";
-import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighting } from "@codemirror/language";
+import { bracketMatching, defaultHighlightStyle, indentOnInput, syntaxHighlighting, syntaxTree } from "@codemirror/language";
 import { Compartment, EditorState } from "@codemirror/state";
 import {
   crosshairCursor,
@@ -16,6 +16,8 @@ import {
   keymap,
   lineNumbers,
   rectangularSelection,
+  Decoration,
+  ViewPlugin,
 } from "@codemirror/view";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
@@ -26,9 +28,159 @@ const lineWrappingCompartment = new Compartment();
 const fontSizeCompartment = new Compartment();
 const themeCompartment = new Compartment();
 
+function atlasSyntaxHighlighting(dark) {
+  return [syntaxHighlighting(defaultHighlightStyle, { fallback: true })];
+}
+
+const yamlValueHighlighting = ViewPlugin.fromClass(class {
+  constructor(view) {
+    this.decorations = this.build(view);
+  }
+
+  update(update) {
+    if (update.docChanged || update.viewportChanged || update.transactions.length) {
+      this.decorations = this.build(update.view);
+    }
+  }
+
+  build(view) {
+    const source = view.state.doc.toString();
+    const decorations = [];
+    const tree = syntaxTree(view.state);
+    tree.iterate({
+      enter(node) {
+        if (node.name === "Comment") {
+          decorations.push(Decoration.mark({ class: "cm-atlas-yaml-comment" }).range(node.from, node.to));
+        }
+
+        const isKey = node.node.parent?.name === "Key";
+        if (node.name === "QuotedLiteral" && !isKey) {
+          decorations.push(Decoration.mark({ class: "cm-atlas-yaml-string" }).range(node.from, node.to));
+        }
+
+        if ((node.name === "Literal" || node.name === "QuotedLiteral") && !isKey) {
+          const quoted = node.name === "QuotedLiteral";
+          const rawValue = source.slice(node.from, node.to);
+          const value = (quoted ? rawValue.slice(1, -1) : rawValue).trim();
+          const valueFrom = node.from + (quoted ? 1 : 0);
+          const valueTo = node.to - (quoted ? 1 : 0);
+          const className = /^true$/i.test(value)
+            ? "cm-atlas-yaml-true"
+            : /^false$/i.test(value)
+              ? "cm-atlas-yaml-false"
+              : /^unknown$/i.test(value)
+                ? "cm-atlas-yaml-unknown"
+                : !quoted && /^[+-]?(?:0x[\da-f_]+|0o[0-7_]+|0b[01_]+|(?:\d[\d_]*\.?[\d_]*|\.\d[\d_]*)(?:e[+-]?\d[\d_]*)?)$/i.test(value)
+                  ? "cm-atlas-yaml-number"
+                : null;
+          if (className) decorations.push(Decoration.mark({ class: className }).range(valueFrom, valueTo));
+        }
+
+        if (node.name === "BlockLiteralContent") {
+          const pair = node.node.parent?.parent;
+          const key = pair?.getChild("Key");
+          if (!key || source.slice(key.from, key.to).trim().toLowerCase() !== "query") return;
+          const block = source.slice(node.from, node.to);
+          const sqlKeyword = /\b(?:SELECT|FROM|WHERE|ROUND|SUM|AS|JOIN|LEFT|RIGHT|INNER|OUTER|ON|GROUP|BY|ORDER|LIMIT|CASE|WHEN|THEN|ELSE|END|DISTINCT|COUNT|AVG|MIN|MAX|AND|OR|NOT|IN|IS|NULL|LIKE)\b/g;
+          let match;
+          while ((match = sqlKeyword.exec(block))) {
+            const from = node.from + match.index;
+            decorations.push(Decoration.mark({ class: "cm-atlas-sql-keyword" }).range(from, from + match[0].length));
+          }
+        }
+      },
+    });
+    return Decoration.set(decorations.sort((left, right) => left.from - right.from));
+  }
+}, { decorations: value => value.decorations });
+
+const templateStringHighlighting = ViewPlugin.fromClass(class {
+  constructor(view) {
+    this.decorations = this.build(view);
+  }
+
+  update(update) {
+    if (update.docChanged) this.decorations = this.build(update.view);
+  }
+
+  build(view) {
+    const source = view.state.doc.toString();
+    const decorations = [];
+    const templateStatement = /\{%([\s\S]*?)%\}/g;
+    let statement;
+
+    while ((statement = templateStatement.exec(source))) {
+      const body = statement[1];
+      const bodyStart = statement.index + 2;
+      decorations.push(Decoration.mark({ class: "cm-atlas-template-delimiter" }).range(statement.index, bodyStart));
+      decorations.push(Decoration.mark({ class: "cm-atlas-template-delimiter" }).range(templateStatement.lastIndex - 2, templateStatement.lastIndex));
+
+      const stringToken = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
+      const stringRanges = [];
+      let stringMatch;
+      while ((stringMatch = stringToken.exec(body))) {
+        stringRanges.push([bodyStart + stringMatch.index, bodyStart + stringMatch.index + stringMatch[0].length]);
+      }
+
+      const markTokens = (pattern, className) => {
+        let match;
+        while ((match = pattern.exec(body))) {
+          const from = bodyStart + match.index;
+          const to = from + match[0].length;
+          if (stringRanges.some(([stringFrom, stringTo]) => from < stringTo && to > stringFrom)) continue;
+          decorations.push(Decoration.mark({ class: className }).range(from, to));
+        }
+      };
+
+      markTokens(/\b(?:if|elif|else|endif)\b/g, "cm-atlas-template-control");
+      markTokens(/\bset\b/g, "cm-atlas-template-set");
+      markTokens(/\b(?:and|or|not)\b/g, "cm-atlas-template-operator");
+    }
+
+    const templateExpression = /\{\{([\s\S]*?)\}\}/g;
+    let expression;
+
+    while ((expression = templateExpression.exec(source))) {
+      decorations.push(Decoration.mark({ class: "cm-atlas-template-delimiter" }).range(expression.index, expression.index + 2));
+      decorations.push(Decoration.mark({ class: "cm-atlas-template-delimiter" }).range(templateExpression.lastIndex - 2, templateExpression.lastIndex));
+      const body = expression[1];
+      const bodyStart = expression.index + 2;
+      const stringToken = /"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'/g;
+      const stringRanges = [];
+      let stringMatch;
+      while ((stringMatch = stringToken.exec(body))) {
+        const from = bodyStart + stringMatch.index;
+        const to = from + stringMatch[0].length;
+        stringRanges.push([from, to]);
+        decorations.push(Decoration.mark({ class: "cm-atlas-template-string" }).range(from, to));
+      }
+
+      const templateFunction = /\b(?:states|float|map|round)\b/gi;
+      let functionMatch;
+      while ((functionMatch = templateFunction.exec(body))) {
+        const from = bodyStart + functionMatch.index;
+        const to = from + functionMatch[0].length;
+        if (stringRanges.some(([stringFrom, stringTo]) => from < stringTo && to > stringFrom)) continue;
+        decorations.push(Decoration.mark({ class: "cm-atlas-template-function" }).range(from, to));
+      }
+
+      const numberToken = /\b\d+(?:\.\d+)?\b/g;
+      let numberMatch;
+      while ((numberMatch = numberToken.exec(body))) {
+        const from = bodyStart + numberMatch.index;
+        const to = from + numberMatch[0].length;
+        if (stringRanges.some(([stringFrom, stringTo]) => from < stringTo && to > stringFrom)) continue;
+        decorations.push(Decoration.mark({ class: "cm-atlas-template-number" }).range(from, to));
+      }
+    }
+
+    return Decoration.set(decorations.sort((left, right) => left.from - right.from));
+  }
+}, { decorations: value => value.decorations });
+
 function extensionLanguage(extension) {
   const normalizedExtension = String(extension ?? "").trim().toLowerCase();
-  if (["yaml", "yml"].includes(normalizedExtension)) return yaml();
+  if (["yaml", "yml"].includes(normalizedExtension)) return [yaml(), yamlValueHighlighting];
   if (normalizedExtension === "json") return json();
   if (["js", "mjs", "ts"].includes(normalizedExtension)) return javascript({ typescript: normalizedExtension === "ts" });
   if (["md", "markdown"].includes(normalizedExtension)) return markdown();
@@ -36,7 +188,7 @@ function extensionLanguage(extension) {
 }
 
 function createAtlasLightTheme(fontSize) {
-  return EditorView.theme({
+  return [EditorView.theme({
     "&": {
       height: "100%",
       minHeight: "100%",
@@ -52,6 +204,20 @@ function createAtlasLightTheme(fontSize) {
       minHeight: "100%",
       caretColor: "var(--atlas-accent)",
     },
+    ".cm-atlas-template-string": { color: "#7e22ce" },
+    ".cm-atlas-template-number": { color: "#9a3412" },
+    ".cm-atlas-template-delimiter": { color: "#374151" },
+    ".cm-atlas-template-function": { color: "#c2410c" },
+    ".cm-atlas-template-control": { color: "#7e22ce", fontWeight: "600" },
+    ".cm-atlas-template-set": { color: "#0f766e", fontWeight: "600" },
+    ".cm-atlas-template-operator": { color: "#c2410c", fontWeight: "600" },
+    ".cm-atlas-yaml-comment": { color: "#008f87" },
+    ".cm-atlas-yaml-string": { color: "#16803c" },
+    ".cm-atlas-yaml-number": { color: "#9a3412" },
+    ".cm-atlas-yaml-true": { color: "#16803c", fontWeight: "600" },
+    ".cm-atlas-yaml-false": { color: "#c62828", fontWeight: "600" },
+    ".cm-atlas-yaml-unknown": { color: "#b45309", fontWeight: "600" },
+    ".cm-atlas-sql-keyword": { color: "#7c3aed", fontWeight: "600" },
     ".cm-gutters": {
       backgroundColor: "var(--atlas-panel)",
       borderRight: "1px solid var(--atlas-border)",
@@ -63,7 +229,9 @@ function createAtlasLightTheme(fontSize) {
     "&.cm-focused": {
       outline: "2px solid color-mix(in srgb, var(--atlas-accent) 30%, transparent)",
     },
-  }, { dark: false });
+  }, { dark: false }),
+  atlasSyntaxHighlighting(false),
+  ];
 }
 
 function createAtlasDarkTheme(fontSize) {
@@ -86,10 +254,25 @@ function createAtlasDarkTheme(fontSize) {
         borderRight: "1px solid var(--atlas-border)",
         color: "var(--atlas-muted)",
       },
+      ".cm-atlas-template-string": { color: "#f0abfc" },
+      ".cm-atlas-template-number": { color: "#ffffff" },
+      ".cm-atlas-template-delimiter": { color: "#ffffff" },
+      ".cm-atlas-template-function": { color: "#ffd54f" },
+      ".cm-atlas-template-control": { color: "#ce93d8", fontWeight: "600" },
+      ".cm-atlas-template-set": { color: "#4dd0e1", fontWeight: "600" },
+      ".cm-atlas-template-operator": { color: "#ffb74d", fontWeight: "600" },
+      ".cm-atlas-yaml-comment": { color: "#4dd0e1" },
+      ".cm-atlas-yaml-string": { color: "#81c784" },
+      ".cm-atlas-yaml-number": { color: "#ffffff" },
+      ".cm-atlas-yaml-true": { color: "#81c784", fontWeight: "600" },
+      ".cm-atlas-yaml-false": { color: "#ff8a80", fontWeight: "600" },
+      ".cm-atlas-yaml-unknown": { color: "#ffb74d", fontWeight: "600" },
+      ".cm-atlas-sql-keyword": { color: "#ce93d8", fontWeight: "600" },
       ".cm-activeLine, .cm-activeLineGutter": {
         backgroundColor: "var(--atlas-accent-soft)",
       },
     }, { dark: true }),
+    atlasSyntaxHighlighting(true),
   ];
 }
 
@@ -116,7 +299,7 @@ function createEditor(host, options = {}) {
         drawSelection(),
         dropCursor(),
         indentOnInput(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        templateStringHighlighting,
         bracketMatching(),
         rectangularSelection(),
         crosshairCursor(),

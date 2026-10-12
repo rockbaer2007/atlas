@@ -8,6 +8,10 @@ The terminal is disabled unless `ATLAS_TERMINAL_ENABLED=1` and a random access t
 
 The shell runs with the same operating-system permissions as the ATLAS server process. Do not expose the server to an untrusted network. In Docker, treat enabling the terminal as granting shell access inside the container and to any mounted paths.
 
+## Install additional commands in the Home Assistant add-on
+
+In the ATLAS add-on configuration, add Alpine package names to `packages`, for example `mc`. Save the options and restart the add-on; its startup installs the listed packages in the terminal container, so `mc` is then available in the local terminal. Package names are restricted to safe Alpine package-name characters. This does not install commands on an SSH target or on the Home Assistant host. Standalone Docker deployments need the package installed in their image separately.
+
 ## Optional Home Assistant SSH target
 
 Configure `ATLAS_TERMINAL_SSH_HOST`, `ATLAS_TERMINAL_SSH_USER`, `ATLAS_TERMINAL_SSH_IDENTITY_FILE` and `ATLAS_TERMINAL_SSH_KNOWN_HOSTS` on the server to show the SSH target. Both the private key and known-hosts file must exist. Optionally set `ATLAS_TERMINAL_SSH_PORT` (default `22`). Host key verification is always enabled. Password login and arbitrary SSH destinations are not accepted from the browser.
@@ -16,4 +20,10 @@ For Docker, mount the SSH key and `known_hosts` read-only into the container bef
 
 ## UI settings
 
-Switch the interface between German and English. Use the slider to set a font size from 11 to 26 px; the choice is saved locally in the browser. When the ATLAS host has Oh My Posh and Bash installed, select a theme from the dropdown for local terminal sessions. The theme list comes from the UGSo fork and the selection is saved in this browser. SSH sessions use the remote server's own shell and do not apply a local theme. ANSI colors are rendered by xterm.js.
+Switch the interface between German and English. Use the slider to set a font size from 11 to 26 px; the choice is saved locally in the browser. The terminal loads `MesloLGM Nerd Font Mono` from Home Assistant's `/local/fonts/` path (or `/local/`); place `MesloLGMNerdFontMono-Regular.ttf` and `MesloLGMNerdFontMono-Bold.ttf` under `/config/www/fonts/` or directly under `/config/www/`. Clients do not need to install the font. When the ATLAS host has Oh My Posh and Bash installed, select a theme from the dropdown for local terminal sessions. The theme list comes from the UGSo fork and the selection is saved in this browser. SSH sessions use the remote server's own shell and do not apply a local theme. ANSI colors are rendered by xterm.js.
+
+### Troubleshooting Nerd Font glyphs on another computer
+
+Oh My Posh symbols have been observed rendering correctly on one computer but incompletely on another. A Nerd Font installed locally may hide a missing or unloaded web font on the first computer. If glyphs are missing, check in the affected browser that the Meslo files under `/local/fonts/` actually load and that the terminal uses that font; clear the browser cache if needed. Oh My Posh itself runs on the ATLAS host, while the browser client renders the font.
+
+The access-token settings are collapsible. They close when a session connects and reopen after disconnecting or when the session ends. If no token is saved in this browser, the settings are shown on initial load. Local shell sessions start at `/`, the filesystem root inside the ATLAS container, rather than `/app`; SSH sessions keep the remote shell's default directory.

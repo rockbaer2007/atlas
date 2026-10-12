@@ -154,6 +154,21 @@
         color: var(--atlas-on-accent);
       }
 
+      .french-translation-note {
+        margin: -8px 0 14px;
+        padding: 9px 12px;
+        border: 1px solid var(--atlas-border-strong);
+        border-left: 3px solid var(--atlas-orange);
+        border-radius: 6px;
+        background: var(--atlas-panel);
+        color: var(--atlas-muted);
+        font-size: 13px;
+      }
+
+      html:not([lang="fr"]) .french-translation-note {
+        display: none;
+      }
+
       .header-doc-link {
         min-height: 34px;
         display: inline-flex;
@@ -178,8 +193,9 @@
 
       .admin-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(260px, 0.45fr);
+        grid-template-columns: minmax(0, 1fr);
         gap: 14px;
+        align-items: start;
       }
 
       .panel,
@@ -213,7 +229,8 @@
       }
 
       input,
-      select {
+      select,
+      textarea {
         width: 100%;
         min-height: 36px;
         box-sizing: border-box;
@@ -240,6 +257,7 @@
 
       input:focus,
       select:focus,
+      textarea:focus,
       button:focus-visible {
         outline: 2px solid var(--atlas-accent);
         outline-offset: 1px;
@@ -442,6 +460,18 @@
         gap: 8px;
       }
 
+      .plugin-action-status {
+        grid-column: 1 / -1;
+        min-height: 0;
+        color: var(--atlas-muted);
+        font-size: 13px;
+        overflow-wrap: anywhere;
+      }
+
+      .plugin-action-status:empty { display: none; }
+      .plugin-action-status.is-error { color: var(--atlas-danger, #ef6b73); }
+      button[aria-busy="true"] { cursor: progress; opacity: 0.75; }
+
       button {
         min-height: 36px;
         border: 1px solid var(--atlas-accent);
@@ -460,11 +490,36 @@
         color: var(--atlas-text);
       }
 
+      button.danger {
+        border-color: #b42332;
+        background: #b42332;
+        color: #ffffff;
+      }
+
       button.accent {
         border-color: var(--atlas-orange);
         background: var(--atlas-orange);
         color: #172033;
         font-weight: 800;
+      }
+
+      .plugin-manager-launch-button {
+        justify-self: start;
+        align-self: start;
+        width: 160px;
+        max-width: 100%;
+        height: 48px;
+        min-height: 48px;
+        padding: 5px 12px;
+        line-height: 1.15;
+        white-space: normal;
+        text-align: center;
+        box-sizing: border-box;
+      }
+
+      html[lang="fr"] .plugin-manager-launch-button {
+        height: 60px;
+        min-height: 60px;
       }
 
       button.accent:hover {
@@ -546,10 +601,121 @@
         gap: 10px;
       }
 
+      .plugin-manager-tabs {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 2px 0 6px;
+        border-bottom: 1px solid var(--atlas-border);
+      }
+
+      .plugin-manager-section {
+        margin: 12px 0;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+      }
+
+      .plugin-manager-section > summary {
+        cursor: pointer;
+        padding: 10px 12px;
+        color: var(--atlas-text);
+        font-weight: 700;
+      }
+
+      .plugin-manager-section[open] {
+        display: grid;
+        gap: 8px;
+        padding: 0 10px 10px;
+      }
+
+      .plugin-manager-section[open] > summary {
+        margin: 0 -10px;
+      }
+
+      .plugin-manager-tab {
+        flex: 0 0 auto;
+        min-height: 34px;
+        border: 1px solid var(--atlas-border-strong);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-text);
+        padding: 6px 11px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .plugin-manager-tab[aria-selected="true"] {
+        border: 2px solid #ff9800;
+        background: color-mix(in srgb, #ff9800 12%, var(--atlas-panel));
+        color: var(--atlas-text);
+      }
+
+      .plugin-card[hidden] {
+        display: none;
+      }
+
+      .plugin-manager-dialog {
+        width: min(1160px, calc(100vw - 32px));
+        max-height: calc(100vh - 32px);
+        overflow: auto;
+      }
+
+      .plugin-update-badge {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        background: #ff9800;
+        color: #17202a;
+        padding: 2px 7px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .plugin-uninstall-dialog {
+        width: min(640px, calc(100vw - 32px));
+      }
+
+      .plugin-manager-dialog > .panel {
+        margin: 0;
+        border: 0;
+        box-shadow: none;
+      }
+
       .app-release-grid {
         display: grid;
         grid-template-columns: minmax(480px, 1fr) minmax(420px, 0.75fr);
         gap: 10px;
+      }
+
+      .app-runtime-grid {
+        display: grid;
+        grid-template-columns: minmax(320px, 0.7fr) minmax(420px, 1.3fr);
+        gap: 10px;
+      }
+
+      .readiness-disclosure {
+        min-width: 0;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+        padding: 0 10px 10px;
+      }
+
+      .readiness-disclosure > summary {
+        padding: 10px 0;
+        color: var(--atlas-text);
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .readiness-disclosure > summary::marker {
+        color: #ff9800;
+      }
+
+      .readiness-disclosure[open] > summary {
+        margin-bottom: 2px;
       }
 
       .runtime-actions {
@@ -583,6 +749,7 @@
 
       .runtime-link a {
         overflow-wrap: anywhere;
+        font-weight: 400;
       }
 
       .readiness-list {
@@ -678,19 +845,19 @@
         gap: 8px;
       }
 
-      .plugin-update-panel {
-        display: grid;
+      .plugin-update-tool {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
         gap: 8px;
-        margin: 12px 0;
-        border: 1px solid var(--atlas-border);
-        border-radius: 6px;
-        background: var(--atlas-panel-soft);
-        padding: 10px;
       }
 
-      .plugin-update-list {
-        display: grid;
-        gap: 8px;
+      .plugin-update-tool output { font-size: 12px; }
+
+      .plugin-manager-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
       .sidebar-dialog {
@@ -771,7 +938,6 @@
       .plugin-repository-tools {
         display: grid;
         gap: 10px;
-        margin: 12px 0;
       }
 
       dialog {
@@ -806,6 +972,111 @@
         display: grid;
         grid-template-columns: minmax(260px, 1fr) minmax(130px, 0.35fr);
         gap: 10px;
+      }
+
+      .plugin-generator-dialog {
+        width: min(980px, calc(100vw - 32px));
+      }
+
+      .plugin-generator-layout {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr);
+        gap: 14px;
+      }
+
+      .plugin-generator-fields {
+        display: grid;
+        gap: 10px;
+        align-content: start;
+      }
+
+      .mdi-picker {
+        display: grid;
+        gap: 8px;
+      }
+
+      .plugin-generator-icon-source {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .plugin-generator-icon-source label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .plugin-generator-icon-source input[type="radio"] {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+      }
+
+      .mdi-picker-selection {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        color: var(--atlas-muted);
+        font-size: 13px;
+      }
+
+      .mdi-picker-selection svg,
+      .mdi-picker-option svg {
+        width: 24px;
+        height: 24px;
+        flex: 0 0 auto;
+        fill: currentColor;
+      }
+
+      .mdi-picker-results {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 6px;
+        max-height: 210px;
+        overflow: auto;
+        padding: 2px;
+      }
+
+      .mdi-picker-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        padding: 7px 9px;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+        color: var(--atlas-text);
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .mdi-picker-option:hover,
+      .mdi-picker-option[aria-pressed="true"] {
+        border-color: var(--atlas-accent);
+        background: color-mix(in srgb, var(--atlas-accent) 12%, var(--atlas-panel-soft));
+      }
+
+      .mdi-picker-option span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .plugin-generator-preview {
+        min-height: 340px;
+        max-height: 55vh;
+        overflow: auto;
+        border: 1px solid var(--atlas-border);
+        border-radius: 6px;
+        background: var(--atlas-panel-soft);
+        padding: 12px;
+        color: var(--atlas-text);
+        font: 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
       }
 
       .repository-preview-list {
@@ -880,16 +1151,6 @@
         place-items: center;
       }
 
-      .plugin-preview {
-        width: 100%;
-        max-height: 150px;
-        margin-top: 10px;
-        border: 1px solid var(--atlas-border);
-        border-radius: 6px;
-        object-fit: cover;
-        background: var(--atlas-panel-soft);
-      }
-
       .danger-icon-button {
         min-width: 36px;
         width: 36px;
@@ -961,7 +1222,8 @@
       }
 
       @media (max-width: 980px) {
-        .app-release-grid {
+        .app-release-grid,
+        .app-runtime-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -978,6 +1240,7 @@
         .admin-grid,
         .field-grid,
         .app-release-grid,
+        .app-runtime-grid,
         .runtime-link,
         .readiness-item,
         .provider-row,
@@ -999,6 +1262,14 @@
 
         .repository-dialog-grid {
           grid-template-columns: 1fr;
+        }
+
+        .plugin-generator-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .plugin-generator-preview {
+          min-height: 220px;
         }
 
         .runtime-actions {
@@ -1048,9 +1319,14 @@
           <div class="language-toggle" role="group" aria-label="Language" data-i18n-aria-label="aria.language">
             <button type="button" data-language="de" aria-pressed="false">DE</button>
             <button type="button" data-language="en" aria-pressed="true">EN</button>
+            <button type="button" data-language="fr" aria-pressed="false">FR</button>
           </div>
         </div>
       </header>
+
+      <p class="french-translation-note" role="status" data-i18n="message.frenchPreview">
+        Certaines interfaces de plugins peuvent encore être en anglais si elles ne sont pas traduites.
+      </p>
 
       <section class="panel" aria-labelledby="admin-access-heading">
         <div class="panel-header">
@@ -1189,17 +1465,17 @@
             <output id="app-runtime-summary" aria-live="polite"></output>
           </div>
         </div>
-        <div class="app-release-grid">
-          <div>
-            <h3 data-i18n="heading.runtimeSurfaces">Surfaces</h3>
+        <div class="app-runtime-grid">
+          <details class="readiness-disclosure">
+            <summary data-i18n="heading.runtimeSurfaces">Surfaces</summary>
             <div id="app-runtime-surfaces" class="readiness-list"></div>
-          </div>
-          <div>
-            <h3 data-i18n="heading.runtimeLinks">Links</h3>
+          </details>
+          <details class="readiness-disclosure">
+            <summary data-i18n="heading.runtimeLinks">Links</summary>
             <div id="app-runtime-links" class="runtime-links"></div>
             <h3 data-i18n="label.distributionOrder">Distribution order</h3>
             <div id="app-runtime-distribution" class="chip-list"></div>
-          </div>
+          </details>
         </div>
         <output id="app-runtime-status" aria-live="polite"></output>
       </section>
@@ -1213,60 +1489,27 @@
           <output id="app-release-summary" aria-live="polite"></output>
         </div>
         <div class="app-release-grid">
-          <div>
-            <h3 data-i18n="heading.releaseChecks">Release checks</h3>
+          <details class="readiness-disclosure">
+            <summary data-i18n="heading.releaseChecks">Release checks</summary>
             <div id="app-release-checks" class="readiness-list"></div>
-          </div>
-          <div>
-            <h3 data-i18n="heading.releaseTargets">Distribution targets</h3>
+          </details>
+          <details class="readiness-disclosure">
+            <summary data-i18n="heading.releaseTargets">Distribution targets</summary>
             <div id="app-release-targets" class="readiness-list"></div>
-          </div>
+          </details>
         </div>
       </section>
 
       <div class="admin-grid">
-        <section class="panel" aria-labelledby="plugins-heading">
+        <section class="panel" aria-labelledby="plugin-manager-launch-heading">
           <div class="panel-header">
             <div>
-              <h2 id="plugins-heading" data-i18n="heading.plugins">Installed plugins</h2>
-              <p data-i18n="message.pluginsHint">The Home Assistant Card Editor is the first official reference plugin.</p>
+              <h2 id="plugin-manager-launch-heading" data-i18n="heading.pluginManager">Plugin Manager</h2>
+              <p data-i18n="message.pluginManagerHint">Manage installed plugins, repositories and updates in one place.</p>
             </div>
-            <output id="plugin-summary" aria-live="polite"></output>
           </div>
-          <div class="plugin-tools">
-            <button id="import-plugin-package" type="button" data-i18n="button.importPackage">Import package</button>
-            <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
-            <button id="open-plugin-repository-dialog" class="atlas-repository-button" type="button">
-              <span data-i18n="button.openRepositoryDialog">Add ATLAS repository</span>
-              <span class="atlas-repository-target" aria-hidden="true">
-                ATLAS
-                <img class="atlas-repository-logo" src="/examples/admin-demo/atlas-icon.png" alt="">
-              </span>
-            </button>
-          </div>
-          <div class="plugin-update-panel" aria-labelledby="plugin-updates-heading">
-            <div class="panel-header">
-              <div>
-                <h3 id="plugin-updates-heading" data-i18n="heading.pluginUpdates">Plugin updates</h3>
-                <p data-i18n="message.pluginUpdatesHint">Atlas checks custom plugin repositories on Administration start and after reload.</p>
-              </div>
-              <button id="refresh-plugin-updates" type="button" data-i18n="button.refreshPluginUpdates">Check updates</button>
-            </div>
-            <output id="plugin-update-summary" aria-live="polite"></output>
-            <div id="plugin-update-list" class="plugin-update-list"></div>
-          </div>
-          <div class="plugin-repository-tools">
-            <div class="panel-header">
-              <div>
-                <h3 data-i18n="label.pluginRepositories">Custom repositories</h3>
-              </div>
-              <button id="refresh-plugin-repositories" type="button" data-i18n="button.refreshRepositories">Refresh repositories</button>
-            </div>
-            <div id="plugin-repository-list" class="repository-list"></div>
-            <output id="plugin-repository-status" aria-live="polite"></output>
-            <div id="plugin-repository-plugin-list" class="plugin-list"></div>
-          </div>
-          <div id="plugin-list" class="plugin-list"></div>
+          <button id="open-plugin-manager" class="accent plugin-manager-launch-button" type="button" data-i18n="button.openPluginManager">Open Plugin Manager</button>
+          <output id="plugin-summary" aria-live="polite"></output>
         </section>
 
         <aside class="panel" aria-labelledby="policy-heading">
@@ -1303,6 +1546,65 @@
         </aside>
       </div>
     </main>
+
+    <dialog id="plugin-manager-dialog" class="plugin-manager-dialog" aria-labelledby="plugins-heading">
+      <section class="panel" aria-labelledby="plugins-heading">
+        <div class="panel-header">
+          <div>
+            <h2 id="plugins-heading" data-i18n="heading.plugins">Installed plugins</h2>
+            <p data-i18n="message.pluginsHint">The Home Assistant Card Editor is the first official reference plugin.</p>
+          </div>
+          <div class="plugin-manager-header-actions">
+            <output id="plugin-manager-summary" aria-live="polite"></output>
+            <button id="close-plugin-manager" class="secondary" type="button" data-i18n="button.close">Close</button>
+          </div>
+        </div>
+          <div class="plugin-tools">
+            <button id="import-plugin-package" type="button" data-i18n="button.importPackage">Import package</button>
+            <button id="open-plugin-generator" type="button" data-i18n="button.createPlugin">Create plugin</button>
+            <div class="plugin-update-tool">
+              <button id="refresh-plugin-updates" type="button" data-i18n="button.refreshPluginUpdates">Check updates</button>
+              <output id="plugin-update-summary" aria-live="polite"></output>
+            </div>
+            <input id="plugin-package-file" class="visually-hidden" type="file" accept=".json,.atlas-plugin.json,application/json">
+            <button id="open-plugin-repository-dialog" class="atlas-repository-button" type="button">
+              <span data-i18n="button.openRepositoryDialog">Add ATLAS repository</span>
+              <span class="atlas-repository-target" aria-hidden="true">
+                ATLAS
+                <img class="atlas-repository-logo" src="examples/admin-demo/atlas-icon.png" alt="">
+              </span>
+            </button>
+          </div>
+          <div id="plugin-manager-tabs" class="plugin-manager-tabs" role="tablist" aria-label="Installed plugins"></div>
+          <div id="plugin-list" class="plugin-list" role="tabpanel" tabindex="0"></div>
+          <details class="plugin-manager-section">
+            <summary data-i18n="label.pluginRepositoriesAndPackages">Repositories and available plugins</summary>
+            <div class="plugin-repository-tools">
+              <div class="panel-header">
+                <div>
+                  <h3 data-i18n="label.pluginRepositories">Custom repositories</h3>
+                </div>
+                <button id="refresh-plugin-repositories" type="button" data-i18n="button.refreshRepositories">Refresh repositories</button>
+              </div>
+              <div id="plugin-repository-list" class="repository-list"></div>
+              <output id="plugin-repository-status" aria-live="polite"></output>
+              <div id="plugin-repository-plugin-list" class="plugin-list"></div>
+            </div>
+          </details>
+      </section>
+    </dialog>
+    <dialog id="plugin-uninstall-dialog" class="plugin-uninstall-dialog" aria-labelledby="plugin-uninstall-heading">
+      <form class="dialog-panel" method="dialog">
+        <h2 id="plugin-uninstall-heading" data-i18n="heading.uninstallPlugin">Uninstall plugin</h2>
+        <p id="plugin-uninstall-message"></p>
+        <p data-i18n="message.pluginSettingsChoice">Choose whether to keep this plugin's saved settings for a later reinstall or delete them now.</p>
+        <div class="dialog-actions">
+          <button class="secondary" type="submit" value="cancel" data-i18n="button.cancel">Cancel</button>
+          <button type="submit" value="keep" data-i18n="button.keepPluginSettings">Uninstall and keep settings</button>
+          <button class="danger" type="submit" value="delete" data-i18n="button.deletePluginSettings">Uninstall and delete settings</button>
+        </div>
+      </form>
+    </dialog>
     <dialog id="plugin-repository-dialog" aria-labelledby="plugin-repository-dialog-heading">
       <form class="dialog-panel" method="dialog">
         <div class="panel-header">
@@ -1333,6 +1635,73 @@
           <button id="preview-plugin-repository" type="button" data-i18n="button.previewRepository">Preview repository</button>
           <button id="add-plugin-repository" class="accent" type="button" data-i18n="button.addRepository">Add</button>
           <button id="close-plugin-repository-dialog" class="secondary" type="button" data-i18n="button.cancel">Cancel</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="plugin-generator-dialog" class="plugin-generator-dialog" aria-labelledby="plugin-generator-heading">
+      <form class="dialog-panel" method="dialog">
+        <div class="panel-header">
+          <div>
+            <h2 id="plugin-generator-heading" data-i18n="heading.pluginGenerator">Plugin generator</h2>
+            <p data-i18n="message.pluginGeneratorHint">Enter the plugin details. ATLAS generates an install package and repository catalog file for you to review and publish.</p>
+          </div>
+        </div>
+        <div class="plugin-generator-layout">
+          <div class="plugin-generator-fields">
+            <div class="field-pair">
+              <label for="plugin-generator-id" data-i18n="label.generatorPluginId">Plugin ID</label>
+              <input id="plugin-generator-id" value="atlas.plugin.example" autocomplete="off" spellcheck="false">
+            </div>
+            <div class="field-pair">
+              <label for="plugin-generator-name" data-i18n="label.generatorPluginName">Name</label>
+              <input id="plugin-generator-name" value="ATLAS Example Plugin" maxlength="80">
+            </div>
+            <div class="field-pair mdi-picker">
+              <label data-i18n="label.generatorIconSource">Icon source</label>
+              <div class="plugin-generator-icon-source">
+                <label><input type="radio" name="plugin-generator-icon-source" value="mdi" checked> <span data-i18n="label.generatorMdi">MDI icon</span></label>
+                <label><input type="radio" name="plugin-generator-icon-source" value="png"> <span data-i18n="label.generatorPng">Custom PNG</span></label>
+              </div>
+              <div id="plugin-generator-mdi-picker">
+                <input id="plugin-generator-icon-search" value="puzzle-outline" autocomplete="off" spellcheck="false" aria-controls="plugin-generator-icon-results" aria-autocomplete="list">
+                <div id="plugin-generator-icon-selection" class="mdi-picker-selection" aria-live="polite"></div>
+                <div id="plugin-generator-icon-results" class="mdi-picker-results" role="listbox" aria-label="Material Design Icons"></div>
+                <span class="field-hint" data-i18n="message.generatorIconHint">Search MDI icons and click a result to select it.</span>
+              </div>
+              <div id="plugin-generator-png-picker" hidden>
+                <input id="plugin-generator-icon-file" type="file" accept="image/png,.png">
+                <div id="plugin-generator-png-preview" class="mdi-picker-selection" aria-live="polite"></div>
+                <span class="field-hint" data-i18n="message.generatorPngHint">Choose a PNG image. Color and transparency are preserved (max. 512 KB).</span>
+              </div>
+            </div>
+            <div class="field-pair">
+              <label for="plugin-generator-description" data-i18n="label.generatorDescription">Description</label>
+              <textarea id="plugin-generator-description" rows="3" maxlength="240">A starter plugin created with ATLAS Administration.</textarea>
+            </div>
+            <div class="repository-dialog-grid">
+              <div class="field-pair">
+                <label for="plugin-generator-version" data-i18n="label.generatorVersion">Version</label>
+                <input id="plugin-generator-version" value="0.1.0" inputmode="decimal">
+              </div>
+              <div class="field-pair">
+                <label for="plugin-generator-entry" data-i18n="label.generatorEntry">Entry path</label>
+                <input id="plugin-generator-entry" value="/plugin-assets/example/index.html">
+              </div>
+            </div>
+            <div class="field-pair">
+              <label for="plugin-generator-capabilities" data-i18n="label.generatorCapabilities">Capabilities (one per line)</label>
+              <textarea id="plugin-generator-capabilities" rows="3" placeholder="atlas.plugin.example"></textarea>
+              <span class="field-hint" data-i18n="message.generatorCapabilitiesHint">Only declare capabilities the plugin actually needs.</span>
+            </div>
+            <output id="plugin-generator-status" aria-live="polite"></output>
+          </div>
+          <pre id="plugin-generator-preview" class="plugin-generator-preview" aria-label="Generated package preview"></pre>
+        </div>
+        <div class="dialog-actions">
+          <button id="download-plugin-generator-package" class="accent" type="button" data-i18n="button.downloadPluginPackage">Download plugin package</button>
+          <button id="download-plugin-generator-catalog" type="button" data-i18n="button.downloadPluginCatalog">Download repository catalog</button>
+          <button id="download-plugin-generator-documentation" type="button" data-i18n="button.downloadPluginDocumentation">Download plugin documentation</button>
+          <button id="close-plugin-generator" class="secondary" type="button" data-i18n="button.cancel">Cancel</button>
         </div>
       </form>
     </dialog>

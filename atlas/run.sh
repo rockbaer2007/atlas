@@ -2,8 +2,10 @@
 set -eu
 
 OPTIONS_PATH="/data/options.json"
+export ATLAS_PLUGIN_DATA_ROOT="${ATLAS_PLUGIN_DATA_ROOT:-/data/atlas-plugins}"
 
 if [ -f "$OPTIONS_PATH" ]; then
+  node scripts/install-addon-packages.mjs "$OPTIONS_PATH"
   ATLAS_INSTANCE_ID="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(String(options.atlas_instance_id || 'atlas-home-assistant'));" "$OPTIONS_PATH")"
   ATLAS_ADMIN_HOME_ASSISTANT_URL="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(String(options.home_assistant_url || ''));" "$OPTIONS_PATH")"
   ATLAS_ADMIN_HOME_ASSISTANT_TOKEN="$(node -e "const fs = require('node:fs'); const options = JSON.parse(fs.readFileSync(process.argv[1], 'utf8')); process.stdout.write(String(options.home_assistant_token || ''));" "$OPTIONS_PATH")"

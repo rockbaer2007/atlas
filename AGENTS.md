@@ -22,7 +22,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Prefer completing a useful end-to-end increment: implement, test, commit, and push when the change is ready.
 - Give short progress updates while working.
 - Keep final reports concise: what changed, what was verified, commit hashes, and anything that did not work.
-- End final reports with the current ATLAS sprint number, derived from the highest numbered `docs/sprints/Sprint-G2.5.*.md` file unless another active sprint is explicitly documented.
+- Record only changes to ATLAS itself in `docs/sprints/`; do not include work on standalone projects or external plugin repositories as ATLAS sprint work.
+- End final reports with the current ATLAS sprint number only when working on or discussing ATLAS. Derive it from the highest numbered `docs/sprints/Sprint-G2.5.*.md` file unless another active sprint is explicitly documented. Do not mention ATLAS sprints in reports about standalone projects.
 - If the user asks for only a short answer, keep it short.
 
 ## Git Rules

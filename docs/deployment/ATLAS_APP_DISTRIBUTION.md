@@ -59,6 +59,28 @@ to a Home Assistant `/addons` directory for local app testing, then refresh the
 App/Add-on store. The generated output contains the scaffold plus the ATLAS
 source files needed by the package Dockerfile.
 
+### Consistent repository packages
+
+The configuration in `packaging/home-assistant-app/atlas` and the current
+ATLAS runtime sources are authoritative. Do not edit the generated `atlas/`
+copy independently. Synchronize both repository copies before publishing:
+
+```sh
+pnpm ha:app:sync --repository ../atlas-homeassistant-addon-repository
+pnpm ha:app:check --repository ../atlas-homeassistant-addon-repository
+```
+
+Synchronization copies source files without deleting existing destination files.
+The check is read-only and rejects missing or different files, including
+configuration, version, Dockerfile, scripts and plugin assets. Local dependencies,
+build output and caches are excluded. Existing user data is not a synchronization
+target. Commit and push each repository separately after validation.
+
+DE: Beide Pakete werden aus derselben Vorlage und denselben Laufzeitquellen
+erzeugt. Vor dem Veröffentlichen beide Befehle ausführen. Die Prüfung vergleicht
+Dateiinhalte, nicht nur Versionsnummern. Vorhandene Einstellungen und installierte
+Plugin-Daten werden durch diese Quellpaket-Synchronisierung nicht bearbeitet.
+
 ## Runtime Configuration
 
 | Variable | Default | Notes |

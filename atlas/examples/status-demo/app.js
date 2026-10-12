@@ -1,3 +1,4 @@
+import { cardEditorFrenchTranslations } from "./card-editor-fr.js";
 import {
   createThemeTokens,
 } from "@atlas/theme";
@@ -223,6 +224,8 @@ const configurationStorageKey = "atlas.homeassistant.demo.configuration";
 const entityCatalogCacheStorageKey = "atlas.homeassistant.demo.entityCatalogCache";
 const exportFilenameHistoryStorageKey = "atlas.homeassistant.demo.exportFilenameHistory";
 const atlasThemeStorageKey = "atlas.themePreference";
+const atlasLanguageStorageKey = "atlas.languagePreference";
+const atlasLanguageCookieName = "atlas_language_preference";
 const defaultAtlasExportEntityIds = ["binary_sensor.atlas_status", "sensor.atlas_temperature"];
 const problemReportIssueUrl = "https://github.com/rockbaer2007/atlas/issues/new";
 const adminOrigin = createPortOrigin(4175);
@@ -345,7 +348,7 @@ const translations = {
     "button.turnOn": "Turn on",
     "button.turnOff": "Turn off",
     "link.openAdmin": "Open Atlas Administration",
-    "link.openHub": "Open Plugin Hub",
+    "link.openHub": "Plugin Hub",
     "message.connectionDetailsToggleHint": "Details",
     "message.connectionSummaryClosed": "Home Assistant: not connected",
     "message.connectionSummaryFailed": "Home Assistant: not connected",
@@ -526,11 +529,12 @@ const translations = {
     "message.exportPathHint": "Choose a save location if your browser supports it, or use the normal download fallback.",
     "message.savePickerUnavailable": "Your browser cannot choose a save location here. Use Download instead.",
     "message.copyPreviewFailed": "Copy failed: use the preview text instead.",
-    "message.problemReportHint": "Review the debug data before copying or opening GitHub. Home Assistant tokens and provider API keys are never included.",
+    "message.problemReportHint": "Review the debug data before copying or opening GitHub. Home Assistant access and Ingress tokens plus provider API keys are never included.",
     "message.problemReportReady": "Problem report preview created. Review it before sharing.",
     "message.problemReportCopied": "Problem report copied to clipboard.",
     "message.problemReportCopyFailed": "Copy failed: use the preview text instead.",
-    "message.problemIssueOpened": "GitHub issue opened with the reviewed debug report.",
+    "message.problemIssueOpened": "GitHub issue opened. Copy the reviewed report and paste it into the issue body.",
+    "message.problemIssueBody": "Paste the reviewed debug report here. In ATLAS, use “Copy report” and then paste it into this issue.",
     "message.resourcesCopiedWithDependency": "ATLAS and {dependency} Lovelace resources {format} copied to clipboard.",
     "message.atlasResourceCopied": "ATLAS Lovelace resource {format} copied to clipboard.",
     "message.copyDependencyFailed": "Copy failed: use the dependency path instead.",
@@ -824,7 +828,7 @@ const translations = {
     "button.turnOn": "Einschalten",
     "button.turnOff": "Ausschalten",
     "link.openAdmin": "Atlas Administration öffnen",
-    "link.openHub": "Plugin-Hub öffnen",
+    "link.openHub": "Plugin Hub",
     "message.connectionDetailsToggleHint": "Details",
     "message.connectionSummaryClosed": "Home Assistant: nicht verbunden",
     "message.connectionSummaryFailed": "Home Assistant: nicht verbunden",
@@ -1005,11 +1009,12 @@ const translations = {
     "message.exportPathHint": "Wähle einen Speicherort, wenn dein Browser das unterstützt, oder nutze den normalen Download-Fallback.",
     "message.savePickerUnavailable": "Dein Browser kann hier keinen Speicherort wählen. Nutze stattdessen Download.",
     "message.copyPreviewFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Vorschautext.",
-    "message.problemReportHint": "Prüfe die Debug-Daten vor dem Kopieren oder Öffnen von GitHub. Home-Assistant-Tokens und Provider-API-Keys werden nie eingefügt.",
+    "message.problemReportHint": "Prüfe die Debug-Daten vor dem Kopieren oder Öffnen von GitHub. Home-Assistant-Zugriffs- und Ingress-Tokens sowie Provider-API-Keys werden nie eingefügt.",
     "message.problemReportReady": "Problembericht-Vorschau erstellt. Bitte vor dem Teilen prüfen.",
     "message.problemReportCopied": "Problembericht in die Zwischenablage kopiert.",
     "message.problemReportCopyFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Vorschautext.",
-    "message.problemIssueOpened": "GitHub-Issue mit geprüftem Debug-Bericht geöffnet.",
+    "message.problemIssueOpened": "GitHub-Issue geöffnet. Kopiere den geprüften Bericht und füge ihn in den Text der Meldung ein.",
+    "message.problemIssueBody": "Füge hier den geprüften Debug-Bericht ein. Nutze in ATLAS „Bericht kopieren“ und füge ihn anschließend in diese Meldung ein.",
     "message.resourcesCopiedWithDependency": "ATLAS- und {dependency}-Lovelace-Ressourcen {format} in die Zwischenablage kopiert.",
     "message.atlasResourceCopied": "ATLAS-Lovelace-Ressource {format} in die Zwischenablage kopiert.",
     "message.copyDependencyFailed": "Kopieren fehlgeschlagen: Nutze stattdessen den Abhängigkeitspfad.",
@@ -1195,6 +1200,7 @@ const translations = {
     "template.state-button": "Status-Button",
     "template.switch-button": "Switch-Button",
   },
+  fr: cardEditorFrenchTranslations,
 };
 let emptyEntitySelectionMessage = translations.en["message.emptySelection"];
 
@@ -1248,7 +1254,18 @@ function applyTranslations() {
 }
 
 function setLanguage(language) {
-  currentLanguage = language === "de" ? "de" : "en";
+  currentLanguage = Object.hasOwn(translations, language) ? language : "en";
+  try {
+    localStorage.setItem(atlasLanguageStorageKey, currentLanguage);
+  } catch {
+    // Keep the in-memory language when browser storage is unavailable.
+  }
+  try {
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${atlasLanguageCookieName}=${encodeURIComponent(currentLanguage)}; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
+  } catch {
+    // Keep the in-memory language when cookies are unavailable.
+  }
   applyTranslations();
   renderCardTargetOptions(haCardTarget.value);
   renderExpertEditorOptions();
@@ -1278,10 +1295,29 @@ function readThemePreferenceFromLocation() {
 function readLanguageFromLocation() {
   try {
     const language = new URL(window.location.href).searchParams.get("language");
-    return language === "de" || language === "en" ? language : undefined;
+    if (Object.hasOwn(translations, language)) return language;
   } catch {
-    return undefined;
+    // Continue with the saved shared preference.
   }
+  return undefined;
+}
+
+function readSharedLanguagePreference() {
+  try {
+    const language = localStorage.getItem(atlasLanguageStorageKey);
+    if (Object.hasOwn(translations, language)) return language;
+  } catch {
+    // Try the shared cookie if local storage is unavailable.
+  }
+  try {
+    const cookie = document.cookie.split(";").map(value => value.trim())
+      .find(value => value.startsWith(`${atlasLanguageCookieName}=`));
+    const language = cookie ? decodeURIComponent(cookie.slice(atlasLanguageCookieName.length + 1)) : "";
+    if (Object.hasOwn(translations, language)) return language;
+  } catch {
+    // Leave the current default language in place.
+  }
+  return undefined;
 }
 
 function normalizeEditorStartMode(value) {
@@ -1559,9 +1595,12 @@ restoreThemePreference();
 try {
   const savedConfiguration = JSON.parse(localStorage.getItem(configurationStorageKey) ?? "null");
   const urlLanguage = readLanguageFromLocation();
+  const sharedLanguage = readSharedLanguagePreference();
   if (urlLanguage) {
     currentLanguage = urlLanguage;
-  } else if (savedConfiguration?.language === "de" || savedConfiguration?.language === "en") {
+  } else if (sharedLanguage) {
+    currentLanguage = sharedLanguage;
+  } else if (Object.hasOwn(translations, savedConfiguration?.language)) {
     currentLanguage = savedConfiguration.language;
   }
   restoreThemePreference(savedConfiguration?.themePreference);
@@ -2753,7 +2792,8 @@ async function fetchLovelaceResourcesViaRestFallback(initialReason = "") {
 }
 
 function addLovelaceResourceDebugEvent(message) {
-  const time = new Date().toLocaleTimeString(currentLanguage === "de" ? "de-DE" : "en-US", {
+  const locale = { de: "de-DE", en: "en-US", fr: "fr-FR" }[currentLanguage] ?? "en-US";
+  const time = new Date().toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -7814,10 +7854,9 @@ async function copyProblemReportPreview() {
 }
 
 function openProblemReportIssue() {
-  const body = problemReportPreview.value || createProblemReportPreviewText();
   window.open(createHomeAssistantCardEditorProblemReportIssueUrl({
     baseUrl: problemReportIssueUrl,
-    body,
+    body: t("message.problemIssueBody"),
   }), "_blank", "noopener,noreferrer");
   problemReportStatus.textContent = t("message.problemIssueOpened");
 }
@@ -7861,7 +7900,7 @@ function createEntityTableEntry(entityId) {
 }
 
 function compareTextValues(left, right) {
-  return String(left).localeCompare(String(right), currentLanguage === "de" ? "de" : "en", {
+  return String(left).localeCompare(String(right), currentLanguage, {
     numeric: true,
     sensitivity: "base",
   });

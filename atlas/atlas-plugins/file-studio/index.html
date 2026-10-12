@@ -20,17 +20,20 @@
             <button type="button" data-theme-mode="light">Light</button>
             <button type="button" data-theme-mode="dark">Dark</button>
           </div>
-          <div class="segmented-control language-toggle" aria-label="Sprache">
-            <button type="button" data-language="de">DE</button>
-            <button type="button" data-language="en">EN</button>
-          </div>
           <button id="height-limit-toggle" class="button toggle-button" type="button" aria-pressed="true">
             Max. Höhe begrenzen
           </button>
           <button id="width-limit-toggle" class="button toggle-button" type="button" aria-pressed="true">
             Max. Breite begrenzen
           </button>
-          <a class="button" href="hub" data-open-hub>Plugin Hub</a>
+          <div class="plugin-hub-language">
+            <a class="button plugin-hub-link" href="hub" data-open-hub>Plugin Hub</a>
+            <div class="segmented-control language-toggle" role="group" aria-label="Sprache">
+              <button type="button" data-language="de">DE</button>
+              <button type="button" data-language="en">EN</button>
+              <button type="button" data-language="fr">FR</button>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -44,9 +47,9 @@
             <div class="tree-heading-actions">
               <button class="icon-button icon-file-add" type="button" data-tree-action="new-file" aria-label="Neue Datei" title="Neue Datei"></button>
               <button class="icon-button icon-folder-add" type="button" data-tree-action="new-folder" aria-label="Neuer Ordner" title="Neuer Ordner"></button>
-              <button id="search-files" class="icon-button asset-icon-button icon-search" type="button" aria-label="Suche" title="Suche"></button>
+              <button id="search-files" class="icon-button svg-icon-button icon-search" type="button" aria-label="Suche" title="Suche"></button>
               <button id="favorite-path-toggle" class="icon-button icon-star" type="button" aria-label="Favorit umschalten" title="Favorit umschalten" aria-pressed="false"></button>
-              <button id="show-hidden-toggle" class="icon-button asset-icon-button icon-hidden" type="button" aria-label="Versteckte Dateien anzeigen" title="Versteckte Dateien anzeigen" aria-pressed="false"></button>
+              <button id="show-hidden-toggle" class="icon-button svg-icon-button icon-hidden" type="button" aria-label="Versteckte Dateien anzeigen" title="Versteckte Dateien anzeigen" aria-pressed="false"></button>
               <button class="icon-button icon-refresh" type="button" data-tree-action="refresh" aria-label="Neu einlesen" title="Neu einlesen"></button>
               <button class="icon-button icon-collapse" type="button" data-tree-action="collapse" aria-label="Alle einklappen" title="Alle einklappen"></button>
             </div>
@@ -81,21 +84,21 @@
           </div>
           <div class="editor-toolbar" aria-label="Editor-Aktionen">
             <div class="editor-toolbar-icons" aria-label="Editor-Iconaktionen">
-              <button id="save-file" class="icon-button asset-icon-button icon-save" type="button" aria-label="Speichern" title="Speichern" disabled></button>
-              <button id="save-file-as" class="icon-button asset-icon-button icon-save-as" type="button" aria-label="Speichern unter" title="Speichern unter" disabled></button>
-              <button id="download-file" class="icon-button asset-icon-button icon-download" type="button" aria-label="Download" title="Download" disabled></button>
-              <button id="undo-file-change" class="icon-button asset-icon-button icon-undo" type="button" aria-label="Rückgängig" title="Rückgängig" disabled></button>
-              <button id="redo-file-change" class="icon-button asset-icon-button icon-redo" type="button" aria-label="Wiederholen" title="Wiederholen" disabled></button>
-              <button id="rename-file" class="icon-button asset-icon-button icon-rename" type="button" aria-label="Umbenennen" title="Umbenennen" disabled></button>
-              <button id="copy-file" class="icon-button asset-icon-button icon-copy" type="button" aria-label="Kopieren" title="Kopieren" disabled></button>
-              <button id="move-file" class="icon-button asset-icon-button icon-move" type="button" aria-label="Verschieben" title="Verschieben" disabled></button>
-              <button id="delete-file" class="icon-button asset-icon-button icon-delete" type="button" aria-label="Löschen" title="Löschen" disabled></button>
-              <button id="extract-archive" class="icon-button asset-icon-button icon-extract" type="button" aria-label="Archiv entpacken" title="Archiv entpacken" disabled></button>
-              <button id="upload-file-trigger" class="icon-button asset-icon-button icon-replace" type="button" aria-label="Upload/Ersetzen" title="Upload/Ersetzen"></button>
+              <button id="save-file" class="icon-button svg-icon-button icon-save" type="button" aria-label="Speichern" title="Speichern" disabled></button>
+              <button id="save-file-as" class="icon-button svg-icon-button icon-save-as" type="button" aria-label="Speichern unter" title="Speichern unter" disabled></button>
+              <button id="download-file" class="icon-button svg-icon-button icon-download" type="button" aria-label="Download" title="Download" disabled></button>
+              <button id="undo-file-change" class="icon-button svg-icon-button icon-undo" type="button" aria-label="Rückgängig" title="Rückgängig" disabled></button>
+              <button id="redo-file-change" class="icon-button svg-icon-button icon-redo" type="button" aria-label="Wiederholen" title="Wiederholen" disabled></button>
+              <button id="rename-file" class="icon-button svg-icon-button icon-rename" type="button" aria-label="Umbenennen" title="Umbenennen" disabled></button>
+              <button id="copy-file" class="icon-button svg-icon-button icon-copy" type="button" aria-label="Kopieren" title="Kopieren" disabled></button>
+              <button id="move-file" class="icon-button svg-icon-button icon-move" type="button" aria-label="Verschieben" title="Verschieben" disabled></button>
+              <button id="delete-file" class="icon-button svg-icon-button icon-delete" type="button" aria-label="Löschen" title="Löschen" disabled></button>
+              <button id="extract-archive" class="icon-button svg-icon-button icon-extract" type="button" aria-label="Archiv entpacken" title="Archiv entpacken" disabled></button>
+              <button id="upload-file-trigger" class="icon-button svg-icon-button icon-replace" type="button" aria-label="Upload/Ersetzen" title="Upload/Ersetzen"></button>
               <input id="upload-file" type="file" multiple hidden>
-              <button id="font-decrease" class="icon-button asset-icon-button icon-zoom-out" type="button" aria-label="Schrift kleiner" title="A- Schrift kleiner"></button>
-              <button id="font-increase" class="icon-button asset-icon-button icon-zoom-in" type="button" aria-label="Schrift größer" title="A+ Schrift größer"></button>
-              <button id="word-wrap-toggle" class="icon-button asset-icon-button icon-word-wrap" type="button" aria-label="Zeilenumbruch" title="Zeilenumbruch" aria-pressed="true"></button>
+              <button id="font-decrease" class="icon-button svg-icon-button icon-zoom-out" type="button" aria-label="Schrift kleiner" title="A- Schrift kleiner"></button>
+              <button id="font-increase" class="icon-button svg-icon-button icon-zoom-in" type="button" aria-label="Schrift größer" title="A+ Schrift größer"></button>
+              <button id="word-wrap-toggle" class="icon-button svg-icon-button icon-word-wrap" type="button" aria-label="Zeilenumbruch" title="Zeilenumbruch" aria-pressed="true"></button>
             </div>
             <div class="editor-toolbar-text" aria-label="Editor-Textaktionen">
               <button id="discard-file" class="button" type="button" disabled>Verwerfen</button>
@@ -112,6 +115,7 @@
           <p class="file-upload-note" id="file-upload-note">
             <span id="file-upload-note-de">Upload-Limit: 64 MiB. Größere Dateien bitte über die <a href="https://github.com/home-assistant/addons/tree/master/samba" target="_blank" rel="noopener noreferrer">Home-Assistant-Samba-App</a> übertragen.</span>
             <span id="file-upload-note-en" hidden>Upload limit: 64 MiB. Transfer larger files with the <a href="https://github.com/home-assistant/addons/tree/master/samba" target="_blank" rel="noopener noreferrer">Home Assistant Samba add-on</a>.</span>
+            <span id="file-upload-note-fr" hidden>Limite d’envoi : 64 Mio. Pour les fichiers plus volumineux, utilisez l’<a href="https://github.com/home-assistant/addons/tree/master/samba" target="_blank" rel="noopener noreferrer">extension Samba de Home Assistant</a>.</span>
           </p>
           <div id="editor-input" class="editor-input" role="textbox" aria-label="Dateieditor"></div>
           <div class="status-row">
@@ -144,10 +148,10 @@
             <p id="image-preview-meta"></p>
           </div>
           <div class="image-preview-actions">
-            <button id="image-preview-zoom-out" class="icon-button asset-icon-button icon-zoom-out" type="button" aria-label="Bild verkleinern" title="Zoom -"></button>
+            <button id="image-preview-zoom-out" class="icon-button svg-icon-button icon-zoom-out" type="button" aria-label="Bild verkleinern" title="Zoom -"></button>
             <button id="image-preview-zoom-reset" class="icon-button icon-zoom-reset" type="button" aria-label="Bild in Originalgröße anzeigen" title="100%"></button>
-            <button id="image-preview-zoom-in" class="icon-button asset-icon-button icon-zoom-in" type="button" aria-label="Bild vergrößern" title="Zoom +"></button>
-            <button id="image-preview-download" class="icon-button asset-icon-button icon-download" type="button" aria-label="Download" title="Download"></button>
+            <button id="image-preview-zoom-in" class="icon-button svg-icon-button icon-zoom-in" type="button" aria-label="Bild vergrößern" title="Zoom +"></button>
+            <button id="image-preview-download" class="icon-button svg-icon-button icon-download" type="button" aria-label="Download" title="Download"></button>
             <button id="image-preview-close" class="icon-button icon-close" type="button" aria-label="Bildvorschau schließen" title="Schließen"></button>
           </div>
         </header>
@@ -172,16 +176,16 @@
             <p id="archive-preview-meta"></p>
           </div>
           <div class="archive-preview-actions">
-            <button id="archive-preview-download" class="icon-button asset-icon-button icon-download" type="button" aria-label="Download" title="Download"></button>
+            <button id="archive-preview-download" class="icon-button svg-icon-button icon-download" type="button" aria-label="Download" title="Download"></button>
             <button id="archive-preview-close" class="icon-button icon-close" type="button" aria-label="Archivinhalt schließen" title="Schließen"></button>
           </div>
         </header>
         <div class="archive-preview-table">
           <div class="archive-preview-table-header">
-            <span>Name</span>
-            <span>Größe</span>
-            <span>Typ</span>
-            <span>Aktion</span>
+          <span>Name</span>
+          <span>Größe</span>
+          <span>Typ</span>
+          <span>Aktion</span>
           </div>
           <div id="archive-preview-list" class="archive-preview-list"></div>
         </div>
@@ -237,7 +241,10 @@
       function readLanguageFromLocation() {
         try {
           const language = new URL(window.location.href).searchParams.get("language");
-          return language === "de" || language === "en" ? language : "de";
+          if (["de", "en", "fr"].includes(language)) return language;
+          const stored = localStorage.getItem("atlas.languagePreference");
+          if (["de", "en", "fr"].includes(stored)) return stored;
+          return navigator.language?.toLowerCase().startsWith("fr") ? "fr" : "de";
         } catch {
           return "de";
         }
@@ -278,10 +285,32 @@
       }
 
       function applyLanguagePreference(language = currentLanguage) {
-        currentLanguage = language === "en" ? "en" : "de";
+        currentLanguage = ["de", "en", "fr"].includes(language) ? language : "de";
         document.documentElement.lang = currentLanguage;
-        document.querySelector("#file-upload-note-de").hidden = currentLanguage !== "de";
-        document.querySelector("#file-upload-note-en").hidden = currentLanguage !== "en";
+        try { localStorage.setItem("atlas.languagePreference", currentLanguage); } catch { /* Storage may be disabled. */ }
+        for (const locale of ["de", "en", "fr"]) {
+          const note = document.querySelector(`#file-upload-note-${locale}`);
+          if (note) note.hidden = currentLanguage !== locale;
+        }
+        const chrome = {
+          de: { subtitle: "Dateibaum, Editor, YAML-Prüfung und Transfer für freigegebene Home-Assistant-Pfade.", hub: "Plugin Hub", tree: "Dateibaum", folder: "Ordnerinhalt", editor: "Editorfläche", themeLight: "Light", themeDark: "Dark", height: "Max. Höhe begrenzen", width: "Max. Breite begrenzen", discard: "Verwerfen", validate: "YAML prüfen", checkHa: "HA prüfen", history: "Verlauf", report: "Problem melden" },
+          en: { subtitle: "File tree, editor, YAML validation and transfer for approved Home Assistant paths.", hub: "Plugin Hub", tree: "File tree", folder: "Folder contents", editor: "Editor", themeLight: "Light", themeDark: "Dark", height: "Limit max. height", width: "Limit max. width", discard: "Discard", validate: "Validate YAML", checkHa: "Check HA", history: "History", report: "Report a problem" },
+          fr: { subtitle: "Arborescence, éditeur, validation YAML et transfert dans les chemins Home Assistant autorisés.", hub: "Plugin Hub", tree: "Arborescence", folder: "Contenu du dossier", editor: "Éditeur", themeLight: "Clair", themeDark: "Sombre", height: "Limiter la hauteur", width: "Limiter la largeur", discard: "Annuler les modifications", validate: "Vérifier le YAML", checkHa: "Vérifier HA", history: "Historique", report: "Signaler un problème" },
+        }[currentLanguage];
+        document.querySelector(".studio-header > div > p:not(.eyebrow)").textContent = chrome.subtitle;
+        document.querySelector("[data-open-hub]").textContent = chrome.hub;
+        document.querySelector(".file-tree .panel-heading h2").textContent = chrome.tree;
+        document.querySelector(".folder-panel .panel-heading h2").textContent = chrome.folder;
+        document.querySelector("#editor-title").textContent = chrome.editor;
+        document.querySelector('[data-theme-mode="light"]').textContent = chrome.themeLight;
+        document.querySelector('[data-theme-mode="dark"]').textContent = chrome.themeDark;
+        document.querySelector("#height-limit-toggle").textContent = chrome.height;
+        document.querySelector("#width-limit-toggle").textContent = chrome.width;
+        document.querySelector("#discard-file").textContent = chrome.discard;
+        document.querySelector("#validate-file").textContent = chrome.validate;
+        document.querySelector("#check-ha-config").textContent = chrome.checkHa;
+        document.querySelector("#show-history").textContent = chrome.history;
+        document.querySelector("#report-problem").textContent = chrome.report;
         updateChromeControls();
         updateLocationState();
         bindHubLinks(currentThemePreference);
@@ -1339,10 +1368,29 @@
         const note = document.querySelector("#addons-access-note");
         const addonsRoot = (catalog.roots ?? []).find(root => root.path === "/addons");
         const enabled = addonsRoot?.enabled === true;
-        const roots = (catalog.roots ?? []).map(root => `${root.path}${root.enabled ? "" : " gesperrt"}`).join(", ");
-        note.textContent = enabled
-          ? `Freigabe aktiv: ${roots}`
-          : `Freigabe aktiv: /config. /addons erst nach Admin-Freigabe`;
+        note.replaceChildren();
+        note.append(document.createTextNode("Freigabe aktiv: "));
+        if (enabled) {
+          (catalog.roots ?? []).forEach((root, index) => {
+            if (index > 0) note.append(document.createTextNode(", "));
+            const path = document.createElement("span");
+            path.className = "access-path";
+            path.dataset.path = root.path;
+            path.textContent = root.path;
+            note.append(path);
+            if (!root.enabled) {
+              const locked = document.createElement("span");
+              locked.textContent = " gesperrt";
+              note.append(locked);
+            }
+          });
+        } else {
+          const path = document.createElement("span");
+          path.className = "access-path";
+          path.dataset.path = "/config";
+          path.textContent = "/config";
+          note.append(path, document.createTextNode(". /addons erst nach Admin-Freigabe"));
+        }
         note.classList.toggle("locked", !enabled);
         note.classList.toggle("ok", enabled);
         document.querySelector("#tree-root-status").textContent = enabled
@@ -1891,9 +1939,15 @@
           });
           await loadDirectoryTree({ preserveSelection: false });
           await openFile(createFileNode(extracted));
-          setStatus(currentLanguage === "en" ? `Extracted: ${extracted.path}` : `Entpackt: ${extracted.path}`, "ok");
+          setStatus(
+            currentLanguage === "en" ? `Extracted: ${extracted.path}` : `Entpackt: ${extracted.path}`,
+            "ok",
+          );
         } catch (error) {
-          setStatus(`${currentLanguage === "en" ? "Extraction failed" : "Entpacken fehlgeschlagen"}: ${describeFileStudioError(error)}`, "warning");
+          setStatus(
+            `${currentLanguage === "en" ? "Extraction failed" : "Entpacken fehlgeschlagen"}: ${describeFileStudioError(error)}`,
+            "warning",
+          );
         }
       }
 
@@ -2094,7 +2148,9 @@
         if (!oversizedFiles.length) return false;
         const message = currentLanguage === "en"
           ? "Upload not started: A selected file exceeds the 64 MiB limit. Use the Samba add-on linked above for larger files."
-          : "Upload nicht gestartet: Mindestens eine ausgewählte Datei überschreitet 64 MiB. Bitte für größere Dateien die oben verlinkte Samba-App verwenden.";
+          : currentLanguage === "fr"
+            ? "Envoi non démarré : un fichier sélectionné dépasse la limite de 64 Mio. Pour les fichiers plus volumineux, utilisez l’extension Samba indiquée ci-dessus."
+            : "Upload nicht gestartet: Mindestens eine ausgewählte Datei überschreitet 64 MiB. Bitte für größere Dateien die oben verlinkte Samba-App verwenden.";
         setStatus(message, "warning");
         return true;
       }
