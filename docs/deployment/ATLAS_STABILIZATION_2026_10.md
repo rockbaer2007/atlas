@@ -35,4 +35,10 @@ Home Assistant installation or browser settings.
   and pass the 469-file source comparison. Configuration except the version is
   identical to the backup; standalone and HA images build and their runtime
   endpoints respond successfully. Publication is recorded in Git history.
-- Items 2–4: pending. Tests performed during item 1 do not complete these items.
+- Item 2: completed (Sprint G2.5.9252), with mock HA authentication and live
+  browser workflow checks. Fixed loss of template/resize metadata and rejection
+  of exported HACS bundles when the first card title differs from the project
+  name. Reload, JSON/ZIP reimport and container restart preserve the tested
+  settings, editor fields and installed-plugin fixture. HA app 0.1.286.
+- Items 3–4: pending. Documentation and checks for the item 2 fixes are included;
+  the separate complete debug-report audit and final stabilization review remain.
