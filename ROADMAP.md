@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.292**.
+Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.293**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -22,6 +22,12 @@ projects and installed plugins throughout future work.
 compatibility. Completed priorities and their test boundaries are recorded in
 the sprint ledger, including user acceptance of A2 and retirement of Simple
 mode (A3) in [Sprint G2.5.9263](docs/sprints/Sprint-G2.5.9263.md).
+
+A5 is in progress. The first increment verifies a synthetic 100-card project,
+2001 mock entities, repeated reconnects and live-event ordering; fixes and
+test boundaries are in [Sprint G2.5.9265](docs/sprints/Sprint-G2.5.9265.md).
+Remaining: representative real populated projects on Pi/Proxmox, native load
+measurements and broader plugin/renderer/theme lifecycle compatibility.
 
 ## Remaining product directions
 
@@ -49,7 +55,7 @@ architecture contract expansion.
 ## Deployment order and test boundaries
 
 1. Standalone Docker runtime (implemented; continue real deployment checks).
-2. HA app/add-on from the same runtime (implemented; real A1 verified; A2 remains).
+2. HA app/add-on from the same runtime (implemented; real A1 verified; A2 accepted).
 3. Optional Linux VM/LXC/bare-Linux installer with systemd (A7).
 4. Native ATLAS Home Assistant/HACS frontend integration where useful (A7).
 

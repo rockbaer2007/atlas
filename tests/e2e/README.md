@@ -1,5 +1,17 @@
 # ATLAS workflow preservation test
 
+## A5: large project and live reconnection
+
+After `pnpm build`, run `node tests/e2e/atlas-a5.mjs` with the same
+`ATLAS_PLAYWRIGHT_MODULE` setting described below. Port 18874 must be free.
+This check owns a local editor child process, a mock HA WebSocket on a temporary
+port and a fresh Edge context. It does not require Docker or access the user's
+HA/browser data. It checks 100 rendered cards, 2001 mock entities, theme changes,
+three remote disconnect/reconnect cycles, 150 live updates, and DE/EN/FR JSON
+roundtrips. It makes no HA service calls. Reports and screenshots stay in a new
+temporary directory. Timings describe the local PC/mock workload, not native Pi
+performance or a production capacity limit.
+
 Run from the ATLAS repository after `pnpm build` and `pnpm docker:build`:
 
 ```powershell
