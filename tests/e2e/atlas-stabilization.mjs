@@ -89,6 +89,32 @@ async function responsiveChecks(surface) {
       }), viewport.width);
       assert.ok(geometry.scrollWidth <= viewport.width + 1 && geometry.width <= viewport.width + 1,
         `${surface} ${viewport.width} ${language}: page overflow ${JSON.stringify(geometry)}`);
+      if (surface === "editor") {
+        const settings = page.locator("#expert-grid-settings");
+        assert.equal(await settings.evaluate(element => element.open), false);
+        const sliders = () => settings.locator('input[type="range"]').evaluateAll(
+          elements => elements.map(element => element.value));
+        const values = await sliders();
+        await settings.locator("summary").tap();
+        assert.equal(await settings.evaluate(element => element.open), true);
+        assert.deepEqual(await sliders(), values);
+        await settings.locator("summary").tap();
+        assert.equal(await settings.evaluate(element => element.open), false);
+        assert.deepEqual(await sliders(), values);
+        const title = await page.locator(".expert-title-row").evaluate(row =>
+          [...row.children].map(element => {
+            const { x, y, width, height } = element.getBoundingClientRect();
+            return { x, y, width, height };
+          }));
+        assert.ok(Math.abs(title[1].y - title[2].y) <= 1);
+        assert.ok(Math.abs(title[1].width - title[2].width) <= 1);
+        assert.ok(Math.abs(title[1].height - title[2].height) <= 1);
+        assert.ok(viewport.width > 520 ? Math.abs(title[0].y - title[1].y) <= 1
+          : title[1].y >= title[0].y + title[0].height);
+        await page.locator(".expert-control-panel").screenshot({
+          path: resolve(temporary, `editor-${viewport.width}-${language}-controls.png`),
+        });
+      }
       if (surface === "editor" && viewport.width > 520) {
         await page.waitForFunction(() => {
           const palette = document.querySelector("#expert-template-palette");
@@ -256,6 +282,7 @@ try {
   await page.waitForSelector("#ha-card-target", { state: "attached" });
   await page.waitForFunction(() => ["ready", "connected"].includes(document.querySelector("#connection-state")?.dataset.state));
   passed("Administration -> Plugin Hub -> Card Editor auto-connect");
+  assert.equal(await page.locator("#expert-grid-settings").evaluate(element => element.open), !mobile);
   await page.waitForFunction(() => [...document.querySelector("#home-assistant-entity-picker").options].some(option => option.value === "sensor.atlas_temperature"));
   assert.equal(await page.locator('#home-assistant-entity-domain option[value="light"]').count(), 1);
   assert.ok(requests.includes("get_states"));
