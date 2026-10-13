@@ -40,5 +40,10 @@ Home Assistant installation or browser settings.
   of exported HACS bundles when the first card title differs from the project
   name. Reload, JSON/ZIP reimport and container restart preserve the tested
   settings, editor fields and installed-plugin fixture. HA app 0.1.286.
-- Items 3–4: pending. Documentation and checks for the item 2 fixes are included;
-  the separate complete debug-report audit and final stabilization review remain.
+- Item 3: completed (Sprint G2.5.9253). Corrected report redaction for configured
+  fields, quoted text, embedded URLs/fragments and known HA session credentials;
+  fixed the imported-style counter. DE/EN/FR preview/copy/failure/issue-link tests
+  preserve settings and plugins. GitHub navigation is tested offline and clipboard
+  calls are stubbed. HA app 0.1.287; 159 unit tests and 14 browser checkpoints pass.
+- Item 4: pending. Each completed item includes its own checks and documentation;
+  the final combined stabilization review remains outstanding.

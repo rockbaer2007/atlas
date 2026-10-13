@@ -21,6 +21,14 @@ It verifies that no HA service calls occur and plugin fixture settings stay
 unchanged. Browser and test container are closed; temporary reports, downloads,
 screenshots and the test-owned data directory are retained for inspection.
 
+The problem-report checks seed fake credentials into card text and diagnostic
+strings, and unrelated test cookies/storage. DE/EN/FR preview, clipboard payload,
+clipboard failure fallback, offline issue URL and styled YAML import are covered.
+Clipboard calls use a test implementation without modifying the OS clipboard;
+the GitHub compose URL is fulfilled locally, with no request sent to GitHub.
+Saved editor/Administration settings and plugin descriptors/state are compared
+before and after each report flow.
+
 Important boundaries: this tests a simulated HA connection, not a live Supervisor
 update, mobile browser or real HA actions. After restart the flow opens
 Administration to restore its encrypted browser-held credentials, then enters

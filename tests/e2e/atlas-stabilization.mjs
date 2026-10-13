@@ -88,7 +88,12 @@ try {
   const context = await browser.newContext({ acceptDownloads: true, viewport: { width: 1600, height: 1000 } });
   context.setDefaultTimeout(12000);
   await context.route("**/*", route => {
-    const host = new URL(route.request().url()).hostname;
+    const requested = new URL(route.request().url());
+    const host = requested.hostname;
+    // Inspect the compose URL offline; never send a report or open a real issue.
+    if (host === "github.com" && requested.pathname === "/rockbaer2007/atlas/issues/new") {
+      return route.fulfill({ contentType: "text/html", body: "<title>Offline issue-link test</title>" });
+    }
     return ["127.0.0.1", "host.docker.internal", "localhost"].includes(host) ? route.continue() : route.abort();
   });
   page = await context.newPage();
@@ -186,6 +191,56 @@ try {
     passed(`${language.toUpperCase()} HACS ZIP and card JSON export/reimport preserve fields`);
   }
   const adminSaved = await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.configuration")));
+  // All seeded secrets are test-only. Exercise both structured and free-text paths.
+  await page.locator("#expert-card-name").fill(`Report ${token}`);
+  await page.evaluate(() => {
+    document.cookie = "test_private_cookie=cookie-test-secret; path=/";
+    localStorage.setItem("test-private-storage", "storage-test-secret");
+    document.querySelector("#status-message").textContent = '{"apiKey":"provider-test-secret with spaces"} https://user:password-test-secret@example.test/#token=fragment-test-secret';
+  });
+  const reportStateBefore = await page.evaluate(() => ({ storage: { ...localStorage }, cookies: document.cookie }));
+  // Exercise the clipboard call without replacing the user's OS clipboard.
+  await page.evaluate(() => Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    value: {
+      writeText: async text => { window.__reportTestClipboard = text; },
+      readText: async () => window.__reportTestClipboard,
+    },
+  }));
+  for (const language of ["de", "en", "fr"]) {
+    await page.locator(`[data-language="${language}"]`).click();
+    const settingsSnapshot = await page.evaluate(() => Object.fromEntries([
+      "atlas.administration.configuration", "atlas.administration.importedPlugins",
+      "atlas.administration.pluginState", "atlas.administration.pluginRepository",
+      "atlas.homeassistant.demo.configuration",
+    ].map(key => [key, localStorage.getItem(key)])));
+    await page.locator("#open-problem-report").click();
+    const preview = await page.locator("#problem-report-preview").inputValue();
+    for (const secret of [token, "cookie-test-secret", "storage-test-secret", "provider-test-secret", "password-test-secret", "fragment-test-secret"]) assert.ok(!preview.includes(secret), secret);
+    assert.ok(preview.includes('"homeAssistantTokenIncluded": false'));
+    await page.locator("#copy-problem-report").click();
+    assert.equal(await page.evaluate(() => navigator.clipboard.readText()), preview);
+    await page.evaluate(() => { navigator.clipboard.writeText = async () => { throw new Error("Test clipboard unavailable"); }; });
+    await page.locator("#copy-problem-report").click();
+    await page.waitForFunction(() => /fehlgeschlagen|failed|Échec/i.test(document.querySelector("#problem-report-status")?.textContent));
+    assert.equal(await page.locator("#problem-report-preview").inputValue(), preview);
+    await page.evaluate(() => { navigator.clipboard.writeText = async text => { window.__reportTestClipboard = text; }; });
+    const [popup] = await Promise.all([context.waitForEvent("page"), page.locator("#open-problem-issue").click()]);
+    await popup.waitForURL(/github\.com\/rockbaer2007\/atlas\/issues\/new/);
+    const issue = popup.url();
+    assert.ok(issue.startsWith("https://github.com/rockbaer2007/atlas/issues/new"));
+    assert.ok(!issue.includes("problem-report.v1"));
+    assert.ok(!decodeURIComponent(issue).includes(token));
+    await popup.close();
+    await page.locator("#close-problem-report").click();
+    assert.deepEqual(await page.evaluate(keys => Object.fromEntries(keys.map(key => [key, localStorage.getItem(key)])), Object.keys(settingsSnapshot)), settingsSnapshot);
+    passed(`${language.toUpperCase()} report preview/copy/issue link exclude seeded secrets`);
+  }
+  const reportStateAfter = await page.evaluate(() => ({ storage: { ...localStorage }, cookies: document.cookie }));
+  assert.equal(reportStateAfter.storage["test-private-storage"], reportStateBefore.storage["test-private-storage"]);
+  assert.deepEqual((await state()).expertEditorFields, before.expertEditorFields);
+  assert.deepEqual(await readFile(resolve(fixture, "settings.json")), fixtureBefore);
+  await page.locator("#expert-card-name").fill(before.expertCardName);
   docker(["restart", container]);
   await waitReady();
   await page.goto("http://127.0.0.1:4176/admin?language=de");
@@ -202,6 +257,15 @@ try {
   await page.waitForFunction(() => document.querySelector("#connection-state")?.dataset.state === "connected");
   assert.deepEqual((await state()).expertEditorFields, before.expertEditorFields);
   passed("Reconnect through Administration after restart preserves editor project");
+  await page.locator("#import-ha-card-config").setInputFiles({
+    name: "styled-report-test.yaml", mimeType: "text/yaml",
+    buffer: Buffer.from('type: entities\ntitle: Styled report test\nentities:\n  - sensor.atlas_temperature\ncard_mod:\n  style: |\n    ha-card { color: red; }\n'),
+  });
+  await page.waitForFunction(() => JSON.parse(localStorage.getItem("atlas.homeassistant.demo.configuration")).groups.some(group => group.title === "Styled report test"));
+  await page.locator("#open-problem-report").click();
+  assert.ok((await page.locator("#problem-report-preview").inputValue()).includes('"importedStyleBlocks"'));
+  await page.locator("#close-problem-report").click();
+  passed("Report preview works after a styled HA card import");
   await page.screenshot({ path: resolve(temporary, "editor.png"), fullPage: true });
   assert.ok(!requests.includes("call_service"));
   assert.deepEqual(await readFile(resolve(fixture, "settings.json")), fixtureBefore);
