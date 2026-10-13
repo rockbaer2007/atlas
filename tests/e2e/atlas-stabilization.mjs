@@ -228,7 +228,7 @@ try {
     localStorage.setItem("atlas.e2e.legacySeeded", "1");
     localStorage.setItem("atlas.administration.configuration", JSON.stringify({
       language: "de", themePreference: "dark", url: "http://host.docker.internal:18123",
-      token, rememberToken: true, autoConnectEditor: true, editorStartMode: "expert",
+      token, rememberToken: true, autoConnectEditor: true, editorStartMode: "simple",
       translationProvider: "none", translationApiKeys: { chatgpt: "provider-migration-test-secret" },
       pluginRepositoryUrl: "https://example.test/preserved-repository.json",
     }));
@@ -258,6 +258,7 @@ try {
   }, token);
   const migrated = await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.configuration")));
   assert.equal(migrated.themePreference, "dark");
+  assert.equal(migrated.editorStartMode, "expert");
   assert.ok(migrated.pluginRepositories.some(repository => repository.url === "https://example.test/preserved-repository.json"));
   assert.ok((await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.pluginState")))).activePluginIds.includes("atlas.plugin.preservation-fixture"));
   passed("Legacy Admin settings migrate secrets while preserving repository, theme and active plugin IDs");
@@ -265,7 +266,8 @@ try {
   await page.locator("#home-assistant-token").fill(token);
   await page.locator("#remember-admin-token").check();
   await page.locator("#auto-connect-editor").check();
-  await page.locator("#editor-start-mode").selectOption("simple");
+  assert.equal(await page.locator("#editor-start-mode").isVisible(), false);
+  assert.equal(await page.locator("#editor-start-mode").inputValue(), "expert");
   await page.locator("#save-admin-settings").click();
   await page.waitForFunction(() => localStorage.getItem("atlas.administration.configuration"));
   await page.reload();
