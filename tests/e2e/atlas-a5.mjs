@@ -82,7 +82,7 @@ try {
     const project = JSON.parse(localStorage.getItem(key));
     const seed = project.expertEditorFields[0];
     project.expertEditorFields = Array.from({ length: 100 }, (_, index) => ({ ...seed,
-      title: `A5 card ${index}`, column: index % 12, row: Math.floor(index / 12), width: 1, height: 1,
+      id: `A5 card ${index + 1}`, title: `A5 card ${index}`, column: index % 12, row: Math.floor(index / 12), width: 1, height: 1,
       resizeBaseWidth: 1, resizeBaseHeight: 1,
     }));
     localStorage.setItem(key, JSON.stringify(project));

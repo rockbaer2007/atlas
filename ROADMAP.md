@@ -26,8 +26,14 @@ mode (A3) in [Sprint G2.5.9263](docs/sprints/Sprint-G2.5.9263.md).
 A5 is in progress. The first increment verifies a synthetic 100-card project,
 2001 mock entities, repeated reconnects and live-event ordering; fixes and
 test boundaries are in [Sprint G2.5.9265](docs/sprints/Sprint-G2.5.9265.md).
-Remaining: representative real populated projects on Pi/Proxmox, native load
-measurements and broader plugin/renderer/theme lifecycle compatibility.
+The native follow-up loads 100 compact and 24 larger test cards on both real
+HA installations, observes Pi backup-state live changes and restores the exact
+original editor/Admin exports. Proxmox also reconnects after a user-initiated
+host restart. Scope and limits: [Sprint G2.5.9266](docs/sprints/Sprint-G2.5.9266.md).
+Remaining: diverse user-owned projects/card families, native backend load
+measurements, forced network-loss recovery and broader plugin/renderer/theme
+lifecycle compatibility. Desktop-browser rendering is not a Pi performance
+benchmark; the VM CPU value did not change during observation.
 
 ## Remaining product directions
 
