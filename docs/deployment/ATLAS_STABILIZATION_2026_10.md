@@ -45,5 +45,16 @@ Home Assistant installation or browser settings.
   fixed the imported-style counter. DE/EN/FR preview/copy/failure/issue-link tests
   preserve settings and plugins. GitHub navigation is tested offline and clipboard
   calls are stubbed. HA app 0.1.287; 159 unit tests and 14 browser checkpoints pass.
-- Item 4: pending. Each completed item includes its own checks and documentation;
-  the final combined stabilization review remains outstanding.
+- Item 4: completed (Sprint G2.5.9254). Full workspace: 870 tests, all TypeScript
+  checks and build pass; 5 origin/packaging tests and all 15 browser checkpoints
+  pass. Legacy Admin preferences preserve theme, repository and active plugin
+  IDs while migrating secrets. Source-package comparison, fresh Docker builds
+  and DE/EN/FR documentation checks complete the combined review.
+
+## Final boundary
+
+All four items are complete for the isolated test environment. Runtime stays
+HA 0.1.287 / framework 0.2.0-alpha.88; the final increment changes validation and
+documentation only. Real HA/Supervisor deployment, hardware actions, mobile
+and aarch64 execution remain unverified. No production settings or installed
+plugin data were modified; the original backup and user roadmap files remain.

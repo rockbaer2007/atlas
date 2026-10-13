@@ -13,7 +13,10 @@ to its module directory. Ports 4174, 4175, 4176 and 18123 must be free; the test
 does not stop existing servers to obtain them.
 
 The test creates a temporary browser context, data directory and container,
-and uses a mock HA API with an explicitly fake token. External browser requests
+and seeds legacy Administration preferences (token/provider keys and the older
+single repository URL field) to verify migration without losing the theme,
+repository or active plugin IDs. Secrets must leave the ordinary settings JSON.
+It uses a mock HA API with an explicitly fake token. External browser requests
 are blocked. It verifies settings reload, encrypted token restoration, plugin
 navigation, HA authentication/entities/resources, Core/Bubble/Mushroom fields,
 editor reload, DE/EN/FR ZIP and JSON export/reimport, and restart preservation.

@@ -87,6 +87,20 @@ try {
   browser = await chromium.launch({ channel: "msedge", headless: true });
   const context = await browser.newContext({ acceptDownloads: true, viewport: { width: 1600, height: 1000 } });
   context.setDefaultTimeout(12000);
+  await context.addInitScript(({ token }) => {
+    if (location.pathname !== "/admin" || localStorage.getItem("atlas.e2e.legacySeeded")) return;
+    localStorage.setItem("atlas.e2e.legacySeeded", "1");
+    localStorage.setItem("atlas.administration.configuration", JSON.stringify({
+      language: "de", themePreference: "dark", url: "http://host.docker.internal:18123",
+      token, rememberToken: true, autoConnectEditor: true, editorStartMode: "expert",
+      translationProvider: "none", translationApiKeys: { chatgpt: "provider-migration-test-secret" },
+      pluginRepositoryUrl: "https://example.test/preserved-repository.json",
+    }));
+    localStorage.setItem("atlas.administration.pluginStateVersion", "2");
+    localStorage.setItem("atlas.administration.pluginState", JSON.stringify({
+      activePluginIds: ["atlas.plugin.homeassistant-card-editor", "atlas.plugin.preservation-fixture"],
+    }));
+  }, { token });
   await context.route("**/*", route => {
     const requested = new URL(route.request().url());
     const host = requested.hostname;
@@ -100,6 +114,17 @@ try {
   page.on("pageerror", error => browserErrors.push(error.message));
   page.on("dialog", dialog => dialog.accept());
   await page.goto("http://127.0.0.1:4176/admin?language=de");
+  await page.waitForFunction(expected => {
+    const saved = JSON.parse(localStorage.getItem("atlas.administration.configuration") || "{}");
+    return document.querySelector("#home-assistant-token")?.value === expected
+      && saved.tokenConfigured === true && Array.isArray(saved.pluginRepositories)
+      && !Object.hasOwn(saved, "token") && !Object.hasOwn(saved, "translationApiKeys");
+  }, token);
+  const migrated = await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.configuration")));
+  assert.equal(migrated.themePreference, "dark");
+  assert.ok(migrated.pluginRepositories.some(repository => repository.url === "https://example.test/preserved-repository.json"));
+  assert.ok((await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.pluginState")))).activePluginIds.includes("atlas.plugin.preservation-fixture"));
+  passed("Legacy Admin settings migrate secrets while preserving repository, theme and active plugin IDs");
   await page.locator("#home-assistant-url").fill("http://host.docker.internal:18123");
   await page.locator("#home-assistant-token").fill(token);
   await page.locator("#remember-admin-token").check();
@@ -109,6 +134,7 @@ try {
   await page.waitForFunction(() => localStorage.getItem("atlas.administration.configuration"));
   await page.reload();
   await page.waitForFunction(expected => document.querySelector("#home-assistant-token")?.value === expected, token);
+  await page.waitForFunction(() => document.querySelector("#translation-api-key-chatgpt")?.value === "provider-migration-test-secret");
   assert.equal(await page.locator("#home-assistant-url").inputValue(), "http://host.docker.internal:18123");
   assert.equal(await page.locator("#remember-admin-token").isChecked(), true);
   assert.equal(await page.locator("#auto-connect-editor").isChecked(), true);
@@ -216,7 +242,7 @@ try {
     ].map(key => [key, localStorage.getItem(key)])));
     await page.locator("#open-problem-report").click();
     const preview = await page.locator("#problem-report-preview").inputValue();
-    for (const secret of [token, "cookie-test-secret", "storage-test-secret", "provider-test-secret", "password-test-secret", "fragment-test-secret"]) assert.ok(!preview.includes(secret), secret);
+    for (const secret of [token, "provider-migration-test-secret", "cookie-test-secret", "storage-test-secret", "provider-test-secret", "password-test-secret", "fragment-test-secret"]) assert.ok(!preview.includes(secret), secret);
     assert.ok(preview.includes('"homeAssistantTokenIncluded": false'));
     await page.locator("#copy-problem-report").click();
     assert.equal(await page.evaluate(() => navigator.clipboard.readText()), preview);
@@ -245,6 +271,7 @@ try {
   await waitReady();
   await page.goto("http://127.0.0.1:4176/admin?language=de");
   await page.waitForFunction(expected => document.querySelector("#home-assistant-token")?.value === expected, token);
+  await page.waitForFunction(() => document.querySelector("#translation-api-key-chatgpt")?.value === "provider-migration-test-secret");
   assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.configuration"))), adminSaved);
   const catalog = await page.request.get("http://127.0.0.1:4176/api/plugins");
   const plugin = (await catalog.json()).plugins.find(value => value.id === "atlas.plugin.preservation-fixture");
