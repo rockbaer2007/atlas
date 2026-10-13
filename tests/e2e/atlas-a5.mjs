@@ -15,7 +15,13 @@ const token = "atlas-a5-fake-token-not-real";
 const entities = [{ entity_id: "sensor.atlas_temperature", state: "20", attributes: { friendly_name: "A5 temperature" } },
   ...Array.from({ length: 2000 }, (_, index) => ({ entity_id: `sensor.a5_${index}`, state: String(index), attributes: { friendly_name: `A5 ${index}` } }))];
 const api = createServer((_request, response) => response.end("A5 isolated mock"));
-const sockets = new WebSocketServer({ server: api, path: "/api/websocket" });
+let available = true;
+let rejectedConnections = 0;
+let rejectAuthentication = false;
+const sockets = new WebSocketServer({ server: api, path: "/api/websocket", verifyClient: (_info, done) => {
+  if (!available) rejectedConnections += 1;
+  done(available, available ? undefined : 503);
+} });
 let connections = 0;
 let subscribed = 0;
 let latestSocket;
@@ -29,6 +35,11 @@ sockets.on("connection", socket => {
     requests.push(message.type);
     if (message.type === "auth") {
       assert.equal(message.access_token, token);
+      if (rejectAuthentication) {
+        socket.send(JSON.stringify({ type: "auth_invalid", message: "A5 rejected test credential" }));
+        socket.close();
+        return;
+      }
       socket.send(JSON.stringify({ type: "auth_ok" }));
     } else {
       assert.notEqual(message.type, "call_service");
@@ -70,7 +81,10 @@ try {
   const page = await context.newPage();
   page.on("pageerror", error => errors.push(error.message));
   await page.goto(`http://127.0.0.1:${editorPort}/`);
-  const ready = () => page.waitForFunction(() => /Subscription active|subscription active/.test(document.querySelector("#connection-state")?.textContent));
+  const ready = () => page.waitForFunction(() => {
+    const state = document.querySelector("#connection-state");
+    return state?.dataset.state === "connected" && state.textContent.includes("active");
+  });
   await ready();
   await page.waitForFunction(() => JSON.parse(localStorage.getItem("atlas.homeassistant.demo.entityCatalogCache") || "{}").entities?.length === 2001);
   await page.locator("#expert-target").selectOption("entity");
@@ -124,6 +138,23 @@ try {
     assert.deepEqual((await state()).expertEditorFields, baseline.expertEditorFields);
   }
   assert.equal(subscribed, connections);
+  // A real network outage can outlast the initial three retries. Keep the
+  // endpoint unavailable across that window, then restore it without reloading.
+  available = false;
+  latestSocket.terminate();
+  await page.waitForFunction(() => document.querySelector("#connection-state")?.dataset.state === "closed");
+  const outageStart = performance.now();
+  await new Promise(done => setTimeout(done, 8000));
+  assert.ok(rejectedConnections >= 3, "Exercise all initial retries while HA is unreachable.");
+  assert.deepEqual((await state()).expertEditorFields, baseline.expertEditorFields);
+  available = true;
+  await page.waitForFunction(() => {
+    const state = document.querySelector("#connection-state");
+    return state?.dataset.state === "connected" && state.textContent.includes("active");
+  }, null, { timeout: 18000 });
+  metrics.longOutageRecoveryMs = Math.round(performance.now() - outageStart);
+  assert.equal(subscribed, connections);
+  assert.deepEqual((await state()).expertEditorFields, baseline.expertEditorFields);
   for (const language of ["de", "en", "fr"]) {
     await page.locator(`[data-language="${language}"]`).click();
     const [download] = await Promise.all([page.waitForEvent("download"), page.locator("#export-ha-card-package").click()]);
@@ -133,11 +164,22 @@ try {
     await page.waitForFunction(() => /importiert|imported|importé/.test(document.querySelector("#status-message")?.textContent));
     assert.deepEqual((await state()).expertEditorFields, baseline.expertEditorFields);
   }
+  rejectAuthentication = true;
+  const beforeRejectedAuth = connections;
+  latestSocket.terminate();
+  await page.waitForFunction(() => document.querySelector("#connection-state")?.dataset.state === "closed");
+  await new Promise(done => setTimeout(done, 4500));
+  assert.equal(connections, beforeRejectedAuth + 1, "Do not endlessly retry rejected credentials after close.");
+  assert.deepEqual((await state()).expertEditorFields, baseline.expertEditorFields);
+  rejectAuthentication = false;
+  await page.reload();
+  await ready();
+  assert.deepEqual((await state()).expertEditorFields, baseline.expertEditorFields);
   assert.deepEqual(errors, []);
   assert.ok(!requests.includes("call_service"));
   await page.screenshot({ path: resolve(temporary, "a5-project.png"), fullPage: false });
   await writeFile(resolve(temporary, "report.json"), JSON.stringify({ metrics, connections, subscribed, errors, entityCount: entities.length, cardCount: 100 }, null, 2));
-  console.log("PASS A5: 100 cards, 2001 entities, 3 reconnects, 150 live updates, DE/EN/FR project roundtrips; no device actions");
+  console.log("PASS A5: 100 cards, 2001 entities, 3 reconnects, long outage recovery, rejected-auth stop, 150 live updates, DE/EN/FR project roundtrips; no device actions");
   console.log(JSON.stringify(metrics));
 } finally {
   await browser?.close();

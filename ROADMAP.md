@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.293**.
+Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.294**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -34,6 +34,11 @@ Remaining: diverse user-owned projects/card families, native backend load
 measurements, forced network-loss recovery and broader plugin/renderer/theme
 lifecycle compatibility. Desktop-browser rendering is not a Pi performance
 benchmark; the VM CPU value did not change during observation.
+
+0.1.294 fixes recovery after outages that exceed the previous three attempts;
+retries continue with a delay capped at 30 seconds, while rejected credentials
+stop automatic retries. The isolated regression and native-test preparation are
+recorded in [Sprint G2.5.9267](docs/sprints/Sprint-G2.5.9267.md).
 
 ## Remaining product directions
 
