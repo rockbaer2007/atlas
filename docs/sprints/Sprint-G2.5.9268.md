@@ -2,6 +2,11 @@
 
 2026-10-13. Evidence follow-up for HA app 0.1.294; no runtime change.
 
+The user additionally confirms functional use in a macOS Ventura VM, but
+reports very sluggish operation. This is user-reported functional evidence,
+not performance acceptance or an independently measured browser matrix.
+The cause of the slowdown is not established.
+
 Fresh Admin exports and Git bundles are saved outside Git in
 `C:/Users/rockb/source/backups/atlas-a5-plugins-20261013`. The encrypted local
 Pi and Proxmox HA backups from Sprint 9266 remain available. Update only the
