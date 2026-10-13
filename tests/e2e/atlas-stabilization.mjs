@@ -73,7 +73,8 @@ async function responsiveChecks(surface) {
     "atlas.administration.importedPlugins", "atlas.homeassistant.demo.configuration",
   ].map(key => [key, localStorage.getItem(key)])));
   for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 },
-    { width: 844, height: 390 }, { width: 768, height: 1024 }]) {
+    { width: 844, height: 390 }, { width: 768, height: 1024 },
+    { width: 1024, height: 1366 }]) {
     await page.setViewportSize(viewport);
     for (const language of ["de", "en", "fr"]) {
       await page.locator(`[data-language="${language}"]`).tap();
@@ -88,6 +89,40 @@ async function responsiveChecks(surface) {
       }), viewport.width);
       assert.ok(geometry.scrollWidth <= viewport.width + 1 && geometry.width <= viewport.width + 1,
         `${surface} ${viewport.width} ${language}: page overflow ${JSON.stringify(geometry)}`);
+      if (surface === "editor" && viewport.width > 520) {
+        await page.waitForFunction(() => {
+          const palette = document.querySelector("#expert-template-palette");
+          const cards = [...palette.querySelectorAll(".expert-template-card")].slice(0, 2);
+          const expected = Math.min(380, innerHeight * 0.45,
+            Math.ceil(Math.max(...cards.map(card => card.getBoundingClientRect().height))));
+          return cards.length === 2 && Math.abs(palette.clientHeight - expected) <= 1;
+        });
+        const palette = await page.evaluate(() => {
+          const list = document.querySelector("#expert-template-palette");
+          const cards = [...list.querySelectorAll(".expert-template-card")].map(card => {
+            const { x, y, width, height } = card.getBoundingClientRect();
+            return { x, y, width, height };
+          });
+          const buttons = [...document.querySelectorAll(".expert-palette-actions button")]
+            .slice(0, 2).map(button => {
+              const { x, y, width, height } = button.getBoundingClientRect();
+              return { x, y, width, height };
+            });
+          return { cards, buttons, height: list.clientHeight, scrollHeight: list.scrollHeight };
+        });
+        assert.ok(Math.abs(palette.cards[0].y - palette.cards[1].y) <= 1);
+        assert.ok(palette.cards[1].x > palette.cards[0].x);
+        assert.ok(palette.cards[2].y > palette.cards[0].y + palette.height);
+        assert.ok(palette.scrollHeight > palette.height);
+        assert.ok(Math.abs(palette.buttons[0].y - palette.buttons[1].y) <= 1);
+        assert.ok(Math.abs(palette.buttons[0].width - palette.buttons[1].width) <= 1);
+        await page.locator(".expert-template-card").last().scrollIntoViewIfNeeded();
+        assert.ok(await page.locator("#expert-template-palette").evaluate(list => list.scrollTop > 0));
+        await page.locator("#expert-template-palette").evaluate(list => { list.scrollTop = 0; });
+        await page.locator("#expert-template-palette").screenshot({
+          path: resolve(temporary, `editor-${viewport.width}-${language}-palette.png`),
+        });
+      }
       const dialogs = surface === "admin" ? [
         ["plugins", "#open-plugin-manager", "#plugin-manager-dialog", "#close-plugin-manager"],
       ] : [

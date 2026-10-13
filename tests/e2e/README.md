@@ -46,7 +46,7 @@ node tests/e2e/atlas-stabilization.mjs
 The image must be built with `--platform linux/arm64`, `BUILD_ARCH=aarch64`
 and the matching `BUILD_VERSION`. The test checks the actual Node architecture.
 Leave ATLAS_E2E_PLATFORM unset for amd64. Mobile mode uses a fresh Chromium
-touch context with 360x800, 390x844, 844x390 and 768x1024 viewports in DE/EN/FR.
+touch context with 360x800, 390x844, 844x390, 768x1024 and 1024x1366 viewports in DE/EN/FR.
 It checks page overflow against the requested viewport (mobile Chromium can
 expand its layout viewport when content overflows), dialog width/height, touch
 open/close and unchanged saved settings/projects. Screenshots cover the plugin

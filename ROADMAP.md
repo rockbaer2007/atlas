@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.289**.
+Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.290**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
