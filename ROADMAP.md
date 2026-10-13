@@ -31,14 +31,19 @@ HA installations, observes Pi backup-state live changes and restores the exact
 original editor/Admin exports. Proxmox also reconnects after a user-initiated
 host restart. Scope and limits: [Sprint G2.5.9266](docs/sprints/Sprint-G2.5.9266.md).
 Remaining: diverse user-owned projects/card families, native backend load
-measurements, forced network-loss recovery and broader plugin/renderer/theme
+measurements, native recovery after a closed transport and broader plugin/renderer/theme
 lifecycle compatibility. Desktop-browser rendering is not a Pi performance
 benchmark; the VM CPU value did not change during observation.
 
 0.1.294 fixes recovery after outages that exceed the previous three attempts;
 retries continue with a delay capped at 30 seconds, while rejected credentials
-stop automatic retries. The isolated regression and native-test preparation are
-recorded in [Sprint G2.5.9267](docs/sprints/Sprint-G2.5.9267.md).
+stop automatic retries. The isolated regression is recorded in
+[Sprint G2.5.9267](docs/sprints/Sprint-G2.5.9267.md). A real twelve-second Pi LAN
+interruption preserves 100 test fields and resumes live data without reload;
+the existing socket remains connected in the observed samples. Native plugin
+integration, Docker health and unchanged Admin/original-project exports are
+recorded in [Sprint G2.5.9268](docs/sprints/Sprint-G2.5.9268.md). This does not
+prove a new native socket connection after a forced transport closure.
 
 ## Remaining product directions
 
