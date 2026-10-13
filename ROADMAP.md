@@ -14,7 +14,7 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A2 | Finish physical mobile-browser verification. Native Raspberry Pi 5 ARM64 is verified in Sprint G2.5.9258; Docker/Chromium emulation is covered in G2.5.9257. | Noch auf Android/iOS prüfen: Touch-Drag/Resize, Tastatur, native Datei-/Download-Dialoge und Ingress; Einstellungen, Projekte und Plugins erhalten. |
+| A2 | Finish physical mobile-browser verification. Native Pi 5 is verified in G2.5.9258; initial Android tablet checks are user-confirmed in G2.5.9259; emulation is covered in G2.5.9257. | Noch prüfen: Touch-Drag/Resize, Tastatur, native Datei-/Download-Dialoge und iOS; Einstellungen, Projekte und Plugins erhalten. |
 | A3 | Resolve the Simple/Expert UI requirement. The current UI intentionally starts in Expert without a visible mode switch. | Sichtbaren Wechsel mit der bisherigen Expert-Startvorgabe abgleichen; gespeicherte Projekte und Expert-Funktionen erhalten. |
 | A5 | Bring Renderer, Theme and plugin APIs closer to production readiness. | Größere reale Projekte, Live-HA-Updates, Fehler-/Wiederverbindungswege, Leistung und Plugin-Kompatibilität prüfen; API-/Lebenszyklusfragen konkretisieren. |
 | A6 | Complete French documentation and keep DE/EN/FR consistent. | FR-Platzhalter übersetzen und fachlich prüfen; Navigation, Struktur und Verhalten der angebotenen Sprachen abgleichen. |
@@ -34,6 +34,13 @@ Ingress for all six plugins and restart preservation at app version 0.1.289.
 Local HA backup and before/after exports protect the existing state; the
 native Expert canvas was empty. Desktop Chrome viewport checks against the
 real Pi do not establish physical phone behavior. Large projects/load remain A5.
+
+The user confirms Hub/Administration portrait, landscape and DE/EN/FR on a
+physical Android tablet, plus editor connection, YAML dialog and Problem report.
+The tablet cannot reach homeassistant.local:80; using the reachable HA IP
+restores the connection without changing the token. Port 80 is already supported.
+Document this browser reachability requirement in DE/EN/FR. Touch editing,
+virtual keyboards, native file/download dialogs and iOS remain unverified.
 
 ## Remaining product directions
 
