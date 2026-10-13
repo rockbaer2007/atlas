@@ -161,7 +161,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 ## Roadmap Notes To Preserve
 
-- Next Atlas Card Editor priority: build an opt-in debug reporting channel before starting unrelated new Atlas editor work. Remind the user if they switch to another Atlas topic first. The planned preview path is a `Problem melden` flow with debug-data preview, GitHub issue link, and no Home Assistant tokens, provider API keys, or other secrets attached.
+- Use `ROADMAP.md` as the current open ATLAS backlog. Keep completed work in the sprint ledger and Git history, not as open roadmap tasks. The next priority is verification on a real Home Assistant installation while preserving settings and plugins.
+- The opt-in `Problem melden` flow and isolated stabilization checks are completed. Preserve its reviewed debug-data preview, manual GitHub sharing and credential exclusion; do not plan its basic implementation again.
 - Future direction includes HACS-installable custom card packages.
 - Future direction includes user-defined card names and script names.
 - Future direction includes a visual drag-and-drop editor with templates in a sidebar.
