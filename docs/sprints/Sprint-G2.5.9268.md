@@ -2,7 +2,8 @@
 
 2026-10-13. Evidence follow-up for HA app 0.1.294; no runtime change.
 
-The user additionally confirms functional use in a macOS Ventura VM, but
+The user additionally confirms functional use in a macOS Ventura VM running
+directly on Proxmox, but
 reports very sluggish operation. This is user-reported functional evidence,
 not performance acceptance or an independently measured browser matrix.
 The cause of the slowdown is not established.
