@@ -17,6 +17,9 @@ const token = "atlas-workflow-test-token-not-real";
 const requests = [];
 const checkpoints = [];
 const browserErrors = [];
+const mobile = process.env.ATLAS_E2E_MOBILE === "1";
+const image = process.env.ATLAS_E2E_IMAGE || "atlas:local";
+const platform = process.env.ATLAS_E2E_PLATFORM;
 let browser;
 let page;
 let started = false;
@@ -56,6 +59,69 @@ function docker(args) {
   return result.stdout.trim();
 }
 function passed(name) { checkpoints.push(name); console.log(`PASS ${name}`); }
+function stableAdminSettings(settings) {
+  const result = structuredClone(settings);
+  // Opening the plugin manager legitimately refreshes this diagnostic timestamp.
+  for (const repository of result.pluginRepositories || []) delete repository.lastChecked;
+  return result;
+}
+async function responsiveChecks(surface) {
+  if (!mobile) return;
+  const initialLanguage = await page.locator('[data-language][aria-pressed="true"]').getAttribute("data-language");
+  const saved = await page.evaluate(() => Object.fromEntries([
+    "atlas.administration.configuration", "atlas.administration.pluginState",
+    "atlas.administration.importedPlugins", "atlas.homeassistant.demo.configuration",
+  ].map(key => [key, localStorage.getItem(key)])));
+  for (const viewport of [{ width: 360, height: 800 }, { width: 390, height: 844 },
+    { width: 844, height: 390 }, { width: 768, height: 1024 }]) {
+    await page.setViewportSize(viewport);
+    for (const language of ["de", "en", "fr"]) {
+      await page.locator(`[data-language="${language}"]`).tap();
+      const geometry = await page.evaluate(viewportWidth => ({
+        width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
+        offenders: [...document.querySelectorAll("body, main, section, aside, header, div, h1, h2, h3, button, input, select, textarea")]
+          .filter(element => {
+            const rect = element.getBoundingClientRect();
+            return rect.width && rect.height && (rect.left < -1 || rect.right > viewportWidth + 1)
+              && !element.closest("[hidden]") && getComputedStyle(element).visibility !== "hidden";
+          }).map(element => element.id || element.className || element.tagName).slice(0, 15),
+      }), viewport.width);
+      assert.ok(geometry.scrollWidth <= viewport.width + 1 && geometry.width <= viewport.width + 1,
+        `${surface} ${viewport.width} ${language}: page overflow ${JSON.stringify(geometry)}`);
+      const dialogs = surface === "admin" ? [
+        ["plugins", "#open-plugin-manager", "#plugin-manager-dialog", "#close-plugin-manager"],
+      ] : [
+        ["report", "#open-problem-report", '#problem-report-backdrop [role="dialog"]', "#close-problem-report"],
+        ["paste", "#open-ha-card-paste-import", '#ha-card-paste-import-backdrop [role="dialog"]', "#close-ha-card-paste-import"],
+        ["export", "#export-ha-card-config", '#ha-card-export-backdrop [role="dialog"]', "#close-ha-card-export"],
+      ];
+      for (const [name, open, selector, close] of dialogs) {
+        await page.locator(open).tap();
+        const dialog = page.locator(selector);
+        await dialog.waitFor({ state: "visible" });
+        const bounds = await dialog.boundingBox();
+        assert.ok(bounds && bounds.x >= -1 && bounds.x + bounds.width <= viewport.width + 1
+          && bounds.y >= -1 && bounds.y + bounds.height <= viewport.height + 1,
+        `${surface} ${name} dialog fits ${viewport.width} ${language}: ${JSON.stringify(bounds)}`);
+        await page.screenshot({ path: resolve(temporary, `${surface}-${viewport.width}-${language}-${name}.png`), fullPage: false });
+        await page.locator(close).tap();
+      }
+    }
+    passed(`${surface} touch controls and dialogs at ${viewport.width}x${viewport.height} in DE/EN/FR`);
+  }
+  await page.locator(`[data-language="${initialLanguage}"]`).tap();
+  const after = await page.evaluate(keys => Object.fromEntries(keys.map(key => [key, localStorage.getItem(key)])), Object.keys(saved));
+  // Language changes are deliberate; restore before comparing all stored project/settings fields.
+  for (const key of Object.keys(saved)) {
+    if (saved[key] === null) { assert.equal(after[key], null); continue; }
+    const previous = JSON.parse(saved[key]);
+    const current = JSON.parse(after[key]);
+    assert.deepEqual(key === "atlas.administration.configuration" ? stableAdminSettings(current) : current,
+      key === "atlas.administration.configuration" ? stableAdminSettings(previous) : previous,
+      `${surface} responsive checks preserve ${key}`);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+}
 async function waitReady() {
   for (let count = 0; count < 50; count += 1) {
     const response = await fetch("http://127.0.0.1:4176/health").catch(() => null);
@@ -77,15 +143,24 @@ try {
   await writeFile(resolve(fixture, "index.html"), "<title>Preservation fixture</title>");
   await writeFile(resolve(fixture, "settings.json"), '{"existingSetting":"keep","value":42}');
   const fixtureBefore = await readFile(resolve(fixture, "settings.json"));
-  docker(["run", "--detach", "--name", container,
+  docker(["run", ...(platform ? ["--platform", platform] : []), "--detach", "--name", container,
+    ...(process.env.ATLAS_E2E_SOURCE_HTML === "1" ? ["--mount",
+      `type=bind,source=${resolve("examples/status-demo/index.html")},target=/app/examples/status-demo/index.html,readonly`, "--mount",
+      `type=bind,source=${resolve("examples/admin-demo/index.html")},target=/app/examples/admin-demo/index.html,readonly`] : []),
     "-p", "127.0.0.1:4176:4176", "-p", "127.0.0.1:4175:4175", "-p", "127.0.0.1:4174:4174",
     "--mount", `type=bind,source=${temporary},target=/data`,
     "-e", "ATLAS_PLUGIN_DATA_ROOT=/data/plugins", "-e", "ATLAS_ADMIN_DEVICE_FILE=/data/admin-device.json",
-    "-e", "ATLAS_INSTANCE_ID=atlas-isolated-workflow-test", "atlas:local"]);
+    "-e", "ATLAS_DISTRIBUTION_TARGET=standalone-docker-preview",
+    "-e", "ATLAS_INSTANCE_ID=atlas-isolated-workflow-test", image]);
   started = true;
   await waitReady();
+  const architecture = docker(["exec", container, "node", "-p", "process.arch"]);
+  if (platform === "linux/arm64") assert.equal(architecture, "arm64");
+  passed(`Container runs Node on ${architecture}; both surfaces ready`);
   browser = await chromium.launch({ channel: "msedge", headless: true });
-  const context = await browser.newContext({ acceptDownloads: true, viewport: { width: 1600, height: 1000 } });
+  const context = await browser.newContext({ acceptDownloads: true,
+    viewport: mobile ? { width: 390, height: 844 } : { width: 1600, height: 1000 },
+    hasTouch: mobile, isMobile: mobile });
   context.setDefaultTimeout(12000);
   await context.addInitScript(({ token }) => {
     if (location.pathname !== "/admin" || localStorage.getItem("atlas.e2e.legacySeeded")) return;
@@ -139,6 +214,7 @@ try {
   assert.equal(await page.locator("#remember-admin-token").isChecked(), true);
   assert.equal(await page.locator("#auto-connect-editor").isChecked(), true);
   passed("Administration settings and encrypted token survive reload");
+  await responsiveChecks("admin");
   await page.locator("#open-card-editor").click();
   await page.waitForURL(/\/hub/);
   await page.locator('a.plugin-action[href*="/editor"]').first().click();
@@ -272,7 +348,7 @@ try {
   await page.goto("http://127.0.0.1:4176/admin?language=de");
   await page.waitForFunction(expected => document.querySelector("#home-assistant-token")?.value === expected, token);
   await page.waitForFunction(() => document.querySelector("#translation-api-key-chatgpt")?.value === "provider-migration-test-secret");
-  assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.configuration"))), adminSaved);
+  assert.deepEqual(stableAdminSettings(await page.evaluate(() => JSON.parse(localStorage.getItem("atlas.administration.configuration")))), stableAdminSettings(adminSaved));
   const catalog = await page.request.get("http://127.0.0.1:4176/api/plugins");
   const plugin = (await catalog.json()).plugins.find(value => value.id === "atlas.plugin.preservation-fixture");
   assert.ok(plugin);
@@ -284,6 +360,7 @@ try {
   await page.waitForFunction(() => document.querySelector("#connection-state")?.dataset.state === "connected");
   assert.deepEqual((await state()).expertEditorFields, before.expertEditorFields);
   passed("Reconnect through Administration after restart preserves editor project");
+  await responsiveChecks("editor");
   await page.locator("#import-ha-card-config").setInputFiles({
     name: "styled-report-test.yaml", mimeType: "text/yaml",
     buffer: Buffer.from('type: entities\ntitle: Styled report test\nentities:\n  - sensor.atlas_temperature\ncard_mod:\n  style: |\n    ha-card { color: red; }\n'),
@@ -311,6 +388,7 @@ try {
   if (started) docker(["rm", "--force", container]);
   sockets.close();
   await new Promise(done => mock.close(done));
-  await writeFile(resolve(temporary, "report.json"), JSON.stringify({checkpoints, requests, browserErrors}, null, 2));
+  await writeFile(resolve(temporary, "report.json"), JSON.stringify({image, platform, mobile,
+    sourceHtml: process.env.ATLAS_E2E_SOURCE_HTML === "1", checkpoints, requests, browserErrors}, null, 2));
   console.log(`Test artifacts: ${temporary}`);
 }

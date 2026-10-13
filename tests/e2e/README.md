@@ -32,8 +32,41 @@ the GitHub compose URL is fulfilled locally, with no request sent to GitHub.
 Saved editor/Administration settings and plugin descriptors/state are compared
 before and after each report flow.
 
+## A2: architecture and mobile emulation
+
+Use a built image and a fresh test-owned data directory:
+
+```powershell
+$env:ATLAS_E2E_IMAGE = 'atlas:a2-arm64-0.1.289'
+$env:ATLAS_E2E_PLATFORM = 'linux/arm64'
+$env:ATLAS_E2E_MOBILE = '1'
+node tests/e2e/atlas-stabilization.mjs
+```
+
+The image must be built with `--platform linux/arm64`, `BUILD_ARCH=aarch64`
+and the matching `BUILD_VERSION`. The test checks the actual Node architecture.
+Leave ATLAS_E2E_PLATFORM unset for amd64. Mobile mode uses a fresh Chromium
+touch context with 360x800, 390x844, 844x390 and 768x1024 viewports in DE/EN/FR.
+It checks page overflow against the requested viewport (mobile Chromium can
+expand its layout viewport when content overflows), dialog width/height, touch
+open/close and unchanged saved settings/projects. Screenshots cover the plugin
+manager, problem report, YAML import and HA export dialogs. Existing JSON/ZIP
+roundtrips and container restart checks also run in mobile mode.
+Only repository `lastChecked` timestamps are excluded from Admin comparisons:
+opening the manager legitimately refreshes them in the background. Repository
+URLs, IDs, status, credentials flags and every actual preference remain checked.
+
+HA images are deliberately run with the standalone distribution setting for
+the editable legacy-Administration migration fixture. This does not test
+Supervisor-owned read-only options. ATLAS_E2E_SOURCE_HTML=1 is only a development
+shortcut: read-only mounts of the two local HTML files replace image files.
+Final acceptance must leave this unset; report.json records its use.
+
 Important boundaries: this tests a simulated HA connection, not a live Supervisor
-update, mobile browser or real HA actions. After restart the flow opens
+update or real HA actions. ARM64 on an x86 Docker host uses emulation; it does
+not prove native Raspberry Pi performance. Chromium viewport/touch emulation
+does not prove physical Android/iOS or Safari behavior, native touch drag/drop,
+file-picker/download handling on phones or virtual keyboard behavior. After restart the flow opens
 Administration to restore its encrypted browser-held credentials, then enters
 the editor. Generated card locales can remain English fallbacks when automatic
 translation is disabled. The current UI intentionally uses the Expert workflow.

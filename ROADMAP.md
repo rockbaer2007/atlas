@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.288**.
+Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.289**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -14,7 +14,7 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A2 | Verify ARM64/Raspberry Pi and mobile browsers. | ARM64-Image auf passender Hardware prüfen; mobile Bedienung, Layout, Import/Export und Dialoge kontrollieren. |
+| A2 | Finish native ARM64/Raspberry Pi and physical mobile-browser verification. Docker ARM64 and Chromium touch/viewport emulation are covered in Sprint G2.5.9257. | Noch auf echter ARM64-Hardware und Android/iOS prüfen: Touch-Drag/Resize, Tastatur, native Datei-/Download-Dialoge und Ingress; Einstellungen, Projekte und Plugins erhalten. |
 | A3 | Resolve the Simple/Expert UI requirement. The current UI intentionally starts in Expert without a visible mode switch. | Sichtbaren Wechsel mit der bisherigen Expert-Startvorgabe abgleichen; gespeicherte Projekte und Expert-Funktionen erhalten. |
 | A5 | Bring Renderer, Theme and plugin APIs closer to production readiness. | Größere reale Projekte, Live-HA-Updates, Fehler-/Wiederverbindungswege, Leistung und Plugin-Kompatibilität prüfen; API-/Lebenszyklusfragen konkretisieren. |
 | A6 | Complete French documentation and keep DE/EN/FR consistent. | FR-Platzhalter übersetzen und fachlich prüfen; Navigation, Struktur und Verhalten der angebotenen Sprachen abgleichen. |
@@ -26,6 +26,12 @@ Ingress and all six plugin surfaces were verified. Administration and full
 editor exports are unchanged except export timestamps. The existing Expert
 canvas was empty; larger populated projects remain part of A5. A4 (roadmap
 cleanup) is complete in Sprint G2.5.9255. A3 remains a product decision.
+
+A2 remains open for native hardware and physical browsers. The emulation
+increment fixes narrow Administration fields, Card Editor page overflow and
+mobile dialog sizing. Existing settings/projects/plugin storage are preserved
+in isolated tests; no real HA settings or projects are edited for this check.
+Native testing on the Raspberry Pi 5 being prepared is the next A2 step.
 
 ## Remaining product directions
 
