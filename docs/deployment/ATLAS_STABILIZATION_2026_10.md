@@ -58,3 +58,13 @@ HA 0.1.287 / framework 0.2.0-alpha.88; the final increment changes validation an
 documentation only. Real HA/Supervisor deployment, hardware actions, mobile
 and aarch64 execution remain unverified. No production settings or installed
 plugin data were modified; the original backup and user roadmap files remain.
+
+## Real installation follow-up (2026-10-13)
+
+The later A1 increment verifies a real Supervisor update 0.1.287 -> 0.1.288,
+a separate restart and Ingress for six installed plugins. Administration and
+full editor exports match before/after, excluding export timestamps. The
+existing Expert canvas was empty. The real HA backup, checks, version-display
+fix and remaining boundaries are recorded in
+[Sprint G2.5.9256](../sprints/Sprint-G2.5.9256.md). This does not establish
+ARM64/mobile execution, hardware actions or every plugin-owned project format.

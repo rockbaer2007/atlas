@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.287**.
+Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.288**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -14,16 +14,18 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A1 | Verify the real HA installation at 0.1.287: Supervisor update, Ingress, entities and installed plugins. | Aktualisierung und Neustart an echtem HA prüfen; Einstellungen, Projekte und Plugins bleiben erhalten. |
 | A2 | Verify ARM64/Raspberry Pi and mobile browsers. | ARM64-Image auf passender Hardware prüfen; mobile Bedienung, Layout, Import/Export und Dialoge kontrollieren. |
 | A3 | Resolve the Simple/Expert UI requirement. The current UI intentionally starts in Expert without a visible mode switch. | Sichtbaren Wechsel mit der bisherigen Expert-Startvorgabe abgleichen; gespeicherte Projekte und Expert-Funktionen erhalten. |
 | A5 | Bring Renderer, Theme and plugin APIs closer to production readiness. | Größere reale Projekte, Live-HA-Updates, Fehler-/Wiederverbindungswege, Leistung und Plugin-Kompatibilität prüfen; API-/Lebenszyklusfragen konkretisieren. |
 | A6 | Complete French documentation and keep DE/EN/FR consistent. | FR-Platzhalter übersetzen und fachlich prüfen; Navigation, Struktur und Verhalten der angebotenen Sprachen abgleichen. |
 | A7 | Add later deployment paths: Linux/systemd installer and native ATLAS HA/HACS frontend integration. | Dieselbe geprüfte Laufzeit verwenden; Installation, Updates, Identität und Wiederherstellung dokumentieren und prüfen. |
 
-**A1 is next.** The former A4 (roadmap cleanup) is complete in Sprint
-G2.5.9255 and is no longer open. A3 is an unresolved product decision;
-this documentation update does not change the current Expert UI.
+**A2 is next.** A1 is complete for the real installation's existing state in
+Sprint G2.5.9256: Supervisor update 0.1.287 -> 0.1.288, a separate restart,
+Ingress and all six plugin surfaces were verified. Administration and full
+editor exports are unchanged except export timestamps. The existing Expert
+canvas was empty; larger populated projects remain part of A5. A4 (roadmap
+cleanup) is complete in Sprint G2.5.9255. A3 remains a product decision.
 
 ## Remaining product directions
 
@@ -51,13 +53,14 @@ architecture contract expansion.
 ## Deployment order and test boundaries
 
 1. Standalone Docker runtime (implemented; continue real deployment checks).
-2. HA app/add-on from the same runtime (implemented; A1/A2 remain).
+2. HA app/add-on from the same runtime (implemented; real A1 verified; A2 remains).
 3. Optional Linux VM/LXC/bare-Linux installer with systemd (A7).
 4. Native ATLAS Home Assistant/HACS frontend integration where useful (A7).
 
 HACS card-package export exists; A7 concerns hosting/integrating ATLAS itself.
-Passing isolated checks do not establish a real Supervisor upgrade, hardware
-actions, mobile support, ARM64 execution or production readiness.
+The real Supervisor upgrade and Ingress checks are recorded in Sprint
+G2.5.9256. They do not establish hardware actions, mobile support, ARM64
+execution, every plugin-owned project format or production readiness.
 
 ## Separate projects and preserved references
 
