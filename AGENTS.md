@@ -7,7 +7,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Primary repo: `C:\Users\rockb\source\repos\atlas`.
 - Documentation repo: `C:\Users\rockb\source\repos\ugso-opensource-docs`.
 - The Home Assistant Card Editor is the only plugin integrated with ATLAS and serves as its reference plugin. Other plugins, such as File Studio and Terminal, are external plugins maintained in separate repositories.
-- Current Atlas focus: Home Assistant card editor, Simple/Expert workflows, HACS-oriented export/import, and bilingual documentation.
+- Current Atlas focus: Expert-only Home Assistant card editor, HACS-oriented export/import, and multilingual documentation.
 - The Atlas Home Assistant Card Editor demo standard port is fixed to `4174`; serve it at `http://127.0.0.1:4174/`.
 - The Atlas Administration demo standard port is fixed to `4175`; serve it at `http://127.0.0.1:4175/`.
 - The combined Atlas app server standard port is fixed to `4176`; `pnpm start:app` should expose `http://127.0.0.1:4176/health` while starting Administration and Card Editor together.
@@ -68,15 +68,13 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 - Text must not overflow or overlap its container on desktop or mobile.
 - Expert editor controls should be compact and predictable.
 - Use clear visual states for selected, editing, disabled, drag, conflict, and resize states.
-- Do not show Simple-only controls in Expert mode when they are not needed.
-- Do not show Expert-only controls in Simple mode when they are not needed.
+- Do not expose the removed Simple mode or its mode switch. Keep legacy import compatibility for existing projects.
 
 ## Atlas Home Assistant Product Rules
 
-- Atlas should support both Simple and Expert editor modes.
-- Simple mode is for fast card generation and button/entity stacks.
+- The user retired Simple mode on 2026-10-13. Atlas offers the Expert editor only; do not reintroduce Simple mode or a mode switch.
 - Expert mode is for a free editor surface with draggable/resizable fields.
-- Expert mode should generate the Expert HA card code, not the Simple HA card code.
+- The editor should generate the Expert HA card code. Preserve supported legacy project imports without offering another editing mode.
 - Expert fields can use different card families, including built-in Home Assistant cards, Bubble Card, and Mushroom.
 - All Home Assistant and HACS resource paths must respect Linux case sensitivity.
 - Bubble Card path:
@@ -144,7 +142,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
   - example Lovelace card
   - embedded `atlas/*.atlas-card.json`
   - selected `locales/*.json` language files
-- HACS bundle import should inspect the ZIP and read the embedded `atlas/*.atlas-card.json` package back into Simple or Expert mode.
+- HACS bundle import should inspect the ZIP and read supported embedded `atlas/*.atlas-card.json` packages into the Expert editor, preserving legacy import compatibility.
 - Raw Home Assistant card import should support nested `vertical-stack`, `horizontal-stack`, `grid`, and `conditional` structures where implemented.
 - External Home Assistant Card Builder artifacts may be evaluated as references, but do not copy source code blindly.
 - If supporting external artifacts later, keep schema mapping explicit and include attribution where required.

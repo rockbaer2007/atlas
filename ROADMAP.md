@@ -14,33 +14,14 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A2 | Finish physical mobile-browser verification. Native Pi 5 is verified in G2.5.9258; initial Android tablet checks are user-confirmed in G2.5.9259; emulation is covered in G2.5.9257. | Noch prüfen: Touch-Drag/Resize, Tastatur, native Datei-/Download-Dialoge und iOS; Einstellungen, Projekte und Plugins erhalten. |
-| A3 | Resolve the Simple/Expert UI requirement. The current UI intentionally starts in Expert without a visible mode switch. | Sichtbaren Wechsel mit der bisherigen Expert-Startvorgabe abgleichen; gespeicherte Projekte und Expert-Funktionen erhalten. |
 | A5 | Bring Renderer, Theme and plugin APIs closer to production readiness. | Größere reale Projekte, Live-HA-Updates, Fehler-/Wiederverbindungswege, Leistung und Plugin-Kompatibilität prüfen; API-/Lebenszyklusfragen konkretisieren. |
 | A6 | Complete French documentation and keep DE/EN/FR consistent. | FR-Platzhalter übersetzen und fachlich prüfen; Navigation, Struktur und Verhalten der angebotenen Sprachen abgleichen. |
 | A7 | Add later deployment paths: Linux/systemd installer and native ATLAS HA/HACS frontend integration. | Dieselbe geprüfte Laufzeit verwenden; Installation, Updates, Identität und Wiederherstellung dokumentieren und prüfen. |
 
-**A2 is next.** A1 is complete for the real installation's existing state in
-Sprint G2.5.9256: Supervisor update 0.1.287 -> 0.1.288, a separate restart,
-Ingress and all six plugin surfaces were verified. Administration and full
-editor exports are unchanged except export timestamps. The existing Expert
-canvas was empty; larger populated projects remain part of A5. A4 (roadmap
-cleanup) is complete in Sprint G2.5.9255. A3 remains a product decision.
-
-A2 remains open for physical mobile browsers. The emulation increment fixes
-narrow Administration fields, Card Editor page overflow and mobile dialog
-sizing. The native Pi 5 check verifies rpi5-64, aarch64/Node arm64, HA OS 18.3,
-Ingress for all six plugins and restart preservation at app version 0.1.289.
-Local HA backup and before/after exports protect the existing state; the
-native Expert canvas was empty. Desktop Chrome viewport checks against the
-real Pi do not establish physical phone behavior. Large projects/load remain A5.
-
-The user confirms Hub/Administration portrait, landscape and DE/EN/FR on a
-physical Android tablet, plus editor connection, YAML dialog and Problem report.
-The tablet cannot reach homeassistant.local:80; using the reachable HA IP
-restores the connection without changing the token. Port 80 is already supported.
-Document this browser reachability requirement in DE/EN/FR. Touch editing,
-virtual keyboards, native file/download dialogs and iOS remain unverified.
+**A5 is next.** Preserve the Expert-only product decision and existing project
+compatibility. Completed priorities and their test boundaries are recorded in
+the sprint ledger, including user acceptance of A2 and retirement of Simple
+mode (A3) in [Sprint G2.5.9263](docs/sprints/Sprint-G2.5.9263.md).
 
 ## Remaining product directions
 
