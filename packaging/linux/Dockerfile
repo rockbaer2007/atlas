@@ -10,6 +10,7 @@ COPY packages ./packages
 COPY atlas-plugins ./atlas-plugins
 COPY examples ./examples
 COPY scripts ./scripts
+COPY custom_components ./custom_components
 COPY packaging/home-assistant-app/atlas/config.yaml ./packaging/home-assistant-app/atlas/config.yaml
 RUN pnpm install --frozen-lockfile && pnpm build && pnpm test:linux && pnpm linux:prepare
 RUN node --input-type=module -e 'import {writeFileSync} from "node:fs"; import {createUnit} from "./scripts/atlas-linux-installer.mjs"; writeFileSync("/tmp/atlas.service",createUnit({app:"/opt/atlas",state:"/var/lib/atlas",environment:"/etc/atlas/atlas.env",node:"/usr/local/bin/node"}));' \

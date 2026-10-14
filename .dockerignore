@@ -9,6 +9,8 @@ dist
 **/dist
 *.tsbuildinfo
 **/*.tsbuildinfo
+**/__pycache__
+**/*.pyc
 
 coverage
 **/coverage

@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.298**.
+Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.299**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -14,13 +14,19 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A7 | Native ATLAS HA/HACS frontend integration. | ATLAS selbst integrieren; bestehende Konfiguration, Identität, Projekte und Plugins erhalten und den nativen Ablauf prüfen. |
+| A7 | Qualify the implemented ATLAS Runtime integration through HACS on Pi/Proxmox and further HA versions. | Download, Einrichtung, Update und Einbettung mit bestehenden Einstellungen, Projekten und Plugins nativ prüfen. |
 
 **A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC.**
 Installation, real update, rollback, backup, restart and recovery after an
 unhealthy update preserve configuration, identity and plugin/project fixtures.
-Native frontend integration remains open. Evidence and Linux host limits are in
+Evidence and Linux host limits are in
 [Sprint G2.5.9283](docs/sprints/Sprint-G2.5.9283.md).
+The optional native HA panel/config-entry integration is implemented in 0.1.299
+and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
+HACS repository layout is provided; catalog inclusion and native Pi/Proxmox HACS
+download/update qualification remain open. Preserve the existing runtime address,
+installation identity and add-on Ingress access. See
+[Sprint G2.5.9284](docs/sprints/Sprint-G2.5.9284.md).
 A6 documentation alignment is complete; the 21 ATLAS/plugin
 pages per language, navigation, locale routes and technical examples are
 reviewed in DE/EN/FR. Evidence and remaining external-plugin UI translation
@@ -38,6 +44,7 @@ results and native test limits are recorded in
 - Stable production plugin/API contracts, version/migration policy and broader host compatibility.
 - HACS repository/release distribution and full exported-card locale runtime coverage.
 - Linux installer qualification on native ARM64, further distributions and bare metal.
+- Real mobile touch/opening check for the native HA panel menu; simulated layout and menu-event contracts are verified.
 
 The completed bounded checks stay in the sprint ledger and the review above.
 These follow-ups remain open; no hardware benchmark, stable 1.0 API or complete
@@ -72,7 +79,7 @@ architecture contract expansion.
 1. Standalone Docker runtime (implemented; continue real deployment checks).
 2. HA app/add-on from the same runtime (implemented; real A1 verified; A2 accepted).
 3. Optional Linux/systemd installer (implemented; Debian 12 amd64 LXC verified).
-4. Native ATLAS Home Assistant/HACS frontend integration where useful (A7).
+4. Native ATLAS Runtime HA panel (implemented; isolated Core verified; native HACS qualification open).
 
 HACS card-package export exists; A7 concerns hosting/integrating ATLAS itself.
 The real Supervisor upgrade and Ingress checks are recorded in Sprint

@@ -1,5 +1,30 @@
 # ATLAS Framework
 
+## Home Assistant frontend integration
+
+ATLAS **0.1.299** includes the optional **ATLAS Runtime** custom integration.
+Add `https://github.com/rockbaer2007/atlas` as a HACS custom repository of type
+**Integration**, download it, restart Home Assistant and add **ATLAS Runtime**
+under Settings > Devices & services. Enter the browser-accessible base URL of
+your existing ATLAS App/Add-on, Docker or Linux runtime.
+
+The integration adds an administrator-only `ATLAS Runtime` sidebar panel with
+Hub, Card Editor and Administration links. It embeds the existing runtime and
+does not forward Home Assistant authentication. Keep the same runtime address
+to retain browser projects and encrypted ATLAS settings. HACS installs only
+`custom_components/atlas_frontend`; it does not install the Node backend or
+external plugins. The existing add-on Ingress entry remains separate.
+
+Manual installation: back up HA and copy only `custom_components/atlas_frontend`
+to the corresponding HA configuration directory, then restart and configure.
+Do not replace any existing custom component directory without backing it up.
+Use HTTPS runtime hosting when HA uses HTTPS; HTTP embedding is blocked by
+browsers. A reverse proxy must preserve the runtime base path and allow framing
+from the HA origin. The HA panel's admin requirement does not secure direct
+access to an external ATLAS server.
+
+Full [DE/EN/FR setup and update guide](https://opensource.ugso-software.de/projects/atlas/frontend).
+
 ## ATLAS Terminal plugin
 
 The optional [ATLAS Terminal plugin](https://github.com/rockbaer2007/atlas-terminal-plugin)
@@ -23,7 +48,7 @@ ATLAS ships Administration, Plugin Hub and the Home Assistant Card Editor as its
 built-in reference plugin. File Studio, Terminal, Automation Exporter / Editor
 and other independently maintained plugins are installed and updated through
 their own repositories. The current Home Assistant App/Add-on package is
-`0.1.265`.
+`0.1.299`.
 
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,
