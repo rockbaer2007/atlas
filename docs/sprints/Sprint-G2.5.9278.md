@@ -38,6 +38,8 @@ Original editor/Admin exports match exactly except createdAt/exportedAt;
 all six plugins remain active on each host. No native resource, original
 dashboard, automation or physical device state is changed.
 
-Cleanup of the two empty own dashboards awaits current-action user confirmation.
+After explicit current-action user confirmation, delete only the two empty own
+Live-Templates test dashboards. Fresh native dashboard tables confirm both
+test entries are absent. Save cleanup evidence and close the two own HA tabs.
 Documentation build and Git whitespace checks pass for DE/EN/FR status and
 roadmap updates. No runtime code/package changes or version bump are required.
