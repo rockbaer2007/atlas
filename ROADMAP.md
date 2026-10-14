@@ -31,7 +31,7 @@ HA installations, observes Pi backup-state live changes and restores the exact
 original editor/Admin exports. Proxmox also reconnects after a user-initiated
 host restart. Scope and limits: [Sprint G2.5.9266](docs/sprints/Sprint-G2.5.9266.md).
 Remaining: diverse user-owned projects/card families, native backend load
-measurements, recovery during prolonged outages and broader plugin/renderer/theme
+profiles, recovery during prolonged outages and broader plugin/renderer/theme
 lifecycle compatibility. Desktop-browser rendering is not a Pi performance
 benchmark; the VM CPU value did not change during observation.
 
@@ -115,6 +115,14 @@ are preserved. This manually extended configuration verifies bounded template
 evaluation and live time updates, not expensive-template CPU/RAM profiling,
 diverse changing entities or long-duration stability. Evidence:
 [Sprint G2.5.9278](docs/sprints/Sprint-G2.5.9278.md).
+
+A bounded native Core/ATLAS container CPU/RAM observation is now recorded on
+both hosts: 4 baseline, 14 mixed-card/live-template load and 4 recovery samples
+per target, with all 40 templates updating. Original settings/projects/plugins
+are preserved and own dashboards removed. Longer profiles, diverse workloads,
+whole-host/client metrics and prolonged outages remain distinct open work;
+this is not a hardware comparison or leak test. Values and sampling limits:
+[Sprint G2.5.9279](docs/sprints/Sprint-G2.5.9279.md).
 
 ## Remaining product directions
 
