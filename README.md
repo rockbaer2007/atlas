@@ -2,7 +2,7 @@
 
 ## Home Assistant frontend integration
 
-ATLAS **0.1.299** includes the optional **ATLAS Runtime** custom integration.
+ATLAS **0.1.300** includes the optional **ATLAS Runtime** custom integration.
 Add `https://github.com/rockbaer2007/atlas` as a HACS custom repository of type
 **Integration**, download it, restart Home Assistant and add **ATLAS Runtime**
 under Settings > Devices & services. Enter the browser-accessible base URL of
@@ -24,6 +24,12 @@ from the HA origin. The HA panel's admin requirement does not secure direct
 access to an external ATLAS server.
 
 Full [DE/EN/FR setup and update guide](https://opensource.ugso-software.de/projects/atlas/frontend).
+
+Since 0.1.300, Plugin Manager can share repository metadata and activation state
+through the existing ATLAS server. Open the original App/Ingress Administration,
+preview **Adopt local state**, then explicitly back up and adopt. Existing browser
+data remain intact; conflicts keep server values by default. Credentials, editor
+projects and external plugin settings are not part of this migration.
 
 ## ATLAS Terminal plugin
 
@@ -48,7 +54,7 @@ ATLAS ships Administration, Plugin Hub and the Home Assistant Card Editor as its
 built-in reference plugin. File Studio, Terminal, Automation Exporter / Editor
 and other independently maintained plugins are installed and updated through
 their own repositories. The current Home Assistant App/Add-on package is
-`0.1.299`.
+`0.1.300`.
 
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,

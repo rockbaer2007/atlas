@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.299**.
+Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.300**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -30,6 +30,11 @@ installation identity and add-on Ingress access. See
 [Sprint G2.5.9284](docs/sprints/Sprint-G2.5.9284.md).
 The HACS download diagnosis and qualification boundary are recorded in
 [Sprint G2.5.9285](docs/sprints/Sprint-G2.5.9285.md).
+Shared plugin management with explicit, backed-up adoption is implemented in
+0.1.300 and verified across separate browser origins. Qualify adoption of the
+existing Proxmox/Pi plugin metadata after updating the native runtime; editor
+projects, credentials and external plugin settings remain outside this migration.
+See [Sprint G2.5.9286](docs/sprints/Sprint-G2.5.9286.md).
 A6 documentation alignment is complete; the 21 ATLAS/plugin
 pages per language, navigation, locale routes and technical examples are
 reviewed in DE/EN/FR. Evidence and remaining external-plugin UI translation
