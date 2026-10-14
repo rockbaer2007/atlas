@@ -23,10 +23,13 @@ Evidence and Linux host limits are in
 [Sprint G2.5.9283](docs/sprints/Sprint-G2.5.9283.md).
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
-HACS repository layout is provided; catalog inclusion and native Pi/Proxmox HACS
-download/update qualification remain open. Preserve the existing runtime address,
+HACS download on Proxmox is confirmed through pending restart; native setup,
+embedding, updates and Pi HACS qualification remain open. Catalog inclusion is
+not claimed. Preserve the existing runtime address,
 installation identity and add-on Ingress access. See
 [Sprint G2.5.9284](docs/sprints/Sprint-G2.5.9284.md).
+The HACS download diagnosis and qualification boundary are recorded in
+[Sprint G2.5.9285](docs/sprints/Sprint-G2.5.9285.md).
 A6 documentation alignment is complete; the 21 ATLAS/plugin
 pages per language, navigation, locale routes and technical examples are
 reviewed in DE/EN/FR. Evidence and remaining external-plugin UI translation
