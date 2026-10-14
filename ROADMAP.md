@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.296**.
+Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.297**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -73,6 +73,12 @@ template evaluates real HA state. Settings/projects/plugins remain identical
 apart from export timestamps. Full bundle deployment, broader resource-scan
 compatibility and the remaining A5 load/recovery work are still open. Evidence:
 [Sprint G2.5.9273](docs/sprints/Sprint-G2.5.9273.md).
+
+0.1.297 fixes generated Expert scripts that previously ignored the embedded
+layout and rendered only an entity list. HA card helpers now mount the actual
+configuration and retain child cards during live updates. Native deployment of
+the resulting bundle is the next A5 verification; evidence:
+[Sprint G2.5.9274](docs/sprints/Sprint-G2.5.9274.md).
 
 ## Remaining product directions
 
