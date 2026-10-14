@@ -95,9 +95,18 @@ A native 120-field mixed Core/Bubble/Mushroom editor workload now passes on
 both hosts: edit, reload, DE/EN/FR, light/dark and repeated HA synchronization.
 Full field objects and restored original Admin/project exports are preserved.
 These are editor tiles, not 120 mounted Lovelace cards or CPU/memory benchmarks.
-Native backend load, larger rendered dashboards, genuine state transitions in
+Native backend load, diverse rendered dashboards, genuine state transitions in
 mixed workloads and diverse user projects remain open. Evidence:
 [Sprint G2.5.9276](docs/sprints/Sprint-G2.5.9276.md).
+
+Real HA card previews now mount 30 and 120 Core/Bubble/Mushroom cards on Pi 5
+and Proxmox. The full 120-card ATLAS export mounts 40 instances of each family
+with nonzero dimensions and no configuration error; entity details are usable.
+Unsaved previews and own empty dashboards are removed, original editor/Admin
+exports preserved and six plugins remain active on each host. This is bounded
+render execution with a Windows Chrome client and one shared sensor, not native
+CPU/RAM profiling, complex template load or a hardware performance comparison.
+Evidence: [Sprint G2.5.9277](docs/sprints/Sprint-G2.5.9277.md).
 
 ## Remaining product directions
 
