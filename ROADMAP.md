@@ -14,124 +14,26 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A5 | Bring Renderer, Theme and plugin APIs closer to production readiness. | Größere reale Projekte, Live-HA-Updates, Fehler-/Wiederverbindungswege, Leistung und Plugin-Kompatibilität prüfen; API-/Lebenszyklusfragen konkretisieren. |
 | A6 | Complete French documentation and keep DE/EN/FR consistent. | FR-Platzhalter übersetzen und fachlich prüfen; Navigation, Struktur und Verhalten der angebotenen Sprachen abgleichen. |
 | A7 | Add later deployment paths: Linux/systemd installer and native ATLAS HA/HACS frontend integration. | Dieselbe geprüfte Laufzeit verwenden; Installation, Updates, Identität und Wiederherstellung dokumentieren und prüfen. |
 
-**A5 is next.** Preserve the Expert-only product decision and existing project
-compatibility. Completed priorities and their test boundaries are recorded in
-the sprint ledger, including user acceptance of A2 and retirement of Simple
-mode (A3) in [Sprint G2.5.9263](docs/sprints/Sprint-G2.5.9263.md).
+**A6 is next.** A5 is complete as the documented stabilization and verification
+increment, not as production approval. Criteria, API boundaries, regression
+results and native test limits are recorded in
+[the A5 review](docs/deployment/ATLAS_A5_REVIEW_2026_10.md) and
+[Sprint G2.5.9281](docs/sprints/Sprint-G2.5.9281.md).
 
-A5 is in progress. The first increment verifies a synthetic 100-card project,
-2001 mock entities, repeated reconnects and live-event ordering; fixes and
-test boundaries are in [Sprint G2.5.9265](docs/sprints/Sprint-G2.5.9265.md).
-The native follow-up loads 100 compact and 24 larger test cards on both real
-HA installations, observes Pi backup-state live changes and restores the exact
-original editor/Admin exports. Proxmox also reconnects after a user-initiated
-host restart. Scope and limits: [Sprint G2.5.9266](docs/sprints/Sprint-G2.5.9266.md).
-Remaining: diverse user-owned projects/card families, native backend load
-profiles, repeated/longer outage recovery under workload and broader plugin/renderer/theme
-lifecycle compatibility. Desktop-browser rendering is not a Pi performance
-benchmark; the VM CPU value did not change during observation.
+## Open follow-up qualification
 
-0.1.294 fixes recovery after outages that exceed the previous three attempts;
-retries continue with a delay capped at 30 seconds, while rejected credentials
-stop automatic retries. The isolated regression is recorded in
-[Sprint G2.5.9267](docs/sprints/Sprint-G2.5.9267.md). A real twelve-second Pi LAN
-interruption preserves 100 test fields and resumes live data without reload;
-the existing socket remains connected in the observed samples. Native plugin
-integration, Docker health and unchanged Admin/original-project exports are
-recorded in [Sprint G2.5.9268](docs/sprints/Sprint-G2.5.9268.md). This does not
-prove a new native socket connection after a forced transport closure.
+- Diverse real user projects, entities, Custom Cards and theme combinations.
+- Longer CPU/RAM profiles and repeated instrumented network outages under project load.
+- Stable production plugin/API contracts, version/migration policy and broader host compatibility.
+- HACS repository/release distribution and full exported-card locale runtime coverage.
 
-0.1.295 makes direct plugin launch links use the same browser-held Administration
-status as the Hub. Isolated app-server tests verify install, rejected update,
-replacement, restart, uninstall and package restore while retaining unrelated
-plugin descriptors and fixture data. Evidence and limits are in
-[Sprint G2.5.9269](docs/sprints/Sprint-G2.5.9269.md). This is not native HA
-deployment evidence or an authorization boundary for plugin assets.
-
-The deferred Docker checks now pass for standalone and HA-package Linux amd64
-images, including real container restart and the plugin lifecycle with isolated
-data. Limits and preservation evidence are in
-[Sprint G2.5.9270](docs/sprints/Sprint-G2.5.9270.md). Native HA deployment and
-renderer/theme checks remain open.
-
-0.1.296 corrects dark renderer status colors and unreadable Expert field rows.
-Synthetic mixed-family previews pass DE/EN/FR theme/state, reload and viewport
-checks without changing field data. Evidence and remaining native/HACS limits:
-[Sprint G2.5.9271](docs/sprints/Sprint-G2.5.9271.md).
-
-Both real HA installations now run 0.1.296 after backup-enabled updates. Actual
-ATLAS YAML exports render in native HA: Core on Pi 5 and Core/Bubble/Mushroom
-on Proxmox, with exact original project/Admin export preservation. Evidence:
-[Sprint G2.5.9272](docs/sprints/Sprint-G2.5.9272.md).
-After the user installs HACS/Bubble/Mushroom on Pi, the unchanged mixed-family
-ATLAS export also passes native ARM64 execution; a separate Mushroom Jinja
-template evaluates real HA state. Settings/projects/plugins remain identical
-apart from export timestamps. Full bundle deployment, broader resource-scan
-compatibility and the remaining A5 load/recovery work are still open. Evidence:
-[Sprint G2.5.9273](docs/sprints/Sprint-G2.5.9273.md).
-
-0.1.297 fixes generated Expert scripts that previously ignored the embedded
-layout and rendered only an entity list. HA card helpers now mount the actual
-configuration and retain child cards during live updates. Manual installation
-of the generated module and native custom-card execution now pass on Pi and
-Proxmox. Original settings/projects/plugins and tracked resource URLs remain
-preserved after removal of own test artifacts. HACS repository publication and
-release distribution remain separate from this local bundle test; evidence:
-[Sprint G2.5.9274](docs/sprints/Sprint-G2.5.9274.md).
-
-Native recovery after an explicitly closed HA WebSocket now passes on Pi 5
-ARM64 and Proxmox amd64 without page reload. Each 24-field fixture retains its
-IDs, entity bindings and geometry; a fresh HA entity/resource sync succeeds.
-Original editor/Admin exports match exactly except export timestamps after
-restoration, with six plugins active on each host. This bounded client-close
-test does not measure prolonged outages or backend load. Evidence:
-[Sprint G2.5.9275](docs/sprints/Sprint-G2.5.9275.md).
-
-A native 120-field mixed Core/Bubble/Mushroom editor workload now passes on
-both hosts: edit, reload, DE/EN/FR, light/dark and repeated HA synchronization.
-Full field objects and restored original Admin/project exports are preserved.
-These are editor tiles, not 120 mounted Lovelace cards or CPU/memory benchmarks.
-Native backend load, diverse rendered dashboards, genuine state transitions in
-mixed workloads and diverse user projects remain open. Evidence:
-[Sprint G2.5.9276](docs/sprints/Sprint-G2.5.9276.md).
-
-Real HA card previews now mount 30 and 120 Core/Bubble/Mushroom cards on Pi 5
-and Proxmox. The full 120-card ATLAS export mounts 40 instances of each family
-with nonzero dimensions and no configuration error; entity details are usable.
-Unsaved previews and own empty dashboards are removed, original editor/Admin
-exports preserved and six plugins remain active on each host. This is bounded
-render execution with a Windows Chrome client and one shared sensor, not native
-CPU/RAM profiling, complex template load or a hardware performance comparison.
-Evidence: [Sprint G2.5.9277](docs/sprints/Sprint-G2.5.9277.md).
-
-The mixed 120-card native test now also includes 40 distinct Mushroom clock
-templates. All 40 outputs automatically change on Pi and Proxmox without reload,
-while 120 native cards remain mounted and original projects/settings/plugins
-are preserved. This manually extended configuration verifies bounded template
-evaluation and live time updates, not expensive-template CPU/RAM profiling,
-diverse changing entities or long-duration stability. Evidence:
-[Sprint G2.5.9278](docs/sprints/Sprint-G2.5.9278.md).
-
-A bounded native Core/ATLAS container CPU/RAM observation is now recorded on
-both hosts: 4 baseline, 14 mixed-card/live-template load and 4 recovery samples
-per target, with all 40 templates updating. Original settings/projects/plugins
-are preserved and own dashboards removed. Longer profiles, diverse workloads,
-whole-host/client metrics and repeated/longer outages under workload remain distinct open work;
-this is not a hardware comparison or leak test. Values and sampling limits:
-[Sprint G2.5.9279](docs/sprints/Sprint-G2.5.9279.md).
-
-The user confirms approximately three-minute Pi-LAN and Proxmox-VM-NIC
-interruptions, with both ATLAS editors reconnecting automatically without
-reload or manual connect. Independent post-recovery sync and exact original
-editor/Admin export comparisons pass; six plugins remain active per host.
-The intended 100-field fixtures were not loaded before this interruption,
-and no monitoring-helper trace was captured. This closes the user-observed
-three-minute scenario, not instrumented retry/latency or loaded-project recovery.
-Evidence and limits: [Sprint G2.5.9280](docs/sprints/Sprint-G2.5.9280.md).
+The completed bounded checks stay in the sprint ledger and the review above.
+These follow-ups remain open; no hardware benchmark, stable 1.0 API or complete
+browser/host compatibility is claimed. Preserve Expert-only legacy import
+compatibility, settings, encrypted credentials, projects and plugins.
 
 ## Remaining product directions
 
