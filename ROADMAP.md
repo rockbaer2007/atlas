@@ -63,6 +63,13 @@ Synthetic mixed-family previews pass DE/EN/FR theme/state, reload and viewport
 checks without changing field data. Evidence and remaining native/HACS limits:
 [Sprint G2.5.9271](docs/sprints/Sprint-G2.5.9271.md).
 
+Both real HA installations now run 0.1.296 after backup-enabled updates. Actual
+ATLAS YAML exports render in native HA: Core on Pi 5 and Core/Bubble/Mushroom
+on Proxmox, with exact original project/Admin export preservation. Pi has no
+configured HACS integration or registered Lovelace resources, so native HACS
+execution on ARM64 and full bundle installation remain unverified. Evidence:
+[Sprint G2.5.9272](docs/sprints/Sprint-G2.5.9272.md).
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
