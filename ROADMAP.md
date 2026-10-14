@@ -31,7 +31,7 @@ HA installations, observes Pi backup-state live changes and restores the exact
 original editor/Admin exports. Proxmox also reconnects after a user-initiated
 host restart. Scope and limits: [Sprint G2.5.9266](docs/sprints/Sprint-G2.5.9266.md).
 Remaining: diverse user-owned projects/card families, native backend load
-profiles, recovery during prolonged outages and broader plugin/renderer/theme
+profiles, repeated/longer outage recovery under workload and broader plugin/renderer/theme
 lifecycle compatibility. Desktop-browser rendering is not a Pi performance
 benchmark; the VM CPU value did not change during observation.
 
@@ -120,9 +120,18 @@ A bounded native Core/ATLAS container CPU/RAM observation is now recorded on
 both hosts: 4 baseline, 14 mixed-card/live-template load and 4 recovery samples
 per target, with all 40 templates updating. Original settings/projects/plugins
 are preserved and own dashboards removed. Longer profiles, diverse workloads,
-whole-host/client metrics and prolonged outages remain distinct open work;
+whole-host/client metrics and repeated/longer outages under workload remain distinct open work;
 this is not a hardware comparison or leak test. Values and sampling limits:
 [Sprint G2.5.9279](docs/sprints/Sprint-G2.5.9279.md).
+
+The user confirms approximately three-minute Pi-LAN and Proxmox-VM-NIC
+interruptions, with both ATLAS editors reconnecting automatically without
+reload or manual connect. Independent post-recovery sync and exact original
+editor/Admin export comparisons pass; six plugins remain active per host.
+The intended 100-field fixtures were not loaded before this interruption,
+and no monitoring-helper trace was captured. This closes the user-observed
+three-minute scenario, not instrumented retry/latency or loaded-project recovery.
+Evidence and limits: [Sprint G2.5.9280](docs/sprints/Sprint-G2.5.9280.md).
 
 ## Remaining product directions
 
