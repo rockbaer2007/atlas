@@ -29,3 +29,12 @@ Native bundle deployment is the next verification in this same A5 increment;
 the previous native YAML checks do not prove generated-script installation.
 No existing native dashboard/resource or external plugin is replaced by this
 fix. Test projects are restored before native package updates.
+
+Both real HA installations update from 0.1.296 to 0.1.297 with the HA backup
+option enabled. Fresh Admin and editor after exports compare exactly to before
+after excluding only timestamps. All six plugins remain active. The corrected
+seven-file bundle is exported from the updated native Pi editor, but Chrome
+holds its ZIP download for user confirmation. No generated script is installed
+and no HA resource is registered yet. Native execution of this bundle remains
+pending; prepared empty `/config/www/community/atlas` directories on both hosts
+contain no test script. Existing HA resources are saved as private UI snapshots.
