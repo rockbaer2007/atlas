@@ -76,8 +76,11 @@ compatibility and the remaining A5 load/recovery work are still open. Evidence:
 
 0.1.297 fixes generated Expert scripts that previously ignored the embedded
 layout and rendered only an entity list. HA card helpers now mount the actual
-configuration and retain child cards during live updates. Native deployment of
-the resulting bundle is the next A5 verification; evidence:
+configuration and retain child cards during live updates. Manual installation
+of the generated module and native custom-card execution now pass on Pi and
+Proxmox. Original settings/projects/plugins and tracked resource URLs remain
+preserved after removal of own test artifacts. HACS repository publication and
+release distribution remain separate from this local bundle test; evidence:
 [Sprint G2.5.9274](docs/sprints/Sprint-G2.5.9274.md).
 
 ## Remaining product directions
