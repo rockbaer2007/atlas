@@ -2,7 +2,7 @@
 
 ## Home Assistant frontend integration
 
-ATLAS **0.1.300** includes the optional **ATLAS Runtime** custom integration.
+ATLAS **0.1.301** includes the optional **ATLAS Runtime** custom integration.
 Add `https://github.com/rockbaer2007/atlas` as a HACS custom repository of type
 **Integration**, download it, restart Home Assistant and add **ATLAS Runtime**
 under Settings > Devices & services. Enter the browser-accessible base URL of
@@ -54,7 +54,7 @@ ATLAS ships Administration, Plugin Hub and the Home Assistant Card Editor as its
 built-in reference plugin. File Studio, Terminal, Automation Exporter / Editor
 and other independently maintained plugins are installed and updated through
 their own repositories. The current Home Assistant App/Add-on package is
-`0.1.300`.
+`0.1.301`.
 
 File Studio displays its active filesystem permissions in a compact, regular-weight
 notice. Each approved path has its own color so paths such as `/config/www`,
