@@ -31,7 +31,7 @@ HA installations, observes Pi backup-state live changes and restores the exact
 original editor/Admin exports. Proxmox also reconnects after a user-initiated
 host restart. Scope and limits: [Sprint G2.5.9266](docs/sprints/Sprint-G2.5.9266.md).
 Remaining: diverse user-owned projects/card families, native backend load
-measurements, native recovery after a closed transport and broader plugin/renderer/theme
+measurements, recovery during prolonged outages and broader plugin/renderer/theme
 lifecycle compatibility. Desktop-browser rendering is not a Pi performance
 benchmark; the VM CPU value did not change during observation.
 
@@ -82,6 +82,14 @@ Proxmox. Original settings/projects/plugins and tracked resource URLs remain
 preserved after removal of own test artifacts. HACS repository publication and
 release distribution remain separate from this local bundle test; evidence:
 [Sprint G2.5.9274](docs/sprints/Sprint-G2.5.9274.md).
+
+Native recovery after an explicitly closed HA WebSocket now passes on Pi 5
+ARM64 and Proxmox amd64 without page reload. Each 24-field fixture retains its
+IDs, entity bindings and geometry; a fresh HA entity/resource sync succeeds.
+Original editor/Admin exports match exactly except export timestamps after
+restoration, with six plugins active on each host. This bounded client-close
+test does not measure prolonged outages or backend load. Evidence:
+[Sprint G2.5.9275](docs/sprints/Sprint-G2.5.9275.md).
 
 ## Remaining product directions
 
