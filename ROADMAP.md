@@ -65,10 +65,14 @@ checks without changing field data. Evidence and remaining native/HACS limits:
 
 Both real HA installations now run 0.1.296 after backup-enabled updates. Actual
 ATLAS YAML exports render in native HA: Core on Pi 5 and Core/Bubble/Mushroom
-on Proxmox, with exact original project/Admin export preservation. Pi has no
-configured HACS integration or registered Lovelace resources, so native HACS
-execution on ARM64 and full bundle installation remain unverified. Evidence:
+on Proxmox, with exact original project/Admin export preservation. Evidence:
 [Sprint G2.5.9272](docs/sprints/Sprint-G2.5.9272.md).
+After the user installs HACS/Bubble/Mushroom on Pi, the unchanged mixed-family
+ATLAS export also passes native ARM64 execution; a separate Mushroom Jinja
+template evaluates real HA state. Settings/projects/plugins remain identical
+apart from export timestamps. Full bundle deployment, broader resource-scan
+compatibility and the remaining A5 load/recovery work are still open. Evidence:
+[Sprint G2.5.9273](docs/sprints/Sprint-G2.5.9273.md).
 
 ## Remaining product directions
 
