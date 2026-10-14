@@ -40,6 +40,22 @@ save/open previews, workspace backups, revision checks and separate local drafts
 Qualify native project adoption after updating the App/runtime; external-plugin
 projects and browser preferences remain separate. See
 [Sprint G2.5.9287](docs/sprints/Sprint-G2.5.9287.md).
+
+### Saved handoff for 2026-10-15 / Fortsetzung morgen
+
+The user reports updating to **0.1.301** on Proxmox. Native verification is
+deferred at the user's request; the update and project adoption have not yet
+been independently verified.
+
+Next: back up existing settings, editor projects and persistent ATLAS data,
+then verify project adoption between the original App editor and Runtime on
+Proxmox (`192.168.178.197`). Save a new named server project from the App,
+explicitly preview/open it through Runtime and compare its fields, card
+configuration, geometry and name. Check save/reload and revision conflicts
+without overwriting original projects. Preserve existing settings, credentials,
+projects and installed plugins; external-plugin projects remain separate.
+No native test or installation change is requested before the continuation.
+
 A6 documentation alignment is complete; the 21 ATLAS/plugin
 pages per language, navigation, locale routes and technical examples are
 reviewed in DE/EN/FR. Evidence and remaining external-plugin UI translation

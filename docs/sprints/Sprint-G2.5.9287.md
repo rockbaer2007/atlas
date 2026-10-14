@@ -46,3 +46,12 @@ Validation:
 
 Native Pi/Proxmox adoption remains a follow-up after the runtime update. No claim
 of migrating external plugin projects or unsaved work across devices is made.
+
+## Handoff saved on 2026-10-14
+
+The user reports updating to 0.1.301 and asks to defer the Proxmox App/Runtime
+editor-project adoption check until tomorrow (2026-10-15). The next step is
+recorded in ROADMAP.md: backup first, then explicit save/open verification with
+original settings, projects and installed plugins preserved. The reported update
+is not independent native test evidence. No native systems were changed for
+this handoff.
