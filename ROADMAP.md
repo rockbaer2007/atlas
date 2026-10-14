@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.295**.
+Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.296**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -57,6 +57,11 @@ images, including real container restart and the plugin lifecycle with isolated
 data. Limits and preservation evidence are in
 [Sprint G2.5.9270](docs/sprints/Sprint-G2.5.9270.md). Native HA deployment and
 renderer/theme checks remain open.
+
+0.1.296 corrects dark renderer status colors and unreadable Expert field rows.
+Synthetic mixed-family previews pass DE/EN/FR theme/state, reload and viewport
+checks without changing field data. Evidence and remaining native/HACS limits:
+[Sprint G2.5.9271](docs/sprints/Sprint-G2.5.9271.md).
 
 ## Remaining product directions
 
