@@ -108,6 +108,14 @@ render execution with a Windows Chrome client and one shared sensor, not native
 CPU/RAM profiling, complex template load or a hardware performance comparison.
 Evidence: [Sprint G2.5.9277](docs/sprints/Sprint-G2.5.9277.md).
 
+The mixed 120-card native test now also includes 40 distinct Mushroom clock
+templates. All 40 outputs automatically change on Pi and Proxmox without reload,
+while 120 native cards remain mounted and original projects/settings/plugins
+are preserved. This manually extended configuration verifies bounded template
+evaluation and live time updates, not expensive-template CPU/RAM profiling,
+diverse changing entities or long-duration stability. Evidence:
+[Sprint G2.5.9278](docs/sprints/Sprint-G2.5.9278.md).
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
