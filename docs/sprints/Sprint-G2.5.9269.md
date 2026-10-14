@@ -32,8 +32,9 @@ Validation: all 11 app-server/origin/packaging checks, 55 runtime tests and
 162 Home Assistant tests pass. The workspace build, syntax/diff checks and
 470-file canonical HA package comparison pass. The local fixture Hub endpoint
 responds and direct launch preserves language/theme parameters and slug aliases.
-Docker is unavailable: the Docker Desktop Linux engine is not running. No VM
-or Docker service is started, preserving resources for Agent DVR.
+Docker was unavailable during this increment: the Docker Desktop Linux engine
+was not running. No VM or Docker service was started. After the user enabled
+Docker, the successful follow-up is recorded in [Sprint 9270](Sprint-G2.5.9270.md).
 
 Public DE/EN/FR documentation describes the corrected browser-held launch
 status and distinguishes it from access control and native test evidence.

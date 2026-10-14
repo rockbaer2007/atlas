@@ -52,6 +52,12 @@ plugin descriptors and fixture data. Evidence and limits are in
 [Sprint G2.5.9269](docs/sprints/Sprint-G2.5.9269.md). This is not native HA
 deployment evidence or an authorization boundary for plugin assets.
 
+The deferred Docker checks now pass for standalone and HA-package Linux amd64
+images, including real container restart and the plugin lifecycle with isolated
+data. Limits and preservation evidence are in
+[Sprint G2.5.9270](docs/sprints/Sprint-G2.5.9270.md). Native HA deployment and
+renderer/theme checks remain open.
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
