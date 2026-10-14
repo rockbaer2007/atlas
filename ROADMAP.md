@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-13. Framework **0.2.0-alpha.88**, HA app **0.1.294**.
+Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.295**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -44,6 +44,13 @@ the existing socket remains connected in the observed samples. Native plugin
 integration, Docker health and unchanged Admin/original-project exports are
 recorded in [Sprint G2.5.9268](docs/sprints/Sprint-G2.5.9268.md). This does not
 prove a new native socket connection after a forced transport closure.
+
+0.1.295 makes direct plugin launch links use the same browser-held Administration
+status as the Hub. Isolated app-server tests verify install, rejected update,
+replacement, restart, uninstall and package restore while retaining unrelated
+plugin descriptors and fixture data. Evidence and limits are in
+[Sprint G2.5.9269](docs/sprints/Sprint-G2.5.9269.md). This is not native HA
+deployment evidence or an authorization boundary for plugin assets.
 
 ## Remaining product directions
 
