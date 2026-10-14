@@ -91,6 +91,14 @@ restoration, with six plugins active on each host. This bounded client-close
 test does not measure prolonged outages or backend load. Evidence:
 [Sprint G2.5.9275](docs/sprints/Sprint-G2.5.9275.md).
 
+A native 120-field mixed Core/Bubble/Mushroom editor workload now passes on
+both hosts: edit, reload, DE/EN/FR, light/dark and repeated HA synchronization.
+Full field objects and restored original Admin/project exports are preserved.
+These are editor tiles, not 120 mounted Lovelace cards or CPU/memory benchmarks.
+Native backend load, larger rendered dashboards, genuine state transitions in
+mixed workloads and diverse user projects remain open. Evidence:
+[Sprint G2.5.9276](docs/sprints/Sprint-G2.5.9276.md).
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
