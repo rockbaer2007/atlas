@@ -14,10 +14,13 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A6 | Complete French documentation and keep DE/EN/FR consistent. | FR-Platzhalter übersetzen und fachlich prüfen; Navigation, Struktur und Verhalten der angebotenen Sprachen abgleichen. |
 | A7 | Add later deployment paths: Linux/systemd installer and native ATLAS HA/HACS frontend integration. | Dieselbe geprüfte Laufzeit verwenden; Installation, Updates, Identität und Wiederherstellung dokumentieren und prüfen. |
 
-**A6 is next.** A5 is complete as the documented stabilization and verification
+**A7 is next.** A6 documentation alignment is complete; the 21 ATLAS/plugin
+pages per language, navigation, locale routes and technical examples are
+reviewed in DE/EN/FR. Evidence and remaining external-plugin UI translation
+limits are recorded in [Sprint G2.5.9282](docs/sprints/Sprint-G2.5.9282.md).
+A5 is complete as the documented stabilization and verification
 increment, not as production approval. Criteria, API boundaries, regression
 results and native test limits are recorded in
 [the A5 review](docs/deployment/ATLAS_A5_REVIEW_2026_10.md) and
