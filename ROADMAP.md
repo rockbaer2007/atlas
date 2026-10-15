@@ -14,7 +14,7 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A7 | Qualify native HACS integration updates and further HA versions. | Bestehende Einstellungen, Projekte und Plugins bei Integrationsupdates erhalten. |
+| A7 | Qualify a native HACS integration version migration and further HA versions. | Bestehende Einstellungen, Projekte und Plugins bei Versionsmigrationen erhalten. |
 
 **A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC.**
 Installation, real update, rollback, backup, restart and recovery after an
@@ -26,8 +26,12 @@ and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
 and Pi 5. The Pi HACS installation, HA restart, configuration and panel checks
 are recorded in [Sprint G2.5.9290](docs/sprints/Sprint-G2.5.9290.md).
-Native HACS integration updates and further HA versions remain open; catalog
-inclusion is not claimed. Preserve the existing runtime address,
+Native HACS commit updates followed by HA Core restart are verified on Pi 5 and
+Proxmox, with settings, local/editor server projects and shared plugins preserved.
+Both integrations remain at 0.1.301; their integration source is unchanged across
+the tested commits. A real integration version/schema migration and further HA
+versions remain open. See [Sprint G2.5.9292](docs/sprints/Sprint-G2.5.9292.md).
+Catalog inclusion is not claimed. Preserve the existing runtime address,
 installation identity and add-on Ingress access. See
 [Sprint G2.5.9284](docs/sprints/Sprint-G2.5.9284.md).
 The HACS download diagnosis and qualification boundary are recorded in
@@ -108,7 +112,7 @@ architecture contract expansion.
 1. Standalone Docker runtime (implemented; continue real deployment checks).
 2. HA app/add-on from the same runtime (implemented; real A1 verified; A2 accepted).
 3. Optional Linux/systemd installer (implemented; Debian 12 amd64 LXC verified).
-4. Native ATLAS Runtime HA panel (implemented; isolated Core verified; native HACS qualification open).
+4. Native ATLAS Runtime HA panel (implemented; native HACS commit update/restart verified; version migration open).
 
 HACS card-package export exists; A7 concerns hosting/integrating ATLAS itself.
 The real Supervisor upgrade and Ingress checks are recorded in Sprint
