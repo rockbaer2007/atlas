@@ -14,7 +14,7 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A7 | Qualify native HACS integration updates and further HA versions; finish explicit shared plugin adoption on Pi. | Bestehende Einstellungen, Projekte und Plugins bei Integrationsupdates erhalten; Pi-Plugin-Verwaltung nur nach gesicherter Vorschau übernehmen. |
+| A7 | Qualify native HACS integration updates and further HA versions. | Bestehende Einstellungen, Projekte und Plugins bei Integrationsupdates erhalten. |
 
 **A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC.**
 Installation, real update, rollback, backup, restart and recovery after an
@@ -34,7 +34,10 @@ The HACS download diagnosis and qualification boundary are recorded in
 [Sprint G2.5.9285](docs/sprints/Sprint-G2.5.9285.md).
 Shared plugin management with explicit, backed-up adoption is implemented in
 0.1.300 and verified across separate browser origins. Proxmox adoption is confirmed
-by the user; qualify existing Pi plugin metadata after updating the runtime. Editor
+by the user; native Pi adoption is verified at revision 1 with five repositories,
+five external metadata entries and six active plugins shared by App, direct Runtime
+and the embedded HA panel. Existing settings and projects are preserved. See
+[Sprint G2.5.9291](docs/sprints/Sprint-G2.5.9291.md). Editor
 projects, credentials and external plugin settings remain outside this migration.
 See [Sprint G2.5.9286](docs/sprints/Sprint-G2.5.9286.md).
 Named Expert editor project storage is implemented in 0.1.301 with explicit
