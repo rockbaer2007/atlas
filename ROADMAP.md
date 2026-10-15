@@ -74,7 +74,7 @@ results and native test limits are recorded in
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
-- Stable production plugin/API contracts, version/migration policy and broader host compatibility.
+- Stable production plugin/API contracts, enforcement of declared plugin compatibility and broader host compatibility. Release/version/migration rules are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md); automatic compatibility gates and migration qualification remain open.
 - HACS repository/release distribution and full exported-card locale runtime coverage.
 - Linux installer qualification on native ARM64, further distributions and bare metal.
 
@@ -89,8 +89,8 @@ These are longer-term directions, not claims that basic infrastructure is
 missing. Prefer concrete, verified product increments over additional
 architecture contract expansion.
 
-- Define stable extension/API boundaries, compatibility policy, versioning,
-  recovery and maintenance strategy for a production release.
+- Stabilize extension/API boundaries and implement the documented compatibility,
+  migration and recovery rules for a production release.
 - Expand Renderer/Theme integration with measured performance, larger layouts,
   dynamic theme inheritance and real host integration where still needed.
 - Review external card-builder interoperability through explicit schemas and

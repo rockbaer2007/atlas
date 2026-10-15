@@ -1,0 +1,129 @@
+# ATLAS version, compatibility and data preservation policy
+
+Status: release and maintenance rules adopted 2026-10-15. This document does
+not introduce a new runtime gate, manifest field or data migration. Existing
+installations and package formats remain unchanged.
+
+## Version identities
+
+| Identity | Meaning and release rule |
+| --- | --- |
+| App/runtime distribution | Root package version; Docker, App/Add-on and Linux package releases identify the delivered runtime. User-visible updates require a version bump and matching affected distribution metadata. |
+| HA integration | `custom_components/atlas_frontend/manifest.json` version identifies the HA panel/config flow integration. HACS commit identity is recorded separately. |
+| Framework packages | Each `@atlas/*` package has its own version. Do not compare its alpha version to an App version as if they were the same product. |
+| Plugin | Stable plugin ID plus independently incremented version; catalog, package descriptor and embedded manifest must agree. The bundled Card Editor ships with ATLAS; external plugins release independently. |
+| Data format | Envelope kind plus schema/format version describes readable data. It is independent of a product version. A revision is a concurrency counter, not a schema version. |
+
+Repository format `version: "1"`, published plugin envelope
+`atlas.schemaVersion: 1`, shared plugin state `version: 1` and editor project
+store `version: 1` are separate contracts, not interchangeable version numbers.
+No blanket compatibility claim follows from equal version strings.
+
+## Release numbering
+
+Use `MAJOR.MINOR.PATCH` for release numbers. A compatible fix increments PATCH;
+a compatible feature increments MINOR; a breaking public contract increments
+MAJOR once stable 1.x contracts exist. Before 1.0, breaking changes require a
+new MINOR plus explicit migration/recovery notes; PATCH releases must preserve
+existing supported contracts and data. Pre-release identifiers such as
+`-alpha.N` identify an explicit test build, not stable compatibility.
+
+Current alpha packages and historic App 0.1.x releases predate this policy.
+Do not rename or retroactively reclassify them. From this policy onward, a
+breaking App change must not be hidden in another 0.1.x patch. Documentation-only
+changes need no runtime version bump. Never republish changed package bytes at
+the same released version; identify source commit/build in release evidence.
+
+## Compatibility declarations and actual enforcement
+
+- Repository `compatibility.atlas` refers to the App/runtime distribution,
+  not a framework npm package. `host` identifies the tested deployment context;
+  `homeAssistant` describes the claimed HA range. Record exact tested runtime,
+  plugin, HA Core, architecture and deployment versions in release evidence.
+- Existing repository range strings are descriptive metadata today. A broad
+  `>=` range is not evidence that every later host is supported. Missing
+  compatibility metadata means unknown, not incompatible or proven compatible.
+  Do not disable legacy plugins solely because they lack new metadata.
+- Administration currently compares available plugin versions with numeric
+  locale ordering to offer updates. This is not a full SemVer resolver or a
+  compatibility gate. Treat pre-release channel transitions as manual review.
+- Kernel module dependencies are a separate enforced contract: exact numeric
+  triples, `^` and `*` are supported; general range expressions and prereleases
+  are not. Current caret matching keeps the same major and, for major zero,
+  the same minor. In particular `^0.0.3` currently accepts `0.0.4`; do not claim
+  complete npm SemVer caret behavior. Prefer exact versions for 0.0.x modules.
+- Package parsing validates known envelopes, and the server checks package
+  identity/version against its manifest before replacement. Capabilities are
+  declarations, not automatic permissions or a code sandbox.
+
+A future install gate must validate catalog AND downloaded package on the
+server, report supported/unsupported/unknown with reasons, preserve legacy
+packages through a reviewed compatibility path, and reject an unsupported
+candidate before replacing the working installation. It must not silently
+disable currently installed plugins. That gate is follow-up implementation.
+
+## Persisted data and migrations
+
+Preserve settings, installation identity, encrypted secrets, editor projects,
+plugin catalog/activation state and each external plugin's own data separately.
+Changing the runtime URL/browser origin may select different local data even
+when the server is the same. Keep runtime address and persistent mounts stable.
+
+For any future schema change, the release must document old/new kinds and
+versions, supported read/write versions, transformations, backup locations and
+recovery procedure. Preserve supported legacy imports, including legacy editor
+projects, without restoring the retired Simple editor UI.
+
+Required migration design: inspect and validate without writes; back up original
+bytes; transform a copy; validate it; then explicitly apply with concurrency
+checks and atomic replacement. A failed, unsupported or newer-format read must
+leave the original intact, never replace it with an empty default. Do not strip
+unknown fields by silently rewriting data. Retry must be idempotent or clearly
+refused; no partial cross-store success may be advertised as a completed
+migration. New credential locations or capabilities need a separate decision.
+
+These are requirements for future migrations, not a claim that every importer
+already implements them. Shared plugin/project stores currently reject unknown
+store versions and use backups plus revision checks for supported changes.
+
+## Backup, update and recovery
+
+1. Record the exact installed and target versions/commits. Back up HA settings
+   and ATLAS persistent data before HA updates, or runtime/data/identity for
+   standalone hosts. Export local Admin settings, editor workspaces and shared
+   plugin metadata separately; include external plugin data and browser-only
+   collections where present. A Git bundle protects source, not live HA data.
+2. Keep encrypted credentials and their required installation identity/key
+   material recoverable through the existing supported mechanism. Exports alone
+   do not make secrets portable to a different installation.
+3. Review changes and declared compatibility, then update one component at a
+   time. Integration updates require the documented HA restart. Keep App and
+   plugin updates independent unless a release declares an ordering dependency.
+4. Verify health, native panel access, plugin versions/activation and project
+   open/export equivalence. Compare settings and secret status without exposing
+   credentials. Do not save test edits into user projects.
+5. For recovery, restore a matched code AND pre-migration data snapshot on the
+   same installation. An older binary must not write a newer unsupported store.
+   Never promise downgrade compatibility without a tested reverse migration.
+
+Plugin directory replacement currently rolls back a failed swap, but removes
+the previous directory after success. It is not a retained release rollback
+archive. Shared plugin metadata backups do not contain installed package files
+or every external plugin's private data. A full backup is still required.
+
+## Release evidence and acceptance
+
+For a changed package: validate package/catalog identity, run affected tests and
+builds, document tested hosts and unsupported/unknown combinations. A changed
+schema additionally needs fixtures for supported old/current/newer data,
+failure preservation, repeated migration, stale revisions and matched restore.
+For official HA integration release qualification, cover Pi ARM64 and Proxmox
+amd64 where applicable; label missing hosts as untested.
+
+Native HACS commit updates to `42a56f1` and HA restart passed on both hosts in
+[Sprint G2.5.9292](../../sprints/Sprint-G2.5.9292.md). Integration source and
+version stayed unchanged at 0.1.301, so real version/schema migration and further
+HA versions remain open. No generic support matrix or stable 1.0 API is claimed.
+
+Public guidance is maintained in DE/EN/FR in the external documentation repo,
+under `projects/atlas-plugins/developers/compatibility`.

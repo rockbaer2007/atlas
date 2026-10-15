@@ -2,6 +2,11 @@
 
 Status: Version 1 is implemented in the public demo repository and the official plugin template.
 
+Release numbering, compatibility boundaries, backup and migration requirements
+are defined in [the version policy](VERSION_COMPATIBILITY_POLICY.md).
+Repository compatibility strings are currently descriptive metadata, not an
+enforced installation gate; missing metadata does not invalidate legacy plugins.
+
 An ATLAS plugin repository is a static HTTP-accessible catalog. The first
 Administration implementation loads a `repository.json`, shows installable
 plugins, installs from package or manifest URLs, compares versions and can

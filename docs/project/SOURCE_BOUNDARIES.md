@@ -137,9 +137,13 @@ configuration is accepted for startup.
 in dependency order. Missing required dependencies and cycles reject startup;
 missing optional dependencies are allowed.
 
-Module versions use stable `MAJOR.MINOR.PATCH` values. Exact requirements must
-match exactly, `^` requirements use SemVer compatibility and `*` accepts any
-available version. Pre-release identifiers are not yet part of this boundary.
+Module versions use stable numeric `MAJOR.MINOR.PATCH` values. Exact requirements
+must match exactly; `^` accepts the same major at or above the required version,
+and for major zero also requires the same minor. This currently accepts
+`0.0.4` for `^0.0.3`, so it is not a complete npm SemVer caret implementation.
+`*` accepts any available version. General ranges and pre-release identifiers
+are not part of this boundary. See the
+[version policy](specifications/VERSION_COMPATIBILITY_POLICY.md).
 
 Runtime stop is restart-safe and does not shut modules down. Terminal Runtime
 disposal invokes optional module stop and dispose capabilities in reverse
