@@ -14,7 +14,7 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A7 | Qualify the implemented ATLAS Runtime integration through HACS on Pi/Proxmox and further HA versions. | Download, Einrichtung, Update und Einbettung mit bestehenden Einstellungen, Projekten und Plugins nativ prüfen. |
+| A7 | Qualify native HACS integration updates and further HA versions; finish explicit shared plugin adoption on Pi. | Bestehende Einstellungen, Projekte und Plugins bei Integrationsupdates erhalten; Pi-Plugin-Verwaltung nur nach gesicherter Vorschau übernehmen. |
 
 **A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC.**
 Installation, real update, rollback, backup, restart and recovery after an
@@ -23,9 +23,11 @@ Evidence and Linux host limits are in
 [Sprint G2.5.9283](docs/sprints/Sprint-G2.5.9283.md).
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
-HACS download on Proxmox is confirmed through pending restart; native setup,
-embedding, updates and Pi HACS qualification remain open. Catalog inclusion is
-not claimed. Preserve the existing runtime address,
+Native installation/setup and embedded project access are verified on Proxmox
+and Pi 5. The Pi HACS installation, HA restart, configuration and panel checks
+are recorded in [Sprint G2.5.9290](docs/sprints/Sprint-G2.5.9290.md).
+Native HACS integration updates and further HA versions remain open; catalog
+inclusion is not claimed. Preserve the existing runtime address,
 installation identity and add-on Ingress access. See
 [Sprint G2.5.9284](docs/sprints/Sprint-G2.5.9284.md).
 The HACS download diagnosis and qualification boundary are recorded in
@@ -41,8 +43,9 @@ Native App/Runtime project adoption on Proxmox is verified, including the embedd
 HA Runtime panel, round-trip project equivalence, stale-save conflict rejection,
 reload persistence and original local configuration preservation. The same
 App/Ingress to direct Runtime round trip is verified on the real Pi 5 after
-updating from 0.1.300 to 0.1.301. The Pi HA Runtime integration/panel is not yet
-configured; native panel setup and diverse real user projects remain follow-up;
+updating from 0.1.300 to 0.1.301. The Pi HA Runtime panel is now configured and
+opens the same server project after HA restart. Diverse real user projects
+remain follow-up qualification;
 external-plugin projects and browser preferences remain separate. See
 [Sprint G2.5.9287](docs/sprints/Sprint-G2.5.9287.md).
 Native evidence and backup boundaries are recorded in
