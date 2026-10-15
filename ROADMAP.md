@@ -16,11 +16,16 @@ projects and installed plugins throughout future work.
 | --- | --- | --- |
 | A7 | Qualify a native HACS integration version migration and further HA versions. | Bestehende Einstellungen, Projekte und Plugins bei Versionsmigrationen erhalten. |
 
-**A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC.**
+**A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC and
+native Raspberry Pi OS / Debian 13 aarch64 on Pi 4.**
 Installation, real update, rollback, backup, restart and recovery after an
 unhealthy update preserve configuration, identity and plugin/project fixtures.
 Evidence and Linux host limits are in
 [Sprint G2.5.9283](docs/sprints/Sprint-G2.5.9283.md).
+The native Pi 4 check covers real 0.1.303 -> 0.1.304 update/rollback,
+backup/restart, automatic unhealthy-update recovery and native PTY execution.
+See [Sprint G2.5.9307](docs/sprints/Sprint-G2.5.9307.md) for preservation and
+backup boundaries; further distributions and hardware remain separate checks.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
@@ -76,7 +81,7 @@ results and native test limits are recorded in
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
 - HACS repository/release distribution and full exported-card locale runtime coverage.
-- Linux installer qualification on native ARM64, further distributions and bare metal.
+- Linux installer qualification on further distributions and additional bare-metal hardware beyond the verified Pi 4 ARM64 host.
 
 The completed bounded checks stay in the sprint ledger and the review above.
 These follow-ups remain open; no hardware benchmark, stable 1.0 API or complete
