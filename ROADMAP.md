@@ -77,7 +77,6 @@ results and native test limits are recorded in
 - Stable production plugin/API contracts, version/migration policy and broader host compatibility.
 - HACS repository/release distribution and full exported-card locale runtime coverage.
 - Linux installer qualification on native ARM64, further distributions and bare metal.
-- Real mobile touch/opening check for the native HA panel menu; simulated layout and menu-event contracts are verified.
 
 The completed bounded checks stay in the sprint ledger and the review above.
 These follow-ups remain open; no hardware benchmark, stable 1.0 API or complete
