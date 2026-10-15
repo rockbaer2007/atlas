@@ -72,7 +72,6 @@ results and native test limits are recorded in
 
 ## Open follow-up qualification
 
-- Repeat native Terminal UI replacement/recovery after the guarded metadata correction on Proxmox and Pi. The two saved legacy requirements are repaired, isolated recovery and native compatibility previews pass; installed Terminal stays 0.1.9. Existing wrongly constrained snapshots on other installations still require reviewed treatment, without weakening the gate. Correction evidence: [Sprint G2.5.9305](docs/sprints/Sprint-G2.5.9305.md); original blocker: [Sprint G2.5.9304](docs/sprints/Sprint-G2.5.9304.md).
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
@@ -90,6 +89,15 @@ plugin bytes, selected config files, projects, settings and visible browser
 preferences are preserved; declared-capability metadata is refreshed as intended.
 See [Sprint G2.5.9303](docs/sprints/Sprint-G2.5.9303.md) for backup and file-check
 boundaries. Further families and real data migrations remain separate work.
+
+Terminal 0.1.9 -> 0.1.10 catalog updates and UI recovery back to exact original
+0.1.9, then forward to retained 0.1.10, now pass after the guarded metadata
+correction: first isolated, then Proxmox and Pi 5. Both native hosts finish at
+0.1.10 with functional local shells and preserved settings, selected config files,
+named projects and other plugins. See
+[Sprint G2.5.9306](docs/sprints/Sprint-G2.5.9306.md) for backup boundaries.
+Existing wrongly constrained snapshots on other installations still require
+reviewed treatment without weakening compatibility or integrity checks.
 
 ## Remaining product directions
 
