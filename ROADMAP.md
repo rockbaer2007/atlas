@@ -31,6 +31,11 @@ Hub and Editor rendering are now verified after a fresh PC-verified ATLAS backup
 Internal ports remain loopback-only. See
 [Sprint G2.5.9308](docs/sprints/Sprint-G2.5.9308.md) for first-visit identity
 initialization and standalone/no-HA-connection boundaries.
+The native Pi 4 now also connects to Proxmox HA with Administration-owned
+credentials: 3,736 live entities, search/domain filtering and automatic Editor
+reconnection after a direct browser reload are verified. Plugin/project state
+and unrelated Administration settings are preserved. See
+[Sprint G2.5.9309](docs/sprints/Sprint-G2.5.9309.md) for backup and test limits.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
