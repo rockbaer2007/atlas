@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-14. Framework **0.2.0-alpha.88**, HA app **0.1.301**.
+Updated: 2026-10-15. Framework **0.2.0-alpha.88**, HA app **0.1.301**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -37,24 +37,14 @@ projects, credentials and external plugin settings remain outside this migration
 See [Sprint G2.5.9286](docs/sprints/Sprint-G2.5.9286.md).
 Named Expert editor project storage is implemented in 0.1.301 with explicit
 save/open previews, workspace backups, revision checks and separate local drafts.
-Qualify native project adoption after updating the App/runtime; external-plugin
-projects and browser preferences remain separate. See
+Native App/Runtime project adoption on Proxmox is verified, including the embedded
+HA Runtime panel, round-trip project equivalence, stale-save conflict rejection,
+reload persistence and original local configuration preservation. Pi project
+adoption and diverse real user projects remain follow-up qualification;
+external-plugin projects and browser preferences remain separate. See
 [Sprint G2.5.9287](docs/sprints/Sprint-G2.5.9287.md).
-
-### Saved handoff for 2026-10-15 / Fortsetzung morgen
-
-The user reports updating to **0.1.301** on Proxmox. Native verification is
-deferred at the user's request; the update and project adoption have not yet
-been independently verified.
-
-Next: back up existing settings, editor projects and persistent ATLAS data,
-then verify project adoption between the original App editor and Runtime on
-Proxmox (`192.168.178.197`). Save a new named server project from the App,
-explicitly preview/open it through Runtime and compare its fields, card
-configuration, geometry and name. Check save/reload and revision conflicts
-without overwriting original projects. Preserve existing settings, credentials,
-projects and installed plugins; external-plugin projects remain separate.
-No native test or installation change is requested before the continuation.
+Native evidence and backup boundaries are recorded in
+[Sprint G2.5.9288](docs/sprints/Sprint-G2.5.9288.md).
 
 A6 documentation alignment is complete; the 21 ATLAS/plugin
 pages per language, navigation, locale routes and technical examples are
