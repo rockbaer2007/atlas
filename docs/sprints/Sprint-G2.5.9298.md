@@ -46,6 +46,10 @@ Native encrypted local backups completed before each host's update:
   A fresh load of `/app/a5967f93_atlas` or legacy `/a5967f93_atlas` remains at
   Loading; this access issue is not resolved or attributed to a specific cause.
   Keep the App-info button as the verified entry point.
+  Follow-up: the user subsequently confirms normal F5 reload on Proxmox and
+  working Pi access. The manually reloaded Proxmox tab visibly shows all six
+  active plugins; the loading symptom persists only in the automated test
+  path. See Sprint G2.5.9299 for the corrected qualification boundary.
 - Only qualification records/roadmap change in Git; whitespace check passes.
   Runtime checks/build evidence for 0.1.303 remains in Sprint G2.5.9297; native
   Supervisor builds now additionally verify ARM64 and amd64 packaging.
