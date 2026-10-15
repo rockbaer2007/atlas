@@ -24,7 +24,10 @@ Administration UI exports before and after. Earlier PC-verified backups remain.
 - App start timestamp changes from the pre-reboot monitor observation
   `2026-10-15T17:41:35.879Z` to `2026-10-15T17:44:07.314Z` (UTC).
   This supports automatic runtime availability after the user-reported reboot.
-  Fresh host uptime/systemctl output has been requested separately.
+  User-supplied host output subsequently confirms `enabled` and `active`, with
+  ExecMainStartTimestamp and ActiveEnterTimestamp at 19:44:06 CEST. Reported
+  `uptime -s` is 19:44:21, later than the service timestamp; retain that anomaly
+  without claiming an exact boot duration or independently audited boot clock.
 - Catalog, shared plugin state and named project list match before exactly.
   Administration UI exports preserve all non-secret settings and plugin metadata.
 - The already-open Editor retains its direct connection to remote Proxmox HA.
@@ -46,9 +49,12 @@ This is a diagnostic lead, not independently confirmed browser crypto evidence.
 Do not weaken encryption, store a raw token or bypass browser security to pass.
 
 Ask the user to re-enter their existing token directly into Pi4 Administration
-and save to restore the session. That manual recovery and host status output
-are pending at this record's creation. Durable credential restoration remains
-open; the overall reboot/HA-connection acceptance is not passed.
+and save to restore the session. User confirms token saved; Administration
+reload then shows the restored redacted credential. The normal Administration
+handoff reconnects the Editor with 3,734 live entities; workspace stays at zero
+fields. Repeat catalog/shared-state/project assertions pass. Save an inspected
+connected screenshot privately. Durable credential restoration remains open;
+the overall reboot/HA-connection acceptance is not passed.
 
 Private preservation assertions and whitespace checks pass. No runtime build
 is needed for this evidence-only increment. Screenshots of disconnected Editor
