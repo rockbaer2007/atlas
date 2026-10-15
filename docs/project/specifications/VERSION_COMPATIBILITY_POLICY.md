@@ -2,7 +2,8 @@
 
 Status: release and maintenance rules adopted 2026-10-15. App 0.1.302 adds the
 compatibility gate below; it does not change existing data formats or migrate
-installed plugins. The optional descriptor compatibility field is preserved.
+installed plugins. App 0.1.303 adds authenticated HA-version discovery. The
+optional descriptor compatibility field is preserved.
 
 ## Version identities
 
@@ -50,10 +51,19 @@ the same released version; identify source commit/build in release evidence.
   aliases are `docker`, `linux` and `homeassistant`, derived from the configured
   distribution target, never from the browser URL. Ordinary local startup is
   `local-runtime`, not automatically Docker. Host declarations must match.
-- HA version is currently unavailable to this gate: HA requirements remain
-  unknown and require manual review. The server does not trust a browser-supplied
-  HA version. Unknown future fields also need review; malformed known ranges or
-  host declarations block the candidate.
+- Since 0.1.303, Administration reads the configured HA instance's authenticated
+  `GET /api/config` version using its server-held connection. The gate fetches
+  fresh metadata before preview and again before staging a replacement, only
+  when a HA requirement exists. Browser-supplied versions are ignored. Tokens,
+  location and other HA configuration are never returned by discovery.
+  Missing credentials, timeouts, redirects, authorization failures and invalid
+  responses remain unknown; no last successful version is reused. Explicit
+  review remains required for unknown requirements. HA beta/rc/dev releases are
+  normalized to SemVer prereleases and never promoted to stable. The sanitized
+  `GET /api/homeassistant/version` response exposes status/version only, with a
+  fixed reason on failure. Requests are bounded to three seconds and 256 KiB.
+  Unknown future fields also need review; malformed known ranges or host
+  declarations block the candidate.
 - Administration currently compares available plugin versions with numeric
   locale ordering to offer updates. This is not a full SemVer resolver or a
   compatibility gate. Treat pre-release channel transitions as manual review.

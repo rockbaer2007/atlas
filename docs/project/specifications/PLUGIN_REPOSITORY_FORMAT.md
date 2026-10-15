@@ -7,8 +7,11 @@ are defined in [the version policy](VERSION_COMPATIBILITY_POLICY.md).
 Since App 0.1.302, catalog, descriptor and embedded manifest compatibility are
 checked server-side before replacement. Unsupported candidates are blocked;
 unknown/legacy declarations require explicit review. Missing metadata does not
-disable installed legacy plugins. HA version requirements currently need manual
-review because the gate does not acquire a verified HA version.
+establish support. Since 0.1.303, HA ranges use the configured Administration
+connection's authenticated `/api/config` version, refreshed at preview and
+replacement. Connection errors keep HA requirements unknown; client-supplied
+HA versions are ignored. HA prereleases retain their prerelease boundaries.
+Missing metadata does not disable installed legacy plugins.
 
 An ATLAS plugin repository is a static HTTP-accessible catalog. The first
 Administration implementation loads a `repository.json`, shows installable
