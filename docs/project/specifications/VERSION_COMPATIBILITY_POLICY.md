@@ -129,10 +129,28 @@ store versions and use backups plus revision checks for supported changes.
    same installation. An older binary must not write a newer unsupported store.
    Never promise downgrade compatibility without a tested reverse migration.
 
-Plugin directory replacement currently rolls back a failed swap, but removes
-the previous directory after success. It is not a retained release rollback
-archive. Shared plugin metadata backups do not contain installed package files
-or every external plugin's private data. A full backup is still required.
+Since App 0.1.304, replacement retains a checked, exact package snapshot under
+`<ATLAS_PLUGIN_DATA_ROOT>/.recovery`, within the existing persistent mount and
+excluded from public static plugin assets. Existing
+packages can be replaced through the import preview, or restored with the
+plugin's Restore action. Preview shows version direction and capabilities;
+unknown compatibility requires explicit review and known mismatches block.
+Apply checks the installed-file/shared-state fingerprint and candidate digest,
+rechecks compatibility, saves recovery material, swaps files and updates known
+shared metadata while preserving activation and repositories. A caught failure
+rolls files and metadata back; a successful restore backs up the version being
+replaced as well. Missing/damaged snapshots fail closed. The reference Card
+Editor cannot be independently replaced. Legacy API clients remain supported;
+UI previews use explicit concurrency guards.
+
+Recovery is bounded to 300 files/20 MB per installed plugin snapshot and
+256 MiB/200 records per plugin. It never auto-purges old backups; insufficient
+space, unsupported paths or linked files block replacement. Shared plugin
+metadata exports still do not contain package files. Browser-only collections,
+editor projects, credentials and plugin-owned data formats are not restored or
+migrated by code recovery. Full backups and matched data snapshots remain
+necessary, particularly across plugin data-format changes. Power-loss recovery
+and a generic reverse data migration are not claimed.
 
 ## Release evidence and acceptance
 
