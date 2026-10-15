@@ -39,12 +39,16 @@ Named Expert editor project storage is implemented in 0.1.301 with explicit
 save/open previews, workspace backups, revision checks and separate local drafts.
 Native App/Runtime project adoption on Proxmox is verified, including the embedded
 HA Runtime panel, round-trip project equivalence, stale-save conflict rejection,
-reload persistence and original local configuration preservation. Pi project
-adoption and diverse real user projects remain follow-up qualification;
+reload persistence and original local configuration preservation. The same
+App/Ingress to direct Runtime round trip is verified on the real Pi 5 after
+updating from 0.1.300 to 0.1.301. The Pi HA Runtime integration/panel is not yet
+configured; native panel setup and diverse real user projects remain follow-up;
 external-plugin projects and browser preferences remain separate. See
 [Sprint G2.5.9287](docs/sprints/Sprint-G2.5.9287.md).
 Native evidence and backup boundaries are recorded in
 [Sprint G2.5.9288](docs/sprints/Sprint-G2.5.9288.md).
+Pi update, backup and project-preservation evidence are recorded in
+[Sprint G2.5.9289](docs/sprints/Sprint-G2.5.9289.md).
 
 A6 documentation alignment is complete; the 21 ATLAS/plugin
 pages per language, navigation, locale routes and technical examples are
