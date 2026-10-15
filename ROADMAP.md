@@ -72,9 +72,10 @@ results and native test limits are recorded in
 
 ## Open follow-up qualification
 
+- Investigate Proxmox App routes `/app/a5967f93_atlas` and `/a5967f93_atlas` hanging on fresh load; clicking Open Web UI in App info works, including subsequent sidebar navigation. See [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md).
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
-- Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 updates and gate refusal/review paths are verified on Pi 5 ARM64 and Proxmox amd64 with settings, projects and six active plugins preserved; see [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Authenticated HA-version discovery is implemented in 0.1.303. Native 0.1.303 deployment/version-discovery qualification, real external-plugin replacement qualification and real migration qualification remain open.
+- Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303, authenticated HA 2026.10.1 discovery and HA-range mismatch refusal are verified on Pi 5 ARM64 and Proxmox amd64 with settings, projects and six active plugins preserved; see [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real external-plugin replacement qualification and real migration qualification remain open.
 - HACS repository/release distribution and full exported-card locale runtime coverage.
 - Linux installer qualification on native ARM64, further distributions and bare metal.
 
