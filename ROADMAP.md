@@ -42,6 +42,12 @@ before Administration reload, direct Editor reconnection and data preservation
 pass after backed-up token adoption. See
 [Sprint G2.5.9311](docs/sprints/Sprint-G2.5.9311.md). Other distributions and
 HA App environment-owned credentials retain their separate qualification limits.
+The App0.1.305 update is now also verified on Proxmox and Pi 5 after fresh
+backups: env-owned HA authentication, direct/embedded Administration and Hub,
+live Editor connection, terminal access and existing plugin/project/config
+preservation pass. The HACS integration remains0.1.301. See
+[Sprint G2.5.9312](docs/sprints/Sprint-G2.5.9312.md) for targeted VM backup and
+file-check boundaries; native integration version migration remains open.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
