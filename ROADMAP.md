@@ -26,6 +26,11 @@ The native Pi 4 check covers real 0.1.303 -> 0.1.304 update/rollback,
 backup/restart, automatic unhealthy-update recovery and native PTY execution.
 See [Sprint G2.5.9307](docs/sprints/Sprint-G2.5.9307.md) for preservation and
 backup boundaries; further distributions and hardware remain separate checks.
+Pi 4 LAN exposure of only combined port 4176 and actual Chrome Administration,
+Hub and Editor rendering are now verified after a fresh PC-verified ATLAS backup.
+Internal ports remain loopback-only. See
+[Sprint G2.5.9308](docs/sprints/Sprint-G2.5.9308.md) for first-visit identity
+initialization and standalone/no-HA-connection boundaries.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
