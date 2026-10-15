@@ -83,6 +83,13 @@ These follow-ups remain open; no hardware benchmark, stable 1.0 API or complete
 browser/host compatibility is claimed. Preserve Expert-only legacy import
 compatibility, settings, encrypted credentials, projects and plugins.
 
+The ATLAS recovery path is additionally qualified with File Studio 0.1.50/0.1.51
+after isolated 0.1.49 replacement/recovery, then native Proxmox/Pi cycles. Original
+plugin bytes, selected config files, projects, settings and visible browser
+preferences are preserved; declared-capability metadata is refreshed as intended.
+See [Sprint G2.5.9303](docs/sprints/Sprint-G2.5.9303.md) for backup and file-check
+boundaries. Further families and real data migrations remain separate work.
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
