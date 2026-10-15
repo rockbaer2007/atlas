@@ -56,6 +56,13 @@ See [Sprint G2.5.9314](docs/sprints/Sprint-G2.5.9314.md) for the PC-verified VM
 backup, storage recovery and test boundaries. Further HA versions and actual
 conversion between different production schemas remain open; no unnecessary
 format change was introduced just for qualification.
+The compatibility matrix now also qualifies HA Core 2026.9.4 in a fresh isolated
+amd64 installation with integration0.1.306 and Runtime0.1.306: real setup/options,
+reload/restart, embedded Hub/Administration/Editor, live entity selection and
+fixture preservation pass. CI runs the eleven integration contracts against
+both 2026.9.4 and 2026.10.1. This does not qualify every intervening version,
+9.4 HACS downloads or native ARM64 execution. Pi 5 and Proxmox were untouched.
+See [Sprint G2.5.9315](docs/sprints/Sprint-G2.5.9315.md).
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
@@ -162,7 +169,7 @@ architecture contract expansion.
 1. Standalone Docker runtime (implemented; continue real deployment checks).
 2. HA app/add-on from the same runtime (implemented; real A1 verified; A2 accepted).
 3. Optional Linux/systemd installer (implemented; Debian 12 amd64 LXC verified).
-4. Native ATLAS Runtime HA panel (implemented; native HACS commit update/restart verified; version migration open).
+4. Native ATLAS Runtime HA panel (implemented; native release update/restart verified; additional HA versions and future schema conversions remain separate qualification).
 
 HACS card-package export exists; A7 concerns hosting/integrating ATLAS itself.
 The real Supervisor upgrade and Ingress checks are recorded in Sprint

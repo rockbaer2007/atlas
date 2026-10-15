@@ -17,7 +17,16 @@ jobs:
       - run: pnpm build
       - run: pnpm test:app
       - run: pnpm test:frontend
-      - name: Test integration against Home Assistant Core
-        run: docker run --rm --entrypoint python -v "$PWD:/work:ro" -w /work ghcr.io/home-assistant/home-assistant:2026.10.1 scripts/test-atlas-frontend.py
       - run: pnpm test:linux
       - run: pnpm linux:prepare
+
+  home-assistant-compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ha-version: ['2026.9.4', '2026.10.1']
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test integration against Home Assistant Core ${{ matrix.ha-version }}
+        run: docker run --rm --entrypoint python -v "$PWD:/work:ro" -w /work ghcr.io/home-assistant/home-assistant:${{ matrix.ha-version }} scripts/test-atlas-frontend.py
