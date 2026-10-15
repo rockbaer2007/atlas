@@ -51,12 +51,35 @@ restoration no longer depends on browser Web Crypto over LAN HTTP.
   is migrated or replaced. Only new encrypted connection/key files are allowed
   in subsequent checks. Host retains one reference plugin and zero named projects.
 
-The user must save their existing HA token once under 0.1.305 because 0.1.304
-may only have held it in memory. At this record's creation that step and the
-final physical host reboot are pending. Do not claim native reboot acceptance
-until a changed boot ID, authenticated version discovery before Administration
-reload, automatic service start, fresh Editor connection and final preservation
-checks succeed. Temporary restricted SSH test access is removed after completion.
+The user saves their existing HA token under 0.1.305 because 0.1.304 only held
+it in memory on this HTTP installation. The new encrypted files are owned by
+atlas and have mode0600. Authenticated discovery confirms HA2026.10.1.
+
+Run the real installer backup once more: its service stop/start cycle retains
+the encrypted connection and successful HA authentication. Retain backup
+`/var/backups/atlas/2026-10-15T18-03-23-142Z-bcGbTd` and copy an archive to PC.
+Verify that ciphertext, key and identity are included and the archive hash matches:
+`1e6cedfd386ee2e0eab6333bfb84d7acc4b0b2d3c5d56364f8f4154097854109`.
+
+Issue a real ordered Pi reboot through the authorized temporary SSH connection.
+After the expected outage, a different kernel boot ID proves a new boot. Before
+reloading Administration, PC-side checks confirm enabled/active service,
+App0.1.305, healthy surfaces and fresh authenticated HA2026.10.1 discovery.
+Reload the separate Editor directly: it automatically connects with 3,734 live
+entities and zero Expert fields. Administration reload then restores the redacted
+token and original connection options. Retain an inspected connected screenshot.
+
+Because sudo authentication expires over reboot, the user runs the existing
+root-side read-only comparison/proof helpers. Retrieve their result files and
+independently assert changed boot ID, matching key/ciphertext file permissions,
+original persistent files/env/unit/catalog/shared state/projects and identical
+non-secret Administration settings/plugin metadata. All pass; only the intended
+new encrypted connection/key files differ from the original file inventory.
+No HA entity, service, automation, dashboard or user project is written.
+
+Remove exactly the temporarily authorized restricted SSH key line, preserving
+all other bytes/ownership/modes. Confirm subsequent BatchMode SSH is denied;
+normal password access is unchanged. Native reboot acceptance now passes.
 
 Both published App source copies are synchronized and checked. DE/EN/FR Linux
 documentation explains activation, private key/data backup and recovery limits;

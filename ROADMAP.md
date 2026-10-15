@@ -36,6 +36,12 @@ credentials: 3,736 live entities, search/domain filtering and automatic Editor
 reconnection after a direct browser reload are verified. Plugin/project state
 and unrelated Administration settings are preserved. See
 [Sprint G2.5.9309](docs/sprints/Sprint-G2.5.9309.md) for backup and test limits.
+App0.1.305 additionally preserves the remembered HA connection in an encrypted
+private Linux installation store. A real Pi 4 reboot, fresh HA authentication
+before Administration reload, direct Editor reconnection and data preservation
+pass after backed-up token adoption. See
+[Sprint G2.5.9311](docs/sprints/Sprint-G2.5.9311.md). Other distributions and
+HA App environment-owned credentials retain their separate qualification limits.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
@@ -87,16 +93,6 @@ results and native test limits are recorded in
 
 ## Open follow-up qualification
 
-- Fix and qualify durable HA credential restoration on the native Pi 4 LAN
-  installation: App0.1.304 starts after a real reboot and non-secret settings,
-  plugins/projects survive, but the freshly loaded Editor cannot reconnect and
-  Administration restores no token. Preserve encryption and credential boundaries;
-  investigate the plain-HTTP/Web Crypto persistence path. See
-  [Sprint G2.5.9310](docs/sprints/Sprint-G2.5.9310.md). This remains open.
-  The encrypted Linux connection store is implemented in 0.1.305 and deployed
-  to Pi 4 with preservation checks. Isolated restart/forget/corruption tests pass;
-  native reboot acceptance after initial token adoption is pending. See
-  [Sprint G2.5.9311](docs/sprints/Sprint-G2.5.9311.md).
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
