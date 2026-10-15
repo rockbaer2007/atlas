@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-15. Framework **0.2.0-alpha.88**, HA app **0.1.305**.
+Updated: 2026-10-15. Framework **0.2.0-alpha.88**, HA app **0.1.306**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -14,7 +14,7 @@ projects and installed plugins throughout future work.
 
 | ID | Open work | Abschlusskriterium |
 | --- | --- | --- |
-| A7 | Qualify a native HACS integration version migration and further HA versions. | Bestehende Einstellungen, Projekte und Plugins bei Versionsmigrationen erhalten. |
+| A7 | Qualify further HA versions and future data-format conversions when required. | Bestehende Einstellungen, Projekte und Plugins bei Versionsmigrationen erhalten. |
 
 **A7 Linux/systemd is implemented and verified on Debian 12 amd64 LXC and
 native Raspberry Pi OS / Debian 13 aarch64 on Pi 4.**
@@ -45,9 +45,17 @@ HA App environment-owned credentials retain their separate qualification limits.
 The App0.1.305 update is now also verified on Proxmox and Pi 5 after fresh
 backups: env-owned HA authentication, direct/embedded Administration and Hub,
 live Editor connection, terminal access and existing plugin/project/config
-preservation pass. The HACS integration remains0.1.301. See
+preservation pass. At that checkpoint the HACS integration remained0.1.301. See
 [Sprint G2.5.9312](docs/sprints/Sprint-G2.5.9312.md) for targeted VM backup and
-file-check boundaries; native integration version migration remains open.
+file-check boundaries.
+The HACS integration release upgrade 0.1.301 -> 0.1.306 is now qualified on
+Proxmox and Pi 5 after checked backups and real HA Core restarts. Stored entry
+identity/schema 1.1/URL, existing plugin/project state and checked files remain
+unchanged. Isolated rollback/re-update and refusal of unknown schema 1.2 also pass.
+See [Sprint G2.5.9314](docs/sprints/Sprint-G2.5.9314.md) for the PC-verified VM
+backup, storage recovery and test boundaries. Further HA versions and actual
+conversion between different production schemas remain open; no unnecessary
+format change was introduced just for qualification.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
@@ -55,9 +63,9 @@ and Pi 5. The Pi HACS installation, HA restart, configuration and panel checks
 are recorded in [Sprint G2.5.9290](docs/sprints/Sprint-G2.5.9290.md).
 Native HACS commit updates followed by HA Core restart are verified on Pi 5 and
 Proxmox, with settings, local/editor server projects and shared plugins preserved.
-Both integrations remain at 0.1.301; their integration source is unchanged across
-the tested commits. A real integration version/schema migration and further HA
-versions remain open. See [Sprint G2.5.9292](docs/sprints/Sprint-G2.5.9292.md).
+At that earlier checkpoint both integrations remained at 0.1.301; their source was unchanged across
+the tested commits. That check did not qualify a release/schema migration.
+See [Sprint G2.5.9292](docs/sprints/Sprint-G2.5.9292.md).
 Catalog inclusion is not claimed. Preserve the existing runtime address,
 installation identity and add-on Ingress access. See
 [Sprint G2.5.9284](docs/sprints/Sprint-G2.5.9284.md).
