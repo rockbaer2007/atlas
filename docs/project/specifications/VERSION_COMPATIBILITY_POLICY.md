@@ -1,8 +1,8 @@
 # ATLAS version, compatibility and data preservation policy
 
-Status: release and maintenance rules adopted 2026-10-15. This document does
-not introduce a new runtime gate, manifest field or data migration. Existing
-installations and package formats remain unchanged.
+Status: release and maintenance rules adopted 2026-10-15. App 0.1.302 adds the
+compatibility gate below; it does not change existing data formats or migrate
+installed plugins. The optional descriptor compatibility field is preserved.
 
 ## Version identities
 
@@ -40,10 +40,20 @@ the same released version; identify source commit/build in release evidence.
   not a framework npm package. `host` identifies the tested deployment context;
   `homeAssistant` describes the claimed HA range. Record exact tested runtime,
   plugin, HA Core, architecture and deployment versions in release evidence.
-- Existing repository range strings are descriptive metadata today. A broad
-  `>=` range is not evidence that every later host is supported. Missing
-  compatibility metadata means unknown, not incompatible or proven compatible.
-  Do not disable legacy plugins solely because they lack new metadata.
+- Catalog, package descriptor and embedded manifest declarations are all checked
+  on the server using node-semver ranges for `atlas` and `homeAssistant`.
+  One unsupported declaration blocks replacement even if the other sources
+  claim support. Missing metadata means unknown, not proven compatible.
+  Legacy plugins are not disabled; unknown candidates require explicit review.
+- Host names accept one string or alternative strings. `administration-local`
+  retains its historic meaning of the common Node installer. Recognized target
+  aliases are `docker`, `linux` and `homeassistant`, derived from the configured
+  distribution target, never from the browser URL. Ordinary local startup is
+  `local-runtime`, not automatically Docker. Host declarations must match.
+- HA version is currently unavailable to this gate: HA requirements remain
+  unknown and require manual review. The server does not trust a browser-supplied
+  HA version. Unknown future fields also need review; malformed known ranges or
+  host declarations block the candidate.
 - Administration currently compares available plugin versions with numeric
   locale ordering to offer updates. This is not a full SemVer resolver or a
   compatibility gate. Treat pre-release channel transitions as manual review.
@@ -56,11 +66,14 @@ the same released version; identify source commit/build in release evidence.
   identity/version against its manifest before replacement. Capabilities are
   declarations, not automatic permissions or a code sandbox.
 
-A future install gate must validate catalog AND downloaded package on the
-server, report supported/unsupported/unknown with reasons, preserve legacy
-packages through a reviewed compatibility path, and reject an unsupported
-candidate before replacing the working installation. It must not silently
-disable currently installed plugins. That gate is follow-up implementation.
+Administration calls the read-only POST `/api/plugins/check-compatibility` with
+the candidate package and catalog declarations. Unsupported results show the
+reason; unknown results require confirmation. POST `/api/plugins/install`
+revalidates independently before staging files. `allowUnknown: true` acknowledges
+unknown results only and cannot bypass a known mismatch. API clients must carry
+catalog metadata when installing a catalog candidate; embedded manifest checks
+always apply. Package and catalog versions must agree in the repository UI.
+The gate checks declared constraints, not trustworthiness or functional support.
 
 ## Persisted data and migrations
 

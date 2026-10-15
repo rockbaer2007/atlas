@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-15. Framework **0.2.0-alpha.88**, HA app **0.1.301**.
+Updated: 2026-10-15. Framework **0.2.0-alpha.88**, HA app **0.1.302**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -74,7 +74,7 @@ results and native test limits are recorded in
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
-- Stable production plugin/API contracts, enforcement of declared plugin compatibility and broader host compatibility. Release/version/migration rules are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md); automatic compatibility gates and migration qualification remain open.
+- Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the 0.1.302 plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native gate qualification, verified HA-version discovery and real migration qualification remain open.
 - HACS repository/release distribution and full exported-card locale runtime coverage.
 - Linux installer qualification on native ARM64, further distributions and bare metal.
 

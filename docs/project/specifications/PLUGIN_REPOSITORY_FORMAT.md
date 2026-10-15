@@ -4,8 +4,11 @@ Status: Version 1 is implemented in the public demo repository and the official 
 
 Release numbering, compatibility boundaries, backup and migration requirements
 are defined in [the version policy](VERSION_COMPATIBILITY_POLICY.md).
-Repository compatibility strings are currently descriptive metadata, not an
-enforced installation gate; missing metadata does not invalidate legacy plugins.
+Since App 0.1.302, catalog, descriptor and embedded manifest compatibility are
+checked server-side before replacement. Unsupported candidates are blocked;
+unknown/legacy declarations require explicit review. Missing metadata does not
+disable installed legacy plugins. HA version requirements currently need manual
+review because the gate does not acquire a verified HA version.
 
 An ATLAS plugin repository is a static HTTP-accessible catalog. The first
 Administration implementation loads a `repository.json`, shows installable
