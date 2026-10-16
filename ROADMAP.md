@@ -186,7 +186,14 @@ rewrite of stored addresses is promised. See
 [Sprint G2.5.9330](docs/sprints/Sprint-G2.5.9330.md).
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
-- Longer CPU/RAM profiles and repeated instrumented network outages under project load.
+  A bounded isolated36-field Core/Bubble/Mushroom project now passes actual UI
+  save/reopen, byte-identical HACS export/import and real HA rendering. During
+  360 fixture state changes over190seconds, controlled12/24/62second transport
+  outages recover automatically without reload; the longest includes both
+  Editor and HA browser sockets. Existing fixture data remains intact and
+  native hosts are untouched. See [Sprint G2.5.9337](docs/sprints/Sprint-G2.5.9337.md).
+- Longer CPU/RAM profiles, more distinct entities and further network failure
+  variants beyond that bounded isolated project-load check.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
 - Further real network/storage failure variants, HAOS recovery on physical/ARM64 hardware and additional HACS versions beyond the bounded isolated checks. No automatic HACS crash rollback is promised.
 - Linux installer qualification on further distributions and additional bare-metal hardware beyond the verified Pi 4 ARM64 host.
