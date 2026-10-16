@@ -139,6 +139,11 @@ HACS2.0.5. A hard process interruption leaves a partial installation after
 restart; normal HACS reinstallation and a separate complete configuration-volume
 snapshot recovery both pass. See [Sprint G2.5.9322](docs/sprints/Sprint-G2.5.9322.md)
 for fault-injection scope and the absence of automatic crash recovery.
+App0.1.310 adds an embedded EN/DE/FR repair notice to newly generated Cards:
+declared locale files are checked even when inactive, while English fallback
+and live child Cards remain usable. Isolated missing-file/repair verification
+and the re-export boundary are recorded in
+[Sprint G2.5.9323](docs/sprints/Sprint-G2.5.9323.md).
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.

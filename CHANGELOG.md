@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.310: newly exported Cards check selected locale files and show a built-in EN/DE/FR repair notice when declared files are missing or unreadable; preserve fallback rendering and stored data.
+
 - Resolve nested File Studio roots such as `/config/www` before `/config`, fixing community icon scans and reads from approved subdirectories.
 - Bump the Home Assistant App to `0.1.284` for precise File Studio root selection.
 - Remove the `ATLAS` prefix from Plugin Manager tabs and detect repository updates for plugins previously imported from package files.
