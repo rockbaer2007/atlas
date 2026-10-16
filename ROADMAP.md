@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.308**.
+Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.309**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -122,13 +122,16 @@ first nested card. Grid metadata round-trips; HA uses generated stacks rather
 than identical pixel geometry. App0.1.308 loads exported Card locale files,
 follows the HA language or an explicit Card language, and applies per-field EN
 fallbacks. DE/FR exports still need translation/review when no adapter runs.
-See [Sprint G2.5.9318](docs/sprints/Sprint-G2.5.9318.md). HACS repository delivery
-is a separate check. Native hosts were untouched.
+See [Sprint G2.5.9318](docs/sprints/Sprint-G2.5.9318.md). App0.1.309 exports
+the dist repository layout. Isolated HACS2.0.5 download methods install the
+script/locales together and the real /hacsfiles/ endpoint serves them in HA.
+See [Sprint G2.5.9319](docs/sprints/Sprint-G2.5.9319.md) for fixture transport and
+release/filename boundaries. Native hosts were untouched.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
-- HACS repository/release distribution, including delivery of sibling locale files.
+- Live GitHub/HACS repository registration, authentication and release-distribution checks beyond the isolated dist-layout fixture.
 - Linux installer qualification on further distributions and additional bare-metal hardware beyond the verified Pi 4 ARM64 host.
 
 The completed bounded checks stay in the sprint ledger and the review above.
