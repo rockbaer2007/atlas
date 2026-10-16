@@ -163,9 +163,12 @@ installation data, with isolated old-container migration, replacement, backup
 recovery and actual file restoration qualified in
 [Sprint G2.5.9327](docs/sprints/Sprint-G2.5.9327.md). Before the FIRST update,
 prepare legacy stores inside the OLD container and back up the prepared data;
-already lost stores require an earlier backup. Native0.1.312 rollout and this
-preparation remain separate follow-up work. Active configuration, projects
-and checked external plugin files remained intact.
+already lost stores require an earlier backup. Native0.1.312 preparation and
+updates now pass on Proxmox and Pi 5 after fresh HA backups plus PC copies of
+legacy/prepared data: both original trash entries, all12 history files and
+all169/174 persistent files remain intact, alongside configuration/projects.
+See [Sprint G2.5.9328](docs/sprints/Sprint-G2.5.9328.md). This does not qualify
+HAOS-native backup restoration or recovery of previously discarded stores.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
