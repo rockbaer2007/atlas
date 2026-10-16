@@ -130,11 +130,15 @@ release/filename boundaries. Real GitHub OAuth, custom Dashboard repository
 registration, branch installation and automatic module registration now pass
 in isolated HA2026.10.1/HACS2.0.5; see
 [Sprint G2.5.9320](docs/sprints/Sprint-G2.5.9320.md). Native hosts were untouched.
+Real tagged releases v0.1.0/v0.1.1, HACS update detection, installation and
+manual reinstallation of v0.1.0 also pass, including exact script/locale bytes,
+stable module identity and preserved configuration after restart; see
+[Sprint G2.5.9321](docs/sprints/Sprint-G2.5.9321.md).
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
-- Tagged Card releases, update/rollback distribution and additional HACS versions beyond the verified live GitHub default-branch install.
+- Interrupted/failed Card downloads, backup recovery after failure and additional HACS versions beyond the verified live branch/tag install and manual older-version reinstallation.
 - Linux installer qualification on further distributions and additional bare-metal hardware beyond the verified Pi 4 ARM64 host.
 
 The completed bounded checks stay in the sprint ledger and the review above.
