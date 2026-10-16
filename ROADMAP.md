@@ -225,6 +225,15 @@ App312 and authenticated HA2026.10.1 remain unchanged, with no restart needed.
 See [Sprint G2.5.9334](docs/sprints/Sprint-G2.5.9334.md). Real data-format
 migration, new GitHub release qualification and full HA restore remain distinct.
 
+Icon Studio package recovery is now also qualified in an isolated App312 with
+actual16/17 packages, guarded UI cancellation/recovery and App restart. On the
+same browser origin/profile, all131collection icons and2drawing text objects
+survive; re-exported collection JSON, iconset JS and drawing SVG match exactly.
+Server files, named project, sibling plugin, trash and history remain intact.
+Browser stores are outside HA/server backups; no deleted-storage recovery or
+origin/profile migration is claimed. Native Pi/Proxmox checks remain open.
+See [Sprint G2.5.9335](docs/sprints/Sprint-G2.5.9335.md).
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
