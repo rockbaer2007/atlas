@@ -152,8 +152,16 @@ App0.1.311 additionally pairs newly generated scripts and locales with a
 deterministic package marker. Mixed/unmarked locales are excluded and reported;
 isolated generated-runtime and HA browser checks are recorded in
 [Sprint G2.5.9325](docs/sprints/Sprint-G2.5.9325.md). Existing deployed scripts
-need deliberate re-export. This is not signature verification or automatic repair;
-native0.1.311 qualification remains separate work.
+need deliberate re-export. This is not signature verification or automatic repair.
+Native0.1.311 App updates and own generated-Card mixed EN/FR, unmarked FR and
+repair checks pass on both hosts; see [Sprint G2.5.9326](docs/sprints/Sprint-G2.5.9326.md).
+The same update exposes an open File Studio retention limitation: trash/history
+default to the replaceable container filesystem. The only pre-existing trash
+entries were our previous test folders; these were reconstructed from PC copies
+with original metadata after the update. Move retention storage to persistent
+installation data and qualify container replacement/backup restoration before
+claiming that these stores survive App updates. Active configuration, projects
+and checked external plugin files remained intact.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
