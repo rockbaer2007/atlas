@@ -2,7 +2,7 @@
 
 ## Home Assistant frontend integration
 
-ATLAS **0.1.306** includes the optional **ATLAS Runtime** custom integration.
+ATLAS **0.1.307** includes the optional **ATLAS Runtime 0.1.306** custom integration.
 Add `https://github.com/rockbaer2007/atlas` as a HACS custom repository of type
 **Integration**, download it, restart Home Assistant and add **ATLAS Runtime**
 under Settings > Devices & services. Enter the browser-accessible base URL of

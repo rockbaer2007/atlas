@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-15. Framework **0.2.0-alpha.88**, HA app **0.1.306**.
+Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.307**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -113,6 +113,15 @@ results and native test limits are recorded in
 [Sprint G2.5.9281](docs/sprints/Sprint-G2.5.9281.md).
 
 ## Open follow-up qualification
+
+The isolated mixed Core/Bubble/Mushroom HACS-card bundle round trip is qualified
+in [Sprint G2.5.9316](docs/sprints/Sprint-G2.5.9316.md). Actual browser download,
+reimport/re-export and real HA rendering retain the checked fields/configuration.
+App0.1.307 fixes false title conflicts when a project's name differs from its
+first nested card. Grid metadata round-trips; HA uses generated stacks rather
+than identical pixel geometry. Card locale files remain reviewed English
+fallback artifacts; loading/applying them in generated Expert scripts remains
+open. HACS repository delivery is a separate check. Native hosts were untouched.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
