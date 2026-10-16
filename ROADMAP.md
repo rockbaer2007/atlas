@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.309**.
+Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.311**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -148,6 +148,12 @@ Native App0.1.310 updates and generated-Card missing-FR/EN checks also pass on
 Proxmox/Pi 5 after fresh backups; existing settings, projects and external plugins
 are preserved. See [Sprint G2.5.9324](docs/sprints/Sprint-G2.5.9324.md) for the
 manual /local/ test resource scope and transient VM preview read-failure boundary.
+App0.1.311 additionally pairs newly generated scripts and locales with a
+deterministic package marker. Mixed/unmarked locales are excluded and reported;
+isolated generated-runtime and HA browser checks are recorded in
+[Sprint G2.5.9325](docs/sprints/Sprint-G2.5.9325.md). Existing deployed scripts
+need deliberate re-export. This is not signature verification or automatic repair;
+native0.1.311 qualification remains separate work.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.

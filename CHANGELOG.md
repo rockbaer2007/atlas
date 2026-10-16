@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.311: new Card exports share a deterministic package marker across script and locales; mixed or unmarked language files trigger the repair notice and are excluded from translations. Existing exports and stored data remain unchanged; this is a consistency check, not a signature.
 - App0.1.310: newly exported Cards check selected locale files and show a built-in EN/DE/FR repair notice when declared files are missing or unreadable; preserve fallback rendering and stored data.
 
 - Resolve nested File Studio roots such as `/config/www` before `/config`, fixing community icon scans and reads from approved subdirectories.
