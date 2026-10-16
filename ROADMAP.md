@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.311**.
+Updated: 2026-10-16. Framework **0.2.0-alpha.88**, HA app **0.1.312**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -155,12 +155,16 @@ isolated generated-runtime and HA browser checks are recorded in
 need deliberate re-export. This is not signature verification or automatic repair.
 Native0.1.311 App updates and own generated-Card mixed EN/FR, unmarked FR and
 repair checks pass on both hosts; see [Sprint G2.5.9326](docs/sprints/Sprint-G2.5.9326.md).
-The same update exposes an open File Studio retention limitation: trash/history
-default to the replaceable container filesystem. The only pre-existing trash
+The same update exposed a File Studio retention limitation: trash/history
+defaulted to the replaceable container filesystem. The only pre-existing trash
 entries were our previous test folders; these were reconstructed from PC copies
-with original metadata after the update. Move retention storage to persistent
-installation data and qualify container replacement/backup restoration before
-claiming that these stores survive App updates. Active configuration, projects
+with original metadata after the update. App0.1.312 now uses persistent plugin
+installation data, with isolated old-container migration, replacement, backup
+recovery and actual file restoration qualified in
+[Sprint G2.5.9327](docs/sprints/Sprint-G2.5.9327.md). Before the FIRST update,
+prepare legacy stores inside the OLD container and back up the prepared data;
+already lost stores require an earlier backup. Native0.1.312 rollout and this
+preparation remain separate follow-up work. Active configuration, projects
 and checked external plugin files remained intact.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
