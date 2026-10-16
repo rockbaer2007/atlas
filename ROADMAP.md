@@ -170,10 +170,19 @@ all169/174 persistent files remain intact, alongside configuration/projects.
 See [Sprint G2.5.9328](docs/sprints/Sprint-G2.5.9328.md). This does not qualify
 HAOS-native backup restoration or recovery of previously discarded stores.
 
+A separate native HAOS full-backup restore is now qualified with owned fixtures:
+HAOS18.3/HA2026.10.1/Supervisor2026.10.2, encrypted full backup downloaded to PC,
+then uploaded and restored through Supervisor into a fresh Hyper-V amd64 VM.
+All154 checked files, App options, HA settings/config entries, six plugin catalog
+entries, the named project and retained trash/history match the source exactly.
+See [Sprint G2.5.9329](docs/sprints/Sprint-G2.5.9329.md). Pi 5 and Proxmox were
+untouched; real production backup archives were not restored. The isolated test
+address was deliberately retained, so address migration is not qualified.
+
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
-- Further real network/storage failure variants, HAOS-native backup restoration and additional HACS versions beyond the bounded isolated download-error/process-interruption checks. No automatic HACS crash rollback is promised.
+- Further real network/storage failure variants, HAOS recovery on physical/ARM64 hardware or with changed addresses and additional HACS versions beyond the bounded isolated checks. No automatic HACS crash rollback is promised.
 - Linux installer qualification on further distributions and additional bare-metal hardware beyond the verified Pi 4 ARM64 host.
 
 The completed bounded checks stay in the sprint ledger and the review above.
