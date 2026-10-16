@@ -65,16 +65,18 @@ change in this qualification increment. Integration remains0.1.306.
 - This is manual /local/ generated-Card qualification, not another native HACS
   repository install or an automatic rewrite of previously deployed exports.
 
-## Outcome and pending cleanup
+## Outcome and approved cleanup
 
 - After repair, script and all three locales match the PC A export exactly on
-  both hosts. Original selected HA files also match (Pi4/VM18), allowing only the
-  two explicit new test dashboard/resource entries. The reconstructed old trash
+  both hosts. After cleanup, all original selected HA files match exactly again
+  (Pi4/VM18); original resource counts are Pi2/VM144. The reconstructed old trash
   metadata remains unchanged. Public DE/EN/FR docs build successfully.
-- Permanent removal of only the new own dashboards/resources has been requested
-  from the user and remains pending confirmation at this checkpoint. Own Card
-  files/configuration are retained in PC deployed-final and both release folders;
-  native test files are still present. No unapproved deletion is performed.
+- With explicit user confirmation, permanently remove only the new own dashboards
+  and module resources. Retain own Card files/configuration in PC deployed-final
+  and both release folders; move only the new own native folders into trash.
+  Final checks permit exactly one new own trash entry per host and require all
+  pre-existing entries unchanged. All active-state/file comparisons pass.
+- Existing backups remain. Close only own test tabs after saving screenshots.
 - Settings, named projects and checked external-plugin/configuration files are
   preserved. The Card tests pass; automatic trash/history retention does not.
   Record that limitation as the next corrective priority, not a completed fix.
