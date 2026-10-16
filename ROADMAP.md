@@ -216,9 +216,14 @@ The ATLAS guarded recovery path now also passes with actual Automation Exporter 
 Editor packages0.1.27/0.1.28 in an isolated local App: non-mutating preview,
 cancellation, stale-preview rejection after a real management change, exact
 package recovery, re-update/restart and source/export/project/history/trash
-preservation. Browser analysis/export and File Studio handoff pass. Native
-Proxmox/Pi qualification, real HA authentication and plugin data-format migration
-are not covered. See [Sprint G2.5.9333](docs/sprints/Sprint-G2.5.9333.md).
+preservation. Browser analysis/export and File Studio handoff pass. See
+[Sprint G2.5.9333](docs/sprints/Sprint-G2.5.9333.md).
+Native Pi 5 and Proxmox28->27->original28 recovery now also passes after fresh
+local HA backups and PC copies: exact plugin/source/export/retention/project
+preservation, UI cancellation/recovery and identical synthetic YAML analysis.
+App312 and authenticated HA2026.10.1 remain unchanged, with no restart needed.
+See [Sprint G2.5.9334](docs/sprints/Sprint-G2.5.9334.md). Real data-format
+migration, new GitHub release qualification and full HA restore remain distinct.
 
 ## Remaining product directions
 
