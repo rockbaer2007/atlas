@@ -212,6 +212,14 @@ named projects and other plugins. See
 Existing wrongly constrained snapshots on other installations still require
 reviewed treatment without weakening compatibility or integrity checks.
 
+The ATLAS guarded recovery path now also passes with actual Automation Exporter /
+Editor packages0.1.27/0.1.28 in an isolated local App: non-mutating preview,
+cancellation, stale-preview rejection after a real management change, exact
+package recovery, re-update/restart and source/export/project/history/trash
+preservation. Browser analysis/export and File Studio handoff pass. Native
+Proxmox/Pi qualification, real HA authentication and plugin data-format migration
+are not covered. See [Sprint G2.5.9333](docs/sprints/Sprint-G2.5.9333.md).
+
 ## Remaining product directions
 
 These are longer-term directions, not claims that basic infrastructure is
