@@ -144,6 +144,10 @@ declared locale files are checked even when inactive, while English fallback
 and live child Cards remain usable. Isolated missing-file/repair verification
 and the re-export boundary are recorded in
 [Sprint G2.5.9323](docs/sprints/Sprint-G2.5.9323.md).
+Native App0.1.310 updates and generated-Card missing-FR/EN checks also pass on
+Proxmox/Pi 5 after fresh backups; existing settings, projects and external plugins
+are preserved. See [Sprint G2.5.9324](docs/sprints/Sprint-G2.5.9324.md) for the
+manual /local/ test resource scope and transient VM preview read-failure boundary.
 
 - Diverse real user projects, entities, Custom Cards and theme combinations.
 - Longer CPU/RAM profiles and repeated instrumented network outages under project load.
