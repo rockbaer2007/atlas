@@ -231,8 +231,16 @@ same browser origin/profile, all131collection icons and2drawing text objects
 survive; re-exported collection JSON, iconset JS and drawing SVG match exactly.
 Server files, named project, sibling plugin, trash and history remain intact.
 Browser stores are outside HA/server backups; no deleted-storage recovery or
-origin/profile migration is claimed. Native Pi/Proxmox checks remain open.
+origin/profile migration is claimed.
 See [Sprint G2.5.9335](docs/sprints/Sprint-G2.5.9335.md).
+Native Pi 5 and Proxmox16->17->original16->17 now also pass after fresh local
+HA backups and PC copies. All12package assets, existing server files, shared
+settings, six active plugins, named project, trash and history are preserved.
+Direct and HA Ingress browser origins retain their three reference icons and
+empty drawing drafts; collection JSON is byte-identical. New text creation,
+undo and reload pass. App312 and HA2026.10.1 need no restart. After recovery,
+reload Administration before another update if a stale preview is rejected.
+See [Sprint G2.5.9336](docs/sprints/Sprint-G2.5.9336.md).
 
 ## Remaining product directions
 
