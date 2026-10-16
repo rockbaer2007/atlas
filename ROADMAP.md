@@ -192,6 +192,13 @@ rewrite of stored addresses is promised. See
   outages recover automatically without reload; the longest includes both
   Editor and HA browser sockets. Existing fixture data remains intact and
   native hosts are untouched. See [Sprint G2.5.9337](docs/sprints/Sprint-G2.5.9337.md).
+  The same 36-field save/reopen and actual browser HACS-export/import workflow
+  now also passes on Proxmox and Pi 5 after fresh backups. Repeated exports are
+  byte-identical per host; original local Editor configurations are restored.
+  Existing Editors recover after a real VM reboot and user-performed Pi LAN
+  interruption; all 36 HA cards remain rendered. Native checks use passive real
+  sensors, not the isolated 360 synthetic changes or ARM64 browser benchmarking.
+  See [Sprint G2.5.9338](docs/sprints/Sprint-G2.5.9338.md).
 - Longer CPU/RAM profiles, more distinct entities and further network failure
   variants beyond that bounded isolated project-load check.
 - Stable production plugin/API contracts and broader host compatibility. Release/version/migration rules and the plugin compatibility gate are defined in [the policy](docs/project/specifications/VERSION_COMPATIBILITY_POLICY.md). Native 0.1.302 gate refusal/review paths are recorded in [Sprint G2.5.9296](docs/sprints/Sprint-G2.5.9296.md). Updates to 0.1.303 and authenticated HA discovery are recorded in [Sprint G2.5.9298](docs/sprints/Sprint-G2.5.9298.md). Real Icon Library 0.1.8/0.1.9 backend replacement and recovery passed on Proxmox/Pi with original assets/shared metadata/projects restored; see [Sprint G2.5.9300](docs/sprints/Sprint-G2.5.9300.md). Native 0.1.304 updates, UI cancellation/replacement/recovery and guarded shared metadata adoption now pass on both hosts after fresh backups; see [Sprint G2.5.9302](docs/sprints/Sprint-G2.5.9302.md). Further plugin families, real migrations and generic plugin-data rollback remain open.
