@@ -63,6 +63,17 @@ and extension configuration are restored; owned test artifacts are cleaned up.
 See [Sprint9353](docs/sprints/Sprint-G2.5.9353.md). Broader real user projects,
 themes and further HA/styling versions remain separate qualification scopes.
 
+The isolated combined-project check found a blocking import defect in 0.1.316:
+numeric-state conditional thresholds such as `above: -1` are dropped in both
+YAML/Card-Mod and JSON/UIX imports. Native HA renders the source correctly,
+whereas the exported conditional section reports a configuration error. Package
+readiness still reports 112/112, so it does not cover this semantic loss.
+Save/API reopen, original-data preservation and the separate state-condition
+package checks pass. Actual HACS UI re-import, combined live themes and browser
+reconnection remain pending after a browser-tool startup failure. See
+[Sprint9354](docs/sprints/Sprint-G2.5.9354.md). Next: correct conditional import
+and its readiness coverage, then resume this same backed-up isolated fixture.
+
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
 
