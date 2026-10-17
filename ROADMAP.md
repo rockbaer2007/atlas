@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.312**.
+Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.313**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -114,14 +114,12 @@ results and native test limits are recorded in
 
 ## Open follow-up qualification
 
-**Next corrective priority:** preserve dynamic Mushroom configuration in normal
-HA YAML/JSON imports. On 0.1.312, normalization drops `icon`/`color`; the tested
-single-card UI import also converts the Mushroom card into a Core entity card.
-Prepared ATLAS project packages with embedded raw container entries retain the
-templates through save/open, bundle round trip and live HA reconnection, but
-this does not qualify normal raw imports. See
-[Sprint G2.5.9340](docs/sprints/Sprint-G2.5.9340.md). Keep original source cards;
-fix and qualify both import paths before recommending that workflow.
+App0.1.313 corrects the normal Mushroom YAML/JSON import losses identified in
+[Sprint G2.5.9340](docs/sprints/Sprint-G2.5.9340.md): single cards retain their
+Mushroom type and text/icon/color templates, as do nested entries. YAML block
+scalars preserve indentation and blank lines. Isolated regression and actual
+HA execution evidence is recorded in [Sprint G2.5.9341](docs/sprints/Sprint-G2.5.9341.md).
+Native Pi 5/Proxmox update qualification remains separate; these hosts were untouched.
 
 The isolated mixed Core/Bubble/Mushroom HACS-card bundle round trip is qualified
 in [Sprint G2.5.9316](docs/sprints/Sprint-G2.5.9316.md). Actual browser download,
