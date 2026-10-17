@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.315**.
+Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.316**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -33,19 +33,18 @@ Pi5: both Card-Mod4.2.1 and UIX8.4.0, each tested separately with App0.1.315,
 HA2026.10.1 and Mushroom5.2.3. Export/native pairs match in909computed-style
 checks including natural Jinja color changes and reload. Original data and
 extension configuration are restored; see [Sprint9347](docs/sprints/Sprint-G2.5.9347.md).
-Next: preserve Bubble's string-valued styles during normal YAML/JSON card import
-and make root-stack UIX custom-property inheritance work inside generated Cards.
-The resumed isolated browser test confirms both limitations in App0.1.315.
-Six default/custom light/dark/return/reload observations and a distinct-parent-
-accent diagnostic expose visible differences despite112/112 HACS readiness
-checks and byte-identical UI re-export. Core/Mushroom child-level UIX rules and
-ordinary Bubble theme variables render correctly; an identical fallback color
-can mask the root inheritance failure. Original source and data remain backed
-up. See [Sprint9349](docs/sprints/Sprint-G2.5.9349.md); the earlier interrupted
-preparation is in [Sprint9348](docs/sprints/Sprint-G2.5.9348.md). Theme changes
-were made through the profile followed by dashboard navigation, not an in-place
-mounted-card switch test. Pi5/Proxmox were untouched. Qualify the fixes in the
-same isolated fixture before further native testing or wider CSS claims.
+App 0.1.316 now fixes Bubble string CSS import and root-stack UIX inheritance.
+The same isolated HA 2026.10.1 fixture passes YAML/JSON and actual HACS UI
+roundtrip with byte-identical ZIPs, 112/112 readiness checks, and 180 computed-CSS
+comparisons across light/dark/reload. Native and exported parent accents now
+match even when distinct from fallback colors. Existing data and projects stay
+unchanged; old lost CSS requires the original source and existing scripts must
+be regenerated. See [Sprint9350](docs/sprints/Sprint-G2.5.9350.md). Findings
+and earlier negative evidence remain in [Sprint9349](docs/sprints/Sprint-G2.5.9349.md).
+Next: qualify the 0.1.316 update and newly exported Cards on Proxmox and Pi 5 after
+fresh backups when requested. Both native hosts remain unchanged at 0.1.315.
+Further styling versions and in-place theme switches on continuously mounted
+Cards remain separate qualification scopes.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.

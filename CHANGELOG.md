@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.316: preserve Bubble CSS strings through single/nested YAML/JSON and HACS roundtrips; use the native HA wrapper for styled root Cards so parent UIX/Card-Mod styles participate in the standard rendering lifecycle. Existing stored data is unchanged; regenerate scripts and recover previously lost CSS from the original source.
+
 - App0.1.315: preserve imported card_mod/uix/uix_style mappings structurally in YAML/JSON, HACS packages and scripts; apply UIX export conversion consistently without overwriting existing UIX blocks or assigning styles to other cards sharing an entity.
 
 - App0.1.314: align HACS readiness with supported YAML/JSON content and reimport; rename the format check to package-format-supported. Keep JSON envelopes and runtime/locales layout unchanged.
