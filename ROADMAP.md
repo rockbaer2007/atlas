@@ -9,6 +9,20 @@ The four stabilization items are closed; evidence and test boundaries are in
 
 ## Agreed priorities / Vereinbarte nächste Schritte
 
+### Gespeicherter nächster Einstiegspunkt (17.10.2026)
+
+Als Nächstes die erweiterten Conditional-Varianten zuerst isoliert prüfen:
+verschachtelte UND/ODER/NICHT-Bedingungen, Zustandslisten sowie Bildschirm- und
+Benutzerbedingungen. Tatsächliche HA-Anzeige, Speichern/Wiederöffnen,
+YAML-/JSON-Export und -Import sowie HACS-Export/Rückimport auf Erhalt der
+vollständigen Bedingungen prüfen. Dies ergänzt den bereits bestandenen
+numerischen Conditional-/Gesamtprojekt-Durchlauf mit App 0.1.317
+([Sprint9356](docs/sprints/Sprint-G2.5.9356.md)).
+
+Vorher Backup; vorhandene Einstellungen, Dateien, Projekte und Plugins
+erhalten. Pi 5 und Proxmox bleiben während dieser isolierten Prüfung
+unverändert. Noch nicht begonnen; bei Wiederaufnahme hier fortsetzen.
+
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical
 re-export with template preservation. See [Sprint9343](docs/sprints/Sprint-G2.5.9343.md).
