@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.314: align HACS readiness with supported YAML/JSON content and reimport; rename the format check to package-format-supported. Keep JSON envelopes and runtime/locales layout unchanged.
 - App0.1.313: preserve Mushroom primary/secondary text, icon and color/icon_color templates through JSON/YAML imports, single-card conversion and exports. YAML block scalars retain meaningful whitespace; existing stored data is unchanged.
 - App0.1.312: File Studio trash/history default to persistent installation data. Adopt accessible legacy stores once without overwriting conflicts; retain original sources and provide a pre-update helper for old containers. Preserve custom/Linux paths. Already discarded container data still requires a backup.
 - App0.1.311: new Card exports share a deterministic package marker across script and locales; mixed or unmarked language files trigger the repair notice and are excluded from translations. Existing exports and stored data remain unchanged; this is a consistency check, not a signature.

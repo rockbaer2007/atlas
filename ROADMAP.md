@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.313**.
+Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.314**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -8,6 +8,14 @@ The four stabilization items are closed; evidence and test boundaries are in
 [the stabilization record](docs/deployment/ATLAS_STABILIZATION_2026_10.md).
 
 ## Agreed priorities / Vereinbarte nächste Schritte
+
+App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
+formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical
+re-export with template preservation. See [Sprint9343](docs/sprints/Sprint-G2.5.9343.md).
+Pi 5 and Proxmox remain unchanged at the previously qualified App0.1.313.
+Next: preserve imported card-mod style metadata in generated packages; the
+isolated check found it in preview only, absent already from the first export.
+Then qualify App0.1.314 or its successor on native hosts after fresh backups.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
