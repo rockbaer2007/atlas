@@ -119,7 +119,11 @@ App0.1.313 corrects the normal Mushroom YAML/JSON import losses identified in
 Mushroom type and text/icon/color templates, as do nested entries. YAML block
 scalars preserve indentation and blank lines. Isolated regression and actual
 HA execution evidence is recorded in [Sprint G2.5.9341](docs/sprints/Sprint-G2.5.9341.md).
-Native Pi 5/Proxmox update qualification remains separate; these hosts were untouched.
+The backed-up native App0.1.313 update now also passes on Proxmox and Pi 5:
+all four normal import paths, exact templates, save/open, actual HACS round trips
+and real HA preview text/icon/color changes on natural minute boundaries.
+Original data and complete local Editor configurations are retained. See
+[Sprint G2.5.9342](docs/sprints/Sprint-G2.5.9342.md) for native scope and boundaries.
 
 The isolated mixed Core/Bubble/Mushroom HACS-card bundle round trip is qualified
 in [Sprint G2.5.9316](docs/sprints/Sprint-G2.5.9316.md). Actual browser download,
