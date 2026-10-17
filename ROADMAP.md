@@ -72,8 +72,13 @@ HACS ZIP re-export, dynamic Jinja text/icons/colors, conditional hide/show,
 eight live theme transitions and 972 native/export CSS comparisons. Both Editors
 reconnect automatically after isolated HA shutdown/start, with fresh template
 updates and no page reload. Original data is preserved. See
-[Sprint9355](docs/sprints/Sprint-G2.5.9355.md). Next: qualify 0.1.317 on native
-Proxmox and Pi 5 with fresh backups when requested; both remain unchanged here.
+[Sprint9355](docs/sprints/Sprint-G2.5.9355.md). Native 0.1.317 qualification on
+Proxmox/Pi5 now also passes after fresh backups: actual HACS UI roundtrips,
+Conditional/Jinja, live themes, 756 CSS comparisons and automatic connection
+after HA Core restarts. Original data and local Editor configurations are
+preserved; owned artifacts cleaned up. Scope and the unsampled brief Pi
+connection interval: [Sprint9356](docs/sprints/Sprint-G2.5.9356.md).
+Broader real user projects and further HA/styling versions remain open scopes.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
