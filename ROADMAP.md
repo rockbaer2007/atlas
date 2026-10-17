@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.316**.
+Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.317**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -63,16 +63,17 @@ and extension configuration are restored; owned test artifacts are cleaned up.
 See [Sprint9353](docs/sprints/Sprint-G2.5.9353.md). Broader real user projects,
 themes and further HA/styling versions remain separate qualification scopes.
 
-The isolated combined-project check found a blocking import defect in 0.1.316:
-numeric-state conditional thresholds such as `above: -1` are dropped in both
-YAML/Card-Mod and JSON/UIX imports. Native HA renders the source correctly,
-whereas the exported conditional section reports a configuration error. Package
-readiness still reports 112/112, so it does not cover this semantic loss.
-Save/API reopen, original-data preservation and the separate state-condition
-package checks pass. Actual HACS UI re-import, combined live themes and browser
-reconnection remain pending after a browser-tool startup failure. See
-[Sprint9354](docs/sprints/Sprint-G2.5.9354.md). Next: correct conditional import
-and its readiness coverage, then resume this same backed-up isolated fixture.
+App 0.1.317 fixes the conditional import defect found in
+[Sprint9354](docs/sprints/Sprint-G2.5.9354.md). Complete condition data, including
+numeric bounds, state lists and logical children, survives YAML/JSON and HACS
+roundtrips. Missing/invalid numeric bounds now block import and package readiness.
+The same isolated combined project now passes actual UI save/reopen, byte-equal
+HACS ZIP re-export, dynamic Jinja text/icons/colors, conditional hide/show,
+eight live theme transitions and 972 native/export CSS comparisons. Both Editors
+reconnect automatically after isolated HA shutdown/start, with fresh template
+updates and no page reload. Original data is preserved. See
+[Sprint9355](docs/sprints/Sprint-G2.5.9355.md). Next: qualify 0.1.317 on native
+Proxmox and Pi 5 with fresh backups when requested; both remain unchanged here.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
