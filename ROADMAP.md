@@ -33,8 +33,14 @@ Pi5: both Card-Mod4.2.1 and UIX8.4.0, each tested separately with App0.1.315,
 HA2026.10.1 and Mushroom5.2.3. Export/native pairs match in909computed-style
 checks including natural Jinja color changes and reload. Original data and
 extension configuration are restored; see [Sprint9347](docs/sprints/Sprint-G2.5.9347.md).
-Next: qualify additional styling-extension versions, themes or further card
-families when required; this is not a blanket compatibility claim for arbitrary CSS.
+Next: preserve Bubble's string-valued styles during normal YAML/JSON card import.
+The isolated theme preparation exposes loss of that CSS despite112/112 package
+checks. Direct server project save/reopen preserves the original source.
+See [Sprint9348](docs/sprints/Sprint-G2.5.9348.md). Actual light/dark theme and
+CSS-inheritance browser qualification remains pending after the workstation/
+tooling restart; it is not completed by these data checks. Then qualify further
+styling-extension versions/themes/card families as required, without a blanket
+compatibility claim for arbitrary CSS.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
