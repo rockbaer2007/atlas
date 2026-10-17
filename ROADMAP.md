@@ -49,8 +49,15 @@ files, projects, plugins, trash and history are preserved. Three resource remova
 made by the user on Proxmox were explicitly confirmed and retained. Owned test
 dashboards/resources and temporary Pi UIX were removed after confirmation.
 See [Sprint9351](docs/sprints/Sprint-G2.5.9351.md).
-Next: qualify in-place light/dark theme switches on continuously mounted Cards
-in isolation. Further HA/styling versions remain separate qualification scopes.
+In-place light/dark theme switches now also pass in two isolated HA 2026.10.1
+instances, separately using Card-Mod 4.2.1 and UIX 8.4.0 with Bubble 3.4.2 and
+Mushroom 5.2.3. Seven transitions per engine cover custom/default themes,
+960 computed-CSS comparisons and stable document plus all Card identities.
+Fixed overrides stay fixed; inherited colors/radii follow HA's live theme mode.
+Original isolated data remains byte-exact; native hosts were untouched. See
+[Sprint9352](docs/sprints/Sprint-G2.5.9352.md).
+Next: qualify the same mounted-Card theme sequence on native Proxmox/Pi 5 after
+fresh backups when requested. Further HA/styling versions remain separate scopes.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
