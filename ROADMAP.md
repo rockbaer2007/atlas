@@ -28,9 +28,13 @@ reference cards for dynamic CSS, current shadow selectors and UIX radii.
 The check exposes configuration limits: CSS templates require config.entity,
 old Mushroom selectors need reviewing, uix_style is preserved but not executed,
 and UIX prefers uix over card_mod. See [Sprint9346](docs/sprints/Sprint-G2.5.9346.md).
-Next: qualify this CSS setup on native hosts only after explicit authorization
-and fresh backups; no styling extension was installed on Pi5 or Proxmox here.
-Other extension versions, themes and arbitrary CSS remain separate checks.
+Native CSS qualification now also passes after fresh backups on Proxmox and
+Pi5: both Card-Mod4.2.1 and UIX8.4.0, each tested separately with App0.1.315,
+HA2026.10.1 and Mushroom5.2.3. Export/native pairs match in909computed-style
+checks including natural Jinja color changes and reload. Original data and
+extension configuration are restored; see [Sprint9347](docs/sprints/Sprint-G2.5.9347.md).
+Next: qualify additional styling-extension versions, themes or further card
+families when required; this is not a blanket compatibility claim for arbitrary CSS.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
