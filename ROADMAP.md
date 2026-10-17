@@ -56,8 +56,12 @@ Mushroom 5.2.3. Seven transitions per engine cover custom/default themes,
 Fixed overrides stay fixed; inherited colors/radii follow HA's live theme mode.
 Original isolated data remains byte-exact; native hosts were untouched. See
 [Sprint9352](docs/sprints/Sprint-G2.5.9352.md).
-Next: qualify the same mounted-Card theme sequence on native Proxmox/Pi 5 after
-fresh backups when requested. Further HA/styling versions remain separate scopes.
+The same live sequence now also passes on Proxmox and Pi 5 after fresh HA
+backups, separately for Card-Mod 4.2.1 and UIX 8.4.0: 1,920 computed-CSS
+comparisons, 28 transitions and stable Card/document identities. Original themes
+and extension configuration are restored; owned test artifacts are cleaned up.
+See [Sprint9353](docs/sprints/Sprint-G2.5.9353.md). Broader real user projects,
+themes and further HA/styling versions remain separate qualification scopes.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
