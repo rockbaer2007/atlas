@@ -22,9 +22,15 @@ after fresh backups: YAML/Card-Mod and JSON/UIX export/re-import/re-export
 achieve112/112 checks and byte-identical archives, preserving original data,
 projects, plugins, trash/history and complete local Editor configurations.
 See [Sprint9345](docs/sprints/Sprint-G2.5.9345.md).
-Next: actual CSS rendering depends on installed Card-Mod/UIX versions and
-remains a separate qualification; no styling extension was installed for the
-export-preservation checks.
+Actual CSS rendering now passes in separate isolated HA2026.10.1 instances
+with Mushroom5.2.3 and Card-Mod4.2.1 / UIX8.4.0: generated scripts match native
+reference cards for dynamic CSS, current shadow selectors and UIX radii.
+The check exposes configuration limits: CSS templates require config.entity,
+old Mushroom selectors need reviewing, uix_style is preserved but not executed,
+and UIX prefers uix over card_mod. See [Sprint9346](docs/sprints/Sprint-G2.5.9346.md).
+Next: qualify this CSS setup on native hosts only after explicit authorization
+and fresh backups; no styling extension was installed on Pi5 or Proxmox here.
+Other extension versions, themes and arbitrary CSS remain separate checks.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
