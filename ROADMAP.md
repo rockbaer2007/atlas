@@ -41,10 +41,16 @@ match even when distinct from fallback colors. Existing data and projects stay
 unchanged; old lost CSS requires the original source and existing scripts must
 be regenerated. See [Sprint9350](docs/sprints/Sprint-G2.5.9350.md). Findings
 and earlier negative evidence remain in [Sprint9349](docs/sprints/Sprint-G2.5.9349.md).
-Next: qualify the 0.1.316 update and newly exported Cards on Proxmox and Pi 5 after
-fresh backups when requested. Both native hosts remain unchanged at 0.1.315.
-Further styling versions and in-place theme switches on continuously mounted
-Cards remain separate qualification scopes.
+The native 0.1.315 -> 0.1.316 update now also passes on Proxmox and Pi 5 after
+fresh HA backups: 240 additional computed-CSS comparisons including reload,
+YAML/JSON style preservation and actual HACS UI roundtrips with byte-identical
+archives and 112/112 readiness checks per host. Original local Editor states,
+files, projects, plugins, trash and history are preserved. Three resource removals
+made by the user on Proxmox were explicitly confirmed and retained. Owned test
+dashboards/resources and temporary Pi UIX were removed after confirmation.
+See [Sprint9351](docs/sprints/Sprint-G2.5.9351.md).
+Next: qualify in-place light/dark theme switches on continuously mounted Cards
+in isolation. Further HA/styling versions remain separate qualification scopes.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
