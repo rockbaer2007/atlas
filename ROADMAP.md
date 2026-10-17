@@ -17,8 +17,14 @@ App0.1.315 fixes imported card_mod/uix/uix_style preservation in structured
 card data, YAML/JSON, HACS packages and generated scripts, including structural
 UIX export conversion and exact style ownership. Isolated qualification and
 limits are in [Sprint9344](docs/sprints/Sprint-G2.5.9344.md).
-Next: qualify App0.1.315 on native hosts after fresh backups; actual CSS rendering
-depends on the installed Card-Mod/UIX versions and remains a separate check.
+The native App0.1.313 -> 0.1.315 update now also passes on Proxmox and Pi5
+after fresh backups: YAML/Card-Mod and JSON/UIX export/re-import/re-export
+achieve112/112 checks and byte-identical archives, preserving original data,
+projects, plugins, trash/history and complete local Editor configurations.
+See [Sprint9345](docs/sprints/Sprint-G2.5.9345.md).
+Next: actual CSS rendering depends on installed Card-Mod/UIX versions and
+remains a separate qualification; no styling extension was installed for the
+export-preservation checks.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.
