@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.314**.
+Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.315**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -13,9 +13,12 @@ App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical
 re-export with template preservation. See [Sprint9343](docs/sprints/Sprint-G2.5.9343.md).
 Pi 5 and Proxmox remain unchanged at the previously qualified App0.1.313.
-Next: preserve imported card-mod style metadata in generated packages; the
-isolated check found it in preview only, absent already from the first export.
-Then qualify App0.1.314 or its successor on native hosts after fresh backups.
+App0.1.315 fixes imported card_mod/uix/uix_style preservation in structured
+card data, YAML/JSON, HACS packages and generated scripts, including structural
+UIX export conversion and exact style ownership. Isolated qualification and
+limits are in [Sprint9344](docs/sprints/Sprint-G2.5.9344.md).
+Next: qualify App0.1.315 on native hosts after fresh backups; actual CSS rendering
+depends on the installed Card-Mod/UIX versions and remains a separate check.
 
 Agreed on 2026-10-13. Preserve existing settings, encrypted credentials,
 projects and installed plugins throughout future work.

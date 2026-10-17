@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.315: preserve imported card_mod/uix/uix_style mappings structurally in YAML/JSON, HACS packages and scripts; apply UIX export conversion consistently without overwriting existing UIX blocks or assigning styles to other cards sharing an entity.
+
 - App0.1.314: align HACS readiness with supported YAML/JSON content and reimport; rename the format check to package-format-supported. Keep JSON envelopes and runtime/locales layout unchanged.
 - App0.1.313: preserve Mushroom primary/secondary text, icon and color/icon_color templates through JSON/YAML imports, single-card conversion and exports. YAML block scalars retain meaningful whitespace; existing stored data is unchanged.
 - App0.1.312: File Studio trash/history default to persistent installation data. Adopt accessible legacy stores once without overwriting conflicts; retain original sources and provide a pre-update helper for old containers. Preserve custom/Linux paths. Already discarded container data still requires a backup.
