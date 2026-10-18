@@ -49,6 +49,7 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 ## Verification Rules
 
+- Testrichtlinie des Nutzers vom 18.10.2026: Netzwerk-, Home-Assistant-, Browser-, Update- und Belastungstests ausschließlich auf `192.168.178.177` und `192.168.178.68` durchführen. Produktivsysteme und alle anderen Hostadressen sind für Tests gesperrt. Diese Regel ersetzt frühere Freigaben für Proxmox, Pi 4 und andere Testziele sowie ältere Anweisungen zum Start isolierter HA-Instanzen auf anderen Adressen. Historische Prüfberichte sind keine aktuelle Zugriffsfreigabe. Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme bleiben möglich. Vor Änderungen weiterhin Backup erstellen und vorhandene Daten erhalten. Andere Testziele erst nach einer neuen ausdrücklichen Nutzeranweisung verwenden.
 - For Atlas code changes, run the most relevant checks:
   - `node --check examples/status-demo/app.js` for demo JavaScript changes.
   - `pnpm --filter @atlas/homeassistant test` for Home Assistant package logic.

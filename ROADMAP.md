@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-17. Framework **0.2.0-alpha.88**, HA app **0.1.317**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.317**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -8,6 +8,16 @@ The four stabilization items are closed; evidence and test boundaries are in
 [the stabilization record](docs/deployment/ATLAS_STABILIZATION_2026_10.md).
 
 ## Agreed priorities / Vereinbarte nächste Schritte
+
+### Verbindliche Testrichtlinie ab 18.10.2026
+
+Für Netzwerk-, HA-, Browser-, Update- und Belastungstests ausschließlich
+`192.168.178.177` und `192.168.178.68` verwenden. Keine Tests auf
+Produktivsystemen oder anderen Adressen. Frühere Hostfreigaben und historische
+Prüfberichte gelten nicht als aktuelle Erlaubnis. Vor Änderungen Backup erstellen
+und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
+Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
+bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
 ### Gespeicherter nächster Einstiegspunkt (17.10.2026)
 
@@ -20,8 +30,9 @@ numerischen Conditional-/Gesamtprojekt-Durchlauf mit App 0.1.317
 ([Sprint9356](docs/sprints/Sprint-G2.5.9356.md)).
 
 Vorher Backup; vorhandene Einstellungen, Dateien, Projekte und Plugins
-erhalten. Pi 5 und Proxmox bleiben während dieser isolierten Prüfung
-unverändert. Noch nicht begonnen; bei Wiederaufnahme hier fortsetzen.
+erhalten. Den isolierten HA-Test nur innerhalb der beiden oben zugelassenen
+Testsysteme vorbereiten; keine Produktivsysteme oder früheren anderen
+Testadressen verwenden. Noch nicht begonnen; bei Wiederaufnahme hier fortsetzen.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical
