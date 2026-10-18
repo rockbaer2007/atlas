@@ -25,7 +25,7 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächster Einstiegspunkt: App 0.1.322 ZIP-Integritätsprüfung nativ bestätigen
+### Nächster Einstiegspunkt: Integritätsfehler im Importbericht präziser erklären
 
 Die native Negativprüfung mit App 0.1.321 auf .177/.68 findet eine offene Lücke:
 Ein absichtlich verändertes README mit ungültiger ZIP-CRC wird mit 112/112
@@ -38,16 +38,24 @@ Editoren sind exakt wiederhergestellt, Bestandsdaten unverändert. Siehe
 [Sprint9367](docs/sprints/Sprint-G2.5.9367.md). Dieser Befund stammt aus App
 0.1.321; Tests bleiben auf .177/.68 beschränkt.
 
-App 0.1.322 korrigiert die Lücke jetzt lokal vor der Editorübernahme: CRC32 aller
+App 0.1.322 korrigiert die Lücke vor der Editorübernahme: CRC32 aller
 gespeicherten ZIP-Einträge, lokale/zentrale Header, Größen, Pfade, Verzeichnis-
 grenzen und Überlappungen werden geprüft. Nicht unterstützte komprimierte Import-
 einträge, Verschlüsselung, Data Descriptors, Multi-Disk und ZIP64 bleiben gesperrt.
 376 Pakettests einschließlich 52 neuer Integritätsfälle, vollständiger Build und
-vier bytegleiche Originalarchiv-Rundläufe bestehen. Frische HA-Vollbackups und
-PC-Dateisicherungen auf .177/.68 sind vorhanden; das native Update und die
-Ablehnung der 30 beschädigten/ungültigen Pakete je Host sind noch zu prüfen.
-Siehe [Sprint9368](docs/sprints/Sprint-G2.5.9368.md). Danach je drei Vollbackups
-behalten und Bestandsdaten unverändert nachweisen. CRC32 ist keine Signatur.
+vier lokale bytegleiche Originalarchiv-Rundläufe bestehen. Nach frischen
+HA-Vollbackups ist das native Update auf .177/.68 mit HA 2026.10.2 bestanden:
+60 ungültige Archive werden abgelehnt, vier gültige JSON/YAML-Kontrollen bestehen
+mit 112/112. Vollständige Editorstände bleiben nach Ablehnung und Neuladen exakt;
+Originaleditoren und Bestandsdaten sind erhalten. Je drei Vollbackups verbleiben.
+Siehe [Sprint9368](docs/sprints/Sprint-G2.5.9368.md). CRC32 ist keine Signatur.
+
+Offen ist die Genauigkeit des Fehlerberichts: Nach einem Integritätsfehler wird
+das ungültige Inventar verworfen. Zusätzlich zur richtigen CRC-Ursache erscheinen
+dadurch generische Hinweise auf fehlende Pflichtdateien. Diese Folgehinweise
+sollten unterdrückt oder als nicht prüfbar gekennzeichnet werden, ohne die sichere
+Ablehnung oder den Editorstand zu verändern. Tests weiterhin nur auf .177/.68,
+vorher Backup und danach je drei Vollbackups; keine erneute offene CRC-Lücke.
 
 ### Letzte abgeschlossene Qualifikation: App 0.1.321 und HACS-Titelprüfung (18.10.2026)
 
