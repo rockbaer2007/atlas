@@ -19,7 +19,7 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: wörtliche Namen im nativen HACS-Rundlauf (18.10.2026)
+### Nächster Einstiegspunkt: HACS-Titelprüfung bei leerem ersten Namen (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
@@ -42,10 +42,15 @@ bestehen, siehe [Sprint9362](docs/sprints/Sprint-G2.5.9362.md). Das native Updat
 auf .177/.68 ist nach Vollsicherungen bestanden: 64 Importfälle, 128 quellgetreue
 Codeproben und 16 echte Card-Paket-Rundläufe samt Neuladen; siehe
 [Sprint9363](docs/sprints/Sprint-G2.5.9363.md). Beide Hosts laufen mit 0.1.320,
-Bestandsdaten und ursprüngliche lokale Editorstände sind erhalten. Ein erneuter
-nativer HACS-ZIP-Rundlauf und die HA-Darstellung genau dieser wörtlichen Namen
-sind noch nicht Teil der Qualifikation. Vorher frische Backups erstellen,
-vorhandene Daten erhalten und keine anderen Testziele verwenden.
+Bestandsdaten und ursprüngliche lokale Editorstände sind erhalten. Der native
+HACS-/HA-Test mit benannter Kontrollkarte davor besteht: vier bytegleiche
+JSON/YAML-ZIP-Rundläufe mit 112/112 und 72 passende Export-/Referenzpaare vor/nach
+Neuladen; siehe [Sprint9364](docs/sprints/Sprint-G2.5.9364.md).
+Neuer offener Befund: Ein leerer erster Entity-Name führt trotz eigenem Paketnamen
+zu 110/112 (`package-title-present`, `import-summary-title-present`). Als Nächstes
+Titel-/Readinessprüfung korrigieren, ohne Namensdaten zu verändern, und gegen die
+Originalpakete prüfen. Frische Backups erstellen, vorhandene Daten erhalten und
+keine anderen Testziele verwenden.
 Bereits verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
