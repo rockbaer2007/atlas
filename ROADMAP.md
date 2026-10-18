@@ -19,20 +19,16 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Gespeicherter nächster Einstiegspunkt (17.10.2026)
+### Nächster Einstiegspunkt: Import-Vorprüfung angleichen (18.10.2026)
 
-Als Nächstes die erweiterten Conditional-Varianten zuerst isoliert prüfen:
-verschachtelte UND/ODER/NICHT-Bedingungen, Zustandslisten sowie Bildschirm- und
-Benutzerbedingungen. Tatsächliche HA-Anzeige, Speichern/Wiederöffnen,
-YAML-/JSON-Export und -Import sowie HACS-Export/Rückimport auf Erhalt der
-vollständigen Bedingungen prüfen. Dies ergänzt den bereits bestandenen
-numerischen Conditional-/Gesamtprojekt-Durchlauf mit App 0.1.317
-([Sprint9356](docs/sprints/Sprint-G2.5.9356.md)).
-
-Vorher Backup; vorhandene Einstellungen, Dateien, Projekte und Plugins
-erhalten. Den isolierten HA-Test nur innerhalb der beiden oben zugelassenen
-Testsysteme vorbereiten; keine Produktivsysteme oder früheren anderen
-Testadressen verwenden. Noch nicht begonnen; bei Wiederaufnahme hier fortsetzen.
+Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
+Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
+Ein Markdown-Blatt innerhalb der Conditional-Testquelle
+wurde von der Vorprüfung als importierbar eingestuft, beim tatsächlichen Import
+aber als nicht unterstützt abgelehnt. Vorprüfung und Import müssen künftig
+dieselbe Unterstützung beurteilen; keine pauschale Markdown-Freigabe behaupten.
+Zuerst lokal mit Sicherung und Regressionstest prüfen; Netzwerkprüfungen nur
+auf den beiden freigegebenen Testsystemen. Vorhandene Daten erhalten.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical
