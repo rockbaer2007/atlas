@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.323**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.324**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -25,24 +25,19 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächster Einstiegspunkt: Mehrdeutige HACS-Pakete vor der Übernahme sperren
+### Zuletzt abgeschlossen: Mehrdeutige HACS-Pakete und Scriptidentitäten sperren
 
-Die native Prüfung von App 0.1.323 auf .177/.68 mit HA 2026.10.2 findet zwei
-offene Importfehler. Je Host werden sechs mehrdeutige Pakete trotz blockiertem
-Prüfbericht übernommen: mehrere eingebettete Projekte oder zusätzliche Scripts.
-Bei gleichnamigen Projekten bestimmt die ZIP-Reihenfolge den übernommenen Inhalt.
-Ein abweichender Scriptname im Editorplan wird zusätzlich mit 112/112 angenommen
-und ins Scriptnamenfeld übernommen. Echte Pfadduplikate einschließlich Root-/dist-
-Aliassen und direkte Manifest-/Script-Konflikte werden korrekt abgewiesen.
-
-46 echte Importe: 26 korrekte Ablehnungen, sechs gültige Kontrollen, 14 falsche
-Übernahmen. Nach jedem Fall sind die vollständigen Originaleditoren exakt
-wiederhergestellt, geprüfte Bestandsdaten unverändert. App und Integration werden
-in diesem Prüfschritt nicht geändert. Siehe
-[Sprint9370](docs/sprints/Sprint-G2.5.9370.md). Korrektur und Regressionen müssen
-Reader, Prüfbericht und tatsächliche Editorübernahme konsistent sperren; keine
-Auswahl anhand der Archiv-Reihenfolge. Tests nur .177/.68, vorher Backup,
-Bestandsdaten erhalten und anschließend je drei Vollbackups behalten.
+Die Importlücken aus App 0.1.323 sind in 0.1.324 geschlossen. Reader und tatsächliche
+Editorübernahme verlangen vollständige Freigabe; mehrere Projekte/Scripts werden
+vor der Auswahl gesperrt, alle Scriptidentitäten abgeglichen. Nach Vollbackups
+bestehen Update und 60 echte Importe auf .177/.68 mit HA 2026.10.2: 52 korrekte
+Ablehnungen, acht gültige Kontrollen, alle 14 früheren Fehlübernahmen abgewiesen.
+Originaleditoren und geprüfte Bestandsdaten bleiben erhalten. 418 Pakettests,
+darunter 40 neue Handler-/Identitätsregressionen, bestehen. Siehe
+[Sprint9371](docs/sprints/Sprint-G2.5.9371.md); der historische Negativbefund und
+seine Protokollgrenzen bleiben in [Sprint9370](docs/sprints/Sprint-G2.5.9370.md)
+erhalten. Weiterer offener Produktumfang steht unten. Tests nur .177/.68,
+vorher Backup und anschließend je drei Vollbackups.
 
 ### Zuletzt abgeschlossen: ZIP-Integrität und präzise Importdiagnose
 

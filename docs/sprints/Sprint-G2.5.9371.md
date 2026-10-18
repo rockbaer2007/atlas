@@ -46,5 +46,43 @@ checks start no other servers. Existing user roadmaps remain untouched.
   CRC fixtures keep expected outcomes, and four original name archives still
   reexport byte-identically. No persisted data migration is introduced.
 
-Native update/qualification and final three-backup retention are pending at
-this implementation commit. Public DE/EN/FR documentation will record final scope.
+## Native qualification
+
+Both hosts update from 0.1.323 to 0.1.324 with HA 2026.10.2 after the checked
+backups. The original Editor code survives the App restarts. No HA Core restart,
+new permission, HA dashboard/resource/state, WWW file or server project is needed.
+Thirty actual file-picker cases per host pass: 52 rejections and eight valid
+JSON/YAML/root/dist/one-word controls at 112/112. All 14 earlier incorrect imports
+now reject before changing the Editor. Reversed project order cannot select a
+different project. Additional resource, element, type and title conflicts reject.
+
+After every case, reload and a fresh complete Editor JSON export match the
+original configuration except createdAt; valid controls are explicitly restored
+before comparison. `verify.mjs` validates 60 unique results, fixture hashes,
+the former failures and unchanged existing files/projects/plugins/management/
+trash/history. Final captures preserve 405 persistent files and checked config/
+themes on .177, nine approved config files on .68, seven projects and six plugins
+per host. Private .68 plugin files retain the full-backup coverage above. Four
+byte-identical archive roundtrips are local checks, not new native ZIP reexports.
+
+## Evidence routing incident
+
+A reused REPL helper retained its old directory binding and first wrote six .68
+case results/exports to the previous qualification directory. The two newly
+exported original Editor backups were recovered from unchanged Downloads copies;
+no HA data or Editor content was affected. Some older individual PC case logs
+and their result entries were overwritten and are not claimed byte-preserved.
+The old directory now contains PROTOCOL_INCIDENT_0.1.324.md explaining the mixed
+records; its earlier aggregate verification and .177 case evidence remain.
+Do not treat the mixed .68 records as fresh evidence for 0.1.323.
+
+The new qualification was repeated from the start with one self-contained helper
+object bound to this new directory. The final 60-case evidence is independent of
+the misrouted run and passes the separate Node verifier. This is an agent protocol
+incident, not a remaining product import failure. Public documentation preserves
+the historical negative result and documents the corrected product behavior.
+
+DE/EN/FR documentation build passes with the large-chunk advisory only; whitespace
+checks pass. Final three-backup retention awaits concrete user confirmation for
+only .177 3193821e and .68 71391a3e, both 18 October 14:00. Until that confirmation,
+four full backups remain per host; installed updates and PC backups are retained.

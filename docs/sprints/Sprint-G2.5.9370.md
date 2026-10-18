@@ -94,3 +94,11 @@ are closed; detached handles from the earlier helper timeout cannot be controlle
 through their old debugger bindings. Both restored persistent Editor states are
 verified independently of those handles. The test is complete with a negative
 qualification result; correcting the actual import gate is the next open task.
+
+Follow-up 0.1.324 closes the product finding; see Sprint G2.5.9371. During that
+follow-up a reused helper accidentally overwrote six old .68 PC case logs/result
+entries. The old evidence directory's PROTOCOL_INCIDENT_0.1.324.md identifies them.
+Its earlier aggregate verification and .177 observations remain historical proof;
+do not rerun the old verifier against mixed-version records. Complete original
+Editor backups were recovered from unchanged Downloads files. The new 0.1.324
+qualification is repeated independently with 60 clean case records.
