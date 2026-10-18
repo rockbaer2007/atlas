@@ -19,6 +19,25 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
+Nach jedem abgeschlossenen Test auf .177/.68 jeweils nur drei vollständige
+HA-Backups behalten, bevorzugt die drei neuesten erfolgreich abgeschlossenen
+Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
+Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
+von dieser Aufbewahrungsgrenze ausgenommen.
+
+### Nächster Einstiegspunkt: ZIP-CRC-Prüfung vor HACS-Import korrigieren
+
+Die native Negativprüfung mit App 0.1.321 auf .177/.68 findet eine offene Lücke:
+Ein absichtlich verändertes README mit ungültiger ZIP-CRC wird mit 112/112
+angenommen und ersetzt den lokalen Editorstand. Ein unabhängiger ZIP-Leser
+bestätigt den Prüfsummenfehler. CRC/ZIP-Integrität vor der Editorübernahme prüfen
+und mit unabhängigen beschädigten Archiven absichern; vorhandene Daten erhalten.
+Die übrigen 19 ungültigen Paketvarianten je Host werden korrekt abgelehnt und
+erhalten vollständige Editor-Konfigurationen auch über Neuladen. Beide Original-
+Editoren sind exakt wiederhergestellt, Bestandsdaten unverändert. Siehe
+[Sprint9367](docs/sprints/Sprint-G2.5.9367.md). Noch keine Korrektur oder neue
+App-Version veröffentlicht; Tests bleiben auf .177/.68 beschränkt.
+
 ### Letzte abgeschlossene Qualifikation: App 0.1.321 und HACS-Titelprüfung (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
