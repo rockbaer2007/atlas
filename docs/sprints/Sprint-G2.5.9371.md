@@ -83,6 +83,10 @@ incident, not a remaining product import failure. Public documentation preserves
 the historical negative result and documents the corrected product behavior.
 
 DE/EN/FR documentation build passes with the large-chunk advisory only; whitespace
-checks pass. Final three-backup retention awaits concrete user confirmation for
-only .177 3193821e and .68 71391a3e, both 18 October 14:00. Until that confirmation,
-four full backups remain per host; installed updates and PC backups are retained.
+checks pass. After explicit user confirmation, only .177 3193821e and .68 71391a3e
+(both 18 October 14:00) were deleted. The unfiltered backup lists confirm exactly
+three full backups per host: .177 retains eb88cc4a, 7e8be012 and 73e24753; .68
+retains a3308ae6, 7908320e and ab1e48cd. Evidence is saved as
+`backups-177-final.txt/.png`, `backups-68-final.txt/.png` and
+`deleted-backups.json` in the qualification directory. Both current verification
+tabs were closed. Installed ATLAS 0.1.324 and PC backups are retained.
