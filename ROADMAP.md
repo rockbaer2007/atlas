@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.317**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.318**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -19,16 +19,16 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: Import-Vorprüfung angleichen (18.10.2026)
+### Nächster Einstiegspunkt: App 0.1.318 auf Testhosts prüfen (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
-Ein Markdown-Blatt innerhalb der Conditional-Testquelle
-wurde von der Vorprüfung als importierbar eingestuft, beim tatsächlichen Import
-aber als nicht unterstützt abgelehnt. Vorprüfung und Import müssen künftig
-dieselbe Unterstützung beurteilen; keine pauschale Markdown-Freigabe behaupten.
-Zuerst lokal mit Sicherung und Regressionstest prüfen; Netzwerkprüfungen nur
-auf den beiden freigegebenen Testsystemen. Vorhandene Daten erhalten.
+Die Markdown-Vorprüflücke ist in App 0.1.318 lokal korrigiert und durch
+Regressionstests abgesichert; siehe [Sprint9358](docs/sprints/Sprint-G2.5.9358.md).
+Als Nächstes nach frischen Sicherungen das Update auf .177 und .68 sowie
+sichtbare Ablehnung von Markdown ohne Editoränderung und erfolgreiche
+Entity-/Conditional-Importe prüfen. Keine Markdown-Unterstützung behaupten.
+Vorhandene Daten erhalten; keine anderen Testziele verwenden.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical
