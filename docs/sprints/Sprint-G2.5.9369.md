@@ -69,6 +69,13 @@ both 514-file canonical App copies and whitespace checks pass.
 
 ## Retention
 
-Final three-backup retention awaits the concrete confirmation for only 62d3a495
-on .177 and 66524782 on .68, both Custom backup 2026.10.2 from 18 October 13:12.
+After explicit user confirmation, only 62d3a495 on .177 and 66524782 on .68,
+both Custom backup 2026.10.2 from 18 October 13:12, are permanently deleted.
+Unfiltered native lists confirm exactly three complete backups per host:
+
+- .177: 73e24753, 3193821e, 6cb9f8fc.
+- .68: ab1e48cd, 71391a3e, a98ca2b0.
+
 The newest full backups, installed updates and all PC backups remain preserved.
+`deleted-backups.json` and final native list text/screenshots record the cleanup.
+Both remaining backup verification tabs are closed.
