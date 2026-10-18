@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.322**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.323**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -25,37 +25,19 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächster Einstiegspunkt: Integritätsfehler im Importbericht präziser erklären
+### Zuletzt abgeschlossen: ZIP-Integrität und präzise Importdiagnose
 
-Die native Negativprüfung mit App 0.1.321 auf .177/.68 findet eine offene Lücke:
-Ein absichtlich verändertes README mit ungültiger ZIP-CRC wird mit 112/112
-angenommen und ersetzt den lokalen Editorstand. Ein unabhängiger ZIP-Leser
-bestätigt den Prüfsummenfehler. CRC/ZIP-Integrität vor der Editorübernahme prüfen
-und mit unabhängigen beschädigten Archiven absichern; vorhandene Daten erhalten.
-Die übrigen 19 ungültigen Paketvarianten je Host werden korrekt abgelehnt und
-erhalten vollständige Editor-Konfigurationen auch über Neuladen. Beide Original-
-Editoren sind exakt wiederhergestellt, Bestandsdaten unverändert. Siehe
-[Sprint9367](docs/sprints/Sprint-G2.5.9367.md). Dieser Befund stammt aus App
-0.1.321; Tests bleiben auf .177/.68 beschränkt.
-
-App 0.1.322 korrigiert die Lücke vor der Editorübernahme: CRC32 aller
-gespeicherten ZIP-Einträge, lokale/zentrale Header, Größen, Pfade, Verzeichnis-
-grenzen und Überlappungen werden geprüft. Nicht unterstützte komprimierte Import-
-einträge, Verschlüsselung, Data Descriptors, Multi-Disk und ZIP64 bleiben gesperrt.
-376 Pakettests einschließlich 52 neuer Integritätsfälle, vollständiger Build und
-vier lokale bytegleiche Originalarchiv-Rundläufe bestehen. Nach frischen
-HA-Vollbackups ist das native Update auf .177/.68 mit HA 2026.10.2 bestanden:
-60 ungültige Archive werden abgelehnt, vier gültige JSON/YAML-Kontrollen bestehen
-mit 112/112. Vollständige Editorstände bleiben nach Ablehnung und Neuladen exakt;
-Originaleditoren und Bestandsdaten sind erhalten. Je drei Vollbackups verbleiben.
-Siehe [Sprint9368](docs/sprints/Sprint-G2.5.9368.md). CRC32 ist keine Signatur.
-
-Offen ist die Genauigkeit des Fehlerberichts: Nach einem Integritätsfehler wird
-das ungültige Inventar verworfen. Zusätzlich zur richtigen CRC-Ursache erscheinen
-dadurch generische Hinweise auf fehlende Pflichtdateien. Diese Folgehinweise
-sollten unterdrückt oder als nicht prüfbar gekennzeichnet werden, ohne die sichere
-Ablehnung oder den Editorstand zu verändern. Tests weiterhin nur auf .177/.68,
-vorher Backup und danach je drei Vollbackups; keine erneute offene CRC-Lücke.
+Die CRC-Lücke aus App 0.1.321 ist mit 0.1.322 geschlossen; siehe
+[Sprint9368](docs/sprints/Sprint-G2.5.9368.md). App 0.1.323 beseitigt die
+irreführenden Dateifehlt-Folgehinweise bei verworfenem ZIP-Inventar. Die ZIP-
+Ursache blockiert zuerst; abhängige Prüfungen bleiben nicht geprüft. Tatsächlich
+fehlende Dateien in verifizierten ZIPs bleiben Fehler. Native Updates und alle
+64 Paketfälle auf .177/.68 mit HA 2026.10.2 bestehen: 60 korrekte Ablehnungen,
+vier gültige JSON/YAML-Kontrollen mit 112/112, 26 unverifizierbare Archive ohne
+erfundene Dateifehler. Originaleditoren und geprüfte Bestandsdaten sind erhalten;
+378 Pakettests und vier lokale bytegleiche Archiv-Rundläufe bestehen. Siehe
+[Sprint9369](docs/sprints/Sprint-G2.5.9369.md). Beide Korrekturen sind abgeschlossen;
+der weitere offene Produktumfang steht unten. CRC32 ist keine Signatur.
 
 ### Letzte abgeschlossene Qualifikation: App 0.1.321 und HACS-Titelprüfung (18.10.2026)
 
