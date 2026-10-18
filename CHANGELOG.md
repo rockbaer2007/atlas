@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.322: validate stored ZIP CRC32 and header/directory consistency before HACS import, including README/locales/extra files. Reject corrupt or unsupported archives before Editor adoption while preserving valid literal names and existing data. CRC32 is a corruption check, not authenticity verification.
 - App0.1.321: check HACS package/import titles using package identity, preserving empty first Entity names and outer whitespace. Original archives pass 112/112 unchanged; missing or mismatched manifest names remain rejected. Existing data is not rewritten.
 - App0.1.320: preserve explicit Entity names literally, including empty/whitespace-only strings and outer spaces/tabs. Source-based JSON/YAML, Editor draft, Card package and HACS regressions close the normalization test gap; existing stored data is unchanged.
 - App0.1.319: retain standalone Conditional structure and Entity names during actual Expert field conversion, draft reload and export, including JSON/YAML and HACS. Existing stored data is unchanged; recover previously lost content from its original source/backup.

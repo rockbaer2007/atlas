@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.321**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.322**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -25,7 +25,7 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächster Einstiegspunkt: ZIP-CRC-Prüfung vor HACS-Import korrigieren
+### Nächster Einstiegspunkt: App 0.1.322 ZIP-Integritätsprüfung nativ bestätigen
 
 Die native Negativprüfung mit App 0.1.321 auf .177/.68 findet eine offene Lücke:
 Ein absichtlich verändertes README mit ungültiger ZIP-CRC wird mit 112/112
@@ -35,8 +35,19 @@ und mit unabhängigen beschädigten Archiven absichern; vorhandene Daten erhalte
 Die übrigen 19 ungültigen Paketvarianten je Host werden korrekt abgelehnt und
 erhalten vollständige Editor-Konfigurationen auch über Neuladen. Beide Original-
 Editoren sind exakt wiederhergestellt, Bestandsdaten unverändert. Siehe
-[Sprint9367](docs/sprints/Sprint-G2.5.9367.md). Noch keine Korrektur oder neue
-App-Version veröffentlicht; Tests bleiben auf .177/.68 beschränkt.
+[Sprint9367](docs/sprints/Sprint-G2.5.9367.md). Dieser Befund stammt aus App
+0.1.321; Tests bleiben auf .177/.68 beschränkt.
+
+App 0.1.322 korrigiert die Lücke jetzt lokal vor der Editorübernahme: CRC32 aller
+gespeicherten ZIP-Einträge, lokale/zentrale Header, Größen, Pfade, Verzeichnis-
+grenzen und Überlappungen werden geprüft. Nicht unterstützte komprimierte Import-
+einträge, Verschlüsselung, Data Descriptors, Multi-Disk und ZIP64 bleiben gesperrt.
+376 Pakettests einschließlich 52 neuer Integritätsfälle, vollständiger Build und
+vier bytegleiche Originalarchiv-Rundläufe bestehen. Frische HA-Vollbackups und
+PC-Dateisicherungen auf .177/.68 sind vorhanden; das native Update und die
+Ablehnung der 30 beschädigten/ungültigen Pakete je Host sind noch zu prüfen.
+Siehe [Sprint9368](docs/sprints/Sprint-G2.5.9368.md). Danach je drei Vollbackups
+behalten und Bestandsdaten unverändert nachweisen. CRC32 ist keine Signatur.
 
 ### Letzte abgeschlossene Qualifikation: App 0.1.321 und HACS-Titelprüfung (18.10.2026)
 

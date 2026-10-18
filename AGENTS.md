@@ -49,6 +49,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 ## Verification Rules
 
+- Nutzerfreigabe vom 18.10.2026: Eigene temporäre Testobjekte nach Prüfungen selbstständig bereinigen; für reversible Bereinigung keine erneute Genehmigung verlangen. Bereits eingespielte Updates und alle vorhandenen Einstellungen, Dateien, Projekte und Plugins erhalten. Zwingende Bestätigungen für endgültige Browser-Löschungen bleiben davon unberührt.
+
 - Backup-Aufbewahrung des Nutzers vom 18.10.2026: Nach Abschluss jedes Tests auf `192.168.178.177` und `192.168.178.68` jeweils nur drei vollständige HA-Backups behalten, bevorzugt die drei neuesten erfolgreich abgeschlossenen Vollsicherungen. Vor dem Test weiterhin frisch sichern. PC-Sicherungen sind von dieser Begrenzung nicht erfasst. Bei endgültiger Browser-Löschung die konkreten älteren Sicherungen identifizieren und die erforderliche Bestätigung am Aktionszeitpunkt einholen; die allgemeine Aufbewahrungsregel ersetzt diese Browserbestätigung nicht.
 
 - Testrichtlinie des Nutzers vom 18.10.2026: Netzwerk-, Home-Assistant-, Browser-, Update- und Belastungstests ausschließlich auf `192.168.178.177` und `192.168.178.68` durchführen. Produktivsysteme und alle anderen Hostadressen sind für Tests gesperrt. Diese Regel ersetzt frühere Freigaben für Proxmox, Pi 4 und andere Testziele sowie ältere Anweisungen zum Start isolierter HA-Instanzen auf anderen Adressen. Historische Prüfberichte sind keine aktuelle Zugriffsfreigabe. Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme bleiben möglich. Vor Änderungen weiterhin Backup erstellen und vorhandene Daten erhalten. Andere Testziele erst nach einer neuen ausdrücklichen Nutzeranweisung verwenden.
