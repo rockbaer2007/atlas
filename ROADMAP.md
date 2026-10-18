@@ -19,7 +19,7 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: App 0.1.320 auf .177/.68 prüfen (18.10.2026)
+### Nächster Einstiegspunkt: wörtliche Namen im nativen HACS-Rundlauf (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
@@ -38,10 +38,14 @@ Datei-/Einfügeimport, Paketexport/-rückimport und Neuladen erhalten; siehe
 [Sprint9361](docs/sprints/Sprint-G2.5.9361.md). Bestandsdaten sind unverändert.
 Die Parser-Normalisierung leerer Entity-Namen und äußerer Leerzeichen ist mit
 App 0.1.320 lokal korrigiert; 37 neue Quellvergleiche und insgesamt 296 Pakettests
-bestehen, siehe [Sprint9362](docs/sprints/Sprint-G2.5.9362.md). Als Nächstes nach
-frischen Backups das native Update und Originalnamenerhalt über Datei-/Einfügeimport,
-Paketexport/-rückimport und Neuladen auf .177/.68 prüfen. Beide Hosts bleiben bis
-dahin auf 0.1.319. Vorhandene Daten erhalten und keine anderen Testziele verwenden.
+bestehen, siehe [Sprint9362](docs/sprints/Sprint-G2.5.9362.md). Das native Update
+auf .177/.68 ist nach Vollsicherungen bestanden: 64 Importfälle, 128 quellgetreue
+Codeproben und 16 echte Card-Paket-Rundläufe samt Neuladen; siehe
+[Sprint9363](docs/sprints/Sprint-G2.5.9363.md). Beide Hosts laufen mit 0.1.320,
+Bestandsdaten und ursprüngliche lokale Editorstände sind erhalten. Ein erneuter
+nativer HACS-ZIP-Rundlauf und die HA-Darstellung genau dieser wörtlichen Namen
+sind noch nicht Teil der Qualifikation. Vorher frische Backups erstellen,
+vorhandene Daten erhalten und keine anderen Testziele verwenden.
 Bereits verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
