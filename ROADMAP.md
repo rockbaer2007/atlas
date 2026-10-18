@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.320**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.321**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -19,7 +19,7 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: HACS-Titelprüfung bei leerem ersten Namen (18.10.2026)
+### Nächster Einstiegspunkt: App 0.1.321 und HACS-Titelprüfung nativ prüfen (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
@@ -46,11 +46,14 @@ Bestandsdaten und ursprüngliche lokale Editorstände sind erhalten. Der native
 HACS-/HA-Test mit benannter Kontrollkarte davor besteht: vier bytegleiche
 JSON/YAML-ZIP-Rundläufe mit 112/112 und 72 passende Export-/Referenzpaare vor/nach
 Neuladen; siehe [Sprint9364](docs/sprints/Sprint-G2.5.9364.md).
-Neuer offener Befund: Ein leerer erster Entity-Name führt trotz eigenem Paketnamen
-zu 110/112 (`package-title-present`, `import-summary-title-present`). Als Nächstes
-Titel-/Readinessprüfung korrigieren, ohne Namensdaten zu verändern, und gegen die
-Originalpakete prüfen. Frische Backups erstellen, vorhandene Daten erhalten und
-keine anderen Testziele verwenden.
+Der dabei gefundene Titelprüfungsfehler ist mit App 0.1.321 lokal korrigiert:
+Beide Prüfungen verwenden den Paketnamen statt des ersten Anzeigenamens.
+Die acht gesicherten Original-/Kontrollpakete bestehen unverändert mit 112/112
+und bytegleichen Rückexporten; 324 Pakettests bestehen. Siehe
+[Sprint9365](docs/sprints/Sprint-G2.5.9365.md). Als Nächstes nach frischen Backups
+das Update auf .177/.68 und die ursprünglichen Fehler-ZIPs ohne Kontrollkarte
+im echten Editor prüfen. Originalnamen und Bestandsdaten erhalten; keine anderen
+Testziele verwenden. Beide Hosts bleiben bis dahin auf 0.1.320.
 Bereits verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
