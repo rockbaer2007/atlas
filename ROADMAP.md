@@ -25,6 +25,25 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
+### Nächster Einstiegspunkt: Mehrdeutige HACS-Pakete vor der Übernahme sperren
+
+Die native Prüfung von App 0.1.323 auf .177/.68 mit HA 2026.10.2 findet zwei
+offene Importfehler. Je Host werden sechs mehrdeutige Pakete trotz blockiertem
+Prüfbericht übernommen: mehrere eingebettete Projekte oder zusätzliche Scripts.
+Bei gleichnamigen Projekten bestimmt die ZIP-Reihenfolge den übernommenen Inhalt.
+Ein abweichender Scriptname im Editorplan wird zusätzlich mit 112/112 angenommen
+und ins Scriptnamenfeld übernommen. Echte Pfadduplikate einschließlich Root-/dist-
+Aliassen und direkte Manifest-/Script-Konflikte werden korrekt abgewiesen.
+
+46 echte Importe: 26 korrekte Ablehnungen, sechs gültige Kontrollen, 14 falsche
+Übernahmen. Nach jedem Fall sind die vollständigen Originaleditoren exakt
+wiederhergestellt, geprüfte Bestandsdaten unverändert. App und Integration werden
+in diesem Prüfschritt nicht geändert. Siehe
+[Sprint9370](docs/sprints/Sprint-G2.5.9370.md). Korrektur und Regressionen müssen
+Reader, Prüfbericht und tatsächliche Editorübernahme konsistent sperren; keine
+Auswahl anhand der Archiv-Reihenfolge. Tests nur .177/.68, vorher Backup,
+Bestandsdaten erhalten und anschließend je drei Vollbackups behalten.
+
 ### Zuletzt abgeschlossen: ZIP-Integrität und präzise Importdiagnose
 
 Die CRC-Lücke aus App 0.1.321 ist mit 0.1.322 geschlossen; siehe
