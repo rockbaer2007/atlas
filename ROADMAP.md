@@ -19,7 +19,7 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: App 0.1.319 auf Testhosts prüfen (18.10.2026)
+### Nächster Einstiegspunkt: leere und wörtliche Entity-Namen erhalten (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
@@ -32,10 +32,15 @@ Karten an, verliert aber deren Bedingungen; bei einzelnen Entity-Karten wird
 der eigene Name ersetzt. Auf beiden Hosts mit JSON/YAML reproduziert.
 Beide Verluste sind im Editor-Übernahmepfad mit App 0.1.319 lokal korrigiert und
 durch Tests des tatsächlichen Editor-Codes abgesichert; siehe
-[Sprint9360](docs/sprints/Sprint-G2.5.9360.md). Als Nächstes nach frischen Backups
-das Update auf .177/.68, Datei-/Einfügeimport, Export und Neuladen prüfen.
-Vorhandene Daten erhalten und keine anderen Testziele verwenden. Bereits
-verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
+[Sprint9360](docs/sprints/Sprint-G2.5.9360.md). Das Update auf .177/.68 ist nach
+Vollsicherungen geprüft: Bedingungen und normale eigene Namen bleiben über
+Datei-/Einfügeimport, Paketexport/-rückimport und Neuladen erhalten; siehe
+[Sprint9361](docs/sprints/Sprint-G2.5.9361.md). Bestandsdaten sind unverändert.
+Offen bleibt die Parser-Normalisierung: `name: ''` wird durch einen Ersatznamen
+ersetzt, äußere Leerzeichen werden entfernt. Als Nächstes diese Werte unverändert
+übernehmen und gegen die ursprüngliche Quelle statt erst gegen normalisierte
+Parserwerte prüfen. Vorhandene Daten erhalten und keine anderen Testziele
+verwenden. Bereits verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical

@@ -15,8 +15,10 @@ the approved .177/.68 test hosts retain their previous0.1.318 installation.
 - Field generation retains Conditional raw data even without a field entity;
   surface analysis treats that preserved card as populated. Child card target
   recognition recurses through Conditional wrappers.
-- Entity generation keeps the imported literal name, including empty names and
-  surrounding whitespace, unless explicitly renamed. Explicit entity selection
+- Entity generation keeps the normalized imported name unless explicitly renamed.
+  Correction after native qualification in Sprint9361: the parser still replaces
+  empty names and trims surrounding whitespace. These local tests compared values
+  after normalization and did not prove literal source-name preservation. Explicit entity selection
   still updates the card entity. Existing styled-card paths stay intact.
 - Stored data is not rewritten. Already lost conditions/names require the original
   source or backup. This does not add a visual condition editor or change the
