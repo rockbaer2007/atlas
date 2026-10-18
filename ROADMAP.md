@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.318**.
+Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.319**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -19,7 +19,7 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: Standalone-Card-Import erhalten (18.10.2026)
+### Nächster Einstiegspunkt: App 0.1.319 auf Testhosts prüfen (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
@@ -30,10 +30,12 @@ geprüft; siehe [Sprint9359](docs/sprints/Sprint-G2.5.9359.md). Keine vollständ
 Einzelkarten-Freigabe: Der tatsächliche Editorimport nimmt einzelne Conditional-
 Karten an, verliert aber deren Bedingungen; bei einzelnen Entity-Karten wird
 der eigene Name ersetzt. Auf beiden Hosts mit JSON/YAML reproduziert.
-Als Nächstes diese beiden Verluste im Editor-Übernahmepfad beheben und mit einer
-echten Editor-/Exportprüfung absichern. Derselbe Conditional-Inhalt bleibt in
-einem vertical-stack erhalten. Vorhandene Daten erhalten, vor Tests sichern und
-keine anderen Testziele verwenden.
+Beide Verluste sind im Editor-Übernahmepfad mit App 0.1.319 lokal korrigiert und
+durch Tests des tatsächlichen Editor-Codes abgesichert; siehe
+[Sprint9360](docs/sprints/Sprint-G2.5.9360.md). Als Nächstes nach frischen Backups
+das Update auf .177/.68, Datei-/Einfügeimport, Export und Neuladen prüfen.
+Vorhandene Daten erhalten und keine anderen Testziele verwenden. Bereits
+verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
 formats. Both isolated browser roundtrips pass 112/112 checks and byte-identical

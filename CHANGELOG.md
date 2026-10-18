@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.319: retain standalone Conditional structure and Entity names during actual Expert field conversion, draft reload and export, including JSON/YAML and HACS. Existing stored data is unchanged; recover previously lost content from its original source/backup.
 - App0.1.318: use the actual import parser for artifact previews, rejecting unsupported nested Markdown and invalid package content before editor state changes. Supported raw JSON/YAML Entity and Conditional cards are recognized structurally. Existing data is unchanged; Markdown editing is not added.
 - App0.1.317: preserve complete nested Conditional data and reject missing/invalid numeric bounds during import and HACS readiness. Existing data is unchanged; previously lost bounds require the original source.
 
