@@ -19,7 +19,7 @@ und vorhandene Einstellungen, Dateien, Projekte und Plugins erhalten.
 Lokale statische Prüfungen und Unit-Tests ohne Zugriff auf andere Systeme
 bleiben möglich. Diese Richtlinie hat Vorrang vor den älteren Testplänen unten.
 
-### Nächster Einstiegspunkt: App 0.1.321 und HACS-Titelprüfung nativ prüfen (18.10.2026)
+### Letzte abgeschlossene Qualifikation: App 0.1.321 und HACS-Titelprüfung (18.10.2026)
 
 Die erweiterte Conditional-Qualifikation ist abgeschlossen; Ergebnisse und
 Grenzen stehen in [Sprint9357](docs/sprints/Sprint-G2.5.9357.md).
@@ -41,7 +41,7 @@ App 0.1.320 lokal korrigiert; 37 neue Quellvergleiche und insgesamt 296 Pakettes
 bestehen, siehe [Sprint9362](docs/sprints/Sprint-G2.5.9362.md). Das native Update
 auf .177/.68 ist nach Vollsicherungen bestanden: 64 Importfälle, 128 quellgetreue
 Codeproben und 16 echte Card-Paket-Rundläufe samt Neuladen; siehe
-[Sprint9363](docs/sprints/Sprint-G2.5.9363.md). Beide Hosts laufen mit 0.1.320,
+[Sprint9363](docs/sprints/Sprint-G2.5.9363.md). Beide Hosts liefen danach mit 0.1.320,
 Bestandsdaten und ursprüngliche lokale Editorstände sind erhalten. Der native
 HACS-/HA-Test mit benannter Kontrollkarte davor besteht: vier bytegleiche
 JSON/YAML-ZIP-Rundläufe mit 112/112 und 72 passende Export-/Referenzpaare vor/nach
@@ -50,10 +50,15 @@ Der dabei gefundene Titelprüfungsfehler ist mit App 0.1.321 lokal korrigiert:
 Beide Prüfungen verwenden den Paketnamen statt des ersten Anzeigenamens.
 Die acht gesicherten Original-/Kontrollpakete bestehen unverändert mit 112/112
 und bytegleichen Rückexporten; 324 Pakettests bestehen. Siehe
-[Sprint9365](docs/sprints/Sprint-G2.5.9365.md). Als Nächstes nach frischen Backups
-das Update auf .177/.68 und die ursprünglichen Fehler-ZIPs ohne Kontrollkarte
-im echten Editor prüfen. Originalnamen und Bestandsdaten erhalten; keine anderen
-Testziele verwenden. Beide Hosts bleiben bis dahin auf 0.1.320.
+[Sprint9365](docs/sprints/Sprint-G2.5.9365.md). Das native Update auf .177/.68
+ist nach frischen Vollsicherungen bestanden; beide Hosts laufen mit 0.1.321 und
+HA 2026.10.2. Die vier ursprünglichen JSON/YAML-Fehler-ZIPs ohne Kontrollkarte
+bestehen im echten Editor mit jeweils 112/112 und bytegleichen Rückexporten.
+Namen/Bedingungen bleiben nach Import und Neuladen exakt, Bestandsdaten und beide
+ursprünglichen lokalen Editorstände unverändert. Siehe
+[Sprint9366](docs/sprints/Sprint-G2.5.9366.md). Dieser Update-/Titelprüfschritt ist
+abgeschlossen; weitere Qualifikation bleibt auf .177/.68 beschränkt und richtet
+sich nach dem unten dokumentierten offenen Produktumfang.
 Bereits verlorene Inhalte aus Originalquelle oder Sicherung neu importieren.
 
 App0.1.314 aligns YAML/JSON HACS readiness with the supported export/import
