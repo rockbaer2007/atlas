@@ -88,16 +88,15 @@ Eigene Testobjekte sind bereinigt, WWW-Dateien im wiederherstellbaren Papierkorb
 Bestandsdaten unverändert und je drei Vollbackups erhalten. Stream Deck bleibt
 unverändert. Ergebnis und Grenzen: [Sprint9376](docs/sprints/Sprint-G2.5.9376.md).
 
-### Vorbereitet: 60-Minuten-Tablet-Dauertest mit UIX
+### Zuletzt abgeschlossen: 60-Minuten-Tablet-Dauertest mit UIX
 
-Auf .177/.68 stehen nach frischen Vollbackups eigene 720-Karten-Ansichten mit
-UIX 8.4.0 allein bereit. Kein Card-Mod-Modul wird geladen. Dashboard jeweils
-`/atlas-tablet-uix-soak-20261019/720`, in der Seitenleiste, ohne Admin-only.
-Der Nutzer startet jeden Host nacheinander für 60 Minuten: automatische
-synthetische Zustandswechsel, Hell/Dunkel und Verbindungsabbrüche bei 15/30/45
-Minuten. Timerlücken und HA-Anfragezeiten ersetzen keine FPS-/Renderzeitmessung.
-PC-Vorprüfung und Datenvergleich sind getrennt vom noch offenen Tablet-Ergebnis.
-Nach Rückmeldung eigene Testobjekte bereinigen und je drei Vollbackups behalten.
+Der Nutzer bestätigt je 60 Minuten mit 720 Karten auf .177 und .68 samt
+Theme-Wechsel und Wiederverbindung: Galaxy Tab A6, Android 11 / LineageOS,
+Chrome Mobile 155. UIX 8.4.0 läuft allein, ohne geladenes Card-Mod-Modul.
+Eigene Testobjekte und temporäres UIX sind entfernt, WWW-Dateien im
+wiederherstellbaren Papierkorb. Bestandsvergleich bestanden; je drei Vollbackups
+bleiben erhalten. Die funktionale Nutzerrückmeldung ersetzt keine unabhängigen
+FPS-/Speichermessungen oder einen Nachweis von Leckfreiheit.
 Siehe [Sprint9377](docs/sprints/Sprint-G2.5.9377.md).
 
 ### Historischer Größenbefund: App 0.1.324

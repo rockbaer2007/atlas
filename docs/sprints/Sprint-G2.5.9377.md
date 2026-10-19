@@ -1,9 +1,10 @@
-# Sprint G2.5.9377 - UIX tablet soak preparation
+# Sprint G2.5.9377 - UIX tablet soak completed
 
 2026-10-19. App 0.1.327 / HA 2026.10.2 unchanged. Network targets only .177/.68.
-This prepares the user's real tablet test; it does not claim a completed
-60-minute device run. Samsung Galaxy Tab A6, Android 11 / LineageOS,
-Chrome Mobile 155 are user-reported device details.
+The user confirms a completed 60-minute tablet run on each host, including theme
+changes and automatic reconnection. Samsung Galaxy Tab A6, Android 11 / LineageOS,
+Chrome Mobile 155 are user-reported device details. This is functional user
+qualification, not independently collected tablet telemetry or a leak/FPS claim.
 
 ## Backup and preservation
 
@@ -64,14 +65,29 @@ Only oldest own test backups 86fcaf3c and 2003c901 are removed under the user's
 explicit test-backup cleanup authorization; no additional full PC copy of those
 two old archives is claimed. Unfiltered lists show exactly three per host.
 
-Original data comparisons allow only the owned dashboard/loader and new UIX
-integration/resource. Original projects/plugins, files, integration entries and
-trash must remain identical. After tablet feedback, remove only owned test
-objects, restore the original theme and resource setup, move owned WWW/UIX
-files to recoverable trash and retain the three newest successful full backups
-per host. PC evidence and installed updates stay intact.
+## Tablet report and completed cleanup
 
-Public DE/EN/FR instructions distinguish ready-to-run preparation from results.
-Tablet qualification remains pending until the user completes and reports each
-host's 60-minute run. Keep the tablet foreground/awake; record gaps rather than
-silently treating background/sleep time as continuous load.
+The user reports the .177 hour complete with working theme changes/reconnection,
+then the same successful outcome after the .68 hour. No per-minute JSON logs,
+precise reconnect counts, timer gaps or independently measured rendering timings
+are supplied. Detailed rotation/scrolling results are not inferred from this
+general success report. The desktop and simulated checks above remain separate.
+
+Owned dashboards and script resources are removed. Marker-guarded synthetic
+states are removed via the public HA API. The entire owned WWW directory moves
+to recoverable File Studio trash on each host. Temporary UIX config entries and
+their automatically managed resources are removed; HACS removes the newly
+installed UIX package. /config/custom_components/uix no longer exists on either
+host. Own script and UIX script URLs return 404. No File Studio permissions are
+expanded, no original integration is removed and no installed update is reverted.
+
+Final capture.mjs comparisons pass: all seven projects, six plugins, 551 original
+approved files on .177 and nine on .68, old trash entries, original integration
+and Lovelace registries and frontend theme files match the pre-test baseline.
+Only owned history/trash files and the one recoverable owned WWW trash entry
+are added. Original Editors were never opened or modified during the workflow.
+PC evidence remains retained. Final unfiltered HA lists retain the same three
+full backups per host listed above; no further backup deletion is needed.
+
+Public DE/EN/FR documentation records the user-confirmed outcome, completed
+cleanup and measurement boundaries. Temporary live test links are retired.
