@@ -6,6 +6,7 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.325: enforce fixed HACS import budgets before reads and CRC work; validate in a terminable worker with Cancel, 15-second timeout and explicit checked-package adoption. Late/cancelled results cannot replace drafts. Existing stored data is preserved.
 - App0.1.324: reject multiple embedded HACS projects/scripts before selection, align all package/Editor script identities and require approved readiness before actual Editor adoption. Preserve valid JSON/YAML, root/dist layouts and legitimate custom-element derivation from one-word script filenames. Existing stored data is unchanged.
 - App0.1.323: report failed HACS ZIP verification as the primary blocker. File/content checks remain unverified instead of inventing missing files from a discarded inventory. Keep genuine missing-file diagnostics for verified ZIPs and preserve rejected imports' Editor state.
 - App0.1.322: validate stored ZIP CRC32 and header/directory consistency before HACS import, including README/locales/extra files. Reject corrupt or unsupported archives before Editor adoption while preserving valid literal names and existing data. CRC32 is a corruption check, not authenticity verification.
