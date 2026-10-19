@@ -42,6 +42,23 @@ Datei-Wiederholungen und zwei ausdrückliche Übernahmen. Vollständige
 Originaleditoren und erfasste Bestandsdaten bleiben erhalten. Siehe
 [Sprint9373](docs/sprints/Sprint-G2.5.9373.md) für Grenzen und Belege.
 
+### Zuletzt abgeschlossen: HACS-Import unter wiederholter Last
+
+Mit unveränderter App 0.1.327 und HA 2026.10.2 auf .177/.68 sind rund
+25 Minuten mit je 60 Serienübernahmen plus zwei echten HACS-Rückimporten
+geprüft. Die Projekte enthalten 36 Editorfelder mit 360 beziehungsweise 720
+verschachtelten Core-/Bubble-/Mushroom-Karten. Insgesamt 238 Abbrüche während
+Lesen, Prüfung und nach fertiger Vorschau erhalten den jeweils geladenen Entwurf;
+116 gleiche Datei-Wiederholungen bestehen. Vier HACS-Rundläufe sind bytegleich.
+Auch die vollständige Prüfung eines gültigen Pakets mit 24 MiB Gesamtinhalt
+und je drei Neuladetests bestehen. Originaleditoren und erfasste Bestandsdaten
+sind wiederhergestellt beziehungsweise unverändert. Siehe
+[Sprint9374](docs/sprints/Sprint-G2.5.9374.md) für Belege und Messgrenzen.
+
+Windows-Chrome-Gesamtprozesswerte sind keine isolierte ATLAS-Speichermessung
+und kein Nachweis von Leckfreiheit. HA-Darstellung aller 720 Karten, ARM64-
+Browserleistung und Langzeitbetrieb über diesen begrenzten Lauf bleiben offen.
+
 ### Historischer Größenbefund: App 0.1.324
 
 Die Größenqualifikation mit unveränderter App 0.1.324 auf .177/.68 und HA
