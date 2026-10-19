@@ -56,8 +56,25 @@ sind wiederhergestellt beziehungsweise unverändert. Siehe
 [Sprint9374](docs/sprints/Sprint-G2.5.9374.md) für Belege und Messgrenzen.
 
 Windows-Chrome-Gesamtprozesswerte sind keine isolierte ATLAS-Speichermessung
-und kein Nachweis von Leckfreiheit. HA-Darstellung aller 720 Karten, ARM64-
-Browserleistung und Langzeitbetrieb über diesen begrenzten Lauf bleiben offen.
+und kein Nachweis von Leckfreiheit. ARM64-Browserleistung und Langzeitbetrieb
+über diesen begrenzten Lauf bleiben offen.
+
+### Zuletzt abgeschlossen: HA-Darstellung großer exportierter Projekte
+
+Mit App 0.1.327 und HA 2026.10.2 auf .177/.68 sind die exportierten 360-/720-
+Karten-Projekte sowie eigene dynamische Varianten gegen native Referenzkarten
+geprüft. Card-Mod 4.2.1 und UIX 8.4.0 werden ausschließlich getrennt geladen.
+UIX verarbeitet dabei sowohl vorhandene `card_mod`-Blöcke als auch native
+`uix`-Stile. Hell/Dunkel, CSS-Vererbung, Mushroom-Jinja für Text/Symbol/Farbe
+und acht WebSocket-Abbrüche mit automatischer Wiederverbindung bestehen.
+62 abgeschlossene Aufnahmen enthalten 33.120 Kartenvergleiche; während des
+Tests werden keine Originaleditoren geöffnet oder verändert. Siehe
+[Sprint9375](docs/sprints/Sprint-G2.5.9375.md) für Datenabgleich und Messgrenzen.
+
+Als Nächstes: Darstellung und Bedienbarkeit auf einem tatsächlich schwächeren
+Browsergerät prüfen, einschließlich Scrollen und responsiver Breite. Die
+aktuellen Messungen stammen aus Windows Chrome und belegen keine Tablet-/ARM64-
+Browserleistung, Bildrate oder Leckfreiheit. Tests weiterhin nur auf .177/.68.
 
 ### Historischer Größenbefund: App 0.1.324
 
