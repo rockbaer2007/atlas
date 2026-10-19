@@ -71,10 +71,23 @@ und acht WebSocket-Abbrüche mit automatischer Wiederverbindung bestehen.
 Tests werden keine Originaleditoren geöffnet oder verändert. Siehe
 [Sprint9375](docs/sprints/Sprint-G2.5.9375.md) für Datenabgleich und Messgrenzen.
 
-Als Nächstes: Darstellung und Bedienbarkeit auf einem tatsächlich schwächeren
-Browsergerät prüfen, einschließlich Scrollen und responsiver Breite. Die
-aktuellen Messungen stammen aus Windows Chrome und belegen keine Tablet-/ARM64-
-Browserleistung, Bildrate oder Leckfreiheit. Tests weiterhin nur auf .177/.68.
+### Vorbereitet: gestufter Tablet-Test, Rückmeldung offen
+
+Auf .177/.68 stehen nach frischen Vollbackups eigene Browserchecks und separate
+temporäre Dashboards mit Start, 12, 360 und 720 Karten bereit. Die PC-Vorprüfung
+zählt alle Karten ohne Fehler und prüft Theme/Zustandswechsel sowie Wiederverbindung.
+Vorhandene Editoren, Projekte, Plugins und erfasste Bestandsdateien bleiben erhalten.
+Card-Mod läuft allein; eine neue Tablet-UIX-Prüfung ist nicht enthalten.
+
+Der Nutzer verwendet ein älteres Galaxy Tab A als virtuelles Stream Deck und
+meldet bereits bei normalen Dashboards kaum Reaktion. Genaue Android-/Browser-
+Version unbekannt. Deshalb zuerst die leichte Seite ohne HA laden, dann höchstens
+die kleine Stufe. 360/720 nur bei flüssiger Bedienung, bei Hängern abbrechen.
+Stream-Deck-Konfiguration nicht verändern. Hoch-/Querformat, Scrollen, Theme und
+Wiederverbindung am Tablet bleiben unbestätigt. Aktuelle Messungen stammen aus
+Windows Chrome und belegen keine Tablet-/ARM64-Browserleistung oder Leckfreiheit.
+Nach Rückmeldung eigene Testobjekte bereinigen und je drei Vollbackups behalten.
+Vorbereitung und Grenzen: [Sprint9376](docs/sprints/Sprint-G2.5.9376.md).
 
 ### Historischer Größenbefund: App 0.1.324
 
