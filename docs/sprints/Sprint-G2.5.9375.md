@@ -87,8 +87,13 @@ both repositories pass git diff --check. No runtime source changed, so the
 previous package-test/build result is not presented as a new code test run.
 
 Unfiltered final lists initially contain four completed full backups per host.
-The action-time confirmation for deleting only 5a52e7ab (.177, 138.73 MB) and
+The user confirms deleting only 5a52e7ab (.177, 138.73 MB) and
 9dfbb12e (.68, 139.93 MB), both named ATLAS ... vor HACS Paketgrenzen 2026-10-19,
-is requested. No extra PC copy of these old full archives is verified. Once
-approved, the newest three are fcd40035/86fcaf3c/760ac463 on .177 and
-538b69e2/2003c901/38a20113 on .68. Installed updates and PC evidence remain.
+and both are removed. No extra PC copy of these old full archives is verified.
+Final unfiltered lists and overview counts confirm exactly three backups per
+host: fcd40035/86fcaf3c/760ac463 on .177 and 538b69e2/2003c901/38a20113 on .68.
+Installed updates and PC evidence remain. Final list text/screenshots are saved
+as backups-177-final.txt/png and backups-68-final.txt/png in the evidence folder.
+The two remaining owned browser tabs are closed. The user's additional standing
+authorization for backup retention on these test hosts is recorded in AGENTS.md,
+subject to mandatory tool confirmations.
