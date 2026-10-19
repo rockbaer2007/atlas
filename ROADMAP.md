@@ -71,23 +71,25 @@ und acht WebSocket-Abbrüche mit automatischer Wiederverbindung bestehen.
 Tests werden keine Originaleditoren geöffnet oder verändert. Siehe
 [Sprint9375](docs/sprints/Sprint-G2.5.9375.md) für Datenabgleich und Messgrenzen.
 
-### Vorbereitet: gestufter Tablet-Test, Rückmeldung offen
+### Zuletzt abgeschlossen: gestufter Tablet-Test
 
-Auf .177/.68 stehen nach frischen Vollbackups eigene Browserchecks und separate
-temporäre Dashboards mit Start, 12, 360 und 720 Karten bereit. Die PC-Vorprüfung
+Auf .177/.68 wurden nach frischen Vollbackups eigene Browserchecks und separate
+temporäre Dashboards mit Start, 12, 360 und 720 Karten bereitgestellt. Die PC-Vorprüfung
 zählt alle Karten ohne Fehler und prüft Theme/Zustandswechsel sowie Wiederverbindung.
 Vorhandene Editoren, Projekte, Plugins und erfasste Bestandsdateien bleiben erhalten.
 Card-Mod läuft allein; eine neue Tablet-UIX-Prüfung ist nicht enthalten.
 
-Der Nutzer verwendet ein älteres Galaxy Tab A als virtuelles Stream Deck und
-meldet bereits bei normalen Dashboards kaum Reaktion. Genaue Android-/Browser-
-Version unbekannt. Deshalb zuerst die leichte Seite ohne HA laden, dann höchstens
-die kleine Stufe. 360/720 nur bei flüssiger Bedienung, bei Hängern abbrechen.
-Stream-Deck-Konfiguration nicht verändern. Hoch-/Querformat, Scrollen, Theme und
-Wiederverbindung am Tablet bleiben unbestätigt. Aktuelle Messungen stammen aus
-Windows Chrome und belegen keine Tablet-/ARM64-Browserleistung oder Leckfreiheit.
-Nach Rückmeldung eigene Testobjekte bereinigen und je drei Vollbackups behalten.
-Vorbereitung und Grenzen: [Sprint9376](docs/sprints/Sprint-G2.5.9376.md).
+Der Nutzer bestätigt 12/360 Karten sowie 720 Karten auf beiden Hosts samt
+Theme-Wechsel und Wiederverbindung auf Samsung Galaxy Tab A6, Android 11 /
+LineageOS, Chrome Mobile 155. Nach Stoppen anderer Apps reagiert der Browser
+flüssig. Dies ist eine funktionale Nutzerrückmeldung, keine FPS-/Speichermessung
+oder Langzeitqualifikation; einzelne Hoch-/Querformatdetails sind nicht belegt.
+Eigene Testobjekte sind bereinigt, WWW-Dateien im wiederherstellbaren Papierkorb,
+Bestandsdaten unverändert und je drei Vollbackups erhalten. Stream Deck bleibt
+unverändert. Ergebnis und Grenzen: [Sprint9376](docs/sprints/Sprint-G2.5.9376.md).
+
+Als Nächstes offen: längerer Betrieb auf dem Tablet mit gemessenen Reaktionszeiten
+und wiederholten Verbindungsabbrüchen; UIX dabei separat von Card-Mod prüfen.
 
 ### Historischer Größenbefund: App 0.1.324
 
