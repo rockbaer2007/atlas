@@ -186,6 +186,8 @@ Repo-wide working rules for Codex and future agents working on ATLAS.
 
 ## Known User Preferences
 
+- Nutzerwunsch vom 19.10.2026: Neue eigene HA-Testdashboards auf .177/.68 ohne "Admin-only" erstellen und für den Tablet-Zugriff in der Seitenleiste anzeigen. Vom Nutzer aktivierte Seitenleisteneinträge erhalten. Diese Vorgabe betrifft Testdashboards, nicht vorhandene Dashboards oder allgemeine HA-Zugriffsrechte.
+
 - Compact, consistent UI is important.
 - Button rows should look aligned and professional.
 - The user prefers practical visible progress over abstract planning.

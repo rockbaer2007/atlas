@@ -60,6 +60,19 @@ permissions are widened. New owned helper history is expected and retained.
 
 ## Tablet handoff and outstanding work
 
+User follow-up identifies the device as a Samsung Galaxy Tab A6. After stopping
+some other Apps to free resources, the lightweight browser check is reported
+responsive. This is not yet a result for the 12/360/720-Card HA views. The user
+enables the owned test dashboards in the sidebar; preserve that deliberate
+change. Future owned test dashboards should be visible there and created
+without Admin-only, as recorded in AGENTS.md. The initially prepared Admin-only
+setting on the current dashboards is not changed merely by recording this
+future creation preference. Exact Android/browser versions remain unconfirmed.
+The next user report says the 12-Card stage is okay. Host attribution and
+individual rotation/theme/reconnection outcomes are not specified, so neither
+both-host qualification nor 360/720 success is inferred. The next cautious step
+is 360 Cards on the same host, stopping on sluggish interaction before trying 720.
+
 The user describes an older Galaxy Tab A, roughly eight years old, used only as
 a virtual Stream Deck. An exact Android/browser version is not confirmed; the
 reported sluggish ordinary dashboard does not establish its cause. The existing
