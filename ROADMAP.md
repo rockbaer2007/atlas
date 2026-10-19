@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-19. Framework **0.2.0-alpha.88**, HA app **0.1.324**.
+Updated: 2026-10-19. Framework **0.2.0-alpha.89**, HA app **0.1.327**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -25,7 +25,24 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächste Priorität: begrenzte und abbrechbare HACS-Paketprüfung
+### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
+
+App 0.1.327 prüft vor dem Lesen maximal 32 MiB ZIP-Dateigröße. Das Inventar ist
+vor CRC-Arbeit auf 2.048 Einträge, 8 MiB pro Eintrag, 24 MiB Gesamtinhalt und
+1.024 UTF-8-Bytes pro Pfad begrenzt. Ein eigener Worker ist während Lesen und
+Prüfen terminierbar; ein 15-Sekunden-Prüfwächter beendet hängende Aufträge.
+Ohne Worker gibt es keinen synchronen Ersatz. Der Editor wird erst nach
+ausdrücklicher Übernahme geändert. Abbrechen verwirft auch fertige Ergebnisse;
+dieselbe Datei ist erneut auswählbar, die Abbrechen-Schaltfläche bleibt stehen.
+
+Alle 431 Pakettests, Workspace-Build und Paketabgleich bestehen. Nach frischen
+Vollbackups sind beide Testhosts auf 0.1.327 geprüft: 20 Grenzfälle, sechs
+Abbrüche während Lesen/Prüfen beziehungsweise nach Ergebnis, zwei gleiche
+Datei-Wiederholungen und zwei ausdrückliche Übernahmen. Vollständige
+Originaleditoren und erfasste Bestandsdaten bleiben erhalten. Siehe
+[Sprint9373](docs/sprints/Sprint-G2.5.9373.md) für Grenzen und Belege.
+
+### Historischer Größenbefund: App 0.1.324
 
 Die Größenqualifikation mit unveränderter App 0.1.324 auf .177/.68 und HA
 2026.10.2 ist abgeschlossen: 24 echte Dateiauswahlen, 16 gültige Übernahmen
@@ -34,9 +51,10 @@ und 16 MiB README-Text werden angenommen. Deflate mit 128 MiB deklariertem
 Inhalt, eine fast 4-GiB-Eintragsdeklaration und abgeschnittene Archive werden
 abgewiesen. Die Kompressionsablehnung ist kein Größenlimit.
 
-Offen sind feste Archiv-/Eintrags-/Gesamtgrößenlimits vor der teuren Verarbeitung
+Damals fehlten feste Archiv-/Eintrags-/Gesamtgrößenlimits vor der teuren Verarbeitung
 sowie eine bedienbare, zuverlässig abbrechbare Prüfung ohne blockierten UI-Thread.
-Der Reader arbeitet synchron und der Handler liest zunächst die ganze Datei.
+Der damalige Handler las zunächst die ganze Datei und prüfte im UI-Thread.
+Diese Lücke ist mit dem oben beschriebenen Worker-Ablauf geschlossen.
 Neuladen direkt nach Dateiauswahl erhält in beiden beobachteten Versuchen den
 Originalentwurf, qualifiziert aber keinen gezielten Abbruch während laufender
 CRC-/JSON-Arbeit. Keine allgemeine Last- oder ARM64-Browserfreigabe behaupten.
