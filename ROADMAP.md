@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-18. Framework **0.2.0-alpha.88**, HA app **0.1.324**.
+Updated: 2026-10-19. Framework **0.2.0-alpha.88**, HA app **0.1.324**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -24,6 +24,25 @@ HA-Backups behalten, bevorzugt die drei neuesten erfolgreich abgeschlossenen
 Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
+
+### Nächste Priorität: begrenzte und abbrechbare HACS-Paketprüfung
+
+Die Größenqualifikation mit unveränderter App 0.1.324 auf .177/.68 und HA
+2026.10.2 ist abgeschlossen: 24 echte Dateiauswahlen, 16 gültige Übernahmen
+mit 112/112 und acht Ablehnungen. Bis zu 30.008 Dateien, 64 MiB Zusatzinhalt
+und 16 MiB README-Text werden angenommen. Deflate mit 128 MiB deklariertem
+Inhalt, eine fast 4-GiB-Eintragsdeklaration und abgeschnittene Archive werden
+abgewiesen. Die Kompressionsablehnung ist kein Größenlimit.
+
+Offen sind feste Archiv-/Eintrags-/Gesamtgrößenlimits vor der teuren Verarbeitung
+sowie eine bedienbare, zuverlässig abbrechbare Prüfung ohne blockierten UI-Thread.
+Der Reader arbeitet synchron und der Handler liest zunächst die ganze Datei.
+Neuladen direkt nach Dateiauswahl erhält in beiden beobachteten Versuchen den
+Originalentwurf, qualifiziert aber keinen gezielten Abbruch während laufender
+CRC-/JSON-Arbeit. Keine allgemeine Last- oder ARM64-Browserfreigabe behaupten.
+Vollständige Originaleditoren und erfasste Bestandsdaten sind erhalten; siehe
+[Sprint9372](docs/sprints/Sprint-G2.5.9372.md). Tests weiterhin nur .177/.68,
+vorher Backup und danach je drei Vollbackups.
 
 ### Zuletzt abgeschlossen: Mehrdeutige HACS-Pakete und Scriptidentitäten sperren
 
