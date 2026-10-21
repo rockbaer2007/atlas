@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-19. Framework **0.2.0-alpha.89**, HA app **0.1.327**.
+Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.327**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -314,6 +314,15 @@ fixture preservation pass. CI runs the eleven integration contracts against
 both 2026.9.4 and 2026.10.1. This does not qualify every intervening version,
 9.4 HACS downloads or native ARM64 execution. Pi 5 and Proxmox were untouched.
 See [Sprint G2.5.9315](docs/sprints/Sprint-G2.5.9315.md).
+The exact HA 2026.10.2 / integration0.1.306 / native App0.1.327 combination is
+now qualified on .68: embedded surfaces, live connection/search, local save/reload,
+byte-identical JSON/YAML HACS Card roundtrips and automatic reconnection after
+a real HA Core restart. Original Editor and captured data are preserved; the
+temporary Runtime address is restored. .177 is not accessed. CI includes all
+three exact HA versions. See [Sprint G2.5.9378](docs/sprints/Sprint-G2.5.9378.md)
+and [the matrix](docs/deployment/HA_COMPATIBILITY_MATRIX.md) for metadata changes,
+retention and boundaries. A newer stable HA version when available and actual
+schema conversions remain separate qualification work.
 The optional native HA panel/config-entry integration is implemented in 0.1.299
 and verified with isolated Home Assistant Core 2026.10.1 and its real frontend.
 Native installation/setup and embedded project access are verified on Proxmox
