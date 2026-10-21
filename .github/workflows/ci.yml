@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ha-version: ['2026.9.4', '2026.10.1']
+        ha-version: ['2026.9.4', '2026.10.1', '2026.10.2']
     steps:
       - uses: actions/checkout@v4
       - name: Test integration against Home Assistant Core ${{ matrix.ha-version }}
