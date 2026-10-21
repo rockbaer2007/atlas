@@ -25,7 +25,7 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächste Prüfung: unerwarteter Browserabbruch mit Editor-Entwürfen
+### Zuletzt abgeschlossen: getrennte Entwürfe nach Browserabbruch
 
 App 0.1.328 behebt die gemeinsame Entwurfsablage. Auf .68 bestehen getrennte
 Entwürfe nach Tab-Neuladen, explizite Wiederherstellung eines geschlossenen
@@ -38,11 +38,14 @@ bestanden: beide Tab-Zeiger bleiben getrennt, vollständige Wiederherstellungen
 entsprechen den Exporten, manuelle Quellenwahl bleibt möglich. Siehe
 [Sprint9381](docs/sprints/Sprint-G2.5.9381.md).
 
-Als nächstes einen unerwarteten Browserabbruch in einer getrennten Testsitzung
-prüfen. Der geordnete Neustart beweist keine Crash-/Stromausfallfestigkeit.
-Geräteaustausch/gelöschter Browserspeicher benötigen weiter einen separaten Export;
-HA-Vollbackups sichern keine lokalen Browserentwürfe. Tests nur auf .177/.68
-nach frischem Backup und ohne Verlust vorhandener Entwürfe.
+Auch das erzwungene Ende aller Chrome-Prozesse und die anschließende
+Sitzungswiederherstellung bestehen auf .68: getrennte Tab-Zeiger, zwei vollständige
+Entwürfe mit unterschiedlichen Kartentiteln und vier unveränderte ältere Quellen.
+Details und Grenzen: [Sprint9382](docs/sprints/Sprint-G2.5.9382.md).
+Der Test beendet einen Browser nach abgeschlossener lokaler Sicherung, nicht
+während eines Schreibvorgangs; Stromausfall und gelöschter Browserspeicher sind
+damit nicht geprüft. Geräteaustausch benötigt weiter einen separaten Export.
+HA-Vollbackups sichern keine lokalen Browserentwürfe.
 
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
