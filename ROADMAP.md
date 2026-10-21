@@ -25,6 +25,22 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
+### Nächste Priorität: Dateiimporte als getrennte Tab-Entwürfe sichern
+
+Der Profilwechseltest mit App 0.1.330 auf .68 findet eine Lücke im normalen
+Import einer Editor-Gesamtkonfiguration (JSON, Schaltfläche Import), ohne zuvor
+geöffnetes gemeinsames Projekt. Beide Dateien werden im frischen Chrome-Profil
+zunächst vollständig übernommen. Es entstehen aber weder eigene Tab-Entwürfe
+noch Tab-Zeiger. Nach Neuladen zeigen beide Tabs den zuletzt importierten Stand;
+auch die umgekehrte Importreihenfolge bestätigt dies. Die getrennten Quelldateien
+bleiben vollständig und stellen den jeweiligen Stand wieder her.
+
+Offen: Jeden bestätigten Gesamtkonfigurations-Import in die getrennte lokale
+Entwurfs-/Wiederherstellungslogik aufnehmen, vorhandene Quellen erhalten und die
+beiden Tab-Stände nach Neuladen eindeutig wiederherstellbar machen. Volle oder
+gesperrte Ablagen weiter korrekt melden. Dies ist kein nachgewiesener Fehler des
+HACS-Paketimports. Details: [Sprint9388](docs/sprints/Sprint-G2.5.9388.md).
+
 ### Zuletzt abgeschlossen: getrennte Entwürfe nach Browserabbruch
 
 App 0.1.328 behebt die gemeinsame Entwurfsablage. Auf .68 bestehen getrennte
