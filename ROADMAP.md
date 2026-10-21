@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.327**.
+Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.328**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -25,23 +25,19 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächste Korrektur: getrennte lokale Entwürfe für mehrere Editor-Tabs
+### Nächste Prüfung: Browser-Neustart mit getrennten Editor-Entwürfen
 
-Der Mehrtab-Test auf .68 mit App 0.1.327 bestätigt Server-Revisionskonflikte,
-veraltete Öffnen-Vorschauen, geänderte Speichervorschauen und erhaltene
-Arbeitsflächen bei einem echten App-Verbindungsausfall. Nach dem Neustart ist
-der unveränderte Serverstand vorhanden; ausdrücklich wiederholtes Speichern
-gelingt. .177 bleibt unberührt, alle Originaldaten sind wiederhergestellt.
+App 0.1.328 behebt die gemeinsame Entwurfsablage. Auf .68 bestehen getrennte
+Entwürfe nach Tab-Neuladen, explizite Wiederherstellung eines geschlossenen
+Tabs und lokale Änderungen während eines echten App-Ausfalls. Server-Konflikte
+bleiben gesperrt. Der alte globale Entwurf bleibt lesbar; Wiederherstellungsquellen
+werden nicht automatisch gelöscht. Details: [Sprint9380](docs/sprints/Sprint-G2.5.9380.md).
 
-Offen ist die browserweit gemeinsame Ablage `atlas.homeassistant.sharedProjectDraft`:
-Tab A bietet nach Neuladen den zuletzt von Tab B gespeicherten lokalen Entwurf
-an, seinen eigenen abweichenden Entwurf jedoch nicht separat. Die beiden
-Testentwürfe sind als PC-Exporte erhalten; die Server-Konfliktsperre ist davon
-nicht betroffen. Entwürfe künftig pro Arbeitskontext/Tab sichern und wiederfinden,
-vorhandene globale Entwürfe kompatibel übernehmen und anschließend auf .68
-mit Neuladen, Konflikten und Verbindungsabbruch prüfen. Siehe
-[Sprint9379](docs/sprints/Sprint-G2.5.9379.md). Keine Korrektur oder neue Version
-ist mit diesem reinen Prüfschritt ausgeliefert.
+Als nächstes den vollständigen Browser-Neustart mit Sitzungswiederherstellung
+und manueller Entwurfsauswahl prüfen. Geräteaustausch/gelöschter Browserspeicher
+benötigen weiter einen separaten Export; HA-Vollbackups sichern keine lokalen
+Browserentwürfe. Tests nur auf .177/.68 nach frischem Backup und ohne Verlust
+vorhandener Entwürfe. Keine bereits bestandenen Tab-/App-Neustarts neu planen.
 
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
