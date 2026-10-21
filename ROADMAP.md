@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.330**.
+Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.331**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -25,7 +25,7 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächste Priorität: Dateiimporte als getrennte Tab-Entwürfe sichern
+### Zuletzt abgeschlossen: Dateiimporte als getrennte Tab-Entwürfe sichern
 
 Der Profilwechseltest mit App 0.1.330 auf .68 findet eine Lücke im normalen
 Import einer Editor-Gesamtkonfiguration (JSON, Schaltfläche Import), ohne zuvor
@@ -35,11 +35,20 @@ noch Tab-Zeiger. Nach Neuladen zeigen beide Tabs den zuletzt importierten Stand;
 auch die umgekehrte Importreihenfolge bestätigt dies. Die getrennten Quelldateien
 bleiben vollständig und stellen den jeweiligen Stand wieder her.
 
-Offen: Jeden bestätigten Gesamtkonfigurations-Import in die getrennte lokale
-Entwurfs-/Wiederherstellungslogik aufnehmen, vorhandene Quellen erhalten und die
-beiden Tab-Stände nach Neuladen eindeutig wiederherstellbar machen. Volle oder
-gesperrte Ablagen weiter korrekt melden. Dies ist kein nachgewiesener Fehler des
-HACS-Paketimports. Details: [Sprint9388](docs/sprints/Sprint-G2.5.9388.md).
+App 0.1.331 nimmt bestätigte Gesamtkonfigurations-Importe in die getrennte lokale
+Entwurfssicherung auf. Jeder erneute Dateiimport erzeugt eine neue Quelle und
+erhält den Vorgänger. Nach Neuladen wird die eigene Quelle vorausgewählt;
+Prüfung und gesicherte Übernahme bleiben ausdrücklich, die globale Profil-
+Arbeitsfläche kann weiter den letzten Import zeigen. Der ursprüngliche Befund
+steht in [Sprint9388](docs/sprints/Sprint-G2.5.9388.md).
+
+Update und native Wiederholungsprüfung auf .68 bestehen: ursprüngliche A/B-
+Dateien, umgekehrte Reihenfolge, erneuter gleicher Import, vollständige Exporte
+vor/nach Wiederherstellung, Abbrechen und ungültige Datei sowie blockierte lokale
+und Sitzungsablage mit sicheren Folgeversuchen. Alle 48 alten Quellen sind
+bytegleich erhalten, Bestandsdaten und Editor-Ausgangsstände wiederhergestellt,
+eigene Testdateien bereinigt und drei Vollbackups behalten. .177 unverändert.
+Details: [Sprint9389](docs/sprints/Sprint-G2.5.9389.md). Keine neue HACS-Qualifikation.
 
 ### Zuletzt abgeschlossen: getrennte Entwürfe nach Browserabbruch
 
