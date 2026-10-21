@@ -85,6 +85,18 @@ Testobjekte bereinigt und drei Vollbackups erhalten. .177 bleibt unangetastet.
 Details und Grenzen: [Sprint9386](docs/sprints/Sprint-G2.5.9386.md).
 Keine allgemeine Browser-/Datenträgerfehlerfreigabe.
 
+Auch die Kombination aus zwei Tabs, blockierter Sitzungsablage und einem echten
+HA-Verbindungsabbruch besteht auf .68 mit unveränderter App 0.1.330. Während des
+HA-Neustarts bleiben unterschiedliche lokale Entwürfe editier- und exportierbar;
+beide Tabs verbinden sich automatisch wieder. Nach Neuladen unter weiter
+blockierter Sitzung erfolgt keine automatische Quellenübernahme. Die ausdrücklich
+gewählten Wiederherstellungen stimmen vollständig mit den jeweiligen Ausfall-
+Exporten überein, abgesehen vom Exportzeitpunkt. Nach bestätigter Folgesicherung
+bleiben auch die Tab-Zeiger beim Neuladen getrennt. Alle 40 vorherigen Quellen
+und Bestandsdaten sind erhalten; Originaleditoren wiederhergestellt, Testobjekte
+bereinigt und drei Vollbackups behalten. .177 unverändert. Kein WLAN-Ausfall oder
+Browser-Prozessabbruch in diesem Lauf. Siehe [Sprint9387](docs/sprints/Sprint-G2.5.9387.md).
+
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
 App 0.1.327 prüft vor dem Lesen maximal 32 MiB ZIP-Dateigröße. Das Inventar ist
