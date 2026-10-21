@@ -64,6 +64,22 @@ Update und gezielter Schreibabbruch auf .68 bestehen samt Abbrechen,
 Wiederherstellung, fremdem neuerem Entwurf und 13 unveränderten älteren Quellen.
 Details und Grenzen: [Sprint9384](docs/sprints/Sprint-G2.5.9384.md).
 
+### Nächste Priorität: Fehler der Sitzungsablage sichtbar melden
+
+Die Browserablagen-Prüfung mit unveränderter App 0.1.329 auf .68 ist abgeschlossen:
+echte lokale und Sitzungs-Quota sowie gezielt blockierte Lese-/Schreibzugriffe
+und Storage-Getter. Lokale Schreibfehler zeigen den Exporthinweis; Entwürfe und
+PC-Wiederherstellung bleiben erhalten. Alle 20 bestehenden Quellen sind bytegleich.
+Details: [Sprint9385](docs/sprints/Sprint-G2.5.9385.md).
+
+Offen: Volle oder für Methoden gesperrte sessionStorage kann Markierung und
+Tab-Zeiger verlieren lassen, obwohl der lokale Datensatz geschrieben wurde.
+Hier fehlt ein Hinweis; nach Neuladen ist nur manuelle Quellenwahl möglich.
+Künftig zwischen lokalem Schreibfehler und fehlender Tab-Wiederherstellungszuordnung
+unterscheiden, präzise DE/EN/FR-Hinweise anzeigen und Export weiterhin ermöglichen.
+Den gespeicherten Datensatz nicht als verloren melden und keine fremde Quelle
+automatisch übernehmen. Keine allgemeine Browser-/Datenträgerfehlerfreigabe.
+
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
 App 0.1.327 prüft vor dem Lesen maximal 32 MiB ZIP-Dateigröße. Das Inventar ist
