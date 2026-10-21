@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.329**.
+Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.330**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -64,7 +64,7 @@ Update und gezielter Schreibabbruch auf .68 bestehen samt Abbrechen,
 Wiederherstellung, fremdem neuerem Entwurf und 13 unveränderten älteren Quellen.
 Details und Grenzen: [Sprint9384](docs/sprints/Sprint-G2.5.9384.md).
 
-### Nächste Priorität: Fehler der Sitzungsablage sichtbar melden
+### Zuletzt abgeschlossen: Fehler der Sitzungsablage sichtbar melden
 
 Die Browserablagen-Prüfung mit unveränderter App 0.1.329 auf .68 ist abgeschlossen:
 echte lokale und Sitzungs-Quota sowie gezielt blockierte Lese-/Schreibzugriffe
@@ -72,13 +72,18 @@ und Storage-Getter. Lokale Schreibfehler zeigen den Exporthinweis; Entwürfe und
 PC-Wiederherstellung bleiben erhalten. Alle 20 bestehenden Quellen sind bytegleich.
 Details: [Sprint9385](docs/sprints/Sprint-G2.5.9385.md).
 
-Offen: Volle oder für Methoden gesperrte sessionStorage kann Markierung und
-Tab-Zeiger verlieren lassen, obwohl der lokale Datensatz geschrieben wurde.
-Hier fehlt ein Hinweis; nach Neuladen ist nur manuelle Quellenwahl möglich.
-Künftig zwischen lokalem Schreibfehler und fehlender Tab-Wiederherstellungszuordnung
-unterscheiden, präzise DE/EN/FR-Hinweise anzeigen und Export weiterhin ermöglichen.
-Den gespeicherten Datensatz nicht als verloren melden und keine fremde Quelle
-automatisch übernehmen. Keine allgemeine Browser-/Datenträgerfehlerfreigabe.
+App 0.1.330 unterscheidet jetzt lokale Schreibfehler von einer nicht bestätigten
+Tab-Wiederherstellungszuordnung. Volle oder blockierte Sitzungsablage zeigt einen
+eigenen DE/EN/FR-Hinweis nach erfolgreichem lokalen Speichern. Auch ein gesperrter
+sessionStorage-Getter verhindert lokale Sicherung nicht mehr. Export bleibt möglich;
+Sprachwechsel und Projektlisten-Aktualisierung erhalten die Warnung. Erst eine
+vollständig bestätigte Folgesicherung entfernt sie. Keine automatische Quellenwahl.
+Die native Prüfung auf .68 besteht mit echten Quota-Grenzen, blockierten Methoden
+und Getter, manueller Wiederherstellung und lokalem Fehler-Vorrang. Alle 31 alten
+Quellen bleiben bytegleich; Originaleditoren und Bestandsdaten sind wiederhergestellt,
+Testobjekte bereinigt und drei Vollbackups erhalten. .177 bleibt unangetastet.
+Details und Grenzen: [Sprint9386](docs/sprints/Sprint-G2.5.9386.md).
+Keine allgemeine Browser-/Datenträgerfehlerfreigabe.
 
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
