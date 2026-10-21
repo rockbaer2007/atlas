@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.328**.
+Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.329**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -55,6 +55,14 @@ Tab B und acht ältere Quellen sind unverändert. Eine eigene Testinstrumentieru
 markiert genau diese Grenze; die installierten App-Dateien bleiben unverändert.
 Kein Abbruch innerhalb des atomaren nativen Speicheraufrufs und kein
 Stromausfall-/Datenträgertest. Siehe [Sprint9383](docs/sprints/Sprint-G2.5.9383.md).
+
+App 0.1.329 schließt die dabei sichtbare Erkennungslücke: Eine vor dem Schreiben
+tabgebunden gespeicherte Absicht erkennt beim Neuladen den exakt passenden
+Nachfolger und bietet Vorschau plus gesicherte Übernahme in DE/EN/FR an.
+Keine automatische Übernahme, keine Ableitung aus fremden Namen/Zeitstempeln.
+Update und gezielter Schreibabbruch auf .68 bestehen samt Abbrechen,
+Wiederherstellung, fremdem neuerem Entwurf und 13 unveränderten älteren Quellen.
+Details und Grenzen: [Sprint9384](docs/sprints/Sprint-G2.5.9384.md).
 
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
