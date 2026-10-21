@@ -6,6 +6,8 @@ The format is based on **Keep a Changelog** and the project adheres to **Semanti
 
 ## [Unreleased]
 
+- App0.1.328: isolate shared Editor drafts per tab, keep reload/duplicated-tab recovery sources separate, expose explicit draft selection in DE/EN/FR and preserve the legacy shared draft without rewriting it. Report local save failures instead of silently losing recovery state.
+
 - App0.1.327: keep Cancel stationary when worker progress changes and the Apply action becomes available.
 - App0.1.326: allow selecting the identical HACS file again immediately after cancelling a worker, without a page reload.
 - App0.1.325: enforce fixed HACS import budgets before reads and CRC work; validate in a terminable worker with Cancel, 15-second timeout and explicit checked-package adoption. Late/cancelled results cannot replace drafts. Existing stored data is preserved.
