@@ -25,6 +25,24 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
+### Nächste Korrektur: getrennte lokale Entwürfe für mehrere Editor-Tabs
+
+Der Mehrtab-Test auf .68 mit App 0.1.327 bestätigt Server-Revisionskonflikte,
+veraltete Öffnen-Vorschauen, geänderte Speichervorschauen und erhaltene
+Arbeitsflächen bei einem echten App-Verbindungsausfall. Nach dem Neustart ist
+der unveränderte Serverstand vorhanden; ausdrücklich wiederholtes Speichern
+gelingt. .177 bleibt unberührt, alle Originaldaten sind wiederhergestellt.
+
+Offen ist die browserweit gemeinsame Ablage `atlas.homeassistant.sharedProjectDraft`:
+Tab A bietet nach Neuladen den zuletzt von Tab B gespeicherten lokalen Entwurf
+an, seinen eigenen abweichenden Entwurf jedoch nicht separat. Die beiden
+Testentwürfe sind als PC-Exporte erhalten; die Server-Konfliktsperre ist davon
+nicht betroffen. Entwürfe künftig pro Arbeitskontext/Tab sichern und wiederfinden,
+vorhandene globale Entwürfe kompatibel übernehmen und anschließend auf .68
+mit Neuladen, Konflikten und Verbindungsabbruch prüfen. Siehe
+[Sprint9379](docs/sprints/Sprint-G2.5.9379.md). Keine Korrektur oder neue Version
+ist mit diesem reinen Prüfschritt ausgeliefert.
+
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
 App 0.1.327 prüft vor dem Lesen maximal 32 MiB ZIP-Dateigröße. Das Inventar ist
