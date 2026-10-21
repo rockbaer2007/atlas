@@ -47,6 +47,15 @@ während eines Schreibvorgangs; Stromausfall und gelöschter Browserspeicher sin
 damit nicht geprüft. Geräteaustausch benötigt weiter einen separaten Export.
 HA-Vollbackups sichern keine lokalen Browserentwürfe.
 
+Der anschließende Schreibabbruch ist ebenfalls auf .68 geprüft: Chrome wird
+innerhalb der lokalen Sicherung nach dem Datensatzschreiben und vor der
+Aktualisierung des Tab-Zeigers beendet. Der vollständige neue Entwurf bleibt
+manuell auswählbar; vorausgewählt bleibt der zuletzt bestätigte Vorgänger.
+Tab B und acht ältere Quellen sind unverändert. Eine eigene Testinstrumentierung
+markiert genau diese Grenze; die installierten App-Dateien bleiben unverändert.
+Kein Abbruch innerhalb des atomaren nativen Speicheraufrufs und kein
+Stromausfall-/Datenträgertest. Siehe [Sprint9383](docs/sprints/Sprint-G2.5.9383.md).
+
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
 App 0.1.327 prüft vor dem Lesen maximal 32 MiB ZIP-Dateigröße. Das Inventar ist
