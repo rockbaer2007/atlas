@@ -25,7 +25,7 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Nächste Prüfung: Browser-Neustart mit getrennten Editor-Entwürfen
+### Nächste Prüfung: unerwarteter Browserabbruch mit Editor-Entwürfen
 
 App 0.1.328 behebt die gemeinsame Entwurfsablage. Auf .68 bestehen getrennte
 Entwürfe nach Tab-Neuladen, explizite Wiederherstellung eines geschlossenen
@@ -33,11 +33,16 @@ Tabs und lokale Änderungen während eines echten App-Ausfalls. Server-Konflikte
 bleiben gesperrt. Der alte globale Entwurf bleibt lesbar; Wiederherstellungsquellen
 werden nicht automatisch gelöscht. Details: [Sprint9380](docs/sprints/Sprint-G2.5.9380.md).
 
-Als nächstes den vollständigen Browser-Neustart mit Sitzungswiederherstellung
-und manueller Entwurfsauswahl prüfen. Geräteaustausch/gelöschter Browserspeicher
-benötigen weiter einen separaten Export; HA-Vollbackups sichern keine lokalen
-Browserentwürfe. Tests nur auf .177/.68 nach frischem Backup und ohne Verlust
-vorhandener Entwürfe. Keine bereits bestandenen Tab-/App-Neustarts neu planen.
+Der vollständige Chrome-Neustart mit Sitzungswiederherstellung ist auf .68
+bestanden: beide Tab-Zeiger bleiben getrennt, vollständige Wiederherstellungen
+entsprechen den Exporten, manuelle Quellenwahl bleibt möglich. Siehe
+[Sprint9381](docs/sprints/Sprint-G2.5.9381.md).
+
+Als nächstes einen unerwarteten Browserabbruch in einer getrennten Testsitzung
+prüfen. Der geordnete Neustart beweist keine Crash-/Stromausfallfestigkeit.
+Geräteaustausch/gelöschter Browserspeicher benötigen weiter einen separaten Export;
+HA-Vollbackups sichern keine lokalen Browserentwürfe. Tests nur auf .177/.68
+nach frischem Backup und ohne Verlust vorhandener Entwürfe.
 
 ### Zuletzt abgeschlossen: begrenzter und abbrechbarer HACS-Import
 
