@@ -25,6 +25,17 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
+### Laufend: geräteübergreifender Speicherkonflikt auf .68
+
+App 0.1.333: Ein eigenes Serverprojekt ist für Chrome auf Handy und Tablet
+vorbereitet. Erst veraltete Tablet-Speichervorschau gegen einen neueren Handy-
+Serverstand prüfen; danach WLAN-Abbruch am Handy vor der Speicherübernahme und
+Entwurfserhalt/Wiederverbindung prüfen. Vollbackup dbc776c2, PC-Sicherungen und
+die eigene Seitenleistenanleitung ATLAS Mobilkonflikt liegen bereit. Die echte
+Geräteprüfung ist noch offen. .177 unverändert; nach Rückmeldung gezielt
+bereinigen, Bestandsdaten erhalten und drei Vollbackups behalten.
+Status und genaue Reihenfolge: [Sprint9395](docs/sprints/Sprint-G2.5.9395.md).
+
 ### Zuletzt abgeschlossen: Mobilprüfung der Entwurfsübersicht auf .68
 
 Der Nutzer bestätigt App 0.1.333 in Chrome auf Handy und Tablet: Auswahl, Suche,
