@@ -68,6 +68,8 @@ project/guide/sidebar stay available, with the guide updated to 0.1.334.
 Local docs build and the 198-page UIX example/link/language check pass. DE/EN/FR
 documentation commit: 04ace4f. Real-device rechecking of the new position remains
 pending; the user's successful prior apply does not qualify this new UI version.
+Source CI 055e64a5 and documentation build/deployment pass. All three public
+Card Editor locale pages return HTTP 200 and include 0.1.334.
 
 After the complete mobile qualification, remove the remaining owned project,
 guide/sidebar and retain the newest three full backups. Five temporarily remain:
