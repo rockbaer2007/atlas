@@ -73,3 +73,15 @@ comparison, apply the standing three-full-backup rule, retaining the three newes
 successful full backups and all PC evidence. Test fixtures must remain available
 until the user has finished both devices. DE/EN/FR documentation records this as
 prepared and awaiting results, not as a passed mobile test.
+
+## User-requested sidebar access
+
+The user subsequently requests the guide in the .68 HA sidebar. After separate
+backups of lovelace_dashboards and core.config_entries, the normal HA Webpage
+dashboard flow creates ATLAS Mobiltest, path atlas-mobiltest-20261022, dashboard
+ID atlas_mobiltest_20261022. It embeds the existing own guide URL, is shown in the
+sidebar and is not admin-only. Native sidebar navigation displays the guide.
+Every previous dashboard entry is deep-equal and core.config_entries is byte-
+identical. sidebar-test-artifact.json and sidebar-mobile-test.png retain the exact
+own entry and proof for later targeted cleanup. Include this own dashboard in
+post-test cleanup; do not remove any original dashboard or Runtime entry.
