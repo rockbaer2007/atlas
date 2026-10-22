@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-21. Framework **0.2.0-alpha.89**, HA app **0.1.331**.
+Updated: 2026-10-22. Framework **0.2.0-alpha.89**, HA app **0.1.331**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -26,6 +26,17 @@ Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
 ### Zuletzt abgeschlossen: Dateiimporte als getrennte Tab-Entwürfe sichern
+
+Der echte Browserabbruch während eines erneuten Dateiimports ist auf .68 mit
+App 0.1.331 bestanden: nach dem lokalen Datensatzschreiben, vor dem Tab-Zeiger.
+Nach Sitzungswiederherstellung wird der neuere A-Entwurf ausdrücklich angeboten;
+Vorschau-Abbrechen ändert nichts. Neuer A-Stand, Vorgänger A und unabhängiger B-
+Stand lassen sich mit identischen Inhalten und Einstellungen wiederherstellen;
+die Übernahme wählt die erste Karte aus. Alle 20 vorherigen Quellen im Testprofil
+bleiben bytegleich, Originaleditoren und globale Arbeitsfläche sind hergestellt.
+Eigene Testdateien liegen im Papierkorb, drei Vollbackups bleiben auf .68; .177
+unverändert. Kein Abbruch innerhalb der atomaren Storage-Operation und keine
+Stromausfallprüfung. Details: [Sprint9390](docs/sprints/Sprint-G2.5.9390.md).
 
 Der Profilwechseltest mit App 0.1.330 auf .68 findet eine Lücke im normalen
 Import einer Editor-Gesamtkonfiguration (JSON, Schaltfläche Import), ohne zuvor
