@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-22. Framework **0.2.0-alpha.89**, HA app **0.1.332**.
+Updated: 2026-10-22. Framework **0.2.0-alpha.89**, HA app **0.1.333**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -26,6 +26,11 @@ Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
 ### Laufend: Mobilprüfung der Entwurfsübersicht auf .68
+
+App 0.1.333 ergänzt einen sichtbaren Button **Suchen** und Enter neben der
+laufenden Filterung. Bei null lokalen Quellen zuerst ein Serverprojekt öffnen
+und gesichert übernehmen; die Suche lädt keine Serverprojekte. Die tatsächliche
+Mobilprüfung bleibt offen. Änderung und Prüfgrenzen: [Sprint9393](docs/sprints/Sprint-G2.5.9393.md).
 
 Die Prüfung in Chrome auf Handy und Tablet ist vorbereitet, noch nicht bestanden.
 Frisches Vollbackup, PC-Quellen-/Dateisicherungen und zwei eigene Serverprojekte
