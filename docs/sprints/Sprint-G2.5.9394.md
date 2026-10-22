@@ -56,3 +56,10 @@ and installed updates remain. The unfiltered HA backup list is checked.
 DE/EN/FR Card Editor and development-status pages now record the successful
 user qualification, device versions and cleanup, replacing the pending status.
 Documentation-only increment: no package version bump is necessary.
+Local npm docs build and the 198-page UIX example/link/language check pass.
+Documentation commit: a15eb4e. Source report: 1cb9edd0.
+GitHub documentation build/deploy succeeds; all three public card-editor.html
+locale pages return HTTP 200 and include the actual-device result and 0.1.333.
+The three-backup screenshot and final before/after comparison are saved in the
+evidence folder. Agent-owned guide/sidebar helper tabs are closed; mobile sources
+and downloads remain under the user's control.

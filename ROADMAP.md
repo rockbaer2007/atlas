@@ -43,8 +43,9 @@ ehrliche Zuordnung (dieser Tab oder anderer/früherer Tab). Mehrbegriffs-Suche,
 Trefferzahl, leere Treffer und die Auswahl nach Filterende sind in DE/EN/FR auf
 .68 geprüft, ebenso gleichnamige Projekte in zwei Tabs und deren Wiederherstellung
 nach Neuladen. Alle 32 vorhandenen Quellen bleiben bytegleich; Originaleditoren,
-Bestandsdaten und drei Vollbackups sind erhalten. .177 unverändert. Die Chrome-
-Viewport-Vorgabe greift nicht; echte schmale/mobile Darstellung bleibt offen.
+Bestandsdaten und drei Vollbackups sind erhalten. .177 unverändert. Die damalige
+Chrome-Viewport-Vorgabe griff nicht; die spätere echte Mobilprüfung mit 0.1.333
+ist inzwischen bestanden (Sprint9394).
 Details: [Sprint9391](docs/sprints/Sprint-G2.5.9391.md).
 
 ### Zuletzt abgeschlossen: Dateiimporte als getrennte Tab-Entwürfe sichern
