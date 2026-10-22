@@ -1,6 +1,6 @@
 # ATLAS Roadmap
 
-Updated: 2026-10-22. Framework **0.2.0-alpha.89**, HA app **0.1.331**.
+Updated: 2026-10-22. Framework **0.2.0-alpha.89**, HA app **0.1.332**.
 
 This is the current open ATLAS backlog. Completed work belongs in
 [the sprint ledger](docs/sprints/) and Git history, not in this list.
@@ -24,6 +24,17 @@ HA-Backups behalten, bevorzugt die drei neuesten erfolgreich abgeschlossenen
 Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
+
+### Zuletzt abgeschlossen: durchsuchbare Entwurfsübersicht
+
+App 0.1.332 ergänzt Projekt-/Scriptnamen, Speicherzeit, Quellenkennung und eine
+ehrliche Zuordnung (dieser Tab oder anderer/früherer Tab). Mehrbegriffs-Suche,
+Trefferzahl, leere Treffer und die Auswahl nach Filterende sind in DE/EN/FR auf
+.68 geprüft, ebenso gleichnamige Projekte in zwei Tabs und deren Wiederherstellung
+nach Neuladen. Alle 32 vorhandenen Quellen bleiben bytegleich; Originaleditoren,
+Bestandsdaten und drei Vollbackups sind erhalten. .177 unverändert. Die Chrome-
+Viewport-Vorgabe greift nicht; echte schmale/mobile Darstellung bleibt offen.
+Details: [Sprint9391](docs/sprints/Sprint-G2.5.9391.md).
 
 ### Zuletzt abgeschlossen: Dateiimporte als getrennte Tab-Entwürfe sichern
 
