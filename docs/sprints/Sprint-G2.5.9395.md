@@ -65,3 +65,10 @@ backups temporarily remain: dbc776c2, a0ca4a9e, fe84e19f, dfc0c05c. After comple
 remove owned fixtures, retain the newest three successful full backups and all
 PC evidence, compare original data and update DE/EN/FR with actual results.
 No new runtime version is needed for this documentation/test preparation.
+
+Local documentation build and the 198-page UIX links/examples/language check
+pass. Guide script syntax and served HTML bytes match; server project remains
+at pristine revision one at handoff. Documentation commit: af45503; preparation
+report: 092456b8. No concurrent save or Wi-Fi-loss success is claimed yet.
+Documentation deployment succeeds. All three public Card Editor locale pages
+return HTTP 200 and contain the new tablet-script procedure.
