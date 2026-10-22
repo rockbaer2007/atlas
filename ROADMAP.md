@@ -25,22 +25,16 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Laufend: Mobilprüfung der Entwurfsübersicht auf .68
+### Zuletzt abgeschlossen: Mobilprüfung der Entwurfsübersicht auf .68
 
-App 0.1.333 ergänzt einen sichtbaren Button **Suchen** und Enter neben der
-laufenden Filterung. Bei null lokalen Quellen zuerst ein Serverprojekt öffnen
-und gesichert übernehmen; die Suche lädt keine Serverprojekte. Die tatsächliche
-Mobilprüfung bleibt offen. Änderung und Prüfgrenzen: [Sprint9393](docs/sprints/Sprint-G2.5.9393.md).
-
-Die Prüfung in Chrome auf Handy und Tablet ist vorbereitet, noch nicht bestanden.
-Frisches Vollbackup, PC-Quellen-/Dateisicherungen und zwei eigene Serverprojekte
-MOB68 A/B sowie eine temporäre Startseite mit lokalem Sicherungsdownload liegen
-bereit. Auf jedem Gerät zuerst eigene lokale Quellen und die aktuelle vollständige
-Editor-Konfiguration exportieren, danach die beiden Testprojekte in getrennten
-Tabs öffnen. Suche, Auswahl, Hoch-/Querformat mit Tastatur und ausdrückliche
-Wiederherstellung nach Neuladen prüfen. .177 bleibt unverändert. Testobjekte bis
-zur Rückmeldung erhalten; danach gezielt bereinigen und drei Vollbackups behalten.
-Status und Grenzen: [Sprint9392](docs/sprints/Sprint-G2.5.9392.md).
+Der Nutzer bestätigt App 0.1.333 in Chrome auf Handy und Tablet: Auswahl, Suche,
+Tab-Zuordnung, Hoch-/Querformat und getrennte A/B-Wiederherstellung funktionieren.
+Die eigenen Serverprojekte, Startseite und der Test-Seitenleisteneintrag sind
+bereinigt; sieben Bestandsprojekte und alle vorhandenen Daten bleiben erhalten.
+.177 unverändert. Drei aktuelle Vollbackups und sämtliche PC-Sicherungen bleiben.
+Geräte, Nutzerergebnis und Bereinigung: [Sprint9394](docs/sprints/Sprint-G2.5.9394.md).
+Der Suchen-Button und Hinweise bei null Quellen stammen aus
+[Sprint9393](docs/sprints/Sprint-G2.5.9393.md).
 
 ### Zuletzt abgeschlossen: durchsuchbare Entwurfsübersicht
 
