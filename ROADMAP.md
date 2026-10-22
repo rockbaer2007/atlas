@@ -25,20 +25,22 @@ Vollsicherungen. Alle Backup-Arten ungefiltert kontrollieren; endgültige
 Browser-Löschungen weiterhin konkret bestätigen lassen. PC-Sicherungen bleiben
 von dieser Aufbewahrungsgrenze ausgenommen.
 
-### Laufend: geräteübergreifender Speicherkonflikt auf .68
+### Zuletzt abgeschlossen: geräteübergreifender Speicherkonflikt auf .68
 
-App 0.1.334: Ein eigenes Serverprojekt ist für Chrome auf Handy und Tablet
-vorbereitet. Erst veraltete Tablet-Speichervorschau gegen einen neueren Handy-
-Serverstand prüfen; danach WLAN-Abbruch am Handy vor der Speicherübernahme und
-Entwurfserhalt/Wiederverbindung prüfen. Vollbackup dbc776c2, PC-Sicherungen und
-die eigene Seitenleistenanleitung ATLAS Mobilkonflikt liegen bereit. Die echte
-Geräteprüfung ist noch offen. .177 unverändert; nach Rückmeldung gezielt
-bereinigen, Bestandsdaten erhalten und drei Vollbackups behalten.
-Status und genaue Reihenfolge: [Sprint9395](docs/sprints/Sprint-G2.5.9395.md).
+App 0.1.334: Der Nutzer bestätigt Handy-Speichern, Konflikt der veralteten Tablet-
+Vorschau und erhaltenen Tablet-Entwurf. WLAN-Abbruch vor der Handy-Übernahme
+meldet einen Fehler, erhält den Offline-Entwurf und verbindet danach wieder.
+Der Server bleibt exakt auf Revision 2 mit dem bestätigten Handy-Script.
+Testprojekt, Anleitung und Test-Seitenleisteneintrag sind bereinigt; sieben
+Originalprojekte und Bestandsdaten bleiben erhalten. Drei neueste Vollbackups
+und PC-Sicherungen bleiben. .177 unverändert. Dies ist kein gesteuerter Abbruch
+nach dem Server-Schreiben vor dessen Bestätigung.
+Ergebnis und Grenzen: [Sprint9397](docs/sprints/Sprint-G2.5.9397.md).
+Vorbereitung: [Sprint9395](docs/sprints/Sprint-G2.5.9395.md).
 Die Bestätigung steht ab 0.1.334 direkt bei den Projektbuttons, wird fokussiert
 und sichtbar gescrollt; Lade- und Auswahlhinweise sowie begrenzte Leseanfragen
 ergänzen die Öffnungsprüfung. Das auf dem Handy zunächst übersehene Laden ist
-inzwischen vom Nutzer bestätigt; der eigentliche Speicherkonflikt bleibt offen.
+inzwischen vom Nutzer bestätigt; der Speicherkonflikt ist ebenfalls bestanden.
 Korrektur und Prüfgrenzen: [Sprint9396](docs/sprints/Sprint-G2.5.9396.md).
 
 ### Zuletzt abgeschlossen: Mobilprüfung der Entwurfsübersicht auf .68
