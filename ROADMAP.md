@@ -9,6 +9,18 @@ The four stabilization items are closed; evidence and test boundaries are in
 
 ## Agreed priorities / Vereinbarte nächste Schritte
 
+### Für später vorgemerkt: Speicherabbruch nach Server-Schreiben
+
+Nutzerwunsch vom 22.10.2026: Als Nächstes auf .68 gezielt die Verbindung nach
+erfolgreichem Schreiben des gemeinsamen Editor-Projekts, aber vor der Bestätigung
+im Browser unterbrechen. Prüfen, ob der bereits gespeicherte Serverstand eindeutig
+erkannt wird, der lokale Entwurf erhalten bleibt und ein erneuter Versuch keinen
+unbemerkten Überschreibvorgang auslöst. Möglichst automatisiert mit einem eigenen
+Testprojekt durchführen. Vorher Backup und Entwürfe/Daten sichern; .177 unverändert
+lassen. Danach eigene Testobjekte bereinigen, drei neueste Vollbackups behalten
+und Doku DE/EN/FR aktualisieren. Nur vorgemerkt, noch nicht gestartet; keine
+Terminierung oder automatische Ausführung beauftragt.
+
 ### Verbindliche Testrichtlinie ab 18.10.2026
 
 Für Netzwerk-, HA-, Browser-, Update- und Belastungstests ausschließlich
