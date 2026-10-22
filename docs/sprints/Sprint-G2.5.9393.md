@@ -50,6 +50,13 @@ step for zero local sources. Actual phone/tablet results remain pending.
 Source 60636bce, package mirror 13ef7ff; source CI passes. Syntax checks, build,
 31 frontend tests, 431 Home Assistant tests and 43 App tests pass. Mirrors sync
 523 files. Documentation DE/EN/FR describes the button and qualification boundary.
+Installed shared-projects.mjs, draft-overview.mjs and app.bundle.js match the
+reviewed source after line-ending normalization. Docs commit 5ea399c builds,
+passes the 198-page UIX link/example check and deploys successfully. All three
+public card-editor.html pages return HTTP 200 and include 0.1.333.
+The user subsequently reports zero sources on both devices and an apparently
+unresponsive Search button. Whether A/B was explicitly applied is awaiting
+clarification; this report is not marked resolved or a passed mobile test.
 Retention: keep a0ca4a9e, fe84e19f and dfc0c05c. Deleting the two older full
 backups c9456330 and 4dc22ce1 is pending the required browser action-time
 confirmation; PC backups and installed updates remain preserved.
